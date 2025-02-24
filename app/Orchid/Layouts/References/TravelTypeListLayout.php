@@ -2,7 +2,7 @@
 
 namespace App\Orchid\Layouts\References;
 
-use App\Models\TravelType;
+use App\Models\Travel\TravelType;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\ModalToggle;

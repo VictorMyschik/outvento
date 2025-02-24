@@ -2,7 +2,7 @@
 
 namespace App\Orchid\Layouts\References;
 
-use App\Models\CategoryEquipment;
+use App\Models\Reference\CategoryEquipment;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Layouts\Rows;

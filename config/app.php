@@ -127,6 +127,7 @@ return [
     'aliases'     => [
         'MrMessage' => MrMessageHelper::class,
         'Auth'      => Illuminate\Support\Facades\Auth::class,
-        'Html'      => Spatie\Html\Facades\Html::class
+        'Html'      => Spatie\Html\Facades\Html::class,
+        'Route'     => Illuminate\Support\Facades\Route::class,
     ],
 ];

@@ -4,20 +4,32 @@ namespace App\Orchid\Screens\Travel;
 
 use App\Classes\Email\EmailService;
 use App\Models\EmailInvite;
-use App\Models\Travel;
-use App\Models\UIH;
+use App\Models\Reference\Country;
+use App\Models\Travel\Travel;
+use App\Models\Travel\TravelType;
+use App\Models\Travel\UIT;
+use App\Models\User;
 use App\Orchid\Layouts\Travel\InviteByEmailEditLayout;
 use App\Orchid\Layouts\Travel\InviteListLayout;
 use App\Orchid\Layouts\Travel\TravelEditLayout;
-use App\Orchid\Layouts\Travel\UIHActiveListLayout;
-use App\Orchid\Layouts\Travel\UIHNotActiveListLayout;
+use App\Services\Travel\Enum\TravelStatus;
+use App\Services\Travel\Enum\UITStatus;
+use App\Services\Travel\Enum\VisibleType;
+use App\Services\Travel\TravelService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Orchid\Screen\Actions\Button;
+use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Fields\Group;
+use Orchid\Screen\Fields\Input;
+use Orchid\Screen\Fields\Select;
+use Orchid\Screen\Fields\TextArea;
+use Orchid\Screen\Fields\ViewField;
+use Orchid\Screen\Layouts\Rows;
+use Orchid\Screen\Layouts\Tabs;
 use Orchid\Screen\Screen;
 use Orchid\Support\Color;
 use Orchid\Support\Facades\Layout;
@@ -27,24 +39,24 @@ class TravelDetailsScreen extends Screen
 {
     public ?Travel $travel = null;
 
+    public function __construct(private readonly TravelService $travelService) {}
+
     public function query(Travel $travel): array
     {
         return [
-            'travel'         => $travel,
-            'active-uih'     => UIH::filters([])->where('travel_id', $travel->id())->where('status', UIH::STATUS_APPROVED)->paginate(20),
-            'not-active-uih' => UIH::filters([])->where('travel_id', $travel->id())->where('status', UIH::STATUS_REJECTED)->paginate(20),
-            'invite-uih'     => EmailInvite::filters([])->where('travel_id', $travel->id())->paginate(20)
+            'travel'     => $travel,
+            'invite-uih' => EmailInvite::filters([])->where('travel_id', $travel->id())->paginate(20)
         ];
     }
 
     public function name(): ?string
     {
-        return $this->travel?->getName();
+        return $this->travel?->getTitle();
     }
 
     public function description(): ?string
     {
-        return $this->travel?->getDescription();
+        return View('admin.created_updated', ['model' => $this->travel])->toHtml();
     }
 
     public function commandBar(): iterable
@@ -69,55 +81,101 @@ class TravelDetailsScreen extends Screen
 
     public function layout(): iterable
     {
-        $out = [
-            Layout::modal('travel_modal', TravelEditLayout::class)->async('asyncGetTravel'),
-        ];
+        $out[] = Layout::columns([
+            $this->getBaseLayout(),
+            $this->getRightTab(),
+        ]);
 
-        if ($travel = Travel::loadBy((int)$this->travel?->id())) {
-            $publicLink = route('travel.public.link', ['token' => $travel->getPublicId()]);
-
-            $out[] = Layout::modal('new_invite_email_modal', InviteByEmailEditLayout::class);
-
-            $rows = [
-                'Статус'             => $travel->getStatusName(),
-                'Страна'             => $travel->getCountry()->getName(),
-                'Тип похода'         => $travel->getTravelType()->getName(),
-                'Тип публичности'    => $travel->getVisibleKindName(),
-                'Публичная страница' => Travel::VISIBLE_KIND_FOR_ME !== $travel->getVisibleKind() ? "<a target='_blank' href='" . $publicLink . "'>$publicLink</a>" : 'Публичная страница не доступна',
-                //'Снаряжение'         => '<a href="'.route().'">Снаряжение</a>',
-            ];
-            $columns[] = Layout::view('table_travel_details', ['rows' => $rows]);
-
-            if (Travel::VISIBLE_KIND_FOR_ME !== $travel->getVisibleKind()) {
-                $columns[] = Layout::tabs([
-                    'Активные'   => UIHActiveListLayout::class,
-                    'Отказ'      => UIHNotActiveListLayout::class,
-                    'В ожидании' => InviteListLayout::class,
-                    'Пригласить' => Layout::rows([
-                        Group::make([
-                            Link::make('QR code')->icon('qrcode')->target('_blank')->type(Color::INFO())
-                                ->href('https://api.qrserver.com/v1/create-qr-code/?data=' . $publicLink . '&amp;size=200x200'),
-
-                            ModalToggle::make('Email')
-                                ->type(Color::INFO())
-                                ->modal('new_invite_email_modal')
-                                ->modalTitle('Create new invite by email')
-                                ->method('createNewInvite')
-                                ->asyncParameters(['id' => $travel->id()]),
-                        ])->autoWidth()
-                    ])
-                ])->activeTab('Активные');
-            }
-
-            $out[] = Layout::columns($columns);
-
-            // Images
-            $images = $this->travel->getImagesList();
-
-            $out[] = Layout::view('travel_images', ['images' => $images]);
-        }
+        $out[] = Layout::modal('travel_modal', TravelEditLayout::class)->async('asyncGetTravel');
+        $out[] = Layout::modal('new_invite_email_modal', InviteByEmailEditLayout::class);
 
         return $out;
+    }
+
+    private function getBaseLayout(): Rows
+    {
+        if (VisibleType::VISIBLE_TYPE_FOR_ME !== $this->travel->getVisibleType()) {
+            $url = $this->travelService->getPublicUrl($this->travel);
+            $link = "<a target='_blank' href='" . $url . "'>$url</a>";
+        }
+
+        $out[] = Group::make([
+            Select::make('travel.status')->title('Общий статус')->required()->options(TravelStatus::getSelectList()),
+            Select::make('travel.visible_type')->title('Видимость')->required()->empty('Select travel public type')->options(VisibleType::getSelectList()),
+            Select::make('travel.travel_type_id')->title('Тип')->required()->empty('Select travel type')->options(TravelType::all()->pluck('name', 'id')->toArray()),
+            Select::make('travel.country_id')->title('Страна')->required()->empty('Select country')->options(Country::all()->pluck('name', 'id')->toArray()),
+        ]);
+
+        $out[] = Input::make('travel.title')->title('Заголовок')->required()->maxlength(255);
+        $out[] = Select::make('travel.user_id')->title('Владелец')->required()->options(User::all()->pluck('name', 'id')->toArray());
+
+        TextArea::make('travel.description')->title('Подробное описание')->rows(5)->maxlength(8000);
+
+        return Layout::rows($out);
+    }
+
+    private function getRightTab(): Tabs
+    {
+        return Layout::tabs([
+            'Активные'   => Layout::rows([$this->getUITActiveListLayout()]),
+            'Отказ'      => Layout::rows([$this->getUITNotActiveListLayout()]),
+            'В ожидании' => InviteListLayout::class,
+            'Пригласить' => Layout::rows([
+                Group::make([
+                    Link::make('QR code')->class('mr-btn-success')->icon('qrcode')->target('_blank')
+                        ->href('https://api.qrserver.com/v1/create-qr-code/?data=' . $this->travelService->getPublicUrl($this->travel) . '&amp;size=200x200'),
+
+                    ModalToggle::make('Email')
+                        ->class('mr-btn-success')
+                        ->modal('new_invite_email_modal')
+                        ->modalTitle('Create new invite by email')
+                        ->method('createNewInvite')
+                        ->asyncParameters(['id' => $this->travel->id()]),
+                ])->autoWidth()
+            ])
+        ]);
+    }
+
+    private function getUITActiveListLayout(): ViewField
+    {
+        $list = $this->travelService->getTravelUsers($this->travel);
+
+        /** @var UIT $userInTravel */
+        foreach ($list as $key => &$userInTravel) {
+            if ($userInTravel->getStatus() !== UITStatus::APPROVED) {
+                unset($list[$key]);
+            }
+
+            $userInTravel->btn = DropDown::make()->icon('options-vertical')->list([
+                Button::make(__('Delete'))
+                    ->icon('bs.trash3')
+                    ->confirm('Удалить участника из списка')
+                    ->method('removeUIH', ['id' => $userInTravel->id()])
+            ])->render();
+        }
+
+        return ViewField::make('')->view('admin.travel.users')->value($list);
+    }
+
+    private function getUITNotActiveListLayout(): ViewField
+    {
+        $list = $this->travelService->getTravelUsers($this->travel);
+
+        foreach ($list as $key => &$userInTravel) {
+            if ($userInTravel->getStatus() == UITStatus::REJECTED) {
+                $userInTravel->btn = DropDown::make()->icon('options-vertical')->list([
+                    Button::make(__('Delete'))
+                        ->icon('bs.trash3')
+                        ->confirm('Удалить участника из списка')
+                        ->method('removeUIH', ['id' => $userInTravel->id()])
+                ])->render();
+                continue;
+            }
+
+            unset($list[$key]);
+        }
+
+        return ViewField::make('')->view('admin.travel.users')->value($list);
     }
 
     public function asyncGetTravel(int $id = 0): array
@@ -130,7 +188,7 @@ class TravelDetailsScreen extends Screen
     public function asyncGetUIH(int $id = 0): array
     {
         return [
-            'uih' => UIH::loadBy($id) ?: new UIH()
+            'uih' => UIT::loadBy($id) ?: new UIT()
         ];
     }
 
@@ -148,7 +206,7 @@ class TravelDetailsScreen extends Screen
 
         $travel = Travel::loadBy($request->get('id')) ?: new Travel();
         $travel->fill($data);
-        $travel->save_mr();
+        $travel->save();
 
         Toast::info('Travel was saved');
     }
@@ -159,7 +217,7 @@ class TravelDetailsScreen extends Screen
             'uih.status' => 'required|integer',
         ])['uih'];
 
-        UIH::updateOrCreate(
+        UIT::updateOrCreate(
             ['id' => (int)$request->get('id')],
             $data
         );
@@ -176,7 +234,7 @@ class TravelDetailsScreen extends Screen
 
     public function removeUIH(int $id): void
     {
-        UIH::loadBy($id)?->delete();
+        (UIT::loadByOrDie($id))->delete();
     }
 
     public function createNewInvite(int $id): void
@@ -200,7 +258,7 @@ class TravelDetailsScreen extends Screen
         $invite->setStatus(EmailInvite::STATUS_NEW);
         $invite->setToken($invite->generateToken());
         $invite->setUserID($travel->getUser()->id);
-        $invite->save_mr();
+        $invite->save();
 
         EmailService::sendTravelInvite($invite);
 
@@ -216,9 +274,9 @@ class TravelDetailsScreen extends Screen
 
     public function declineUIH(int $id): void
     {
-        $invite = UIH::loadByOrDie($id);
-        $invite->setStatus(UIH::STATUS_REJECTED);
-        $invite->save_mr();
+        $invite = UIT::loadByOrDie($id);
+        $invite->setStatus(UITStatus::REJECTED);
+        $invite->save();
 
         Toast::info('Приглашение отклонено');
     }

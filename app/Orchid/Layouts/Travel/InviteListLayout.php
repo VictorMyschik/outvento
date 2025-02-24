@@ -7,10 +7,8 @@ namespace App\Orchid\Layouts\Travel;
 use App\Models\EmailInvite;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
-use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
-use Orchid\Support\Color;
 
 class InviteListLayout extends Table
 {

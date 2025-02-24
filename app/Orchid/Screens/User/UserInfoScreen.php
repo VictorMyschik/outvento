@@ -2,7 +2,7 @@
 
 namespace App\Orchid\Screens\User;
 
-use App\Models\UserInfo;
+use App\Models\UserInfo\UserInfo;
 use App\Orchid\Filters\UserInfoFilter;
 use App\Orchid\Layouts\User\UserInfoEditLayout;
 use App\Orchid\Layouts\User\UserInfoListLayout;
@@ -75,7 +75,7 @@ class UserInfoScreen extends Screen
         $userInfo->setAbout($input['about']);
         $userInfo->setBirthday($input['birthday']);
 
-        $userInfo->save_mr();
+        $userInfo->save();
 
         Toast::info('Информация о пользователе успешно сохранена');
     }

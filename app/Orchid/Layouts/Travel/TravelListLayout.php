@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid\Layouts\Travel;
 
-use App\Models\Travel;
+use App\Models\Travel\Travel;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\Link;
@@ -22,13 +22,13 @@ class TravelListLayout extends Table
         return [
             TD::make('id', __('ID'))->sort(),
 
-            TD::make('name', 'Name')->render(fn(Travel $travel) => Link::make($travel->getName())
+            TD::make('name', 'Name')->render(fn(Travel $travel) => Link::make($travel->getTitle())
                 ->route('travel.details', ['travel' => $travel->id()])
             ),
 
             TD::make('description', 'Description'),
 
-            TD::make('status', 'Status')->render(fn(Travel $travel) => $travel->getStatusName()),
+            TD::make('status', 'Status')->render(fn(Travel $travel) => $travel->getStatus()->getLabel()),
 
             TD::make('user_id', 'User')->render(fn(Travel $travel) => $travel->getUser()->name),
 

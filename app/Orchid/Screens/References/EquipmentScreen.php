@@ -2,7 +2,7 @@
 
 namespace App\Orchid\Screens\References;
 
-use App\Models\Equipment;
+use App\Models\Equipment\Equipment;
 use App\Orchid\Filters\EquipmentFilter;
 use App\Orchid\Layouts\References\EquipmentEditLayout;
 use App\Orchid\Layouts\References\EquipmentListLayout;
@@ -10,7 +10,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Screen;
-use Orchid\Support\Color;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
 

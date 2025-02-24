@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 
+Auth::routes();
+
 Route::get('/clear', function () {
     Artisan::call('cache:clear');
     Artisan::call('view:clear');

@@ -5,11 +5,10 @@ namespace App\Http\Controllers\Travel;
 use App\Classes\Travel\Image\ImageClass;
 use App\Classes\Validation\TravelImageValidation;
 use App\Http\Controllers\Controller;
-use App\Models\Travel;
-use App\Models\TravelImage;
+use App\Models\Travel\Travel;
+use App\Models\Travel\TravelImage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -75,7 +74,7 @@ class TravelImageController extends Controller
 
         $this->imageClass->setImageProperties($image, $input);
 
-        $image->save_mr();
+        $image->save();
 
         return $this->successResult();
     }

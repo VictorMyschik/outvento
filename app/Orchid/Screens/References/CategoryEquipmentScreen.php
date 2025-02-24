@@ -2,13 +2,12 @@
 
 namespace App\Orchid\Screens\References;
 
-use App\Models\CategoryEquipment;
+use App\Models\Reference\CategoryEquipment;
 use App\Orchid\Layouts\References\CategoryEquipmentEditLayout;
 use App\Orchid\Layouts\References\CategoryEquipmentListLayout;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Screen;
-use Orchid\Support\Color;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
 

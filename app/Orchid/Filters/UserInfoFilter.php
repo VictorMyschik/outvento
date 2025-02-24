@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Orchid\Filters;
 
 use App\Models\User;
-use App\Models\UserInfo;
+use App\Models\UserInfo\UserInfo;
 use App\Orchid\Layouts\Lego\ActionFilterPanel;
 use Illuminate\Database\Eloquent\Builder;
 use Orchid\Filters\Filter;

@@ -2,13 +2,12 @@
 
 namespace App\Orchid\Screens\References;
 
-use App\Models\TravelType;
+use App\Models\Travel\TravelType;
 use App\Orchid\Layouts\References\TravelTypeEditLayout;
 use App\Orchid\Layouts\References\TravelTypeListLayout;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Screen;
-use Orchid\Support\Color;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
 

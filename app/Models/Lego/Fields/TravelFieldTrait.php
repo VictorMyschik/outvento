@@ -2,7 +2,7 @@
 
 namespace App\Models\Lego\Fields;
 
-use App\Models\Travel;
+use App\Models\Travel\Travel;
 
 trait TravelFieldTrait
 {

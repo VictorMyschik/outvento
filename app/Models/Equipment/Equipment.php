@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Equipment;
 
 use App\Models\Lego\Fields\DescriptionNullableFieldTrait;
 use App\Models\Lego\Fields\NameFieldTrait;
 use App\Models\ORM\ORM;
+use App\Models\Reference\CategoryEquipment;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
 
@@ -33,10 +34,5 @@ class Equipment extends ORM
     public function getCategory(): ?CategoryEquipment
     {
         return CategoryEquipment::loadBy($this->category_id);
-    }
-
-    public function setCategoryID(?int $value): void
-    {
-        $this->category_id = $value;
     }
 }

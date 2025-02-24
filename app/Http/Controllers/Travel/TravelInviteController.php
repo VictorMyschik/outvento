@@ -4,8 +4,9 @@ namespace App\Http\Controllers\Travel;
 
 use App\Http\Controllers\Controller;
 use App\Models\EmailInvite;
-use App\Models\UIH;
+use App\Models\Travel\UIT;
 use App\Models\User;
+use App\Services\Travel\Enum\UITStatus;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 
@@ -28,9 +29,9 @@ class TravelInviteController extends Controller
         if ($user) {
             Auth::login($user);
 
-            $status = $status === 'true' ? UIH::STATUS_APPROVED : UIH::STATUS_REJECTED;
+            $status = $status === 'true' ? UITStatus::APPROVED : UITStatus::REJECTED;
 
-            UIH::where('travel_id', $emailInvite->getTravel()->id())->where('user_id', $user->id)->updateOrCreate([
+            UIT::where('travel_id', $emailInvite->getTravel()->id())->where('user_id', $user->id)->updateOrCreate([
                 'travel_id' => $emailInvite->getTravel()->id(),
                 'user_id'   => $user->id,
             ], [

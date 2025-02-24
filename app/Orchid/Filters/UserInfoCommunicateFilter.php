@@ -2,9 +2,9 @@
 
 namespace App\Orchid\Filters;
 
-use App\Models\Communicate;
 use App\Models\User;
-use App\Models\UserInfo;
+use App\Models\UserInfo\Communicate;
+use App\Models\UserInfo\UserInfo;
 use App\Orchid\Layouts\Lego\ActionFilterPanel;
 use App\Orchid\Layouts\Lego\ViewHelper;
 use Illuminate\Database\Eloquent\Builder;

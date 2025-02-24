@@ -1,2 +1,3 @@
 insert into public.users (id, name, email, email_verified_at, password, permissions, remember_token, created_at, updated_at)
-values  (1, 'admin', 'admin@admin.com', null, '$2y$12$sLnnWhs/wsvxG5P0x1ehZOjCZuGDxX0MzNwXsC2..SWke1tvAA3Re', '{"platform.index": true, "platform.systems.roles": true, "platform.systems.users": true, "platform.systems.attachment": true}', null, '2025-02-24 09:01:48', '2025-02-24 09:01:48');
+values  (2, 'Viktar Myshchyk', 'mega-ximik@mail.ru', null, '$2y$12$WKfuZxyjvV.ZKETKOHh.FucbKFAkfGspRuUa6N0h8eSNc89vFdhzO', null, null, '2025-02-24 10:57:40', '2025-02-24 10:57:40'),
+        (1, 'admin', 'admin@admin.com', null, '$2y$12$sLnnWhs/wsvxG5P0x1ehZOjCZuGDxX0MzNwXsC2..SWke1tvAA3Re', '{"platform.index": true, "platform.systems.roles": true, "platform.systems.users": true, "platform.systems.attachment": true}', 'dhzKbRjU5i5UIzQB7UdcxS4n37VQTq2eMIM7PoG4OkAnkpvLTWG4gqUjJPYa', '2025-02-24 09:01:48', '2025-02-24 11:00:16');

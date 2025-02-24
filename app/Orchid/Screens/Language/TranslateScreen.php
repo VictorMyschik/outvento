@@ -65,7 +65,7 @@ class TranslateScreen extends Screen
         try {
             $translate = Translate::loadBy((int)$request->get('id')) ?: new Translate();
             $translate->fill($data);
-            $translate->save_mr();
+            $translate->save();
             Toast::info('Translate was saved');
         } catch (\Exception $e) {
             Toast::error($e->getMessage());

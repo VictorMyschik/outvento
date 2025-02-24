@@ -2,10 +2,12 @@
 
 namespace App\Orchid\Layouts\Travel;
 
-use App\Models\Travel;
-use App\Models\TravelType;
 use App\Models\Reference\Country;
+use App\Models\Travel\Travel;
+use App\Models\Travel\TravelType;
 use App\Models\User;
+use App\Services\Travel\Enum\TravelStatus;
+use App\Services\Travel\Enum\VisibleType;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Fields\TextArea;
@@ -16,8 +18,8 @@ class TravelEditLayout extends Rows
     public function fields(): array
     {
         return [
-            Input::make('travel.name')
-                ->title('Name')
+            Input::make('travel.title')
+                ->title('Title')
                 ->required()
                 ->maxlength(255),
 
@@ -29,7 +31,7 @@ class TravelEditLayout extends Rows
             Select::make('travel.status')
                 ->title('Status')
                 ->required()
-                ->options(Travel::getStatusList()),
+                ->options(TravelStatus::getSelectList()),
 
             Select::make('travel.user_id')
                 ->title('User')
@@ -48,11 +50,11 @@ class TravelEditLayout extends Rows
                 ->empty('Select travel type')
                 ->options(TravelType::all()->pluck('name', 'id')->toArray()),
 
-            Select::make('travel.visible_kind')
+            Select::make('travel.visible_type')
                 ->title('Visible type')
                 ->required()
                 ->empty('Select travel public type')
-                ->options(Travel::getVisibleKindList()),
+                ->options(VisibleType::getSelectList()),
         ];
     }
 }

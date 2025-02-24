@@ -2,18 +2,20 @@
 
 namespace App\Orchid\Screens\Travel;
 
-use App\Models\Travel;
+use App\Models\Travel\Travel;
 use App\Orchid\Layouts\Travel\TravelEditLayout;
 use App\Orchid\Layouts\Travel\TravelListLayout;
+use App\Services\Travel\TravelService;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Screen;
-use Orchid\Support\Color;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
 
 class TravelListScreen extends Screen
 {
+    public function __construct(private readonly TravelService $service) {}
+
     public function query(): iterable
     {
         return [
@@ -35,7 +37,7 @@ class TravelListScreen extends Screen
     {
         return [
             ModalToggle::make('Add')
-                ->type(Color::PRIMARY())
+                ->class('mr-btn-success')
                 ->icon('plus')
                 ->modal('travel_modal')
                 ->modalTitle('Create New Travel')
@@ -59,20 +61,23 @@ class TravelListScreen extends Screen
         ];
     }
 
-    public function saveTravel(Request $request): void
+    public function saveTravel(Request $request, int $id): void
     {
         $data = $request->validate([
-            'travel.name'           => 'required|string|max:255',
+            'travel.title'          => 'required|string|max:255',
             'travel.description'    => 'nullable|string|max:8000',
             'travel.status'         => 'required|integer',
             'travel.user_id'        => 'required|integer',
             'travel.country_id'     => 'required|integer',
             'travel.travel_type_id' => 'required|integer',
+            'travel.visible_type'   => 'required|integer',
         ])['travel'];
 
-        $travel = Travel::loadBy($request->get('id')) ?: new Travel();
-        $travel->fill($data);
-        $travel->save_mr();
+        if ($id > 0) {
+            $this->service->updateTravel($id, $data);
+        } else {
+            $this->service->createTravel($data);
+        }
 
         Toast::info('Travel was saved');
     }

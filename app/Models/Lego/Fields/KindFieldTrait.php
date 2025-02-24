@@ -11,13 +11,13 @@ trait KindFieldTrait
 
     public function setKind(int $value): void
     {
-        abort_if(!isset(self::getKindList()[$value]), 500, 'Unknown kind');
+        abort_if(!isset(self::getTypeList()[$value]), 500, 'Unknown kind');
 
         $this->kind = $value;
     }
 
     public function getKindName(): string
     {
-        return self::getKindList()[$this->getKind()];
+        return self::getTypeList()[$this->getKind()];
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Travel;
 
 use App\Models\Lego\Fields\DescriptionNullableFieldTrait;
 use App\Models\Lego\Fields\NameFieldTrait;

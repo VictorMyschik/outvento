@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\UserInfo;
 
 use App\Models\Lego\Fields\CreatedFieldTrait;
 use App\Models\Lego\Fields\UpdatedNullableFieldTrait;

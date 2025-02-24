@@ -15,6 +15,8 @@ return new class extends Migration {
             $table->timestampTz('created_at')->useCurrent();
             $table->timestampTz('updated_at')->nullable()->useCurrentOnUpdate();
 
+            $table->unique(['travel_id', 'user_id']);
+
             $table->foreign('travel_id')->references('id')->on('travels')->cascadeOnDelete();
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
         });

@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-md shadow-sm shadow mr-nav">
     <div class="container">
         <a class="navbar-brand text-italic mr-nav-link-color" href="{{ url('/') }}">
-            <span class="mr-nav-link-color">My Climbing</span>
+            <span class="mr-nav-link-color">My Travel</span>
         </a>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ml-auto">

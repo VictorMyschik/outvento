@@ -1,10 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
-use App\Models\Lego\Fields\CreatedFieldTrait;
 use App\Models\Lego\Fields\TravelFieldTrait;
-use App\Models\Lego\Fields\UpdatedNullableFieldTrait;
 use App\Models\Lego\Fields\UserFieldTrait;
 use App\Models\ORM\ORM;
 use Orchid\Filters\Filterable;
@@ -17,10 +17,8 @@ class EmailInvite extends ORM
 
     use UserFieldTrait;
     use TravelFieldTrait;
-    use CreatedFieldTrait;
-    use UpdatedNullableFieldTrait;
 
-    protected $table = 'email_invite';
+    protected $table = 'email_invites';
 
     protected $fillable = [
         'travel_id',

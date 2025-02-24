@@ -4,39 +4,33 @@ declare(strict_types=1);
 
 namespace App\Orchid\Layouts\Travel;
 
-use App\Helpers\System\MrDateTime;
-use App\Models\UIH;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Travel\UIT;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
-use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
-use Orchid\Support\Color;
 
-class UIHActiveListLayout extends Table
+class UITActiveListLayout extends Table
 {
     public $target = 'active-uih';
 
     public function columns(): array
     {
-        $user = Auth::user();
-
         $out[] = TD::make('id', __('ID'))->sort();
 
-        $out[] = TD::make('user_id', 'User')->render(fn(UIH $uih) => $uih->getUser()->name);
-        $out[] = TD::make('user_id', 'Email')->render(fn(UIH $uih) => $uih->getUser()->email);
+        $out[] = TD::make('user_id', 'User')->render(fn(UIT $uih) => $uih->getUser()->name);
+        $out[] = TD::make('user_id', 'Email')->render(fn(UIT $uih) => $uih->getUser()->email);
 
         $out[] = TD::make('created_at', 'Created')->sort()
-            ->render(fn(UIH $client) => $client->getCreatedObject()->format(MrDateTime::SHORT_DATE));
+            ->render(fn(UIT $client) => $client->created_at);
         $out[] = TD::make('updated_at', 'Updated')->sort()
-            ->render(fn(UIH $client) => $client->getUpdatedObject()?->format(MrDateTime::SHORT_DATE));
+            ->render(fn(UIT $client) => $client->updated_at);
 
 
         $out[] = TD::make(__('Actions'))
             ->align(TD::ALIGN_CENTER)
             ->width('100px')
-            ->render(function (UIH $uih) {
+            ->render(function (UIT $uih) {
 
                 $btnBan = Button::make(__('ban'))
                     ->icon('ban')

@@ -21,13 +21,8 @@ class PlatformProvider extends OrchidServiceProvider
     public function menu(): array
     {
         return [
-            Menu::make('System')->icon('settings')->list([
-                Menu::make('Cron')->route('system.info.cron'),
-                Menu::make('Cache')->route('system.cache'),
-                Menu::make('Settings')->route('system.settings.list'),
-                Menu::make('Failed jobs')->route('system.failed.jobs'),
-                Menu::make('API documentation')->target('_blank')->href('/api/documentation'),
-            ])->divider(),
+            // Travel
+            Menu::make('Travel list')->icon('bs.list')->route('travel.list'),
 
             // References
             Menu::make('References')->icon('grid')->list([
@@ -41,6 +36,14 @@ class PlatformProvider extends OrchidServiceProvider
             Menu::make('FAQ')->title('Information')->icon('bs.book')->route('faq.list'),
 
             Menu::make('Language')->icon('language')->route('language.list'),
+
+            Menu::make('System')->icon('settings')->list([
+                Menu::make('Cron')->route('system.info.cron'),
+                Menu::make('Cache')->route('system.cache'),
+                Menu::make('Settings')->route('system.settings.list'),
+                Menu::make('Failed jobs')->route('system.failed.jobs'),
+                Menu::make('API documentation')->target('_blank')->href('/api/documentation'),
+            ])->divider(),
 
             Menu::make(__('Users'))
                 ->icon('bs.people')

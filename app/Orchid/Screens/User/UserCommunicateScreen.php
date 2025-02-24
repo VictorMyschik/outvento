@@ -2,7 +2,7 @@
 
 namespace App\Orchid\Screens\User;
 
-use App\Models\Communicate;
+use App\Models\UserInfo\Communicate;
 use App\Orchid\Filters\UserInfoCommunicateFilter;
 use App\Orchid\Layouts\User\UserCommunicateEditLayout;
 use App\Orchid\Layouts\User\UserCommunicateListLayout;
@@ -90,7 +90,7 @@ class UserCommunicateScreen extends Screen
         $communicate->setUserId($input['user_id']);
         $communicate->setAddress($input['address']);
         $communicate->setKind((int)$input['kind']);
-        $communicate->save_mr();
+        $communicate->save();
 
         Toast::info('Контакт сохранен');
     }

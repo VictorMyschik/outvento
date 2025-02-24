@@ -2,8 +2,8 @@
 
 namespace App\Orchid\Filters;
 
-use App\Models\CategoryEquipment;
-use App\Models\Equipment;
+use App\Models\Equipment\Equipment;
+use App\Models\Reference\CategoryEquipment;
 use App\Orchid\Layouts\Lego\ActionFilterPanel;
 use Illuminate\Database\Eloquent\Builder;
 use Orchid\Filters\Filter;

@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace App\Orchid\Layouts\Travel;
 
 use App\Helpers\System\MrDateTime;
-use App\Models\UIH;
+use App\Models\Travel\UIT;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
-use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
-use Orchid\Support\Color;
 
 class UIHNotActiveListLayout extends Table
 {
@@ -21,17 +19,17 @@ class UIHNotActiveListLayout extends Table
     {
         return [
             TD::make('id', __('ID'))->sort(),
-            TD::make('user_id', 'User')->render(fn(UIH $uih) => $uih->getUser()->name),
-            TD::make('user_id', 'Email')->render(fn(UIH $uih) => $uih->getUser()->email),
+            TD::make('user_id', 'User')->render(fn(UIT $uih) => $uih->getUser()->name),
+            TD::make('user_id', 'Email')->render(fn(UIT $uih) => $uih->getUser()->email),
             TD::make('created_at', 'Created')->sort()
-                ->render(fn(UIH $uih) => $uih->getCreatedObject()->format(MrDateTime::SHORT_DATE)),
+                ->render(fn(UIT $uih) => $uih->created_at),
             TD::make('updated_at', 'Updated')->sort()
-                ->render(fn(UIH $uih) => $uih->getUpdatedObject()?->format(MrDateTime::SHORT_DATE)),
+                ->render(fn(UIT $uih) => $uih->updated_at),
 
             TD::make(__('Actions'))
                 ->align(TD::ALIGN_CENTER)
                 ->width('100px')
-                ->render(fn(UIH $uih) => DropDown::make()
+                ->render(fn(UIT $uih) => DropDown::make()
                     ->icon('bs.three-dots-vertical')
                     ->list([
                         Button::make(__('Delete'))

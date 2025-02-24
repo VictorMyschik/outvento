@@ -2,14 +2,13 @@
 
 namespace App\Orchid\Layouts\References;
 
-use App\Models\CategoryEquipment;
+use App\Models\Reference\CategoryEquipment;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
-use Orchid\Support\Color;
 
 class CategoryEquipmentListLayout extends Table
 {

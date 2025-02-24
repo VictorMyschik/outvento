@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('size');
             $table->integer('sort')->default(0);
             $table->string('description', 50)->nullable();
-            $table->string('hash', 50);
+            $table->string('hash', 50)->index();
             $table->unsignedBigInteger('user_id')->index();
             $table->tinyInteger('type')->default(0);
             $table->string('group')->nullable();

@@ -2,12 +2,9 @@
 
 namespace App\Orchid\Screens\Language;
 
-use App\Models\CategoryEquipment;
 use App\Models\System\Language;
 use App\Orchid\Layouts\Language\LanguageEditLayout;
 use App\Orchid\Layouts\Language\LanguageListLayout;
-use App\Orchid\Layouts\References\CategoryEquipmentEditLayout;
-use App\Orchid\Layouts\References\CategoryEquipmentListLayout;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Screen;

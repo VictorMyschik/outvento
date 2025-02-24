@@ -2,7 +2,7 @@
 
 namespace App\Orchid\Screens\Travel\TravelEquipments;
 
-use App\Models\Travel;
+use App\Models\Travel\Travel;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Screen;

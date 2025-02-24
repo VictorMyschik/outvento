@@ -2,7 +2,7 @@
 
 namespace App\Orchid\Layouts\Travel;
 
-use App\Models\Travel;
+use App\Models\Travel\Travel;
 use Orchid\Screen\Layouts\Rows;
 use Orchid\Screen\Sight;
 use Orchid\Support\Facades\Layout;
