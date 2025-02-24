@@ -2,7 +2,14 @@
 
 declare(strict_types=1);
 
+use App\Orchid\Screens\Email\EmailScreen;
+use App\Orchid\Screens\FAQScreen;
+use App\Orchid\Screens\Language\LanguageScreen;
+use App\Orchid\Screens\Language\TranslateScreen;
 use App\Orchid\Screens\PlatformScreen;
+use App\Orchid\Screens\References\CategoryEquipmentScreen;
+use App\Orchid\Screens\References\EquipmentScreen;
+use App\Orchid\Screens\References\TravelTypeListScreen;
 use App\Orchid\Screens\Role\RoleEditScreen;
 use App\Orchid\Screens\Role\RoleListScreen;
 use App\Orchid\Screens\System\CacheScreen;
@@ -10,7 +17,11 @@ use App\Orchid\Screens\System\CronScreen;
 use App\Orchid\Screens\System\FailedJobsScreen;
 use App\Orchid\Screens\System\PurgeScreen;
 use App\Orchid\Screens\System\SettingsScreen;
+use App\Orchid\Screens\Travel\TravelDetailsScreen;
+use App\Orchid\Screens\Travel\TravelListScreen;
+use App\Orchid\Screens\User\UserCommunicateScreen;
 use App\Orchid\Screens\User\UserEditScreen;
+use App\Orchid\Screens\User\UserInfoScreen;
 use App\Orchid\Screens\User\UserListScreen;
 use App\Orchid\Screens\User\UserProfileScreen;
 use Illuminate\Support\Facades\Route;
@@ -86,3 +97,22 @@ Route::screen('system/cache', CacheScreen::class)->name('system.cache');
 Route::screen('system/cron', CronScreen::class)->name('system.info.cron');
 Route::screen('system/purge', PurgeScreen::class)->name('system.purge');
 Route::screen('system/failed-jobs', FailedJobsScreen::class)->name('system.failed.jobs');
+// Language
+Route::screen('language', LanguageScreen::class)->name('language.list');
+Route::screen('language/{language}/translate', TranslateScreen::class)->name('language.translate.list');
+
+
+Route::screen('/faq/list', FAQScreen::class)->name('faq.list');
+Route::screen('/user-info/list', UserInfoScreen::class)->name('user.info.list');
+Route::screen('/user-info/address/list', UserCommunicateScreen::class)->name('user.info.address.list');
+
+// Travel
+Route::screen('/travel-type/list', TravelTypeListScreen::class)->name('reference.travel-type.list');
+Route::screen('/travel/list', TravelListScreen::class)->name('travel.list');
+Route::screen('/travel/details/{travel}', TravelDetailsScreen::class)->name('travel.details');
+Route::screen('/emails', EmailScreen::class)->name('reference.email.list');
+// Travel Equipment
+Route::screen('/travel/{travel_id}/', EmailScreen::class)->name('2reference.email.list');
+// References
+Route::screen('/reference/category-equipments/list', CategoryEquipmentScreen::class)->name('reference.category.equipments.list');
+Route::screen('/reference/equipments/list', EquipmentScreen::class)->name('reference.equipments.list');

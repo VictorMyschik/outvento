@@ -1,5 +1,7 @@
 <?php
 
+use App\Helpers\System\MrMessageHelper;
+
 return [
 
     /*
@@ -39,7 +41,7 @@ return [
     |
     */
 
-    'debug' => (bool) env('APP_DEBUG', false),
+    'debug' => (bool)env('APP_DEBUG', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -120,7 +122,11 @@ return [
 
     'maintenance' => [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
-        'store' => env('APP_MAINTENANCE_STORE', 'database'),
+        'store'  => env('APP_MAINTENANCE_STORE', 'database'),
     ],
-
+    'aliases'     => [
+        'MrMessage' => MrMessageHelper::class,
+        'Auth'      => Illuminate\Support\Facades\Auth::class,
+        'Html'      => Spatie\Html\Facades\Html::class
+    ],
 ];

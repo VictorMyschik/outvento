@@ -9,7 +9,7 @@ use App\Orchid\Layouts\User\UserFiltersLayout;
 use App\Orchid\Layouts\User\UserListLayout;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use App\Models\User;
+use Orchid\Platform\Models\User;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
@@ -80,17 +80,15 @@ class UserListScreen extends Screen
             UserFiltersLayout::class,
             UserListLayout::class,
 
-            Layout::modal('editUserModal', UserEditLayout::class)
-                ->deferred('loadUserOnOpenModal'),
+            Layout::modal('asyncEditUserModal', UserEditLayout::class)
+                ->async('asyncGetUser'),
         ];
     }
 
     /**
-     * Loads user data when opening the modal window.
-     *
      * @return array
      */
-    public function loadUserOnOpenModal(User $user): iterable
+    public function asyncGetUser(User $user): iterable
     {
         return [
             'user' => $user,

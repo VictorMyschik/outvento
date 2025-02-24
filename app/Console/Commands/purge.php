@@ -74,6 +74,8 @@ class purge extends Command
             'settings',
             'users',
             'cron',
+            'languages',
+            'translates',
         ];
 
         foreach ($tableList as $tableName) {
