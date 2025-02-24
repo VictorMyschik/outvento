@@ -1,0 +1,113 @@
+// Таблица
+
+.mr-table-header {
+  background: rgba(220, 216, 167, 0.2); //linear-gradient(150deg, rgba(51, 106, 206, 1) 0%, rgba(57, 114, 213, 1) 30%, rgba(35, 90, 191, 1) 30%, rgba(1, 60, 163, 1) 100%);
+  color: #001f6c;
+}
+
+.mr-table-header-2 {
+  background: linear-gradient(175deg, rgb(213, 207, 184) 0%, rgb(213, 174, 103) 30%, rgb(191, 123, 90) 60%, rgb(168, 120, 59) 90%);
+  color: #ffffff;
+}
+
+.mr-table-background {
+  background: rgba(220, 216, 167, 0.2);
+}
+
+// Кнопки
+.btn-panel {
+  background-color: rgba(231, 173, 101, 0.2);
+  //box-shadow: 0 0 10px rgba(160, 146, 146, 0.5);
+  border-radius: 15px;
+}
+
+.mr-btn-primary {
+  border: none;
+  box-shadow: 0 0 5px rgba(166, 166, 166, 0.8);
+  border-radius: 4px;
+  background: linear-gradient(180deg, rgb(206, 131, 51) 0%, rgb(213, 143, 57) 20%, rgb(191, 97, 35) 50%, rgb(163, 85, 1) 80%);
+  color: #ffffff;
+  padding: 2px 5px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.mr-btn-primary:hover {
+  border: none;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+  background-color: rgba(0, 54, 121, 0.1);
+}
+
+.mr-btn-danger {
+  border: none;
+  box-shadow: 0 0 5px rgba(166, 166, 166, 0.8);
+  border-radius: 4px;
+  background: linear-gradient(150deg, rgb(206, 51, 51) 0%, rgb(213, 57, 57) 30%, rgb(191, 35, 35) 30%, rgb(163, 1, 1) 100%);
+  color: #ffffff;
+  padding: 2px 5px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.mr-btn-success {
+  border: none;
+  box-shadow: 0 0 5px rgba(166, 166, 166, 0.8);
+  border-radius: 4px;
+  background: linear-gradient(150deg, rgb(95, 206, 51) 0%, rgb(91, 213, 57) 30%, rgb(56, 191, 35) 30%, rgb(36, 163, 1) 100%);
+  color: #ffffff;
+  padding: 2px 5px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.mr-btn-off {
+  border: none;
+  box-shadow: 0 0 5px rgba(0, 54, 121, 0.1);
+  border-radius: 4px;
+  background: linear-gradient(150deg, rgba(197, 197, 197, 0.5) 0%, rgba(128, 128, 128, 0.5) 30%, rgba(116, 128, 114, 0.5) 30%, rgba(97, 119, 91, 0.5) 100%);
+  color: #9b0000;
+  padding: 2px 5px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+
+.mr-btn-danger:hover {
+  border: none;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+  background-color: rgba(0, 54, 121, 0.1);
+}
+
+// Верхняя панель
+.mr-nav {
+  background: linear-gradient(150deg, rgb(206, 113, 51) 0%, rgb(213, 138, 57) 30%, rgb(191, 103, 35) 30%, rgb(163, 71, 1) 100%);
+}
+
+.mr-nav-link-color {
+  color: white;
+}
+
+.mr-nav-link-submenu-background {
+  background: rgba(163, 71, 1, 0.9);
+}
+
+.mr-nav-link-color:hover {
+  color: #ffda93;
+  text-decoration: underline white;
+}
+
+.mr-nav-link-submenu-color {
+  color: white;
+}
+
+.mr-nav-link-submenu-color:hover {
+  color: #ffda93;
+}
+
+.mr-nav-link-logo {
+  color: #ffda93;
+}
+
+.mr-nav-link-logo:hover {
+  color: #ffda93;
+}

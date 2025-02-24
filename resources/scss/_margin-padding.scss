@@ -1,0 +1,31 @@
+@mixin margin-padding-classes {
+  @for $i from 1 through 5 {
+    $margin: $i * 5;
+    .m-t-#{$margin} {margin-top: $margin+px;}
+    .m-l-#{$margin} {margin-left: $margin+px;}
+    .m-r-#{$margin} {margin-right: $margin+px;}
+    .m-b-#{$margin} {margin-bottom: $margin+px;}
+
+    .p-t-#{$margin} {padding-top: $margin+px;}
+    .p-l-#{$margin} {padding-left: $margin+px;}
+    .p-r-#{$margin} {padding-right: $margin+px;}
+    .p-b-#{$margin} {padding-bottom: $margin+px;}
+  }
+}
+
+.padding-horizontal-0{
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.margin-horizontal-0{
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.padding-horizontal{
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+@include margin-padding-classes;
