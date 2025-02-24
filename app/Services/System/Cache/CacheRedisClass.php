@@ -5,19 +5,17 @@ declare(strict_types=1);
 namespace App\Services\System\Cache;
 
 use Illuminate\Support\Facades\Redis;
-use RedisException;
 
 class CacheRedisClass
 {
     public string $name = 'Redis';
 
-    public function __construct(private readonly Redis $client)
-    {
-        $this->client::select(1);
-    }
+    public function __construct(private readonly Redis $client) {}
 
     public function getDisplayInfo(): CacheInfoDTO
     {
+        $this->client::select(config('database.redis.cache.database'));
+
         return new CacheInfoDTO(
             $this->name,
             $this->getVersion(),
@@ -28,10 +26,6 @@ class CacheRedisClass
         );
     }
 
-    /**
-     * @return false|array|Redis
-     * @throws RedisException
-     */
     public function getRawInfo(): mixed
     {
         return $this->client::info();
