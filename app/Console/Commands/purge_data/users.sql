@@ -1,0 +1,2 @@
+insert into public.users (id, name, email, email_verified_at, password, permissions, remember_token, created_at, updated_at)
+values  (1, 'admin', 'admin@admin.com', null, '$2y$12$sLnnWhs/wsvxG5P0x1ehZOjCZuGDxX0MzNwXsC2..SWke1tvAA3Re', '{"platform.index": true, "platform.systems.roles": true, "platform.systems.users": true, "platform.systems.attachment": true}', null, '2025-02-24 09:01:48', '2025-02-24 09:01:48');
