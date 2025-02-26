@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid\Layouts\FAQ;
 
+use App\Services\System\Enum\Language;
 use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Quill;
@@ -19,9 +20,9 @@ class FAQEditLayout extends Rows
             Group::make([
                 Switcher::make('faq.active')->sendTrueOrFalse()->title('Active'),
 
-                Select::make('faq.language_id')
+                Select::make('faq.language')
                     ->title('Language')
-                    ->fromModel(\App\Models\System\Language::class, 'name', 'id'),
+                    ->options(Language::getSelectList())
             ]),
 
             Input::make('faq.title')

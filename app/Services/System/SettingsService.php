@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services\System;
 
 use App\Models\System\Settings;
-use App\Orchid\Screens\System\Enum\SettingsKeyEnum;
+use App\Orchid\Screens\System\Enum\SettingsKey;
 use Illuminate\Support\Facades\Cache;
 
 final class SettingsService
@@ -33,7 +33,7 @@ final class SettingsService
         return $this->settings;
     }
 
-    private function getByKey(SettingsKeyEnum $key): Settings
+    private function getByKey(SettingsKey $key): Settings
     {
         $setup = $this->all()[$key->value] ?? null;
         if (!$setup) {

@@ -2,7 +2,7 @@
 
 namespace App\Orchid\Layouts\System\Settings;
 
-use App\Orchid\Screens\System\Enum\SettingsKeyEnum;
+use App\Orchid\Screens\System\Enum\SettingsKey;
 use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
@@ -33,7 +33,7 @@ class SettingsEditLayout extends Rows
                 ->title('Value'),
 
             Select::make('setup.code_key')
-                ->options(SettingsKeyEnum::getSelectList())
+                ->options(SettingsKey::getSelectList())
                 ->required()
                 ->title('Key'),
 

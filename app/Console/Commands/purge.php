@@ -74,7 +74,6 @@ class purge extends Command
             'settings',
             'users',
             'cron',
-            'languages',
             'translates',
             'countries',
             'travel_types'

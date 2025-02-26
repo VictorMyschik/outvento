@@ -57,3 +57,26 @@ services:
       - '6379:6379'
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
+
+  supervisor:
+      build: ./docker/supervisor
+      container_name: supervisor_travel
+      networks:
+          - backend
+      volumes:
+          - .:/var/www/travel
+          - ./storage/logs:/var/log/php
+          - ./docker/php/php.ini:/usr/local/etc/php/php.ini
+          - ./docker/php/opcache.ini:/usr/local/etc/php/conf.d/opcache.ini
+
+  rabbitmq:
+      image: rabbitmq:3-management-alpine
+      ports:
+          # AMQP protocol port
+          - '5679:5672'
+          # HTTP management UI
+          - '15679:15672'
+      volumes:
+          - ./docker/rabbitmq/data/:/var/lib/rabbitmq/
+      networks:
+          - backend

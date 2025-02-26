@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\Travel;
+namespace App\Services\Travel;
 
 use App\Models\Travel\Travel;
 

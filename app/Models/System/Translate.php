@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Models\System;
 
 use App\Models\ORM\ORM;
+use App\Services\System\Enum\Language;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
 
@@ -21,13 +21,13 @@ class Translate extends ORM
 
     protected $fillable = array(
         'code',
-        'language_id',
+        'language',
         'translate',
     );
 
     protected array $allowedSorts = [
         'code',
-        'language_id',
+        'language',
         'translate',
     ];
 
@@ -43,15 +43,7 @@ class Translate extends ORM
 
     public function getLanguage(): Language
     {
-        return Language::loadByOrDie($this->language_id);
-    }
-
-    /**
-     * Язык перевода
-     */
-    public function setLanguageID(int $value): void
-    {
-        $this->language_id = $value;
+        return Language::from($this->language);
     }
 
     /**
@@ -67,14 +59,10 @@ class Translate extends ORM
         $this->translate = $value;
     }
 
-    public static function getFullList(string $code): array
+    public static function getFullList(Language $language): array
     {
-        return Cache::rememberForever('translate_list_' . $code, function () use ($code) {
-            $list = DB::table(Translate::getTableName())
-                ->join('languages', 'translates.language_id', '=', 'languages.id')
-                ->select('translates.*')
-                ->where('languages.code', strtoupper($code))
-                ->get(['translates.code', 'translates.translate'])->toArray();
+        return Cache::rememberForever('translate_list_' . $language->value, function () use ($language) {
+            $list = Translate::where('language', $language->value)->get()->all();
 
             $out = [];
             foreach ($list as $value) {

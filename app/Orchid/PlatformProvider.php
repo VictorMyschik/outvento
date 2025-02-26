@@ -31,16 +31,18 @@ class PlatformProvider extends OrchidServiceProvider
                 Menu::make('Category Equipments')->icon('bs.list')->route('reference.category.equipments.list'),
                 Menu::make('Equipments')->icon('bs.list')->route('reference.equipments.list'),
             ]),
-
+            Menu::make('Subscriptions')->icon('bs.send')->route('subscriptions.list')->divider(),
             // FAQ
             Menu::make('FAQ')->title('Information')->icon('bs.book')->route('faq.list'),
 
             Menu::make('Language')->icon('language')->route('language.list'),
 
             Menu::make('System')->icon('settings')->list([
+                Menu::make('Email log')->route('system.email.log'),
                 Menu::make('Cron')->route('system.info.cron'),
                 Menu::make('Cache')->route('system.cache'),
                 Menu::make('Settings')->route('system.settings.list'),
+               // Menu::make('Jobs')->route('system.jobs'),
                 Menu::make('Failed jobs')->route('system.failed.jobs'),
                 Menu::make('API documentation')->target('_blank')->href('/api/documentation'),
             ])->divider(),

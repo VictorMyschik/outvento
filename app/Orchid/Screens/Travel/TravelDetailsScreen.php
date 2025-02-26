@@ -2,16 +2,17 @@
 
 namespace App\Orchid\Screens\Travel;
 
-use App\Classes\Email\EmailService;
 use App\Models\EmailInvite;
 use App\Models\Reference\Country;
 use App\Models\Travel\Travel;
 use App\Models\Travel\TravelType;
 use App\Models\Travel\UIT;
 use App\Models\User;
+use App\Orchid\Layouts\Lego\ActionDeleteModelLayout;
 use App\Orchid\Layouts\Travel\InviteByEmailEditLayout;
 use App\Orchid\Layouts\Travel\InviteListLayout;
 use App\Orchid\Layouts\Travel\TravelEditLayout;
+use App\Services\Email\EmailService;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\UITStatus;
 use App\Services\Travel\Enum\VisibleType;
@@ -25,13 +26,13 @@ use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
+use Orchid\Screen\Fields\Label;
+use Orchid\Screen\Fields\Quill;
 use Orchid\Screen\Fields\Select;
-use Orchid\Screen\Fields\TextArea;
 use Orchid\Screen\Fields\ViewField;
 use Orchid\Screen\Layouts\Rows;
 use Orchid\Screen\Layouts\Tabs;
 use Orchid\Screen\Screen;
-use Orchid\Support\Color;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
 
@@ -61,21 +62,9 @@ class TravelDetailsScreen extends Screen
 
     public function commandBar(): iterable
     {
-        $id = (int)$this->travel?->id();
-
         return [
-            ModalToggle::make('Edit')
-                ->type(Color::BASIC())
-                ->icon('pencil')
-                ->modal('travel_modal')
-                ->modalTitle('Edit travel id')
-                ->method('saveTravel')
-                ->asyncParameters(['id' => $id]),
-
-            Button::make(__('Delete'))
-                ->icon('bs.trash3')
-                ->confirm(__('Are you sure you want to delete the travel?'))
-                ->method('remove', ['id' => $id]),
+            Button::make('Save')->icon('check')->method('saveTravel')->class('mr-btn-success'),
+            Link::make('Назад')->icon('arrow-left')->route('travel.list'),
         ];
     }
 
@@ -86,32 +75,38 @@ class TravelDetailsScreen extends Screen
             $this->getRightTab(),
         ]);
 
+        $out[] = Layout::rows([
+            Quill::make('travel.description')->title('Подробное описание')->rows(5)->maxlength(8000),
+        ]);
+
         $out[] = Layout::modal('travel_modal', TravelEditLayout::class)->async('asyncGetTravel');
         $out[] = Layout::modal('new_invite_email_modal', InviteByEmailEditLayout::class);
+
+        $out[] = Layout::rows([
+            ActionDeleteModelLayout::getActionButtons('удалить'),
+        ]);
 
         return $out;
     }
 
     private function getBaseLayout(): Rows
     {
-        if (VisibleType::VISIBLE_TYPE_FOR_ME !== $this->travel->getVisibleType()) {
-            $url = $this->travelService->getPublicUrl($this->travel);
-            $link = "<a target='_blank' href='" . $url . "'>$url</a>";
-        }
-
-        $out[] = Group::make([
-            Select::make('travel.status')->title('Общий статус')->required()->options(TravelStatus::getSelectList()),
-            Select::make('travel.visible_type')->title('Видимость')->required()->empty('Select travel public type')->options(VisibleType::getSelectList()),
-            Select::make('travel.travel_type_id')->title('Тип')->required()->empty('Select travel type')->options(TravelType::all()->pluck('name', 'id')->toArray()),
-            Select::make('travel.country_id')->title('Страна')->required()->empty('Select country')->options(Country::all()->pluck('name', 'id')->toArray()),
+        return Layout::rows([
+            Group::make([
+                Select::make('travel.status')->title('Общий статус')->required()->options(TravelStatus::getSelectList()),
+                Select::make('travel.visible_type')->title('Видимость')->required()->empty('Select travel public type')->options(VisibleType::getSelectList()),
+                Select::make('travel.travel_type_id')->title('Тип')->required()->empty('Select travel type')->options(TravelType::all()->pluck('name', 'id')->toArray()),
+                Select::make('travel.country_id')->title('Страна')->required()->empty('Select country')->options(Country::all()->pluck('name', 'id')->toArray()),
+            ]),
+            ViewField::make('')->view('space'),
+            Input::make('travel.title')->title('Заголовок')->required()->maxlength(255),
+            ViewField::make('')->view('space'),
+            Group::make([
+                Select::make('travel.user_id')->title('Владелец')->required()->options(User::all()->pluck('name', 'id')->toArray()),
+                Label::make('travel.public_id')->title('Публичный ID')->value($this->travel->getPublicId()),
+                Link::make('link')->title('Ссылка на страницу')->href($this->travelService->getPublicUrl($this->travel))->target('_blank'),
+            ]),
         ]);
-
-        $out[] = Input::make('travel.title')->title('Заголовок')->required()->maxlength(255);
-        $out[] = Select::make('travel.user_id')->title('Владелец')->required()->options(User::all()->pluck('name', 'id')->toArray());
-
-        TextArea::make('travel.description')->title('Подробное описание')->rows(5)->maxlength(8000);
-
-        return Layout::rows($out);
     }
 
     private function getRightTab(): Tabs
@@ -195,20 +190,18 @@ class TravelDetailsScreen extends Screen
     public function saveTravel(Request $request): void
     {
         $data = $request->validate([
-            'travel.name'           => 'required|string|max:255',
+            'travel.title'          => 'required|string|max:255',
             'travel.description'    => 'nullable|string|max:8000',
             'travel.status'         => 'required|integer',
             'travel.user_id'        => 'required|integer',
             'travel.country_id'     => 'required|integer',
             'travel.travel_type_id' => 'required|integer',
-            'travel.visible_kind'   => 'required|integer',
+            'travel.visible_type'   => 'required|integer',
         ])['travel'];
 
-        $travel = Travel::loadBy($request->get('id')) ?: new Travel();
-        $travel->fill($data);
-        $travel->save();
+        $this->travelService->updateTravel($this->travel->id(), $data);
 
-        Toast::info('Travel was saved');
+        Toast::info('Travel was saved')->delay(1000);;
     }
 
     public function saveUIH(Request $request): void
@@ -222,7 +215,7 @@ class TravelDetailsScreen extends Screen
             $data
         );
 
-        Toast::info('UIH was saved');
+        Toast::info('UIH was saved')->delay(1000);;
     }
 
     public function remove(int $id): RedirectResponse
@@ -262,14 +255,14 @@ class TravelDetailsScreen extends Screen
 
         EmailService::sendTravelInvite($invite);
 
-        Toast::info('Приглашение отправлено');
+        Toast::info('Приглашение отправлено')->delay(1000);;
     }
 
     public function resendEmailInvite(int $id): void
     {
         $invite = EmailInvite::loadByOrDie($id);
         EmailService::sendTravelInvite($invite);
-        Toast::info('Приглашение отправлено');
+        Toast::info('Приглашение отправлено')->delay(1000);;
     }
 
     public function declineUIH(int $id): void
@@ -278,6 +271,6 @@ class TravelDetailsScreen extends Screen
         $invite->setStatus(UITStatus::REJECTED);
         $invite->save();
 
-        Toast::info('Приглашение отклонено');
+        Toast::info('Приглашение отклонено')->delay(1000);;
     }
 }

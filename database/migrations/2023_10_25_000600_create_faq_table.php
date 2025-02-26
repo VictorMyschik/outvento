@@ -9,15 +9,13 @@ return new class extends Migration {
     {
         Schema::create('faq', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('language_id')->index();
+            $table->unsignedSmallInteger('language')->index();
             $table->string('title')->unique();
             $table->string('text', 8000);
             $table->boolean('active')->default(false);
 
             $table->timestampTz('created_at')->useCurrent();
             $table->timestampTz('updated_at')->nullable()->useCurrentOnUpdate();
-
-            $table->foreign('language_id')->references('id')->on('languages');
         });
     }
 

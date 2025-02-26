@@ -1,4 +1,4 @@
-insert into public.translates (id, code, language_id, translate, created_at)
+insert into public.translates (id, code, language, translate, created_at)
 values (1, 'Hi', 2, 'Привет', '2024-02-03 16:53:47'),
        (2, 'Hi', 1, 'Hi', '2024-02-03 16:53:47'),
        (3, 'Bye', 1, 'Bye', '2024-02-03 18:42:29'),

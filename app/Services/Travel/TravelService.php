@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services\Travel;
 
 use App\Models\Travel\Travel;
-use App\Repositories\Travel\TravelRepositoryInterface;
 
 final readonly class TravelService
 {

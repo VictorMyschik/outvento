@@ -2,73 +2,61 @@
 
 namespace App\Orchid\Screens\Language;
 
-use App\Models\System\Language;
+use App\Models\System\Translate;
 use App\Orchid\Layouts\Language\LanguageEditLayout;
 use App\Orchid\Layouts\Language\LanguageListLayout;
-use Illuminate\Http\Request;
-use Orchid\Screen\Actions\ModalToggle;
+use App\Services\System\Enum\Language;
+use Orchid\Screen\Actions\Button;
+use Orchid\Screen\Actions\Link;
+use Orchid\Screen\Fields\Group;
+use Orchid\Screen\Fields\Label;
 use Orchid\Screen\Screen;
-use Orchid\Support\Color;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
 
 class LanguageScreen extends Screen
 {
+    public string $name = 'Language';
+
     public function query(): iterable
     {
-        return [
-            'list' => Language::filters([])->paginate(20)
-        ];
+        return [];
     }
 
     public function commandBar(): iterable
     {
-        return [
-            ModalToggle::make('Add')
-                ->type(Color::PRIMARY())
-                ->icon('plus')
-                ->modal('language')
-                ->modalTitle('Create New Language')
-                ->method('saveLanguage')
-                ->asyncParameters(['id' => 0])
-        ];
+        return [];
     }
 
     public function layout(): iterable
     {
-        return [
-            LanguageListLayout::class,
-            Layout::modal('language', LanguageEditLayout::class)->async('asyncGetLanguage'),
-        ];
-    }
+        $out = [];
+        $rows = [];
+        foreach (Language::getSelectList() as $key => $language) {
+            $item = [
+                Group::make([
+                   Link::make($language)
+                       ->target('_blank')
+                        ->route('language.translate.list', ['language' => $key])
+                        ->icon('bs.pencil-square'),
 
-    public function asyncGetLanguage(int $id = 0): array
-    {
-        return [
-            'language' => Language::loadBy($id) ?: new Language()
-        ];
-    }
+                    Button::make(__('Delete'))
+                        ->icon('bs.trash3')
+                        ->confirm(__('Are you sure you want to delete the Language?'))
+                        ->method('remove', ['id' => 0]),
+                ])->autoWidth(),
+            ];
 
-    public function saveLanguage(Request $request): void
-    {
-        $data = $request->validate([
-            'language.active' => 'required|boolean',
-            'language.code'   => 'required|string|max:2',
-            'language.name'   => 'required|string|max:50',
-        ])['language'];
+            $out[] = Layout::rows($item);
+        }
 
-        Language::updateOrCreate(
-            ['id' => (int)$request->get('id')],
-            $data
-        );
-
-        Toast::info('Language was saved');
+        return $out;
     }
 
     public function remove(int $id): void
     {
         try {
-            Language::loadBy($id)?->delete();
+            Translate::where('language', $id)->delete();
         } catch (\Exception $e) {
             Toast::error($e->getMessage());
         }

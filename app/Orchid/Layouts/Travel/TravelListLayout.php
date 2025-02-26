@@ -26,8 +26,6 @@ class TravelListLayout extends Table
                 ->route('travel.details', ['travel' => $travel->id()])
             ),
 
-            TD::make('description', 'Description'),
-
             TD::make('status', 'Status')->render(fn(Travel $travel) => $travel->getStatus()->getLabel()),
 
             TD::make('user_id', 'User')->render(fn(Travel $travel) => $travel->getUser()->name),

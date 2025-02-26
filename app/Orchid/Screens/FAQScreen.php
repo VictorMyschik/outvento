@@ -64,10 +64,10 @@ class FAQScreen extends Screen
     public function saveFAQ(Request $request): void
     {
         $data = $request->validate([
-            'faq.active'      => 'required|boolean',
-            'faq.language_id' => 'required|integer',
-            'faq.title'       => 'required|string',
-            'faq.text'        => 'required|string',
+            'faq.active'   => 'required|boolean',
+            'faq.language' => 'required|integer',
+            'faq.title'    => 'required|string',
+            'faq.text'     => 'required|string',
         ])['faq'];
 
         Faq::updateOrCreate(

@@ -4,12 +4,12 @@
         <span class="">{{ mb_strtoupper(app()->getLocale()) }}</span> <span class="caret"></span>
     </a>
     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-        @foreach(\App\Models\System\Language::all() as $item)
+        @foreach(Language::list() as $key => $item)
             @if($item->getCode() == mb_strtoupper(app()->getLocale()))
                 @continue
             @endif
             <a href="{{ url('/locale/'.mb_strtolower($item->getCode())) }}" class="dropdown-item">
-                <i class="nav-item mr-color-green-dark"></i> {{ $item->getCode() . ' ' . $item->getName() }}</a>
+                <i class="nav-item mr-color-green-dark"></i> {{ $item->getCode() . ' ' . $item->getLabel() }}</a>
         @endforeach
     </div>
 </li>

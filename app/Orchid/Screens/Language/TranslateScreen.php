@@ -2,10 +2,10 @@
 
 namespace App\Orchid\Screens\Language;
 
-use App\Models\System\Language;
 use App\Models\System\Translate;
 use App\Orchid\Layouts\Language\TranslateEditLayout;
 use App\Orchid\Layouts\Language\TranslateListLayout;
+use App\Services\System\Enum\Language;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Actions\ModalToggle;
@@ -15,10 +15,15 @@ use Orchid\Support\Facades\Toast;
 
 class TranslateScreen extends Screen
 {
-    public function query(Language $language): iterable
+    public function name(): string
+    {
+        return 'Translate for Language ' . Language::tryFrom((int)request()->route()->parameter('language'))?->getLabel();
+    }
+
+    public function query(int $language): iterable
     {
         return [
-            'list' => Translate::filters([])->where('language_id', $language->id())->paginate(50)
+            'list' => Translate::filters([])->where('language_id', $language)->paginate(50)
         ];
     }
 
@@ -52,15 +57,14 @@ class TranslateScreen extends Screen
         ];
     }
 
-    public function saveTranslate(Request $request): void
+    public function saveTranslate(Request $request, int $language): void
     {
-        $languageID = request()->route()->parameter('language');
         $data = $request->validate([
             'translate.code'      => 'required|string|max:255',
             'translate.translate' => 'required|string|max:255',
         ])['translate'];
 
-        $data['language_id'] = $languageID;
+        $data['language'] = $language;
 
         try {
             $translate = Translate::loadBy((int)$request->get('id')) ?: new Translate();

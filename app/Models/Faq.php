@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Models\ORM\ORM;
-use App\Models\System\Language;
+use App\Services\System\Enum\Language;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
 
@@ -14,7 +14,7 @@ class Faq extends ORM
 
     protected $table = 'faq';
     protected $fillable = array(
-        'language_id',
+        'language',
         'title',
         'text',
         'active'
@@ -30,7 +30,7 @@ class Faq extends ORM
 
     public function getLanguage(): Language
     {
-        return Language::loadByOrDie($this->language_id);
+        return Language::from($this->language);
     }
 
     public function getTitle(): string

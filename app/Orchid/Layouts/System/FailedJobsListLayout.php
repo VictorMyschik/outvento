@@ -33,6 +33,7 @@ class FailedJobsListLayout extends Table
             })->width(500),
 
             TD::make('exception', 'Exception')->render(function (FailedJobs $job) {
+                $message = 'Unknown error';
                 if (preg_match('/^Exception: (.*?) in /', $job->exception, $matches)) {
                     $message = $matches[1];
                 }

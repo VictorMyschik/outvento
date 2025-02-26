@@ -13,12 +13,7 @@ class TravelInviteEmail extends Mailable
     use Queueable;
     use SerializesModels;
 
-    public $data;
-
-    public function __construct(array $data)
-    {
-        $this->data = $data;
-    }
+    public function __construct(public array $data) {}
 
     public function envelope(): Envelope
     {

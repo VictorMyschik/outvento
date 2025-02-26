@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\Forms\Form;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -13,12 +14,7 @@ class Feedback extends Mailable
     use Queueable;
     use SerializesModels;
 
-    public $data;
-
-    public function __construct(array $data)
-    {
-        $this->data = $data;
-    }
+    public function __construct(public Form $form) {}
 
     public function envelope(): Envelope
     {

@@ -19,7 +19,7 @@ class FAQListLayout extends Table
     {
         return [
             TD::make('active', 'Active')->active()->sort(),
-            TD::make('language_id', 'Language')->render(fn(Faq $faq) => $faq->getLanguage()->getName())->sort(),
+            TD::make('language_id', 'Language')->render(fn(Faq $faq) => $faq->getLanguage()->getLabel())->sort(),
             TD::make('title', 'Title')->sort(),
             TD::make('text', 'Text')->sort()->render(function (Faq $faq) {
                 return $faq->getText();

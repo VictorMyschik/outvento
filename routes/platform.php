@@ -12,9 +12,12 @@ use App\Orchid\Screens\References\EquipmentScreen;
 use App\Orchid\Screens\References\TravelTypeListScreen;
 use App\Orchid\Screens\Role\RoleEditScreen;
 use App\Orchid\Screens\Role\RoleListScreen;
+use App\Orchid\Screens\Subscription\SubscriptionScreen;
 use App\Orchid\Screens\System\CacheScreen;
 use App\Orchid\Screens\System\CronScreen;
+use App\Orchid\Screens\System\EmailLogScreen;
 use App\Orchid\Screens\System\FailedJobsScreen;
+use App\Orchid\Screens\System\JobsScreen;
 use App\Orchid\Screens\System\PurgeScreen;
 use App\Orchid\Screens\System\SettingsScreen;
 use App\Orchid\Screens\Travel\TravelDetailsScreen;
@@ -92,10 +95,12 @@ Route::screen('roles', RoleListScreen::class)
         ->push(__('Roles'), route('platform.systems.roles')));
 
 // System
+Route::screen('system/email/log/list', EmailLogScreen::class)->name('system.email.log');
 Route::screen('system/settings/list', SettingsScreen::class)->name('system.settings.list');
 Route::screen('system/cache', CacheScreen::class)->name('system.cache');
 Route::screen('system/cron', CronScreen::class)->name('system.info.cron');
 Route::screen('system/purge', PurgeScreen::class)->name('system.purge');
+Route::screen('system/jobs', JobsScreen::class)->name('system.jobs');
 Route::screen('system/failed-jobs', FailedJobsScreen::class)->name('system.failed.jobs');
 // Language
 Route::screen('language', LanguageScreen::class)->name('language.list');
@@ -116,3 +121,5 @@ Route::screen('/travel/{travel_id}/', EmailScreen::class)->name('2reference.emai
 // References
 Route::screen('/reference/category-equipments/list', CategoryEquipmentScreen::class)->name('reference.category.equipments.list');
 Route::screen('/reference/equipments/list', EquipmentScreen::class)->name('reference.equipments.list');
+//// Subscriptions
+Route::screen('subscriptions/list', SubscriptionScreen::class)->name('subscriptions.list');

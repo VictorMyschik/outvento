@@ -21,8 +21,8 @@ class SettingsListLayout extends Table
             TD::make('category')->sort()->defaultHidden(),
             TD::make('name')->sort(),
             TD::make('code_key')->sort()->defaultHidden(),
-            TD::make('value', 'Value')->width('50%'),
-            TD::make('description', 'Description')->width('50%')->defaultHidden(),
+            TD::make('value', 'Value'),
+            TD::make('description', 'Description')->defaultHidden(),
             TD::make('created_at', 'Created')
                 ->render(fn (Settings $setup) => $setup->created_at->format('d.m.Y'))
                 ->sort()

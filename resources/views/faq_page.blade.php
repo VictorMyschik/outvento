@@ -34,7 +34,8 @@
                 {{__('mr-t.feedback')}} <h3 class="form-group">{{__('mr-t.feedback_2')}}</h3>
             </a>
             <div id="feedback" class="collapse show in">
-                <form action="{{route('faq.send.question')}}" method="post">
+                <form action="{{route('feedback')}}" method="post">
+                    @csrf
                     <label for="name"
                            class="form-group col-md-6 padding-horizontal-0 mr-bold">{{__('mr-t.feedback_form_name')}}
                         <input required type="text" name="name" class="form-control mr_bg_input"></label>
@@ -44,7 +45,7 @@
 
                     <div class="form-group">
                         <label for="message" class="mr-bold">{{__('mr-t.feedback_form_message')}}</label>
-                        <textarea name="text" id="message" cols="30" rows="10"
+                        <textarea required name="message" id="message" cols="30" rows="10"
                                   class="form-control mr_bg_input"></textarea>
                     </div>
 

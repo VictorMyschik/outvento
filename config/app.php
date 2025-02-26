@@ -129,5 +129,6 @@ return [
         'Auth'      => Illuminate\Support\Facades\Auth::class,
         'Html'      => Spatie\Html\Facades\Html::class,
         'Route'     => Illuminate\Support\Facades\Route::class,
+        'Language'  => App\Services\System\Enum\Language::class,
     ],
 ];

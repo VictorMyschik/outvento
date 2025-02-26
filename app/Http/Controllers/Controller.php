@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\System\Enum\Language;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
@@ -19,5 +20,10 @@ class Controller extends BaseController
     public function errorResult($data, int $code = 400): JsonResponse
     {
         return response()->json(['result' => false, 'content' => $data], $code);
+    }
+
+    protected function getLanguage(): Language
+    {
+        return Language::fromString(app()->getLocale());
     }
 }

@@ -7,6 +7,7 @@ namespace App\Repositories\Travel;
 use App\Models\Travel\Travel;
 use App\Models\Travel\UIT;
 use App\Repositories\DatabaseRepository;
+use App\Services\Travel\TravelRepositoryInterface;
 
 class TravelRepository extends DatabaseRepository implements TravelRepositoryInterface
 {

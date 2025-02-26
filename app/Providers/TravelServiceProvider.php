@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Repositories\Travel\TravelRepository;
-use App\Repositories\Travel\TravelRepositoryInterface;
+use App\Services\Travel\TravelRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 
 class TravelServiceProvider extends ServiceProvider
