@@ -1,5 +1,6 @@
 <?php
 
+use App\Forms\Account\Travel\TravelForm;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Admin\AdminTravelController;
 use App\Http\Controllers\FAQController;
@@ -31,9 +32,9 @@ Route::get('/test', function () {
 Route::get('/logout', function () {
     Session::flush();
     Auth::logout();
-
     return redirect()->route('login');
 })->name('logout');
+
 Route::get('locale/{locale}', function ($locale) {
     Session::put('locale', $locale);
     return redirect()->back();
@@ -52,14 +53,14 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 // Admin routes
-Route::group(['middleware' => ['auth'], 'prefix' => 'admin/travel'], function () {
+Route::group(['middleware' => ['auth'], 'prefix' => '/admin/travel'], function () {
     Route::get('{travel_id}/image/show/{image_name}', [AdminTravelController::class, 'showImage'])->name('admin.show.image');
     Route::get('image/delete/{image_id}', [AdminTravelController::class, 'deleteImage'])->name('admin.delete.travel.image');
 });
 
 // User routes
 Route::group(['middleware' => ['auth'], 'prefix' => 'account'], function () {
-    Route::get('/travel/{travel_id}/page', [TravelController::class, 'index'])->name('account.travel.page');
+    //Route::get('/travel/{travel_id}/page', [TravelController::class, 'index'])->name('account.travel.page');
     // Edit travel name and description
-    //Route::match(['get', 'post', 'put'], '/travel/{travel_id}/base/form', [NameDescriptionTravelForm::class, 'processForm'])->name('account.travel.base.form');
+    Route::match(['get', 'post', 'put'], '/travel/{travel_id}/base/form', [TravelForm::class, 'processForm'])->name('account.travel.base.form');
 });

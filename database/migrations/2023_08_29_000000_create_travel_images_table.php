@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->string('description', 50)->nullable();
             $table->string('hash', 50)->index();
             $table->unsignedBigInteger('user_id')->index();
-            $table->tinyInteger('type')->default(0);
+            $table->tinyInteger('type')->default(0); // ImageType
             $table->string('group')->nullable();
 
             $table->timestampTz('created_at')->useCurrent();

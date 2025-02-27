@@ -43,7 +43,7 @@
                                 class="mr-nav-link-color">{{__('mr-t.Account')}}</span></a>
                     </li>
 
-                    @if(Auth::user()->isSuperAdmin())
+                    @if(auth()->user()->isSuperAdmin())
                         <li class="nav-item mr-5">
                             <a class="nav-link" href="/admin"><span class="mr-nav-link-color">Admin</span></a>
                         </li>

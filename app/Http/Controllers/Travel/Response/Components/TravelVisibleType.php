@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Travel\Response\Components;
 
-class TravelVisibleKind
+class TravelVisibleType
 {
     public function __construct(
         public int    $key,

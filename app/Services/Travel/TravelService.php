@@ -6,11 +6,16 @@ namespace App\Services\Travel;
 
 use App\Models\Travel\Travel;
 
-final readonly class TravelService
+readonly class TravelService
 {
     public function __construct(
         private TravelRepositoryInterface $travelRepository,
     ) {}
+
+    public function getTravelById(int $travelId): ?Travel
+    {
+        return $this->travelRepository->getTravelById($travelId);
+    }
 
     public function createTravel(array $data): int
     {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Travel\Enum;
 
-enum VisibleType: int
+enum TravelVisibleType: int
 {
     case VISIBLE_TYPE_PUBLIC = 2; // публичный
     case VISIBLE_TYPE_FOR_ME = 0; // только для меня, в публичном поиске не участвует

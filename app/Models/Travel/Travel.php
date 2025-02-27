@@ -12,7 +12,7 @@ use App\Models\Reference\Country;
 use App\Models\User;
 use App\Services\Travel\Enum\ImageType;
 use App\Services\Travel\Enum\TravelStatus;
-use App\Services\Travel\Enum\VisibleType;
+use App\Services\Travel\Enum\TravelVisibleType;
 use Illuminate\Support\Facades\Cache;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
@@ -44,24 +44,15 @@ class Travel extends ORM
         'deleted_at',
     ];
 
-    protected $fillable = [
-        'title',
-        'description',
-        'status',
-        'user_id',
-        'public_id',
-        'country_id',
-        'travel_type_id',
-        'visible_type',
-        'public_id',
-        'created_at',
-        'updated_at',
-        'deleted_at',
+    public $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
     ];
 
-    public function getVisibleType(): VisibleType
+    public function getVisibleType(): TravelVisibleType
     {
-        return VisibleType::from($this->visible_type);
+        return TravelVisibleType::from($this->visible_type);
     }
 
     private const string STORAGE_PATH = 'files/travel_images';

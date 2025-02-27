@@ -8,7 +8,7 @@ use App\Http\Controllers\Response\CountryResponse;
 use App\Http\Controllers\Response\TravelTypeResponse;
 use App\Http\Controllers\Travel\Response\Components\TravelStatusComponent;
 use App\Http\Controllers\Travel\Response\Components\TravelUserComponent;
-use App\Http\Controllers\Travel\Response\Components\TravelVisibleKind;
+use App\Http\Controllers\Travel\Response\Components\TravelVisibleType;
 
 final readonly class TravelDetailsResponse
 {
@@ -17,7 +17,7 @@ final readonly class TravelDetailsResponse
         public string                $title,
         public string                $description,
         public TravelStatusComponent $status,
-        public TravelVisibleKind     $visible_kind,
+        public TravelVisibleType     $visible_kind,
         public TravelUserComponent   $user,
         public CountryResponse       $country,
         public TravelTypeResponse    $travel_type,

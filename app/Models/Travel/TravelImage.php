@@ -5,20 +5,24 @@ declare(strict_types=1);
 namespace App\Models\Travel;
 
 use App\Models\Lego\Fields\DescriptionNullableFieldTrait;
-use App\Models\Lego\Fields\KindFieldTrait;
 use App\Models\Lego\Fields\NameFieldTrait;
 use App\Models\Lego\Fields\UserFieldTrait;
 use App\Models\ORM\ORM;
+use App\Services\Travel\Enum\ImageType;
 use Illuminate\Support\Facades\Storage;
 
 class TravelImage extends ORM
 {
     use NameFieldTrait;
-    use KindFieldTrait;
     use DescriptionNullableFieldTrait;
     use UserFieldTrait;
 
     protected $table = 'travel_images';
+
+    public function getType(): ImageType
+    {
+        return ImageType::from($this->kind);
+    }
 
     public function getTravel(): Travel
     {
@@ -50,15 +54,13 @@ class TravelImage extends ORM
         return $this->group;
     }
 
-    public function getLocalPath(): string
+    public function getPath(): string
     {
-        return $this->getTravel()->getDirNameForImages() . DIRECTORY_SEPARATOR . $this->name;
+        return '/travels/' . $this->travel_id . '/images';
     }
 
-    private function deleteImageFromStorage(): void
+    public function getUrl(): string
     {
-        $imagePath = $this->getTravel()->getDirNameForImages() . '/' . $this->getName();
-        $imagePath = str_replace('storage/', '', $imagePath);
-        Storage::delete($imagePath);
+        return Storage::url($this->getPath() . '/' . $this->getName());
     }
 }

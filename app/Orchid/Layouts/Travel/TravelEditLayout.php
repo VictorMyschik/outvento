@@ -7,7 +7,7 @@ use App\Models\Travel\Travel;
 use App\Models\Travel\TravelType;
 use App\Models\User;
 use App\Services\Travel\Enum\TravelStatus;
-use App\Services\Travel\Enum\VisibleType;
+use App\Services\Travel\Enum\TravelVisibleType;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Fields\TextArea;
@@ -54,7 +54,7 @@ class TravelEditLayout extends Rows
                 ->title('Visible type')
                 ->required()
                 ->empty('Select travel public type')
-                ->options(VisibleType::getSelectList()),
+                ->options(TravelVisibleType::getSelectList()),
         ];
     }
 }
