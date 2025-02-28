@@ -1,7 +1,7 @@
 <?php
 
+use App\Exceptions\ExceptionAPIBase;
 use App\Http\Middleware\Localization;
-use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -24,5 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function (ExceptionAPIBase $e) {
+            return response()->json(['result' => false, 'error' => $e->getMessage()], 400);
+        });
     })->create();

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models\Travel;
 
+use App\Models\Lego\Fields\NameByLanguageFieldTrait;
 use App\Models\ORM\ORM;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
@@ -12,6 +13,7 @@ class TravelType extends ORM
 {
     use AsSource;
     use Filterable;
+    use NameByLanguageFieldTrait;
 
     public $timestamps = false;
 

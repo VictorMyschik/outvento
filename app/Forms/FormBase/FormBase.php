@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Forms\FormBase;
 
+use App\Exceptions\Validation\InputMissingException;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
-use Symfony\Component\HttpFoundation\Response;
 
 class FormBase extends Controller
 {
@@ -38,7 +37,7 @@ class FormBase extends Controller
             $this->validateFormBase($routeParameters);
 
             try {
-                $this->submitForm($routeParameters);
+                $this->submitForm($routeParameters, request()->user());
             } catch (\Exception $e) {
                 $this->errors[] = $e->getMessage();
                 $this->returnError();
@@ -58,9 +57,9 @@ class FormBase extends Controller
 
         if (request()->getMethod() === 'POST') {
             return [
-                'rendered'   => $formDisplay,
-                'inputs' => $inputs,
-                'system' => [
+                'rendered' => $formDisplay,
+                'inputs'   => $inputs,
+                'system'   => [
                     '#title'   => $this->title,
                     '#size'    => $this->size ?? 'w-50',
                     '#url'     => request()->url(),
@@ -84,22 +83,29 @@ class FormBase extends Controller
     {
         $fields = $this->getFormBuilder()['form_data'];
 
+        $newFields = [];
         // Get original form data.
-        foreach ($fields as $fieldName => $parameters) {
-            if (str_starts_with($fieldName, '#') || !isset($parameters['#type'])) {
-                unset($fields[$fieldName]);
+        foreach ($fields as $field) {
+            if ($field->getType() === 'group') {
+                foreach ($field->fields as $value) {
+                    $newFields[] = $value;
+                }
+
+                continue;
             }
+
+            $newFields[] = $field;
         }
 
-        foreach ($fields as $fieldName => $parameters) {
+        foreach ($newFields as $parameters) {
             // value from input
-            $value = request()->get($fieldName, null);
+            $value = request()->get($parameters->name, null);
 
-            $title = $parameters['#title'] ?? '';
+            $title = $parameters->title ?? '';
 
-            if (array_key_exists('#required', $parameters) && true === $parameters['#required']) {
-                if (empty(trim($value))) {
-                    $this->errors[$fieldName] = 'Поле "' . $title . '" должно быть заполнено';
+            if ($parameters->required) {
+                if (empty(trim((string)$value))) {
+                    $this->errors[$parameters->name] = sprintf(__('mr-t.field_is_required'), $title);
                 }
             }
 
@@ -107,19 +113,19 @@ class FormBase extends Controller
 
             if ($value) {
                 // Type numeric
-                if (self::TYPE_NUMBER === $parameters['#type']) {
+                if (self::TYPE_NUMBER === $parameters->getType()) {
                     if (!is_numeric($value)) {
-                        $this->errors[$fieldName] = 'Поле "' . $parameters['#title'] . '" имеет не верный формат';
+                        $this->errors[$parameters->name] = 'Поле "' . $parameters->title . '" имеет не верный формат';
                         $this->returnError();
                     }
-                } elseif (self::TYPE_TEXT === $parameters['#type']) {
-                    if (isset($parameters['#max']) && (int)$parameters['#max'] > strlen($value)) {
-                        $this->errors[$fieldName] = 'Поле "' . $parameters['#title'] . '" ограничено ' . $parameters['#max'] . ' символами';
+                } elseif (self::TYPE_TEXT === $parameters->getType()) {
+                    if (isset($parameters->max) && (int)$parameters->max > strlen($value)) {
+                        $this->errors[$parameters->name] = 'Поле "' . $parameters->title . '" ограничено ' . $parameters['#max'] . ' символами';
                     }
                 }
             }
 
-            $this->v[$fieldName] = $value;
+            $this->v[$parameters->name] = $value;
         }
 
         $this->returnError();
@@ -134,8 +140,7 @@ class FormBase extends Controller
     private function returnError(): void
     {
         if (count($this->errors)) {
-            Log::alert('Wrong set form', $this->errors);
-            abort(Response::HTTP_UNPROCESSABLE_ENTITY, json_encode($this->errors));
+            throw new InputMissingException(json_encode($this->errors));
         }
     }
     #endregion

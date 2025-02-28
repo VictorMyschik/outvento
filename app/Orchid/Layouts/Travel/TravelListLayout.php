@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Orchid\Layouts\Travel;
 
 use App\Models\Travel\Travel;
+use App\Services\System\Enum\Language;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\Link;
@@ -30,9 +31,9 @@ class TravelListLayout extends Table
 
             TD::make('user_id', 'User')->render(fn(Travel $travel) => $travel->getUser()->name),
 
-            TD::make('country', 'CountryResponse')->render(fn(Travel $travel) => $travel->getCountry()->getName()),
+            TD::make('country', 'CountryResponse')->render(fn(Travel $travel) => $travel->getCountry()->getName(Language::RU)),
 
-            TD::make('travel_type_id', 'Travel type')->render(fn(Travel $travel) => $travel->getTravelType()->getName()),
+            TD::make('travel_type_id', 'Travel type')->render(fn(Travel $travel) => $travel->getTravelType()->getName(Language::RU)),
 
 
             TD::make(__('Actions'))

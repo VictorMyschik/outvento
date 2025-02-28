@@ -14,6 +14,7 @@ class FieldBase
     public ?string $title;
     public mixed $value = null;
     public array $classes = [];
+    public bool $required = false;
 
     public static function make(string $name): static
     {
@@ -49,6 +50,13 @@ class FieldBase
     public function setClasses(array $classes): self
     {
         $this->classes = $classes;
+
+        return $this;
+    }
+
+    public function required(bool $required = true): self
+    {
+        $this->required = $required;
 
         return $this;
     }

@@ -25964,13 +25964,11 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       }
       if (this.url !== undefined) {
         axios.put(this.url, this.in_data).then(function (response) {
-          if (undefined !== response.data['code']) {
-            _this2.buildErrorHtml(response.data.message);
-          } else {
-            _this2.hide();
-            _this2.afterSave();
-            _this2.is_wait = false;
-          }
+          _this2.hide();
+          _this2.afterSave();
+          _this2.is_wait = false;
+        })["catch"](function (error) {
+          _this2.buildErrorHtml(error.response.data.error);
         });
       }
     },
@@ -25987,7 +25985,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       }
     },
     buildErrorHtml: function buildErrorHtml(response) {
-      var errorMessageHtml = '<div><h6>Пожалуйста, проверьте форму</h6>';
+      var errorMessageHtml = '';
       var msg = JSON.parse(response);
       var el;
       for (var r in msg) {

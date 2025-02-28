@@ -128,15 +128,15 @@ export default {
             }
 
             if (this.url !== undefined) {
-                axios.put(this.url, this.in_data).then(response => {
-                    if (undefined !== response.data['code']) {
-                        this.buildErrorHtml(response.data.message);
-                    } else {
+                axios.put(this.url, this.in_data)
+                    .then(response => {
                         this.hide();
                         this.afterSave();
                         this.is_wait = false;
-                    }
-                });
+                    })
+                    .catch(error => {
+                        this.buildErrorHtml(error.response.data.error);
+                    });
             }
         },
 
@@ -155,7 +155,7 @@ export default {
         },
 
         buildErrorHtml: function (response) {
-            let errorMessageHtml = '<div><h6>Пожалуйста, проверьте форму</h6>';
+            let errorMessageHtml = '';
             let msg = JSON.parse(response);
             let el;
             for (let r in msg) {
