@@ -27,6 +27,11 @@ class PostgreSQLTriggerManager
 
     public function addUpdateTimestampTrigger($tableName): void
     {
+        if (!$this->columnExists($tableName, 'updated_at')) {
+            Log::info("Column updated_at does not exist in table $tableName.");
+            return;
+        }
+
         $sql = sprintf("
         CREATE TRIGGER %s_update_timestamp_trigger
         BEFORE UPDATE ON %s
@@ -56,6 +61,16 @@ class PostgreSQLTriggerManager
         foreach ($tables as $table) {
             $this->addUpdateTimestampTrigger($table);
         }
+    }
+
+    private function columnExists($tableName, $columnName): bool
+    {
+        $result = DB::select("
+            SELECT column_name
+            FROM information_schema.columns
+            WHERE table_name = ? AND column_name = ?", [$tableName, $columnName]);
+
+        return !empty($result);
     }
 
     private function executeQuery($sql): bool

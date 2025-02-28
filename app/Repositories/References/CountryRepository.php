@@ -7,11 +7,16 @@ namespace App\Repositories\References;
 use App\Models\Reference\Country;
 use App\Repositories\DatabaseRepository;
 use App\Services\References\CountryRepositoryInterface;
+use App\Services\System\Enum\Language;
 
 class CountryRepository extends DatabaseRepository implements CountryRepositoryInterface
 {
-    public function getSelectList(): array
+    public function getSelectList(Language $language): array
     {
-        return $this->db->table(Country::getTableName())->orderBy('name')->pluck('name', 'id')->toArray();
+        $field = 'name_' . $language->getCode();
+
+        return $this->db->table(Country::getTableName())
+            ->orderBy($field)->pluck($field, 'id')
+            ->toArray();
     }
 }

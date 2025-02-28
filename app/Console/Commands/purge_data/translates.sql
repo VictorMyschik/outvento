@@ -13,4 +13,13 @@ values  (1, 'account', 'Профиль', 'Account', 'Profil', '2025-02-28 09:15:
         (12, 'only_for_me', 'Только для меня', 'Only for me', 'Tylko dla mnie', '2025-02-28 09:29:24 +00:00'),
         (13, 'public', 'Публичный', 'Public', 'Publiczny', '2025-02-28 09:29:57 +00:00'),
         (14, 'message', 'Сообщение', 'Message', 'Wiadomość', '2025-02-28 09:45:44 +00:00'),
-        (15, 'my_travels', 'Мои путешествия', 'My Travels', 'Moje podróże', '2025-02-28 09:47:00 +00:00');
+        (15, 'my_travels', 'Мои путешествия', 'My Travels', 'Moje podróże', '2025-02-28 09:47:00 +00:00'),
+        (16, 'account_form_status', 'Статус', 'Status', 'Status', '2025-02-28 11:09:08 +00:00'),
+        (17, 'draft', 'Черновик', 'Draft', 'Szkic', '2025-02-28 11:12:17 +00:00'),
+        (18, 'active', 'Активный', 'Active', 'Archiwum', '2025-02-28 11:12:59 +00:00'),
+        (19, 'archived', 'Архиыный', 'Archived', 'Archiwum', '2025-02-28 11:13:29 +00:00'),
+        (20, 'account_form_travel_create', 'Создайте новое путешествие', 'Create new travel', 'Stwórz nową podróż', '2025-02-28 11:24:18 +00:00'),
+        (21, 'title', 'Заголовок', 'Title', 'Nagłówek', '2025-02-28 11:24:57 +00:00'),
+        (22, 'country', 'Страна', 'Country', 'Kraj', '2025-02-28 11:25:28 +00:00'),
+        (23, 'travel_type', 'Тип', 'Type', 'Typ', '2025-02-28 11:26:12 +00:00'),
+        (24, 'visible_type', 'Видимость', 'Visible', 'Widoczny typ', '2025-02-28 11:26:58 +00:00');

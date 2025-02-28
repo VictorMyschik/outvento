@@ -41,7 +41,7 @@ class TravelForm extends FormBase
             ->value($travel?->getTitle());
 
         $inputs[] = FormSelectInput::make('country_id')
-            ->options([0 => 'не выбрано'] + $this->countryService->getSelectList())
+            ->options([0 => 'не выбрано'] + $this->countryService->getSelectList($this->getLanguage()))
             ->title(__('mr-t.country'))
             ->value($travel?->getCountry()->id());
 

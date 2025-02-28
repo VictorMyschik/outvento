@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\System\Translate;
+use App\Services\Language\TranslateService;
 use App\Services\System\Enum\Language;
 
-return Translate::getFullList(Language::PL);
+return TranslateService::getFullList(Language::PL);

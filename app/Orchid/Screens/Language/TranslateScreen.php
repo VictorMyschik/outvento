@@ -5,6 +5,7 @@ namespace App\Orchid\Screens\Language;
 use App\Models\System\Translate;
 use App\Orchid\Layouts\Language\TranslateEditLayout;
 use App\Orchid\Layouts\Language\TranslateListLayout;
+use App\Services\Language\TranslateService;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Screen;
@@ -13,6 +14,8 @@ use Orchid\Support\Facades\Toast;
 
 class TranslateScreen extends Screen
 {
+    public function __construct(private TranslateService $service) {}
+
     public function name(): string
     {
         return 'Translate table';
@@ -53,7 +56,7 @@ class TranslateScreen extends Screen
         ];
     }
 
-    public function saveTranslate(Request $request): void
+    public function saveTranslate(Request $request, int $id): void
     {
         $data = $request->validate([
             'translate.code' => 'required|string|max:255',
@@ -62,15 +65,7 @@ class TranslateScreen extends Screen
             'translate.pl'   => 'nullable|string|max:255',
         ])['translate'];
 
-        try {
-            $translate = Translate::loadBy((int)$request->get('id')) ?: new Translate();
-            $translate->fill($data);
-            $translate->save();
-            Toast::info('Translate was saved');
-        } catch (\Exception $e) {
-            Toast::error($e->getMessage());
-        }
-
+        $this->service->saveTranslate($id, $data);
     }
 
     public function remove(int $id): void

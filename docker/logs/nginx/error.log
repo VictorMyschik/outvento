@@ -3955,3 +3955,4 @@
 2025/02/28 07:39:06 [notice] 1#1: start worker process 50
 2025/02/28 07:39:06 [notice] 1#1: start worker process 51
 2025/02/28 07:39:06 [notice] 1#1: start worker process 52
+2025/02/28 11:37:38 [error] 35#35: *891 upstream timed out (110: Operation timed out) while reading response header from upstream, client: 172.20.0.1, server: travel.test, request: "GET /test HTTP/1.1", upstream: "fastcgi://172.22.0.3:9000", host: "travel.test"
