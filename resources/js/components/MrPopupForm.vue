@@ -4,7 +4,7 @@
       <transition name="modal fade">
         <div class="modal-mask">
           <div class="modal-wrapper">
-            <div class="modal-dialog mw-100" :class="form_data['#size']" role="document">
+            <div class="modal-dialog mw-100" :class="size" role="document">
               <div class="modal-content">
                 <div class="p-b-25 modal-header shadow btn-panel"
                      style="height: 30px; border-radius: 0; border-color: #a34701">
@@ -20,11 +20,11 @@
                     <div class="row no-gutters text-danger">
                       <div id="mrError"></div>
                     </div>
-                    <v-runtime-template :template="form_html"></v-runtime-template>
+                    <v-runtime-template :template="rendered"></v-runtime-template>
                   </form>
                 </div>
                 <div class="modal-footer justify-content-center" style="height: 55px;">
-                  <span v-if="form_data['#btn_info']">
+                  <span v-if="btnInfo">
                      <button type="button" @click="hide()" class="mr-btn-primary">Закрыть</button>
                   </span>
                   <span v-else>
@@ -61,9 +61,12 @@ export default {
     data() {
         return {
             showModal: false,
-            form_html: null,
-            form_data: [],
+            rendered: null,
+            //form_data: [],
             title: '',
+            size: 'w-50',
+            url: '',
+            btnInfo: false,
             load_data: false,
             mrErrors: null,
             is_wait: false,
@@ -82,7 +85,7 @@ export default {
         },
 
         show() {
-            this.GetForm();
+            this.getForm();
             this.showModal = true;
             this.mrErrors = null;
         },
@@ -91,13 +94,17 @@ export default {
             this.showModal = false
         },
 
-        GetForm: function () {
+        getForm: function () {
             this.load_data = true;
             axios.post(this.route_url).then(response => {
                     let data = response.data;
-                    this.form_html = data.html;
-                    this.form_data = data.form_data;
-                    this.title = this.form_data['#title'];
+                    this.rendered = data.rendered;
+
+                    this.system = data.system;
+                    this.title = this.system['#title'];
+                    this.size = this.system['#size'];
+                    this.url = this.system['#url'];
+                    this.btnInfo = this.system['#btnInfo'];
 
                     this.load_data = false;
                     this.is_wait = false;
@@ -120,8 +127,8 @@ export default {
                 }
             }
 
-            if (this.form_data['#url'] !== undefined) {
-                axios.put(this.form_data['#url'], this.in_data).then(response => {
+            if (this.url !== undefined) {
+                axios.put(this.url, this.in_data).then(response => {
                     if (undefined !== response.data['code']) {
                         this.buildErrorHtml(response.data.message);
                     } else {

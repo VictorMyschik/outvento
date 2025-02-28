@@ -23,7 +23,7 @@ class TranslateScreen extends Screen
     public function query(int $language): iterable
     {
         return [
-            'list' => Translate::filters([])->where('language_id', $language)->paginate(50)
+            'list' => Translate::filters([])->where('language', $language)->paginate(50)
         ];
     }
 

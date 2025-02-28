@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Forms\Account\Travel;
 
+use App\Forms\FormBase\Fields\FormSelectInput;
+use App\Forms\FormBase\Fields\FormTextFieldInput;
 use App\Forms\FormBase\FormBase;
 use App\Models\Travel\TravelType;
 use App\Services\References\CountryService;
@@ -20,47 +22,40 @@ class TravelForm extends FormBase
         private readonly CountryService $countryService
     ) {}
 
-    protected function builderForm(array &$form, array $args): void
+    protected function builderForm(array $args): array
     {
         $travel = $this->service->getTravelById((int)$args['travel_id']);
 
-        $form['#title'] = __('mr-t.account_form_travel_edit');
+        $this->title = __('mr-t.account_form_travel_create');
+        if ($travel) {
+            $this->title = __('mr-t.account_form_travel_edit');
+        }
 
-        $form['status'] = [
-            '#type'          => 'select',
-            '#title'         => __('mr-t.account_form_status'),
-            '#default_value' => $travel ? $travel->getStatus() : TravelStatus::STATUS_DRAFT,
-            '#options'       => TravelStatus::getSelectList(),
-        ];
+        $inputs[] = FormSelectInput::make('status')
+            ->options(TravelStatus::getSelectList())
+            ->title(__('mr-t.account_form_status'))
+            ->value($travel?->getStatus());
 
-        $form['title'] = [
-            '#type'  => 'textfield',
-            '#title' => __('mr-t.Title'),
-            '#class' => ['mr-border-radius-5'],
-            '#value' => $travel?->getTitle(),
-        ];
+        $inputs[] = FormTextFieldInput::make('title')
+            ->title(__('mr-t.Title'))
+            ->value($travel?->getTitle());
 
-        $form['country_id'] = [
-            '#type'          => 'select',
-            '#title'         => __('mr-t.country'),
-            '#required'      => true,
-            '#default_value' => $travel ? $travel->getCountry()->id() : 0,
-            '#options'       => [0 => 'не выбрано'] + $this->countryService->getSelectList()
-        ];
+        $inputs[] = FormSelectInput::make('country_id')
+            ->options([0 => 'не выбрано'] + $this->countryService->getSelectList())
+            ->title(__('mr-t.country'))
+            ->value($travel?->getCountry()->id());
 
-        $form['travel_type_id'] = [
-            '#type'          => 'select',
-            '#title'         => __('mr-t.travel_type'),
-            '#default_value' => $travel ? $travel->getTravelType()->id() : 0,
-            '#options'       => TravelType::all()->pluck('name', 'id')->toArray(),
-        ];
+        $inputs[] = FormSelectInput::make('travel_type_id')
+            ->options(TravelType::all()->pluck('name', 'id')->toArray())
+            ->title(__('mr-t.travel_type'))
+            ->value($travel?->getTravelType()->id());
 
-        $form['visible_kind'] = [
-            '#type'          => 'select',
-            '#title'         => __('mr-t.visible_kind'),
-            '#default_value' => (int)$travel?->getVisibleType(),
-            '#options'       => TravelVisibleType::getSelectList(),
-        ];
+        $inputs[] = FormSelectInput::make('visible_type')
+            ->options(TravelVisibleType::getSelectList())
+            ->title(__('mr-t.visible_type'))
+            ->value($travel?->getVisibleType()->value);
+
+        return $inputs;
     }
 
     protected function validateForm(array $routeParameters): void
@@ -77,6 +72,7 @@ class TravelForm extends FormBase
     protected function submitForm(array $routeParameters): void
     {
         $this->v['user_id'] = auth()->id();
+
         if ((int)$routeParameters['travel_id'] > 0) {
             $this->service->updateTravel((int)$routeParameters['travel_id'], $this->v);
         } else {

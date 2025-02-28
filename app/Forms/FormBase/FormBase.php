@@ -23,7 +23,9 @@ class FormBase extends Controller
 
     protected array $v = [];
     protected array $errors = [];
-    protected const SIZE_50 = 'w-50';
+    protected string $title = '';
+    protected const string SIZE_50 = 'w-50';
+    protected bool $btnInfo = false;
 
     public function processForm(): mixed
     {
@@ -50,29 +52,25 @@ class FormBase extends Controller
     {
         $routeParameters = Route::getFacadeRoot()->current()->parameters();
 
-        $form = array(
-            '#title' => '',
-            '#size'  => $this->size ?? 'w-50',
-            '#url'   => ''
-        );
+        $inputs = $this->builderForm($routeParameters);
 
-        $this->builderForm($form, $routeParameters);
-
-        if (!isset($form['#btn_info'])) {
-            $form['#url'] = request()->url();
-        }
-
-        $formDisplay = View('form.base_form.form_templates')->with(['form' => $form])->toHtml();
+        $formDisplay = View('form.base_form.new_form_templates')->with(['form' => $inputs])->toHtml();
 
         if (request()->getMethod() === 'POST') {
-            return array(
-                'html'      => $formDisplay,
-                'form_data' => $form,
-            );
+            return [
+                'rendered'   => $formDisplay,
+                'inputs' => $inputs,
+                'system' => [
+                    '#title'   => $this->title,
+                    '#size'    => $this->size ?? 'w-50',
+                    '#url'     => request()->url(),
+                    '#btnInfo' => $this->btnInfo,
+                ],
+            ];
         } else { // GET запрос для дебага
             return View('form.base_form.form_render')->with([
                 'form'      => $formDisplay,
-                'form_data' => $form,
+                'form_data' => $inputs,
             ]);
         }
     }

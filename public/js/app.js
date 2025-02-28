@@ -25892,9 +25892,12 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
   data: function data() {
     return {
       showModal: false,
-      form_html: null,
-      form_data: [],
+      rendered: null,
+      //form_data: [],
       title: '',
+      size: 'w-50',
+      url: '',
+      btnInfo: false,
       load_data: false,
       mrErrors: null,
       is_wait: false
@@ -25910,7 +25913,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       }
     },
     show: function show() {
-      this.GetForm();
+      this.getForm();
       this.showModal = true;
       this.mrErrors = null;
     },
@@ -25918,14 +25921,17 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       this.mrErrors = null;
       this.showModal = false;
     },
-    GetForm: function GetForm() {
+    getForm: function getForm() {
       var _this = this;
       this.load_data = true;
       axios.post(this.route_url).then(function (response) {
         var data = response.data;
-        _this.form_html = data.html;
-        _this.form_data = data.form_data;
-        _this.title = _this.form_data['#title'];
+        _this.rendered = data.rendered;
+        _this.system = data.system;
+        _this.title = _this.system['#title'];
+        _this.size = _this.system['#size'];
+        _this.url = _this.system['#url'];
+        _this.btnInfo = _this.system['#btnInfo'];
         _this.load_data = false;
         _this.is_wait = false;
       });
@@ -25956,8 +25962,8 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
       } finally {
         _iterator.f();
       }
-      if (this.form_data['#url'] !== undefined) {
-        axios.put(this.form_data['#url'], this.in_data).then(function (response) {
+      if (this.url !== undefined) {
+        axios.put(this.url, this.in_data).then(function (response) {
           if (undefined !== response.data['code']) {
             _this2.buildErrorHtml(response.data.message);
           } else {
@@ -26282,7 +26288,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   }, {
     "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
       return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
-        "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["modal-dialog mw-100", $data.form_data['#size']]),
+        "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["modal-dialog mw-100", $data.size]),
         role: "document"
       }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h6", _hoisted_6, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.title), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
         type: "button",
@@ -26310,8 +26316,8 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
         id: "mrError"
       })], -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_v_runtime_template, {
-        template: $data.form_html
-      }, null, 8 /* PROPS */, ["template"])], 32 /* NEED_HYDRATION */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [$data.form_data['#btn_info'] ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_10, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+        template: $data.rendered
+      }, null, 8 /* PROPS */, ["template"])], 32 /* NEED_HYDRATION */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [$data.btnInfo ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_10, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
         type: "button",
         onClick: _cache[2] || (_cache[2] = function ($event) {
           return $options.hide();
