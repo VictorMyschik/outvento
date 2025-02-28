@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Reference\ReferenceController;
 use App\Http\Controllers\Travel\TravelController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,4 +26,8 @@ Route::group(['prefix' => 'travel'], function () {
     Route::get('{travel_id}/image/show/{image_name}', [TravelImageController::class, 'showImage'])->name('api.travel.image.get');
     // Update image description
     Route::post('image/update', [TravelImageController::class, 'updateImage'])->name('api.travel.image.update');
+});
+
+Route::group(['prefix' => 'reference'], function () {
+    Route::post('/country/list', [ReferenceController::class, 'getCountryList'])->name('api.reference.country.list');
 });

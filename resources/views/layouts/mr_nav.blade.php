@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-md shadow-sm shadow mr-nav transparent-nav">
+<nav class="navbar navbar-expand-md shadow-sm shadow mr-nav transparent-nav" style="z-index: 9999;">
     <div class="container">
         <a class="navbar-brand text-italic mr-nav-link-color" href="{{ url('/') }}">
             <span class="mr-nav-link-color">My Travel</span>

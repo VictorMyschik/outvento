@@ -1,4 +1,4 @@
-<template>
+<template  style="z-index: 9999;">
   <span>
     <span v-if="showModal">
       <transition name="modal fade">
