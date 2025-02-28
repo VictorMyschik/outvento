@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'failed'                   => 'Te dane uwierzytelniające nie pasują do naszych zapisów.',
-    'password'                 => 'Podane hasło jest nieprawidłowe.',
-    'throttle'                 => 'Zbyt wiele prób logowania. Spróbuj ponownie za :seconds sekund.',
-    'forgot_your_password'     => 'Zapomniałeś hasła?',
-    'send_password_reset_link' => 'Wyślij link do resetowania hasła',
+    'failed'                   => 'Эти учетные данные не соответствуют нашим записям.',
+    'password'                 => 'Предоставленный пароль неверен.',
+    'throttle'                 => 'Слишком много попыток входа. Пожалуйста, попробуйте еще раз через :seconds секунд.',
+    'forgot_your_password'     => 'Забыли свой пароль?',
+    'send_password_reset_link' => 'Отправить ссылку для сброса пароля',
 ];

@@ -1,9 +1,9 @@
 <?php
 
 return [
-  'reset'     => 'Ваш пароль был сброшен.',
-  'sent'      => 'Мы отправили вам ссылку для сброса пароля по электронной почте.',
-  'throttled' => 'Пожалуйста, подождите, прежде чем повторить попытку.',
-  'token'     => 'Этот токен сброса пароля недействителен.',
-  'user'      => "Мы не можем найти пользователя с этим адресом электронной почты.",
+    'reset'     => 'Twoje hasło zostało zresetowane.',
+    'sent'      => 'Wysłaliśmy Ci e-mail z linkiem do resetowania hasła.',
+    'throttled' => 'Proszę poczekać przed ponowną próbą.',
+    'token'     => 'Ten token resetowania hasła jest nieprawidłowy.',
+    'user'      => 'Nie możemy znaleźć użytkownika z tym adresem e-mail.',
 ];

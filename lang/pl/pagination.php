@@ -1,6 +1,5 @@
 <?php
-
 return [
-  'previous' => '&laquo; Назад',
-  'next'     => 'Вперёд &raquo;',
+    'previous' => '&laquo; Poprzednia',
+    'next'     => 'Następna &raquo;',
 ];

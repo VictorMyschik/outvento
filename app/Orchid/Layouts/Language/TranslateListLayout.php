@@ -30,7 +30,6 @@ class TranslateListLayout extends Table
                     ->icon('bs.three-dots-vertical')
                     ->list([
                         ModalToggle::make('Edit')
-                            ->type(Color::PRIMARY())
                             ->icon('pencil')
                             ->modal('translate')
                             ->modalTitle('Translate id ' . $translate->id())

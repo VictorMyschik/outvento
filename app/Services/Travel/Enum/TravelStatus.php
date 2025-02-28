@@ -22,9 +22,9 @@ enum TravelStatus: int
     public function getLabel(): string
     {
         return match ($this) {
-            self::STATUS_DRAFT => __('mr-t.Draft'),
-            self::STATUS_ACTIVE => __('mr-t.Active'),
-            self::STATUS_ARCHIVED => __('mr-t.Archived'),
+            self::STATUS_DRAFT => __('mr-t.draft'),
+            self::STATUS_ACTIVE => __('mr-t.active'),
+            self::STATUS_ARCHIVED => __('mr-t.archived'),
         };
     }
 }
