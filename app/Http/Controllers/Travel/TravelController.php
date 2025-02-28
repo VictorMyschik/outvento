@@ -14,7 +14,6 @@ use App\Services\Travel\TravelApiService;
 use App\Services\Travel\TravelService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 final class TravelController extends Controller

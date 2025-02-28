@@ -35,12 +35,11 @@ class TravelRepository extends DatabaseRepository implements TravelRepositoryInt
     public function getPublicList(?User $user, array $filter = []): array
     {
         if (!$user) {
-            $query = Travel::where('visible_type', TravelVisibleType::VISIBLE_TYPE_PUBLIC)->whereIn('status', [TravelStatus::STATUS_ACTIVE, TravelStatus::STATUS_ARCHIVED]);
+            $query = Travel::where('visible_type', TravelVisibleType::VISIBLE_TYPE_PUBLIC)->whereIn('status', [TravelStatus::STATUS_ACTIVE]);
         }
 
         if ($user) {
-            $query = Travel::whereIn('visible_type', [TravelVisibleType::VISIBLE_TYPE_PUBLIC, TravelVisibleType::VISIBLE_TYPE_PLATFORM])
-                ->whereIn('status', [TravelStatus::STATUS_ACTIVE, TravelStatus::STATUS_ARCHIVED]);
+            $query = Travel::whereIn('status', [TravelStatus::STATUS_ACTIVE, TravelStatus::STATUS_ARCHIVED]);
         }
 
         // Filtering

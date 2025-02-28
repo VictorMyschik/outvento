@@ -24,7 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->render(function (ExceptionAPIBase $e) {
+        $exceptions->renderable(function (ExceptionAPIBase $e) {
             return response()->json(['result' => false, 'error' => $e->getMessage()], 400);
         });
     })->create();
