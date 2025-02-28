@@ -1,4 +1,4 @@
-<div class="mb-3 @if(isset($item->classes)){{ implode(' ', $item->classes) }}@endif">
+<div class="col-12 col-md form-group mb-md-2 @if(isset($item->classes)){{ implode(' ', $item->classes) }}@endif">
     <label for="{{ $item->name }}" class="mr-bold">{{ $item->title }}</label>
     <input id="{{ $item->name }}" type="text" name="{{ $item->name }}" value="{{ $item->value }}"
            placeholder='{{ $item->placeholder }}'

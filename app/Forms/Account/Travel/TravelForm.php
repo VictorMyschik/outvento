@@ -7,7 +7,7 @@ namespace App\Forms\Account\Travel;
 use App\Forms\FormBase\Fields\FormSelectInput;
 use App\Forms\FormBase\Fields\FormTextFieldInput;
 use App\Forms\FormBase\FormBase;
-use App\Models\Travel\TravelType;
+use App\Forms\FormBase\Helpers\Group;
 use App\Services\References\ReferenceService;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\TravelVisibleType;
@@ -31,15 +31,17 @@ class TravelForm extends FormBase
             $this->title = __('mr-t.account_form_travel_edit');
         }
 
-        $inputs[] = FormSelectInput::make('status')
-            ->options(TravelStatus::getSelectList())
-            ->title(__('mr-t.account_form_status'))
-            ->value($travel?->getStatus());
+        $inputs[] = Group::make([
+            FormSelectInput::make('status')
+                ->options(TravelStatus::getSelectList())
+                ->title(__('mr-t.account_form_status'))
+                ->value($travel?->getStatus()),
 
-        $inputs[] = FormSelectInput::make('visible_type')
-            ->options(TravelVisibleType::getSelectList())
-            ->title(__('mr-t.visible_type'))
-            ->value($travel?->getVisibleType()->value);
+            FormSelectInput::make('visible_type')
+                ->options(TravelVisibleType::getSelectList())
+                ->title(__('mr-t.visible_type'))
+                ->value($travel?->getVisibleType()->value)
+        ]);
 
         $inputs[] = FormTextFieldInput::make('title')
             ->title(__('mr-t.title'))

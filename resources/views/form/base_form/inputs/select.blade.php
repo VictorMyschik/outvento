@@ -1,5 +1,5 @@
-<span id="{{ $item->name }}"></span>
-<label><span class="mr-bold mr-form-size-09">{{ $item->title }}</span>
+<div class="col-12 col-md form-group mb-md-2">
+    <span>{{ $item->title }}</span>
     <select class="form-control mr-border-radius-5" style="margin-top: 7px;"
             name="{{ $item->name }}">
         @foreach($item->options as $key => $value)
@@ -10,4 +10,4 @@
             @endif
         @endforeach
     </select>
-</label>
+</div>
