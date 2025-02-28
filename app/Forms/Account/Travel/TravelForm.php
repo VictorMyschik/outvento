@@ -37,7 +37,7 @@ class TravelForm extends FormBase
             ->value($travel?->getStatus());
 
         $inputs[] = FormTextFieldInput::make('title')
-            ->title(__('mr-t.Title'))
+            ->title(__('mr-t.title'))
             ->value($travel?->getTitle());
 
         $inputs[] = FormSelectInput::make('country_id')

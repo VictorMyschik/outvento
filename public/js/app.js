@@ -26381,7 +26381,7 @@ var _hoisted_3 = {
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_mrp = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("mrp");
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("li", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_mrp, {
-    btn_name: "новое",
+    btn_name: "New",
     onResponse: $options.redirectToTravel,
     route_url: $options.router('account.travel.base.form', {
       'travel_id': 0

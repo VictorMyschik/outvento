@@ -2,7 +2,7 @@
     <li class="nav-item">
         <a class="nav-link" href="#">
             <span class="mr-nav-link-color mr-color-green">
-                        <mrp btn_name="новое"
+                        <mrp btn_name="New"
                              @response="redirectToTravel"
                              :route_url="router('account.travel.base.form', {'travel_id': 0})"
                              class_arr=""></mrp>
