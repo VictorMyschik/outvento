@@ -6,7 +6,7 @@
             <div class="col-md-8">
 
                 <div class="card-body">
-                    <h5>{{__('mr-t.Login')}}</h5>
+                    <h5>{{__('mr-t.login')}}</h5>
                     <hr>
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
@@ -57,8 +57,8 @@
 
                         <div class="row mb-0">
                             <div class="col-md-8 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('mr-t.Login') }}
+                                <button type="submit" class="mr-btn-success">
+                                    {{ __('mr-t.login') }}
                                 </button>
 
                                 @if (Route::has('password.request'))

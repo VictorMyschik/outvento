@@ -33,7 +33,7 @@ class PlatformProvider extends OrchidServiceProvider
             ]),
             Menu::make('Subscriptions')->icon('bs.send')->route('subscriptions.list')->divider(),
             // FAQ
-            Menu::make('FAQ')->title('Information')->icon('bs.book')->route('faq.list'),
+            Menu::make('FAQ')->icon('bs.book')->route('faq.list'),
 
             Menu::make('Language')->icon('language')->route('language.translate.list'),
 

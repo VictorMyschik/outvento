@@ -69,21 +69,21 @@ final class TravelController extends Controller
         $this->validationClass->validateDetails($request);
 
         return $this->successResult(
-            $this->travelApiService->getTravelDetailsResponse($request->getTravelId())
+            $this->travelApiService->getTravelDetailsResponse($request->getTravelId(), $this->getLanguage())
         );
     }
 
     public function getList(Request $request): JsonResponse
     {
         return $this->successResult(
-            $this->travelApiService->getPublicTravelList($request->user())
+            $this->travelApiService->getPublicTravelList($request->user(), $this->getLanguage())
         );
     }
 
     public function personalList(Request $request): JsonResponse
     {
         return $this->successResult(
-            $this->travelApiService->getPersonalList($request->user())
+            $this->travelApiService->getPersonalList($request->user(), $this->getLanguage())
         );
     }
 }

@@ -15,6 +15,7 @@ use App\Http\Controllers\Travel\Response\TravelDetailsResponse;
 use App\Models\Travel\Travel;
 use App\Models\Travel\TravelImage;
 use App\Models\User;
+use App\Services\System\Enum\Language;
 use App\Services\Travel\Enum\ImageType;
 
 final readonly class TravelApiService
@@ -23,28 +24,28 @@ final readonly class TravelApiService
         private TravelRepositoryInterface $travelRepository,
     ) {}
 
-    public function getPublicTravelList(?User $user): array
+    public function getPublicTravelList(?User $user, Language $language): array
     {
         $out = [];
 
         foreach ($this->travelRepository->getPublicList($user) as $travel) {
-            $out[] = $this->getTravelDetailsResponse($travel);
+            $out[] = $this->getTravelDetailsResponse($travel, $language);
         }
 
         return $out;
     }
 
-    public function getPersonalList(User $user): array
+    public function getPersonalList(User $user, Language $language): array
     {
         $out = [];
         foreach ($this->getTravelByUserId($user->id()) as $travel) {
-            $out[] = $this->getTravelDetailsResponse($travel->id);
+            $out[] = $this->getTravelDetailsResponse($travel->id, $language);
         }
 
         return $out;
     }
 
-    public function getTravelDetailsResponse(Travel $travel): TravelDetailsResponse
+    public function getTravelDetailsResponse(Travel $travel, Language $language): TravelDetailsResponse
     {
         $images = [];
 
@@ -78,7 +79,7 @@ final readonly class TravelApiService
             ),
             country: new CountryResponse(
                 id: $travel->getCountry()->id(),
-                name: $travel->getCountry()->getName(),
+                name: $travel->getCountry()->getName($language),
                 continent: new CountryContinentComponent(
                     name: $travel->getCountry()->getContinentName(),
                     short_name: $travel->getCountry()->getContinentShortName(),
@@ -86,8 +87,7 @@ final readonly class TravelApiService
             ),
             travel_type: new TravelTypeResponse(
                 id: $travel->getTravelType()->id(),
-                name: $travel->getTravelType()->getName(),
-                description: $travel->getTravelType()->getDescription(),
+                name: $travel->getTravelType()->getName($language),
             ),
             created_at: $travel->created_at->toAtomString(),
             updated_at: $travel->updated_at?->toAtomString(),

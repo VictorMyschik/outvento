@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-md shadow-sm shadow mr-nav">
+<nav class="navbar navbar-expand-md shadow-sm shadow mr-nav transparent-nav">
     <div class="container">
         <a class="navbar-brand text-italic mr-nav-link-color" href="{{ url('/') }}">
             <span class="mr-nav-link-color">My Travel</span>
@@ -12,11 +12,11 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('login') }}"><span
-                                class="mr-nav-link-color">{{ __('mr-t.Login') }}</span></a>
+                                class="mr-nav-link-color">{{ __('mr-t.login') }}</span></a>
                     </li>
                     <li class="nav-item mr-5">
                         <a class="nav-link" href="{{ route('register') }}"><span
-                                class="mr-nav-link-color">{{ __('mr-t.Register') }}</span></a>
+                                class="mr-nav-link-color">{{ __('mr-t.register') }}</span></a>
                     </li>
                     @include('layouts.language')
                 @else

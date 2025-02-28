@@ -22,4 +22,6 @@ values  (1, 'account', 'Профиль', 'Account', 'Profil', '2025-02-28 09:15:
         (22, 'country', 'Страна', 'Country', 'Kraj', '2025-02-28 11:25:28 +00:00'),
         (23, 'travel_type', 'Тип', 'Type', 'Typ', '2025-02-28 11:26:12 +00:00'),
         (24, 'visible_type', 'Видимость', 'Visible', 'Widoczny typ', '2025-02-28 11:26:58 +00:00'),
-        (18, 'active', 'Активный', 'Active', 'Active', '2025-02-28 11:12:59 +00:00');
+        (18, 'active', 'Активный', 'Active', 'Active', '2025-02-28 11:12:59 +00:00'),
+        (25, 'field_is_required', 'Поле "%s" обязательно для заполнения', 'Field "%s" is required', 'Pole "%s" jest wymagane', '2025-02-28 14:11:07 +00:00'),
+        (26, 'feedback_form_send', 'Отправить', 'Send', 'Wysłać', '2025-02-28 16:03:12 +00:00');
