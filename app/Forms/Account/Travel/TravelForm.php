@@ -8,7 +8,7 @@ use App\Forms\FormBase\Fields\FormSelectInput;
 use App\Forms\FormBase\Fields\FormTextFieldInput;
 use App\Forms\FormBase\FormBase;
 use App\Models\Travel\TravelType;
-use App\Services\References\CountryService;
+use App\Services\References\ReferenceService;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\TravelVisibleType;
 use App\Services\Travel\TravelService;
@@ -18,8 +18,8 @@ class TravelForm extends FormBase
     public string $size = self::SIZE_50;
 
     public function __construct(
-        private readonly TravelService  $service,
-        private readonly CountryService $countryService
+        private readonly TravelService    $service,
+        private readonly ReferenceService $referenceService
     ) {}
 
     protected function builderForm(array $args): array
@@ -36,24 +36,25 @@ class TravelForm extends FormBase
             ->title(__('mr-t.account_form_status'))
             ->value($travel?->getStatus());
 
+        $inputs[] = FormSelectInput::make('visible_type')
+            ->options(TravelVisibleType::getSelectList())
+            ->title(__('mr-t.visible_type'))
+            ->value($travel?->getVisibleType()->value);
+
         $inputs[] = FormTextFieldInput::make('title')
             ->title(__('mr-t.title'))
             ->value($travel?->getTitle());
 
         $inputs[] = FormSelectInput::make('country_id')
-            ->options([0 => 'не выбрано'] + $this->countryService->getSelectList($this->getLanguage()))
+            ->options([0 => 'не выбрано'] + $this->referenceService->getCountrySelectList($this->getLanguage()))
             ->title(__('mr-t.country'))
             ->value($travel?->getCountry()->id());
 
         $inputs[] = FormSelectInput::make('travel_type_id')
-            ->options(TravelType::all()->pluck('name', 'id')->toArray())
+            ->options($this->referenceService->getTravelTypeSelectList($this->getLanguage()))
             ->title(__('mr-t.travel_type'))
             ->value($travel?->getTravelType()->id());
 
-        $inputs[] = FormSelectInput::make('visible_type')
-            ->options(TravelVisibleType::getSelectList())
-            ->title(__('mr-t.visible_type'))
-            ->value($travel?->getVisibleType()->value);
 
         return $inputs;
     }

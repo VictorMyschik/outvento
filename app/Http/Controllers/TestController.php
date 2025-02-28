@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\MyJob;
 use Illuminate\Support\Facades\DB;
 use Stichoza\GoogleTranslate\GoogleTranslate;
 
@@ -21,19 +20,20 @@ class TestController extends Controller
         $translator = new GoogleTranslate();
         $translator->setSource('ru'); // Исходный язык
 
-        $countries = DB::table('countries')->get();
+        $tableName = 'travel_types';
+        $travelTypes = DB::table($tableName)->get();
 
-        foreach ($countries as $country) {
-            if (empty($country->name_en)) {
+        foreach ($travelTypes as $travelType) {
+            if (empty($travelType->name_en)) {
                 $translator->setTarget('en');
-                $translatedName = $translator->translate($country->name);
-                DB::table('countries')->where('id', $country->id)->update(['name_en' => $translatedName]);
+                $translatedName = $translator->translate($travelType->name_ru);
+                DB::table($tableName)->where('id', $travelType->id)->update(['name_en' => $translatedName]);
             }
 
-            if (empty($country->name_pl)) {
+            if (empty($travelType->name_pl)) {
                 $translator->setTarget('pl');
-                $translatedName = $translator->translate($country->name);
-                DB::table('countries')->where('id', $country->id)->update(['name_pl' => $translatedName]);
+                $translatedName = $translator->translate($travelType->name_ru);
+                DB::table($tableName)->where('id', $travelType->id)->update(['name_pl' => $translatedName]);
             }
         }
     }

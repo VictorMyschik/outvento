@@ -36,7 +36,7 @@ final readonly class TranslateService
 
     public function flush(): void
     {
-        foreach (Language::list() as $key => $language) {
+        foreach (Language::list() as $language) {
             Cache::forget('translate_list_' . $language->getCode());
         }
     }

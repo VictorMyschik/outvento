@@ -17,8 +17,9 @@ class TravelTypeListLayout extends Table
     {
         return [
             TD::make('id', __('ID'))->sort(),
-            TD::make('name', 'Name'),
-            TD::make('description', 'Description'),
+            TD::make('name_ru', 'RU'),
+            TD::make('name_en', 'EN'),
+            TD::make('name_pl', 'PL'),
 
             TD::make(__('Actions'))
                 ->align(TD::ALIGN_CENTER)

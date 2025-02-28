@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use App\Repositories\References\CountryCacheRepository;
-use App\Repositories\References\CountryRepository;
-use App\Services\References\CountryRepositoryInterface;
+use App\Repositories\References\ReferenceCacheRepository;
+use App\Repositories\References\ReferenceRepository;
+use App\Services\References\ReferenceRepositoryInterface;
 use Illuminate\Cache\Repository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\DatabaseManager;
@@ -17,9 +17,9 @@ class ReferenceProvider extends ServiceProvider
     public function register(): void
     {
         // Country
-        $this->app->bind(CountryRepositoryInterface::class, function (Application $app) {
-            return new CountryCacheRepository(
-                new CountryRepository($app->make(DatabaseManager::class)),
+        $this->app->bind(ReferenceRepositoryInterface::class, function (Application $app) {
+            return new ReferenceCacheRepository(
+                new ReferenceRepository($app->make(DatabaseManager::class)),
                 $app->make(Repository::class)
             );
         });

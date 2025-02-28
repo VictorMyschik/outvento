@@ -9,8 +9,9 @@ return new class extends Migration {
     {
         Schema::create('travel_types', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('description', 8000)->nullable();
+            $table->string('name_ru', 50);
+            $table->string('name_en', 50)->nullable();
+            $table->string('name_pl', 50)->nullable();
         });
     }
 

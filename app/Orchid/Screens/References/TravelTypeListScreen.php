@@ -5,14 +5,16 @@ namespace App\Orchid\Screens\References;
 use App\Models\Travel\TravelType;
 use App\Orchid\Layouts\References\TravelTypeEditLayout;
 use App\Orchid\Layouts\References\TravelTypeListLayout;
+use App\Services\References\ReferenceService;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
-use Orchid\Support\Facades\Toast;
 
 class TravelTypeListScreen extends Screen
 {
+    public function __construct(private ReferenceService $service) {}
+
     public function query(): iterable
     {
         return [
@@ -58,19 +60,15 @@ class TravelTypeListScreen extends Screen
         ];
     }
 
-    public function saveTravelType(Request $request): void
+    public function saveTravelType(Request $request, int $id): void
     {
         $data = $request->validate([
-            'travel-type.name'        => 'required|string',
-            'travel-type.description' => 'nullable|string',
+            'travel-type.name_ru' => 'required|string',
+            'travel-type.name_en' => 'required|string',
+            'travel-type.name_pl' => 'required|string',
         ])['travel-type'];
 
-        TravelType::updateOrCreate(
-            ['id' => (int)$request->get('id')],
-            $data
-        );
-
-        Toast::info('Travel type was saved');
+        $this->service->saveTravelType($id, $data);
     }
 
     public function remove(int $id): void
