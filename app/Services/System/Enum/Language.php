@@ -10,12 +10,14 @@ enum Language: int
 {
     case EN = 1;
     case RU = 2;
+    case PL = 3;
 
     public static function fromString(string $language): self
     {
         return match (mb_strtolower($language)) {
             'ru' => self::RU,
             'en' => self::EN,
+            'pl' => self::PL,
             default => throw new NotFoundHttpException('Unknown language: ' . $language),
         };
     }
@@ -28,6 +30,7 @@ enum Language: int
         return [
             self::RU->value => self::RU->getLabel(),
             self::EN->value => self::EN->getLabel(),
+            self::PL->value => self::PL->getLabel(),
         ];
     }
 
@@ -36,6 +39,7 @@ enum Language: int
         return match ($this) {
             Language::RU => 'ru',
             Language::EN => 'en',
+            Language::PL => 'pl',
         };
     }
 
@@ -44,6 +48,7 @@ enum Language: int
         return match ($this) {
             Language::EN => 'English',
             Language::RU => 'Русский',
+            Language::PL => 'Polski',
         };
     }
 
@@ -52,6 +57,7 @@ enum Language: int
         return [
             self::EN,
             self::RU,
+            self::PL,
         ];
     }
 

@@ -17,9 +17,11 @@ class TranslateListLayout extends Table
     public function columns(): array
     {
         return [
-            TD::make('id', __('ID'))->sort(),
-            TD::make('code', __('Code'))->sort(),
-            TD::make('translate', __('Translate'))->sort(),
+            TD::make('id', 'ID')->sort(),
+            TD::make('code', 'Code')->sort(),
+            TD::make('ru', 'RU')->sort(),
+            TD::make('en', 'EN')->sort(),
+            TD::make('pl', 'PL')->sort(),
 
             TD::make(__('Actions'))
                 ->align(TD::ALIGN_CENTER)

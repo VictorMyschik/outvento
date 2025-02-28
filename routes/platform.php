@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use App\Orchid\Screens\Email\EmailScreen;
 use App\Orchid\Screens\FAQScreen;
-use App\Orchid\Screens\Language\LanguageScreen;
 use App\Orchid\Screens\Language\TranslateScreen;
 use App\Orchid\Screens\PlatformScreen;
 use App\Orchid\Screens\References\CategoryEquipmentScreen;
@@ -103,8 +102,7 @@ Route::screen('system/purge', PurgeScreen::class)->name('system.purge');
 Route::screen('system/jobs', JobsScreen::class)->name('system.jobs');
 Route::screen('system/failed-jobs', FailedJobsScreen::class)->name('system.failed.jobs');
 // Language
-Route::screen('language', LanguageScreen::class)->name('language.list');
-Route::screen('language/{language}/translate', TranslateScreen::class)->name('language.translate.list');
+Route::screen('language/translate', TranslateScreen::class)->name('language.translate.list');
 
 
 Route::screen('/faq/list', FAQScreen::class)->name('faq.list');

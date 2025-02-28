@@ -10,18 +10,29 @@ class TranslateEditLayout extends Rows
     public function fields(): array
     {
         return [
-            // hide id
-            /* Input::make('translate.id')
-               ->value($translate->id ?? 0)
-               ->type('hidden'),*/
-
             Input::make('translate.code')
                 ->type('text')
                 ->max(255)
                 ->required()
                 ->title('Code'),
 
-            Input::make('translate.translate')->title('Translate')
+            Input::make('translate.ru')
+                ->type('text')
+                ->max(255)
+                ->required()
+                ->title('RU'),
+
+            Input::make('translate.en')
+                ->type('text')
+                ->max(255)
+                ->required()
+                ->title('EN'),
+
+            Input::make('translate.pl')
+                ->type('text')
+                ->max(255)
+                ->required()
+                ->title('PL'),
         ];
     }
 }

@@ -5,9 +5,7 @@ namespace App\Orchid\Screens\Language;
 use App\Models\System\Translate;
 use App\Orchid\Layouts\Language\TranslateEditLayout;
 use App\Orchid\Layouts\Language\TranslateListLayout;
-use App\Services\System\Enum\Language;
 use Illuminate\Http\Request;
-use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
@@ -17,13 +15,13 @@ class TranslateScreen extends Screen
 {
     public function name(): string
     {
-        return 'Translate for Language ' . Language::tryFrom((int)request()->route()->parameter('language'))?->getLabel();
+        return 'Translate table';
     }
 
-    public function query(int $language): iterable
+    public function query(): iterable
     {
         return [
-            'list' => Translate::filters([])->where('language', $language)->paginate(50)
+            'list' => Translate::filters([])->paginate(50)
         ];
     }
 
@@ -31,14 +29,12 @@ class TranslateScreen extends Screen
     {
         return [
             ModalToggle::make('Add')
+                ->class('mr-btn-success')
                 ->icon('plus')
                 ->modal('translate')
                 ->modalTitle('Create New Translate')
                 ->method('saveTranslate')
                 ->asyncParameters(['id' => 0]),
-            Link::make('Назад')
-                ->icon('arrow-left')
-                ->route('language.list'),
         ];
     }
 
@@ -57,14 +53,14 @@ class TranslateScreen extends Screen
         ];
     }
 
-    public function saveTranslate(Request $request, int $language): void
+    public function saveTranslate(Request $request): void
     {
         $data = $request->validate([
-            'translate.code'      => 'required|string|max:255',
-            'translate.translate' => 'required|string|max:255',
+            'translate.code' => 'required|string|max:255',
+            'translate.ru'   => 'nullable|string|max:255',
+            'translate.en'   => 'nullable|string|max:255',
+            'translate.pl'   => 'nullable|string|max:255',
         ])['translate'];
-
-        $data['language'] = $language;
 
         try {
             $translate = Translate::loadBy((int)$request->get('id')) ?: new Translate();

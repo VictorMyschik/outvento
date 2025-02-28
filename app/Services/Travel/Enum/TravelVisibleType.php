@@ -22,18 +22,18 @@ enum TravelVisibleType: int
     public function getLabel(): string
     {
         return match ($this) {
-            self::VISIBLE_TYPE_PUBLIC => __('mr-t.Public'),
+            self::VISIBLE_TYPE_PUBLIC => __('mr-t.public'),
             self::VISIBLE_TYPE_FOR_ME => __('mr-t.only_for_me'),
-            self::VISIBLE_TYPE_PLATFORM => __('mr-t.Only for registered users'),
+            self::VISIBLE_TYPE_PLATFORM => __('mr-t.only_for_registered_users'),
         };
     }
 
     public function getDescription(): array
     {
         return match ($this) {
-            self::VISIBLE_TYPE_PUBLIC => __('mr-t.Anyone can see this travel program'), // 'Любой пользователь может видеть эту походную программу',
-            self::VISIBLE_TYPE_FOR_ME => __('mr-t.Only I can see this travel program'), // 'Только я могу видеть эту походную программу',
-            self::VISIBLE_TYPE_PLATFORM => __('mr-t.Only registered users can see this travel program'), // 'Только зарегистрированные пользователи могут видеть эту походную программу',
+            self::VISIBLE_TYPE_PUBLIC => __('mr-t.anyone_can_see_this_travel_program'), // 'Любой пользователь может видеть эту походную программу',
+            self::VISIBLE_TYPE_FOR_ME => __('mr-t.only_i_can_see_this_travel_program'), // 'Только я могу видеть эту походную программу',
+            self::VISIBLE_TYPE_PLATFORM => __('mr-t.only_registered_users_can_see_this_travel_program'), // 'Только зарегистрированные пользователи могут видеть эту походную программу',
         };
     }
 

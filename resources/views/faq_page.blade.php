@@ -31,20 +31,20 @@
 
         <div class="container mt-5">
             <a data-bs-toggle="collapse" href="#feedback" aria-expanded="true" class="mr-color-black mr-bold">
-                {{__('mr-t.feedback')}} <h3 class="form-group">{{__('mr-t.feedback_2')}}</h3>
+                Feedback <h3 class="form-group">{{__('mr-t.feedback_2')}}</h3>
             </a>
             <div id="feedback" class="collapse show in">
                 <form action="{{route('feedback')}}" method="post">
                     @csrf
                     <label for="name"
-                           class="form-group col-md-6 padding-horizontal-0 mr-bold">{{__('mr-t.feedback_form_name')}}
+                           class="form-group col-md-6 padding-horizontal-0 mr-bold">{{__('mr-t.name')}}
                         <input required type="text" name="name" class="form-control mr_bg_input"></label>
 
                     <label for="email" class="form-group col-md-6 padding-horizontal-0 mr-bold">Email
                         <input required type="email" name="email" class="form-control mr_bg_input"></label>
 
                     <div class="form-group">
-                        <label for="message" class="mr-bold">{{__('mr-t.feedback_form_message')}}</label>
+                        <label for="message" class="mr-bold">{{__('mr-t.message')}}</label>
                         <textarea required name="message" id="message" cols="30" rows="10"
                                   class="form-control mr_bg_input"></textarea>
                     </div>

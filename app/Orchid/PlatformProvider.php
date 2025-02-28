@@ -35,7 +35,7 @@ class PlatformProvider extends OrchidServiceProvider
             // FAQ
             Menu::make('FAQ')->title('Information')->icon('bs.book')->route('faq.list'),
 
-            Menu::make('Language')->icon('language')->route('language.list'),
+            Menu::make('Language')->icon('language')->route('language.translate.list'),
 
             Menu::make('System')->icon('settings')->list([
                 Menu::make('Email log')->route('system.email.log'),

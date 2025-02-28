@@ -1,6 +1,5 @@
 <?php
 
-use App\Services\System\Enum\Language;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -10,12 +9,13 @@ return new class extends Migration {
     {
         Schema::create('translates', function (Blueprint $table) {
             $table->id();
-            $table->string('code');
-            $table->unsignedSmallInteger('language')->default(Language::RU->value)->index();
-            $table->string('translate');
-            $table->timestamp('created_at')->useCurrent();
+            $table->string('code')->unique()->index();
+            $table->string('ru')->nullable();
+            $table->string('en')->nullable();
+            $table->string('pl')->nullable();
 
-            $table->unique(['code', 'language']);
+            $table->timestampTz('created_at')->useCurrent();
+
         });
     }
 

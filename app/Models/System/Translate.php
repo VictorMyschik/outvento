@@ -21,52 +21,27 @@ class Translate extends ORM
 
     protected $fillable = array(
         'code',
-        'language',
-        'translate',
+        'ru',
+        'en',
+        'pl',
     );
 
     protected array $allowedSorts = [
         'code',
-        'language',
-        'translate',
+        'ru',
+        'en',
+        'pl',
     ];
-
-    public function getCode(): ?string
-    {
-        return $this->code;
-    }
-
-    public function setCode(string $value): void
-    {
-        $this->code = $value;
-    }
-
-    public function getLanguage(): Language
-    {
-        return Language::from($this->language);
-    }
-
-    /**
-     * Переведено
-     */
-    public function getTranslate(): ?string
-    {
-        return $this->translate;
-    }
-
-    public function setTranslate(string $value): void
-    {
-        $this->translate = $value;
-    }
 
     public static function getFullList(Language $language): array
     {
-        return Cache::rememberForever('translate_list_' . $language->value, function () use ($language) {
-            $list = Translate::where('language', $language->value)->get()->all();
+        return Cache::rememberForever('translate_list_' . $language->getCode(), function () use ($language) {
+            $list = Translate::select('code', $language->getCode())->get()->all();
 
+            $field = $language->getCode();
             $out = [];
             foreach ($list as $value) {
-                $out[$value->code] = $value->translate;
+                $out[$value->code] = $value->$field;
             }
 
             return $out;

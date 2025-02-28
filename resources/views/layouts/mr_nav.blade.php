@@ -26,7 +26,7 @@
                         <a id="navbarDropdown" class="nav-link mr-nav-link-color dropdown-toggle font-weight-bolder"
                            href="#" role="button"
                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                           v-pre>{{__('mr-t.MyTravels')}}<span
+                           v-pre>{{__('mr-t.my_travels')}}<span
                                 class="caret"></span>
                         </a>
 
@@ -40,7 +40,7 @@
 
                     <li class="nav-item mr-5">
                         <a class="nav-link" href="/account"><span
-                                class="mr-nav-link-color">{{__('mr-t.Account')}}</span></a>
+                                class="mr-nav-link-color">{{__('mr-t.account')}}</span></a>
                     </li>
 
                     @if(auth()->user()->isSuperAdmin())
