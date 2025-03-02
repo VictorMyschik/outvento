@@ -30,7 +30,7 @@ class TravelTypeListLayout extends Table
                         ModalToggle::make('Edit')
                             ->icon('pencil')
                             ->modal('travel_type')
-                            ->modalTitle('Edit currency id ' . $travelType->id)
+                            ->modalTitle('Edit type id ' . $travelType->id)
                             ->method('saveTravelType')
                             ->asyncParameters(['id' => $travelType->id]),
 

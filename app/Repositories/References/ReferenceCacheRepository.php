@@ -12,6 +12,7 @@ final readonly class ReferenceCacheRepository implements ReferenceRepositoryInte
 {
     private const string COUNTRIES = 'countries';
     private const string TRAVEL_TYPES = 'travel_types';
+    private const string CITIES = 'cities';
 
     public function __construct(
         private ReferenceRepositoryInterface $repository,
@@ -46,5 +47,14 @@ final readonly class ReferenceCacheRepository implements ReferenceRepositoryInte
         foreach (Language::list() as $language) {
             $this->cache->forget($key . $language->getCode());
         }
+    }
+
+    public function saveCity(int $id, array $data): int
+    {
+        $this->repository->saveCity($id, $data);
+
+        $this->flush(self::CITIES);
+
+        return $id;
     }
 }

@@ -26,4 +26,9 @@ final readonly class ReferenceService
     {
         return $this->repository->saveTravelType($id, $data);
     }
+
+    public function saveCity(int $id, array $data): int
+    {
+        return $this->repository->saveCity($id, $data);
+    }
 }

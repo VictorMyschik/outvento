@@ -10,13 +10,18 @@ return new class extends Migration {
         Schema::create('travels', function (Blueprint $table) {
             $table->id();
             $table->string('title')->index();
-            $table->string('description', 8000)->nullable();
+            $table->string('preview', 500)->nullable()->index();
+            $table->text('description')->nullable();
             $table->tinyInteger('status')->index();
-            $table->unsignedBigInteger('user_id')->index();
             $table->unsignedBigInteger('country_id')->index();
+            $table->unsignedBigInteger('city_id')->nullable()->index();
+            $table->date('date_from')->index();
+            $table->date('date_to')->index();
+            $table->smallInteger('members');
             $table->unsignedBigInteger('travel_type_id')->index();
             $table->string('public_id', 15)->nullable()->index();
             $table->tinyInteger('visible_type')->default(0)->index();
+            $table->unsignedBigInteger('user_id')->index();
 
             $table->timestampTz('created_at')->useCurrent();
             $table->timestampTz('updated_at')->nullable()->useCurrentOnUpdate();

@@ -13,4 +13,6 @@ interface ReferenceRepositoryInterface
     public function getTravelTypeSelectList(Language $language): array;
 
     public function saveTravelType(int $id, array $data): int;
+
+    public function saveCity(int $id, array $data): int;
 }

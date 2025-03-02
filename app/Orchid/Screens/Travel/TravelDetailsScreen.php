@@ -96,7 +96,7 @@ class TravelDetailsScreen extends Screen
                 Select::make('travel.status')->title('Общий статус')->required()->options(TravelStatus::getSelectList()),
                 Select::make('travel.visible_type')->title('Видимость')->required()->empty('Select travel public type')->options(TravelVisibleType::getSelectList()),
                 Select::make('travel.travel_type_id')->title('Тип')->required()->empty('Select travel type')->options(TravelType::all()->pluck('name', 'id')->toArray()),
-                Select::make('travel.country_id')->title('Страна')->required()->empty('Select country')->options(Country::all()->pluck('name', 'id')->toArray()),
+                Select::make('travel.country_id')->title('Страна')->required()->empty('Select country')->options(Country::all()->pluck('name_ru', 'id')->toArray()),
             ]),
             ViewField::make('')->view('space'),
             Input::make('travel.title')->title('Заголовок')->required()->maxlength(255),

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories\References;
 
+use App\Models\Reference\City;
 use App\Models\Reference\Country;
 use App\Models\Travel\TravelType;
 use App\Repositories\DatabaseRepository;
@@ -39,5 +40,16 @@ class ReferenceRepository extends DatabaseRepository implements ReferenceReposit
         }
 
         return $this->db->table(TravelType::getTableName())->insertGetId($data);
+    }
+
+    public function saveCity(int $id, array $data): int
+    {
+        if ($id > 0) {
+            $this->db->table(City::getTableName())->where('id', $id)->update($data);
+
+            return $id;
+        }
+
+        return $this->db->table(City::getTableName())->insertGetId($data);
     }
 }

@@ -25,14 +25,18 @@ class Country extends ORM
     protected array $allowedSorts = [
         'id',
         'continent',
-        'name',
+        'name_ru',
+        'name_en',
+        'name_pl',
         'iso3166alpha2',
         'iso3166alpha3',
         'iso3166numeric',
     ];
 
     protected $fillable = array(
-        'name',
+        'name_ru',
+        'name_en',
+        'name_pl',
         'iso3166alpha2',
         'iso3166alpha3',
         'iso3166numeric',
