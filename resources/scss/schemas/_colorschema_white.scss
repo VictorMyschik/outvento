@@ -112,18 +112,21 @@
   color: #001c3d;
 }
 
-.stock-item-of-list:hover {
-  color: #000000;
-  background-color: rgba(218, 218, 218, 0.6);
+.auth-card {
+    background-color: #f8f8f8;
+    opacity: 0.8;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    padding: 20px;
+    margin-top: 20px;
 }
 
-
-.selected-row {
-  color: white;
-  background-color: rgba(180, 180, 180, 0.6);
+.mr-background-form {
+    background-color: #f8f8f8;
+    opacity: 0.9;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    padding: 20px;
+    margin-top: 20px;
 }
 
-.mr-left-side {
-  background: rgb(234, 241, 242);
-  background: linear-gradient(150deg, rgb(161, 229, 255) 10%, rgb(234, 241, 242) 100%, rgb(155, 226, 252) 18%, rgb(242, 238, 234) 100%);
-}

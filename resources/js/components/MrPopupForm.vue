@@ -1,16 +1,16 @@
-<template  style="z-index: 9999;">
+<template style="z-index: 9999;">
   <span>
     <span v-if="showModal">
       <transition name="modal fade">
         <div class="modal-mask">
           <div class="modal-wrapper">
             <div class="modal-dialog mw-100" :class="size" role="document">
-              <div class="modal-content">
+              <div class="modal-content mr-background-form">
                 <div class="p-b-25 modal-header shadow btn-panel"
                      style="height: 30px; border-radius: 0; border-color: #a34701">
-                  <h6 class=" mr-bold">{{ title }}</h6>
+                  <span class=" mr-bold">{{ title }}</span>
                   <button type="button" class="mr-btn-primary fa fa-window-close" @click="showModal = false"
-                          data-dismiss="modal" aria-label="Close"></button>
+                          data-dismiss="modal" aria-label="Close" style="margin-left: auto;"></button>
                 </div>
                 <div class="modal-body">
                   <form action="#" method="post" v-on:submit.prevent="MrSave" id="frm">

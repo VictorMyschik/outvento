@@ -4,6 +4,9 @@
             <span class="mr-nav-link-color">My Travel</span>
         </a>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto">
+
+            </ul>
             <ul class="navbar-nav ml-auto">
                 @guest
                     <li class="nav-item">

@@ -3,7 +3,7 @@
     @include('layouts.mr_nav')
     <div class="container m-t-10">
         <div class="row justify-content-center">
-            <div class="col-md-8">
+            <div class="col-md-8 auth-card">
 
                 <div class="card-body">
                     <h5>{{__('mr-t.login')}}</h5>

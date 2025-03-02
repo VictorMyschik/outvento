@@ -29,11 +29,11 @@
             </div>
         </div>
 
-        <div class="container mt-5">
+        <div class="container mt-5 ">
             <a data-bs-toggle="collapse" href="#feedback" aria-expanded="true" class="mr-color-black mr-bold">
                 Feedback <h3 class="form-group">{{__('mr-t.feedback_2')}}</h3>
             </a>
-            <div id="feedback" class="collapse show in">
+            <div id="feedback" class="collapse show in mt-4">
                 <form action="{{route('feedback')}}" method="post">
                     @csrf
                     <label for="name"
@@ -43,14 +43,14 @@
                     <label for="email" class="form-group col-md-6 padding-horizontal-0 mr-bold">Email
                         <input required type="email" name="email" class="form-control mr_bg_input"></label>
 
-                    <div class="form-group">
+                    <div class="form-group mt-3">
                         <label for="message" class="mr-bold">{{__('mr-t.message')}}</label>
                         <textarea required name="message" id="message" cols="30" rows="10"
                                   class="form-control mr_bg_input"></textarea>
                     </div>
 
-                    <div class="form-group">
-                        <input type="submit" value="{{__('mr-t.feedback_form_send')}}" class="btn btn-primary">
+                    <div class="form-group mt-3">
+                        <input type="submit" value="{{__('mr-t.feedback_form_send')}}" class="mr-btn-success">
                     </div>
                     <br>
                 </form>

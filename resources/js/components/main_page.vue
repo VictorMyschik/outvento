@@ -2,21 +2,23 @@
     <div class="container border">
         <div class="row col-md-12 justify-content-center">
             <div class="mt-5">
-                <vSelect :options="counties"
+                <v_select :options="counties"
                          v-model="country"
                          placeholder="Select Country"
                          aria-autocomplete="inline"
                 >
-                </vSelect>
+                </v_select>
             </div>
         </div>
     </div>
 </template>
+
 <script>
-import vSelect from 'vue-select'
+import v_select from 'vue-select';
+
 export default {
     components: {
-        vSelect,
+        v_select
     },
     name: 'main_page',
     data() {
@@ -51,6 +53,5 @@ export default {
 }
 </script>
 <style>
-@import "vue-select/dist/vue-select.css";
 
 </style>

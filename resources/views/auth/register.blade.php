@@ -3,16 +3,16 @@
     @include('layouts.mr_nav')
     <div class="container m-t-10">
         <div class="row justify-content-center">
-            <div class="col-md-8">
+            <div class="col-md-8 auth-card">
 
                 <div class="card-body">
-                    <h5>{{__('mr-t.Register')}}</h5>
+                    <h5>{{__('mr-t.register')}}</h5>
                     <hr>
                     <form method="POST" action="{{ route('register') }}">
                         @csrf
 
                         <div class="row mb-3">
-                            <label for="name" class="col-md-4 col-form-label text-md-end">{{ __('mr-t.Name') }}</label>
+                            <label for="name" class="col-md-4 col-form-label text-md-end">{{ __('mr-t.name') }}</label>
 
                             <div class="col-md-6">
                                 <input id="name" type="text" class="form-control @error('name') is-invalid @enderror"
@@ -62,7 +62,7 @@
 
                         <div class="row mb-3">
                             <label for="password-confirm"
-                                   class="col-md-4 col-form-label text-md-end">{{ __('mr-t.Confirm Password') }}</label>
+                                   class="col-md-4 col-form-label text-md-end">{{ __('Confirm Password') }}</label>
 
                             <div class="col-md-6">
                                 <input id="password-confirm" type="password" class="form-control"

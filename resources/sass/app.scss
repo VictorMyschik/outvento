@@ -5,9 +5,7 @@
 @import 'variables';
 
 // Bootstrap
-@import "~bootstrap-vue/node_modules/bootstrap/scss/bootstrap.scss";
-@import '~bootstrap-vue/src/index.scss';
-
+@import '~bootstrap/scss/bootstrap';
 @import '~@fortawesome/fontawesome-free/scss/fontawesome';
 @import '~@fortawesome/fontawesome-free/scss/regular';
 @import '~@fortawesome/fontawesome-free/scss/solid';

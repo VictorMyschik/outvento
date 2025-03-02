@@ -7,6 +7,7 @@ import nav_bar from './components/nav_bar.vue';
 import account_travel_list from './components/account/travel/page.vue';
 import new_travel from './components/account/travel/new_travel.vue';
 import v_select from "vue-select";
+import 'vue-select/dist/vue-select.css';
 
 const app = createApp({
     components: {
