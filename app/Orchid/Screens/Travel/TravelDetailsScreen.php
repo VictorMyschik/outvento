@@ -8,14 +8,13 @@ use App\Models\Travel\Travel;
 use App\Models\Travel\TravelType;
 use App\Models\Travel\UIT;
 use App\Models\User;
-use App\Orchid\Layouts\Lego\ActionDeleteModelLayout;
 use App\Orchid\Layouts\Travel\InviteByEmailEditLayout;
 use App\Orchid\Layouts\Travel\InviteListLayout;
 use App\Orchid\Layouts\Travel\TravelEditLayout;
 use App\Services\Email\EmailService;
 use App\Services\Travel\Enum\TravelStatus;
-use App\Services\Travel\Enum\UITStatus;
 use App\Services\Travel\Enum\TravelVisibleType;
+use App\Services\Travel\Enum\UITStatus;
 use App\Services\Travel\TravelService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -29,6 +28,7 @@ use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Label;
 use Orchid\Screen\Fields\Quill;
 use Orchid\Screen\Fields\Select;
+use Orchid\Screen\Fields\TextArea;
 use Orchid\Screen\Fields\ViewField;
 use Orchid\Screen\Layouts\Rows;
 use Orchid\Screen\Layouts\Tabs;
@@ -57,7 +57,7 @@ class TravelDetailsScreen extends Screen
 
     public function description(): ?string
     {
-        return View('admin.created_updated', ['model' => $this->travel])->toHtml();
+        return '';
     }
 
     public function commandBar(): iterable
@@ -83,7 +83,10 @@ class TravelDetailsScreen extends Screen
         $out[] = Layout::modal('new_invite_email_modal', InviteByEmailEditLayout::class);
 
         $out[] = Layout::rows([
-            ActionDeleteModelLayout::getActionButtons('удалить'),
+            Group::make([
+                ViewField::make('')->view('admin.created_updated')->value($this->travel),
+                Button::make('Clear')->confirm('Удалить?')->class('mr-btn-danger pull-right')->name('Delete')->method('remove')->novalidate(),
+            ])->fullWidth()
         ]);
 
         return $out;
@@ -95,12 +98,25 @@ class TravelDetailsScreen extends Screen
             Group::make([
                 Select::make('travel.status')->title('Общий статус')->required()->options(TravelStatus::getSelectList()),
                 Select::make('travel.visible_type')->title('Видимость')->required()->empty('Select travel public type')->options(TravelVisibleType::getSelectList()),
-                Select::make('travel.travel_type_id')->title('Тип')->required()->empty('Select travel type')->options(TravelType::all()->pluck('name', 'id')->toArray()),
+                Select::make('travel.travel_type_id')->title('Тип')->required()->empty('Select travel type')->fromModel(TravelType::class, 'name_ru'),
                 Select::make('travel.country_id')->title('Страна')->required()->empty('Select country')->options(Country::all()->pluck('name_ru', 'id')->toArray()),
             ]),
             ViewField::make('')->view('space'),
             Input::make('travel.title')->title('Заголовок')->required()->maxlength(255),
+            TextArea::make('travel.preview')->title('Короткое описание')->rows(5)->maxlength(500),
             ViewField::make('')->view('space'),
+            Group::make([
+                Input::make('travel.date_from')
+                    ->title('Date from')
+                    ->required()
+                    ->type('date'),
+
+                Input::make('travel.date_to')
+                    ->title('Date to')
+                    ->required()
+                    ->type('date'),
+                Input::make('travel.members')->title('Макс. участников')->type('number'),
+            ]),
             Group::make([
                 Select::make('travel.user_id')->title('Владелец')->required()->options(User::all()->pluck('name', 'id')->toArray()),
                 Label::make('travel.public_id')->title('Публичный ID')->value($this->travel->getPublicId()),
@@ -197,6 +213,8 @@ class TravelDetailsScreen extends Screen
             'travel.country_id'     => 'required|integer',
             'travel.travel_type_id' => 'required|integer',
             'travel.visible_type'   => 'required|integer',
+            'travel.preview'        => 'nullable|string|max:500',
+            'travel.members'        => 'nullable|integer',
         ])['travel'];
 
         $this->travelService->updateTravel($this->travel->id(), $data);

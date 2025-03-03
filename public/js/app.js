@@ -26255,21 +26255,21 @@ var _hoisted_3 = {
   "class": "modal-wrapper"
 };
 var _hoisted_4 = {
-  "class": "modal-content mr-background-form"
+  "class": "modal-content mr-background-form pt-0 px-1"
 };
 var _hoisted_5 = {
-  "class": "p-b-25 modal-header shadow btn-panel",
+  "class": "p-1 modal-header shadow btn-panel",
   style: {
-    "height": "30px",
-    "border-radius": "0",
+    "height": "auto",
+    "vertical-align": "center",
     "border-color": "#a34701"
   }
 };
 var _hoisted_6 = {
-  "class": "mr-bold"
+  "class": "px-3 pt-2"
 };
 var _hoisted_7 = {
-  "class": "modal-body"
+  "class": "modal-body py-3 px-3"
 };
 var _hoisted_8 = {
   key: 0,
@@ -26300,7 +26300,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
         "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["modal-dialog mw-100", $data.size]),
         role: "document"
-      }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_6, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.title), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+      }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h4", _hoisted_6, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.title), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
         type: "button",
         "class": "mr-btn-primary fa fa-window-close",
         onClick: _cache[0] || (_cache[0] = function ($event) {
@@ -33018,7 +33018,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.modal-mask[data-v-6869a4d0] {\n    position: fixed;\n    z-index: 9998;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    webkit-transform: translate3d(0, 0, 0) !important;\n    background-color: rgba(0, 0, 0, .5);\n    display: table;\n    transition: opacity 5s ease;\n}\n.modal-wrapper[data-v-6869a4d0] {\n    display: table-cell;\n    vertical-align: middle;\n}\n.modal-body[data-v-6869a4d0] {\n    overflow-y: auto;\n    max-height: 75vh;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.modal-mask[data-v-6869a4d0] {\n    position: fixed;\n    z-index: 9998;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    webkit-transform: translate3d(0, 0, 0) !important;\n    background-color: rgba(0, 0, 0, .5);\n    display: table;\n    transition: opacity 0.3s ease;\n}\n.modal-wrapper[data-v-6869a4d0] {\n    display: table-cell;\n    vertical-align: middle;\n}\n.modal-body[data-v-6869a4d0] {\n    overflow-y: auto;\n    max-height: 75vh;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 

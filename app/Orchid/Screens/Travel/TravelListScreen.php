@@ -71,6 +71,8 @@ class TravelListScreen extends Screen
             'travel.country_id'     => 'required|integer',
             'travel.travel_type_id' => 'required|integer',
             'travel.visible_type'   => 'required|integer',
+            'travel.date_from'      => 'required|date|before:travel.date_to',
+            'travel.date_to'        => 'required|date|after:travel.date_from',
         ])['travel'];
 
         if ($id > 0) {

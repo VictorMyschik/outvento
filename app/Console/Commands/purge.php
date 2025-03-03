@@ -76,7 +76,8 @@ class purge extends Command
             'cron',
             'translates',
             'countries',
-            'travel_types'
+            'travel_types',
+            'travels',
         ];
 
         foreach ($tableList as $tableName) {

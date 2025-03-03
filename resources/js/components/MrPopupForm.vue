@@ -5,14 +5,14 @@
         <div class="modal-mask">
           <div class="modal-wrapper">
             <div class="modal-dialog mw-100" :class="size" role="document">
-              <div class="modal-content mr-background-form">
-                <div class="p-b-25 modal-header shadow btn-panel"
-                     style="height: 30px; border-radius: 0; border-color: #a34701">
-                  <span class=" mr-bold">{{ title }}</span>
+              <div class="modal-content mr-background-form pt-0 px-1">
+                <div class="p-1 modal-header shadow btn-panel"
+                     style="height: auto; vertical-align: center; border-color: #a34701">
+                    <h4 class="px-3 pt-2">{{ title }}</h4>
                   <button type="button" class="mr-btn-primary fa fa-window-close" @click="showModal = false"
                           data-dismiss="modal" aria-label="Close" style="margin-left: auto;"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body py-3 px-3">
                   <form action="#" method="post" v-on:submit.prevent="MrSave" id="frm">
                     <input type="hidden" name="_method" value="put">
                     <div class="mr-bold mr-middle" v-if="load_data">Загрузка данных <i
