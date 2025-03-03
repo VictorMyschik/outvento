@@ -26156,7 +26156,8 @@ __webpack_require__.r(__webpack_exports__);
       travelTypePlaceholder: null,
       date_from: null,
       date_to: null,
-      searchResultList: null
+      searchResultList: null,
+      runSearch: false
     };
   },
   created: function created() {
@@ -26171,9 +26172,11 @@ __webpack_require__.r(__webpack_exports__);
         dateFrom: this.date_from,
         dateTo: this.date_to
       };
+      this.runSearch = true;
       axios.post(this.urlList['api.travels.search'], data).then(function (response) {
         _this.buildTravelResultList(response.data.content);
       });
+      this.runSearch = false;
     },
     buildTravelResultList: function buildTravelResultList(data) {
       if (!data.length) {
@@ -26535,15 +26538,23 @@ var _hoisted_2 = {
 };
 var _hoisted_3 = {
   key: 0,
-  "class": "row justify-content-center mr-background-form"
+  "class": "fa fa-spinner fa-spin"
 };
 var _hoisted_4 = {
-  "class": "result-item-container"
+  key: 0,
+  "class": "row justify-content-center mr-background-form"
 };
 var _hoisted_5 = {
-  "class": "result-item-block"
+  key: 1,
+  "class": "row justify-content-center mr-background-form"
 };
 var _hoisted_6 = {
+  "class": "result-item-container"
+};
+var _hoisted_7 = {
+  "class": "result-item-block"
+};
+var _hoisted_8 = {
   "class": "text-muted"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
@@ -26584,8 +26595,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       return $options.search && $options.search.apply($options, arguments);
     }),
     "class": "col mr-btn-primary mx-2 my-1"
-  }, "search")]), $data.searchResultList ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.searchResultList, function (travel) {
-    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(travel['title']), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(travel['preview']), 1 /* TEXT */)]);
+  }, [$data.runSearch ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("i", _hoisted_3)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), _cache[5] || (_cache[5] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("search"))])]), $data.runSearch ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_4, _cache[6] || (_cache[6] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+    "class": "fa fa-spinner fa-spin"
+  }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" searching")], -1 /* HOISTED */)]))) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $data.searchResultList ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.searchResultList, function (travel) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(travel['title']), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(travel['preview']), 1 /* TEXT */)]);
   }), 256 /* UNKEYED_FRAGMENT */))])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]);
 }
 

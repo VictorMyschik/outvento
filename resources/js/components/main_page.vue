@@ -17,7 +17,11 @@
             </v_select>
             <input type="date" v-model="date_from" class="col mx-2 my-1" style="">
             <input type="date" v-model="date_to" class="col mx-2 my-1">
-            <button @click="search" class="col mr-btn-primary mx-2 my-1">search</button>
+            <button @click="search" class="col mr-btn-primary mx-2 my-1"><i v-if="runSearch" class="fa fa-spinner fa-spin"></i>search</button>
+        </div>
+
+        <div v-if="runSearch" class="row justify-content-center mr-background-form">
+            <span><i class="fa fa-spinner fa-spin"></i> searching</span>
         </div>
 
         <div v-if="searchResultList" class="row justify-content-center mr-background-form">
@@ -57,6 +61,7 @@ export default {
             date_to: null,
 
             searchResultList: null,
+            runSearch: false,
         }
     },
     created: function () {
@@ -70,10 +75,12 @@ export default {
                 dateFrom: this.date_from,
                 dateTo: this.date_to,
             };
+            this.runSearch = true;
             axios.post(this.urlList['api.travels.search'], data).then(response => {
                     this.buildTravelResultList(response.data.content);
                 }
             );
+            this.runSearch = false;
         },
         buildTravelResultList: function (data) {
             if (!data.length) {
