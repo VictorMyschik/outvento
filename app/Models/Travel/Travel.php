@@ -31,7 +31,7 @@ class Travel extends ORM
     protected array $allowedSorts = [
         'id',
         'title',
-        'description',
+        'preview',
         'status',
         'user_id',
         'country_id',
@@ -49,6 +49,11 @@ class Travel extends ORM
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
     ];
+
+    public function getPreview(): ?string
+    {
+        return $this->preview;
+    }
 
     public function getVisibleType(): TravelVisibleType
     {

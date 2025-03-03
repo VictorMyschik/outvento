@@ -1,21 +1,31 @@
 <template>
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col mt-5">
-                <v_select :options="counties"
-                          v-model="country"
-                          :placeholder="countryPlaceholder"
-                          aria-autocomplete="inline"
-                >
-                </v_select>
-            </div>
-            <div class="col mt-5">
-                <v_select :options="travelTypes"
-                          v-model="travelType"
-                          :placeholder="travelTypePlaceholder"
-                          aria-autocomplete="inline"
-                >
-                </v_select>
+        <div class="row justify-content-center mr-background-form">
+            <v_select :options="counties"
+                      v-model="country"
+                      :placeholder="countryPlaceholder"
+                      aria-autocomplete="inline"
+                      class="col my-1"
+            >
+            </v_select>
+            <v_select :options="travelTypes"
+                      v-model="travelType"
+                      :placeholder="travelTypePlaceholder"
+                      aria-autocomplete="inline"
+                      class="col my-1"
+            >
+            </v_select>
+            <input type="date" v-model="date_from" class="col mx-2 my-1" style="">
+            <input type="date" v-model="date_to" class="col mx-2 my-1">
+            <button @click="search" class="col mr-btn-primary mx-2 my-1">search</button>
+        </div>
+
+        <div v-if="searchResultList" class="row justify-content-center mr-background-form">
+            <div class="result-item-container">
+                <div v-for="travel in searchResultList" class="result-item-block">
+                    <div>{{ travel['title'] }}</div>
+                    <div class="text-muted">{{ travel['preview'] }}</div>
+                </div>
             </div>
         </div>
     </div>
@@ -33,6 +43,7 @@ export default {
         return {
             urlList: {
                 "api.reference.full": "/api/reference/full",
+                "api.travels.search": "/api/travels/search",
             },
             country: null,
             counties: [],
@@ -41,12 +52,41 @@ export default {
             travelType: null,
             travelTypes: [],
             travelTypePlaceholder: null,
+
+            date_from: null,
+            date_to: null,
+
+            searchResultList: null,
         }
     },
     created: function () {
         this.getForm();
     },
     methods: {
+        search: function () {
+            let data = {
+                country: this.country ? this.country.id : null,
+                travelType: this.travelType ? this.travelType.id : null,
+                dateFrom: this.date_from,
+                dateTo: this.date_to,
+            };
+            axios.post(this.urlList['api.travels.search'], data).then(response => {
+                    this.buildTravelResultList(response.data.content);
+                }
+            );
+        },
+        buildTravelResultList: function (data) {
+            if (!data.length) {
+                this.searchResultList = [{
+                    title: 'Not found',
+                    preview: '',
+                }];
+
+                return;
+            }
+
+            this.searchResultList = data;
+        },
         getForm: function () {
             axios.post(this.urlList['api.reference.full']).then(response => {
                     this.buildCountries(response.data.content.countries);
@@ -58,7 +98,6 @@ export default {
             this.countryPlaceholder = data['title'];
 
             for (let key in data.options) {
-                console.log(data.options[key]);
                 this.counties.push({
                     label: data.options[key],
                     id: key,
@@ -78,6 +117,34 @@ export default {
     },
 }
 </script>
-<style>
+<style scoped>
+.result-item-container {
+    display: block;
+}
 
+.result-item-block {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 8px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.result-item-block:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.result-item-title {
+    font-size: 1.25em;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.result-item-preview {
+    font-size: 1em;
+    color: #666;
+}
 </style>

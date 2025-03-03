@@ -10,7 +10,7 @@ return new class extends Migration {
         Schema::create('travels', function (Blueprint $table) {
             $table->id();
             $table->string('title')->index();
-            $table->string('preview', 500)->nullable()->index();
+            $table->string('preview', 350)->nullable()->index();
             $table->text('description')->nullable();
             $table->tinyInteger('status')->index();
             $table->unsignedBigInteger('country_id')->index();

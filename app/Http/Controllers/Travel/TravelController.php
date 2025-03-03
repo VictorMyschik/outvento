@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Travel;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Travel\Request\CreateTravelRequest;
+use App\Http\Controllers\Travel\Request\SearchRequest;
 use App\Http\Controllers\Travel\Request\TravelDetailsRequest;
 use App\Http\Controllers\Travel\Request\UpdateTravelRequest;
 use App\Http\Controllers\Travel\Validation\TravelValidation;
@@ -77,6 +78,13 @@ final class TravelController extends Controller
     {
         return $this->successResult(
             $this->travelApiService->getPublicTravelList($request->user(), $this->getLanguage())
+        );
+    }
+
+    public function searchTravels(SearchRequest $request): JsonResponse
+    {
+        return $this->successResult(
+            $this->travelApiService->searchTravels($request->validated(), $this->getLanguage(), $request->user())
         );
     }
 

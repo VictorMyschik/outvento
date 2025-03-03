@@ -15,6 +15,7 @@ final readonly class TravelDetailsResponse
     public function __construct(
         public int                   $id,
         public string                $title,
+        public ?string               $preview,
         public ?string               $description,
         public TravelStatusComponent $status,
         public TravelVisibleType     $visible_kind,

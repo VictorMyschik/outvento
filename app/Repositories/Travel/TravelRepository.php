@@ -43,6 +43,24 @@ class TravelRepository extends DatabaseRepository implements TravelRepositoryInt
         }
 
         // Filtering
+        if (!empty($filter['country'])) {
+            $query->where('country_id', (int)$filter['country']);
+        }
+
+        if (!empty($filter['travelType'])) {
+            $query->where('travel_type_id', (int)$filter['travelType']);
+        }
+
+        if (!empty($filter['dateFrom'])) {
+            $dateFrom = \DateTime::createFromFormat('Y-m-d', $filter['dateFrom']);
+            $query->where('date_from', '>=', $dateFrom->format('Y-m-d'));
+        }
+
+        if (!empty($filter['dateTo'])) {
+            $dateTo = \DateTime::createFromFormat('Y-m-d', $filter['dateTo']);
+            $query->where('date_to', '<=', $dateTo->format('Y-m-d'));
+        }
+
 
         return $query->get()->all();
     }

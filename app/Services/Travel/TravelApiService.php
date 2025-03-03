@@ -24,6 +24,21 @@ final readonly class TravelApiService
         private TravelRepositoryInterface $travelRepository,
     ) {}
 
+    public function searchTravels(array $input, Language $language, ?User $user): array
+    {
+        $out = [];
+
+        if (empty($input['dateFrom'])) {
+            $input['dateFrom'] = now()->toDateString();
+        }
+
+        foreach ($this->travelRepository->getPublicList($user, $input) as $travel) {
+            $out[] = $this->getTravelDetailsResponse($travel, $language);
+        }
+
+        return $out;
+    }
+
     public function getPublicTravelList(?User $user, Language $language): array
     {
         $out = [];
@@ -64,6 +79,7 @@ final readonly class TravelApiService
         return new TravelDetailsResponse(
             id: $travel->id(),
             title: $travel->getTitle(),
+            preview: $travel->getPreview(),
             description: $travel->getDescription(),
             status: new TravelStatusComponent(
                 key: $travel->getStatus()->value,

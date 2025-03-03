@@ -7,8 +7,9 @@ use App\Http\Controllers\Travel\TravelController;
 use Illuminate\Support\Facades\Route;
 
 
-Route::group(['prefix' => 'travel'], function () {
+Route::group(['prefix' => 'travels'], function () {
     // Create Travel
+    Route::post('search', [TravelController::class, 'searchTravels'])->name('api.travels.search');
     Route::post('list', [TravelController::class, 'getList'])->name('api.travel.list');
     Route::post('create', [TravelController::class, 'create'])->name('api.travel.create');
     Route::post('update', [TravelController::class, 'update'])->name('api.travel.update');

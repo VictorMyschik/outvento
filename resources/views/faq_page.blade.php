@@ -50,7 +50,7 @@
                     </div>
 
                     <div class="form-group mt-3">
-                        <input type="submit" value="{{__('mr-t.feedback_form_send')}}" class="mr-btn-success">
+                        <input type="submit" value="{{__('mr-t.feedback_form_send')}}" class="mr-btn-primary">
                     </div>
                     <br>
                 </form>
