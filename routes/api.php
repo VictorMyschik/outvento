@@ -29,5 +29,6 @@ Route::group(['prefix' => 'travel'], function () {
 });
 
 Route::group(['prefix' => 'reference'], function () {
-    Route::post('/country/list', [ReferenceController::class, 'getCountryList'])->name('api.reference.country.list');
+    Route::post('/full', [ReferenceController::class, 'getFullReferences'])->name('api.reference.full');
+    Route::post('/country/list', [ReferenceController::class, 'getUsingCountryList'])->name('api.reference.country.list');
 });

@@ -17,6 +17,11 @@ final readonly class ReferenceService
         return $this->repository->getCountrySelectList($language);
     }
 
+    public function getUsingCountrySelectList(Language $language): array
+    {
+        return $this->repository->getUsingCountrySelectList($language);
+    }
+
     public function getTravelTypeSelectList(Language $language): array
     {
         return $this->repository->getTravelTypeSelectList($language);

@@ -1,11 +1,19 @@
 <template>
-    <div class="container border">
-        <div class="row col-md-12 justify-content-center">
-            <div class="mt-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col mt-5">
                 <v_select :options="counties"
-                         v-model="country"
-                         placeholder="Select Country"
-                         aria-autocomplete="inline"
+                          v-model="country"
+                          :placeholder="countryPlaceholder"
+                          aria-autocomplete="inline"
+                >
+                </v_select>
+            </div>
+            <div class="col mt-5">
+                <v_select :options="travelTypes"
+                          v-model="travelType"
+                          :placeholder="travelTypePlaceholder"
+                          aria-autocomplete="inline"
                 >
                 </v_select>
             </div>
@@ -24,11 +32,15 @@ export default {
     data() {
         return {
             urlList: {
-                "api.reference.country.list": "/api/reference/country/list",
+                "api.reference.full": "/api/reference/full",
             },
             country: null,
-            setSelected: 0,
             counties: [],
+            countryPlaceholder: null,
+
+            travelType: null,
+            travelTypes: [],
+            travelTypePlaceholder: null,
         }
     },
     created: function () {
@@ -36,19 +48,33 @@ export default {
     },
     methods: {
         getForm: function () {
-            axios.post(this.urlList['api.reference.country.list']).then(response => {
-                    this.buildCountriesOptions(response.data.content);
+            axios.post(this.urlList['api.reference.full']).then(response => {
+                    this.buildCountries(response.data.content.countries);
+                    this.buildTravelTypes(response.data.content.travelTypes);
                 }
             );
         },
-        buildCountriesOptions: function (data) {
-            for (let key in data) {
+        buildCountries: function (data) {
+            this.countryPlaceholder = data['title'];
+
+            for (let key in data.options) {
+                console.log(data.options[key]);
                 this.counties.push({
-                    label: data[key],
+                    label: data.options[key],
                     id: key,
                 });
             }
-        }
+        },
+        buildTravelTypes: function (data) {
+            this.travelTypePlaceholder = data['title'];
+
+            for (let key in data.options) {
+                this.travelTypes.push({
+                    label: data.options[key],
+                    id: key,
+                });
+            }
+        },
     },
 }
 </script>

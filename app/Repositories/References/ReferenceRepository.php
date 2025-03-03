@@ -6,6 +6,7 @@ namespace App\Repositories\References;
 
 use App\Models\Reference\City;
 use App\Models\Reference\Country;
+use App\Models\Travel\Travel;
 use App\Models\Travel\TravelType;
 use App\Repositories\DatabaseRepository;
 use App\Services\References\ReferenceRepositoryInterface;
@@ -19,6 +20,16 @@ class ReferenceRepository extends DatabaseRepository implements ReferenceReposit
 
         return $this->db->table(Country::getTableName())
             ->orderBy($field)->pluck($field, 'id')
+            ->toArray();
+    }
+
+    public function getUsingCountrySelectList(Language $language): array
+    {
+        $field = 'name_' . $language->getCode();
+
+        return $this->db->table(Country::getTableName())
+            ->join(Travel::getTableName(), Country::getTableName() . '.id', '=', Travel::getTableName() . '.country_id')
+            ->orderBy($field)->pluck($field, Country::getTableName() . '.id')
             ->toArray();
     }
 
@@ -52,4 +63,5 @@ class ReferenceRepository extends DatabaseRepository implements ReferenceReposit
 
         return $this->db->table(City::getTableName())->insertGetId($data);
     }
+
 }

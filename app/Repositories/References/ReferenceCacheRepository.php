@@ -11,6 +11,7 @@ use Psr\SimpleCache\CacheInterface;
 final readonly class ReferenceCacheRepository implements ReferenceRepositoryInterface
 {
     private const string COUNTRIES = 'countries';
+    private const string COUNTRIES_USING = 'countries_using';
     private const string TRAVEL_TYPES = 'travel_types';
     private const string CITIES = 'cities';
 
@@ -23,6 +24,13 @@ final readonly class ReferenceCacheRepository implements ReferenceRepositoryInte
     {
         return $this->cache->rememberForever(self::COUNTRIES . $language->getCode(), function () use ($language) {
             return $this->repository->getCountrySelectList($language);
+        });
+    }
+
+    public function getUsingCountrySelectList(Language $language): array
+    {
+        return $this->cache->rememberForever(self::COUNTRIES_USING . $language->getCode(), function () use ($language) {
+            return $this->repository->getUsingCountrySelectList($language);
         });
     }
 

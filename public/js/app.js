@@ -26145,11 +26145,14 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       urlList: {
-        "api.reference.country.list": "/api/reference/country/list"
+        "api.reference.full": "/api/reference/full"
       },
       country: null,
-      setSelected: 0,
-      counties: []
+      counties: [],
+      countryPlaceholder: null,
+      travelType: null,
+      travelTypes: [],
+      travelTypePlaceholder: null
     };
   },
   created: function created() {
@@ -26158,14 +26161,26 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     getForm: function getForm() {
       var _this = this;
-      axios.post(this.urlList['api.reference.country.list']).then(function (response) {
-        _this.buildCountriesOptions(response.data.content);
+      axios.post(this.urlList['api.reference.full']).then(function (response) {
+        _this.buildCountries(response.data.content.countries);
+        _this.buildTravelTypes(response.data.content.travelTypes);
       });
     },
-    buildCountriesOptions: function buildCountriesOptions(data) {
-      for (var key in data) {
+    buildCountries: function buildCountries(data) {
+      this.countryPlaceholder = data['title'];
+      for (var key in data.options) {
+        console.log(data.options[key]);
         this.counties.push({
-          label: data[key],
+          label: data.options[key],
+          id: key
+        });
+      }
+    },
+    buildTravelTypes: function buildTravelTypes(data) {
+      this.travelTypePlaceholder = data['title'];
+      for (var key in data.options) {
+        this.travelTypes.push({
+          label: data.options[key],
           id: key
         });
       }
@@ -26488,13 +26503,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
 
 var _hoisted_1 = {
-  "class": "container border"
+  "class": "container"
 };
 var _hoisted_2 = {
-  "class": "row col-md-12 justify-content-center"
+  "class": "row justify-content-center"
 };
 var _hoisted_3 = {
-  "class": "mt-5"
+  "class": "col mt-5"
+};
+var _hoisted_4 = {
+  "class": "col mt-5"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_v_select = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("v_select");
@@ -26504,9 +26522,17 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "onUpdate:modelValue": _cache[0] || (_cache[0] = function ($event) {
       return $data.country = $event;
     }),
-    placeholder: "Select Country",
+    placeholder: $data.countryPlaceholder,
     "aria-autocomplete": "inline"
-  }, null, 8 /* PROPS */, ["options", "modelValue"])])])]);
+  }, null, 8 /* PROPS */, ["options", "modelValue", "placeholder"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_v_select, {
+    options: $data.travelTypes,
+    modelValue: $data.travelType,
+    "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
+      return $data.travelType = $event;
+    }),
+    placeholder: $data.travelTypePlaceholder,
+    "aria-autocomplete": "inline"
+  }, null, 8 /* PROPS */, ["options", "modelValue", "placeholder"])])])]);
 }
 
 /***/ }),
