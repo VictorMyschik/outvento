@@ -25,6 +25,9 @@
         <div v-if="runSearch" class="row justify-content-center mr-background-form">
             <span><i class="fa fa-spinner fa-spin"></i> searching</span>
         </div>
+        <div v-if="searchResultList" class="row justify-content-center mr-background-form">
+        {{lang['filter']}}
+        </div>
 
         <div v-if="searchResultList" class="row justify-content-center mr-background-form">
             <div class="result-item-container">
@@ -147,6 +150,8 @@ export default {
 <style scoped>
 .result-item-container {
     display: block;
+    max-height: 85vh;
+    overflow-y: auto;
 }
 
 .result-item-block {

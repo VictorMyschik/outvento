@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 // use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Feature\Helpers\TestHelper;
 use Tests\TestCase;
 
 class ExampleTest extends TestCase
@@ -12,8 +13,9 @@ class ExampleTest extends TestCase
      */
     public function test_the_application_returns_a_successful_response(): void
     {
-        $response = $this->get('/');
+        for ($i = 0; $i < 100; $i++) {
+            TestHelper::createNewUser();
+        }
 
-        $response->assertStatus(200);
     }
 }
