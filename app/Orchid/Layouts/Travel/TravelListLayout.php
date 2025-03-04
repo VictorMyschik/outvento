@@ -28,6 +28,7 @@ class TravelListLayout extends Table
             ),
 
             TD::make('status', 'Status')->render(fn(Travel $travel) => $travel->getStatus()->getLabel()),
+            TD::make('members', 'Max members')->sort(),
 
             TD::make('user_id', 'User')->render(fn(Travel $travel) => $travel->getUser()->name),
 

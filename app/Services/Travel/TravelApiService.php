@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace App\Services\Travel;
 
 use App\Http\Controllers\Response\Components\CountryContinentComponent;
+use App\Http\Controllers\Response\Components\MembersComponent;
+use App\Http\Controllers\Response\Components\TravelTypeComponent;
 use App\Http\Controllers\Response\CountryResponse;
-use App\Http\Controllers\Response\TravelTypeResponse;
 use App\Http\Controllers\Travel\Response\Components\TravelImageComponent;
 use App\Http\Controllers\Travel\Response\Components\TravelStatusComponent;
 use App\Http\Controllers\Travel\Response\Components\TravelUserComponent;
@@ -101,14 +102,20 @@ final readonly class TravelApiService
                     short_name: $travel->getCountry()->getContinentShortName(),
                 ),
             ),
-            travelType: new TravelTypeResponse(
+            travelType: new TravelTypeComponent(
                 id: $travel->getTravelType()->id(),
                 name: $travel->getTravelType()->getName($language),
-                icon: $travel->getTravelType()->getIcon(),
+                icon: $travel->getTravelType()->getImageUrl(),
             ),
             dateFrom: $travel->getDateFrom()->format('d.M.Y'),
             dateTo: $travel->getDateTo()->format('d.M.Y'),
+            members: new MembersComponent(
+                maxMember: $travel->getMaxMembers(),
+                existsMembers: $travel->getMembers(),
+                title: __('mr-t.travel_members'),
+            ),
             images: $images,
+            owner: $travel->getUser()->name,
         );
     }
 }

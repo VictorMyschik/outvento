@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Travel\Response;
 
+use App\Http\Controllers\Response\Components\MembersComponent;
+use App\Http\Controllers\Response\Components\TravelTypeComponent;
 use App\Http\Controllers\Response\CountryResponse;
-use App\Http\Controllers\Response\TravelTypeResponse;
 use App\Http\Controllers\Travel\Response\Components\TravelStatusComponent;
 use App\Http\Controllers\Travel\Response\Components\TravelUserComponent;
 use App\Http\Controllers\Travel\Response\Components\TravelVisibleType;
@@ -21,9 +22,11 @@ final readonly class TravelDetailsResponse
         public TravelVisibleType     $visibleType,
         public TravelUserComponent   $user,
         public CountryResponse       $country,
-        public TravelTypeResponse    $travelType,
+        public TravelTypeComponent   $travelType,
         public string                $dateFrom,
         public ?string               $dateTo,
+        public MembersComponent      $members,
         public array                 $images, // TravelImageComponent[]
+        public string                $owner,
     ) {}
 }

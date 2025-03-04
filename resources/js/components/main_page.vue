@@ -17,8 +17,8 @@
             </v_select>
             <input type="date" v-model="date_from" class="col mx-2 my-1" style="">
             <input type="date" v-model="date_to" class="col mx-2 my-1">
-            <button @click="search" class="col mr-btn-primary mx-2 my-1"><i v-if="runSearch"
-                                                                            class="fa fa-spinner fa-spin"></i>search
+            <button @click="search" class="col mr-btn-primary mx-2 my-1">
+                <i v-if="runSearch" class="fa fa-spinner fa-spin"></i>search
             </button>
         </div>
 
@@ -29,17 +29,23 @@
         <div v-if="searchResultList" class="row justify-content-center mr-background-form">
             <div class="result-item-container">
                 <div v-for="travel in searchResultList" class="result-item-block">
-                    <div><b>{{ travel['title'] }}</b></div>
+                    <div>
+                        <h5>
+                            <img class="icon"
+                                 :title="travel['travelType']['name']"
+                                 :src="travel['travelType']['icon']"
+                                 :alt="travel['travelType']['name']">
+                            <span :title="travel['members']['title']">
+                                {{ travel['members']['maxMember'] }}({{ travel['members']['existsMembers'] }})
+                            </span>
+                            {{ travel['title'] }}
+                        </h5>
+                    </div>
                     <div>
                         <span>{{ travel['dateFrom'] }}</span> - <span>{{ travel['dateTo'] }}</span>
                     </div>
-                    <div>
-                        <i class="fa fa-bicycle"></i>
-                        <i class="fa fa-hiking"></i>
-                        <i class="fa fa-mountain"></i>
-                        <i class="fa fa-people-group"></i>
-                    </div>
                     <div class="text-muted">{{ travel['preview'] }}</div>
+                    <div class="text-muted">{{ lang['owner'] }}: {{ travel['owner'] }}</div>
                 </div>
             </div>
         </div>
@@ -54,6 +60,9 @@ export default {
         v_select
     },
     name: 'main_page',
+    props: [
+        'lang',
+    ],
     data() {
         return {
             urlList: {
@@ -155,14 +164,4 @@ export default {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.result-item-title {
-    font-size: 1.25em;
-    font-weight: bold;
-    margin-bottom: 8px;
-}
-
-.result-item-preview {
-    font-size: 1em;
-    color: #666;
-}
 </style>

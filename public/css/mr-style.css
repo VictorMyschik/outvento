@@ -599,6 +599,16 @@
   font-size: 1rem;
 }
 
+.icon {
+  width: 32px;
+  height: 32px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  border-radius: 30%;
+  border: 2px solid #ddd;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 .mr-table-header {
   color: #001f6c;
 }

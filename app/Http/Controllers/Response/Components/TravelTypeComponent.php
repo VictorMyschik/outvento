@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Response;
+namespace App\Http\Controllers\Response\Components;
 
-class TravelTypeResponse
+class TravelTypeComponent
 {
     public function __construct(
         public int    $id,

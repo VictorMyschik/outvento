@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Services\Travel\Enum\ImageType;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\TravelVisibleType;
+use App\Services\Travel\Enum\UITStatus;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Orchid\Filters\Filterable;
@@ -36,6 +37,7 @@ class Travel extends ORM
         'status',
         'user_id',
         'country_id',
+        'members',
         'public',
         'travel_type_id',
         'public_id',
@@ -104,6 +106,16 @@ class Travel extends ORM
     public function getDirNameForImages(): string
     {
         return self::STORAGE_PATH;
+    }
+
+    public function getMaxMembers(): ?int
+    {
+        return $this->members;
+    }
+
+    public function getMembers(): ?int
+    {
+        return UIT::where('travel_id', $this->id())->where('status', UITStatus::APPROVED->value)->count();
     }
 
     public function getFullImagesList(): array
