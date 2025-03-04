@@ -85,7 +85,7 @@ final readonly class TravelApiService
                 key: $travel->getStatus()->value,
                 name: $travel->getStatus()->getLabel(),
             ),
-            visible_kind: new TravelVisibleType(
+            visibleType: new TravelVisibleType(
                 key: $travel->getVisibleType()->value,
                 name: $travel->getVisibleType()->getLabel(),
             ),
@@ -101,12 +101,13 @@ final readonly class TravelApiService
                     short_name: $travel->getCountry()->getContinentShortName(),
                 ),
             ),
-            travel_type: new TravelTypeResponse(
+            travelType: new TravelTypeResponse(
                 id: $travel->getTravelType()->id(),
                 name: $travel->getTravelType()->getName($language),
+                icon: $travel->getTravelType()->getIcon(),
             ),
-            created_at: $travel->created_at->toAtomString(),
-            updated_at: $travel->updated_at?->toAtomString(),
+            dateFrom: $travel->getDateFrom()->format('d.M.Y'),
+            dateTo: $travel->getDateTo()->format('d.M.Y'),
             images: $images,
         );
     }

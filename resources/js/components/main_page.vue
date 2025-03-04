@@ -17,7 +17,9 @@
             </v_select>
             <input type="date" v-model="date_from" class="col mx-2 my-1" style="">
             <input type="date" v-model="date_to" class="col mx-2 my-1">
-            <button @click="search" class="col mr-btn-primary mx-2 my-1"><i v-if="runSearch" class="fa fa-spinner fa-spin"></i>search</button>
+            <button @click="search" class="col mr-btn-primary mx-2 my-1"><i v-if="runSearch"
+                                                                            class="fa fa-spinner fa-spin"></i>search
+            </button>
         </div>
 
         <div v-if="runSearch" class="row justify-content-center mr-background-form">
@@ -27,7 +29,16 @@
         <div v-if="searchResultList" class="row justify-content-center mr-background-form">
             <div class="result-item-container">
                 <div v-for="travel in searchResultList" class="result-item-block">
-                    <div>{{ travel['title'] }}</div>
+                    <div><b>{{ travel['title'] }}</b></div>
+                    <div>
+                        <span>{{ travel['dateFrom'] }}</span> - <span>{{ travel['dateTo'] }}</span>
+                    </div>
+                    <div>
+                        <i class="fa fa-bicycle"></i>
+                        <i class="fa fa-hiking"></i>
+                        <i class="fa fa-mountain"></i>
+                        <i class="fa fa-people-group"></i>
+                    </div>
                     <div class="text-muted">{{ travel['preview'] }}</div>
                 </div>
             </div>

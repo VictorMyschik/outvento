@@ -12,6 +12,7 @@ return new class extends Migration {
             $table->string('name_ru', 50);
             $table->string('name_en', 50)->nullable();
             $table->string('name_pl', 50)->nullable();
+            $table->string('image_path')->nullable();
         });
     }
 

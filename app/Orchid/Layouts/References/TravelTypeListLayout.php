@@ -17,9 +17,12 @@ class TravelTypeListLayout extends Table
     {
         return [
             TD::make('id', __('ID'))->sort(),
-            TD::make('name_ru', 'RU'),
-            TD::make('name_en', 'EN'),
-            TD::make('name_pl', 'PL'),
+            TD::make('#', 'Image')->render(function (TravelType $travelType) {
+                return View('admin.image')->with(['path' => $travelType->getImageUrl()]);
+            }),
+            TD::make('name_ru', 'RU')->sort(),
+            TD::make('name_en', 'EN')->sort(),
+            TD::make('name_pl', 'PL')->sort(),
 
             TD::make(__('Actions'))
                 ->align(TD::ALIGN_CENTER)

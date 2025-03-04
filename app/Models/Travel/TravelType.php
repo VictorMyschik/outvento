@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Models\Travel;
 
 use App\Models\Lego\Fields\NameByLanguageFieldTrait;
+use App\Models\Lego\Fields\ReferenceImageFieldTrait;
 use App\Models\ORM\ORM;
+use Illuminate\Support\Facades\Storage;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
 
@@ -14,6 +16,7 @@ class TravelType extends ORM
     use AsSource;
     use Filterable;
     use NameByLanguageFieldTrait;
+    use ReferenceImageFieldTrait;
 
     public $timestamps = false;
 
@@ -25,9 +28,8 @@ class TravelType extends ORM
         'name_pl',
     ];
 
-    protected $fillable = [
-        'name_ru',
-        'name_en',
-        'name_pl',
-    ];
+    public function afterDelete(): void
+    {
+        $this->getImagePath() && Storage::delete($this->getImagePath());
+    }
 }

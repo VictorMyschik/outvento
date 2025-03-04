@@ -18,12 +18,12 @@ final readonly class TravelDetailsResponse
         public ?string               $preview,
         public ?string               $description,
         public TravelStatusComponent $status,
-        public TravelVisibleType     $visible_kind,
+        public TravelVisibleType     $visibleType,
         public TravelUserComponent   $user,
         public CountryResponse       $country,
-        public TravelTypeResponse    $travel_type,
-        public string                $created_at,
-        public ?string               $updated_at,
+        public TravelTypeResponse    $travelType,
+        public string                $dateFrom,
+        public ?string               $dateTo,
         public array                 $images, // TravelImageComponent[]
     ) {}
 }

@@ -7,6 +7,8 @@ use App\Console\Commands\Lego\ConsoleMessagesTrait;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class purge extends Command
 {
@@ -28,7 +30,7 @@ class purge extends Command
 
         $this->refreshTables();
         $this->addPostgresTablesData();
-
+        $this->reCopyFiles();
         $this->clearCache();
 
         $this->nl();
@@ -98,5 +100,12 @@ class purge extends Command
             $this->success('Table ' . $tableName . ' is OK');
             $this->nl();
         }
+    }
+
+    private function reCopyFiles(): void
+    {
+        Storage::deleteDirectory('/images');
+        File::copyDirectory(__DIR__ . '/purge_data/files', __DIR__ . '/../../../storage/app/public');
+        shell_exec('chmod -R 777 storage/*');
     }
 }

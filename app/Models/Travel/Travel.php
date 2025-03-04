@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Services\Travel\Enum\ImageType;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\TravelVisibleType;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
@@ -41,14 +42,27 @@ class Travel extends ORM
         'visible_type',
         'created_at',
         'updated_at',
-        'deleted_at',
     ];
 
     public $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
-        'deleted_at' => 'datetime',
     ];
+
+    public function getDateFrom(): Carbon
+    {
+        return Carbon::parse($this->date_from);
+    }
+
+    public function getDateTo(): Carbon
+    {
+        return Carbon::parse($this->date_to);
+    }
+
+    public function getDuration(): float
+    {
+        return $this->getDateFrom()->diffInDays($this->getDateTo());
+    }
 
     public function getPreview(): ?string
     {

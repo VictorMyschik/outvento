@@ -5,11 +5,13 @@ namespace App\Orchid\Screens\References;
 use App\Models\Travel\TravelType;
 use App\Orchid\Layouts\References\TravelTypeEditLayout;
 use App\Orchid\Layouts\References\TravelTypeListLayout;
+use App\Orchid\Rebuild\AttachmentHelper;
 use App\Services\References\ReferenceService;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
+use Orchid\Support\Facades\Toast;
 
 class TravelTypeListScreen extends Screen
 {
@@ -56,7 +58,7 @@ class TravelTypeListScreen extends Screen
     public function asyncGetTravelTypeList(int $id = 0): array
     {
         return [
-            'travel-type' => TravelType::loadBy($id) ?: new TravelType()
+            'travel-type' => TravelType::loadBy($id)
         ];
     }
 
@@ -68,11 +70,26 @@ class TravelTypeListScreen extends Screen
             'travel-type.name_pl' => 'required|string',
         ])['travel-type'];
 
-        $this->service->saveTravelType($id, $data);
+        $attachment = AttachmentHelper::getFile($request, 'travel-type');
+
+        $this->service->saveTravelType($id, $data, $attachment?->file);
+
+        if ($attachment ?? null) {
+            $attachment->delete();
+        }
+    }
+
+    public function deleteImage(int $travelTypeId): void
+    {
+        $this->service->deleteImage(TravelType::loadByOrDie($travelTypeId));
     }
 
     public function remove(int $id): void
     {
-        TravelType::loadBy($id)?->delete();
+        try {
+            (TravelType::loadByOrDie($id))->delete();
+        } catch (\Exception $exception) {
+            Toast::info($exception->getMessage())->delay(1000);
+        }
     }
 }

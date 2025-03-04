@@ -39,4 +39,17 @@ class ORM extends Model
 
         return self::findOrFail($value);
     }
+
+    public function delete(): void
+    {
+        if (method_exists($this, 'beforeDelete')) {
+            $this->beforeDelete();
+        }
+
+        parent::delete();
+
+        if (method_exists($this, 'afterDelete')) {
+            $this->afterDelete();
+        }
+    }
 }

@@ -25,11 +25,10 @@ return new class extends Migration {
 
             $table->timestampTz('created_at')->useCurrent();
             $table->timestampTz('updated_at')->nullable()->useCurrentOnUpdate();
-            $table->timestampTz('deleted_at')->nullable();
 
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
             $table->foreign('country_id')->references('id')->on('countries')->onDelete('set null');
-            $table->foreign('travel_type_id')->references('id')->on('travel_types')->onDelete('set null');
+            $table->foreign('travel_type_id')->references('id')->on('travel_types')->restrictOnDelete();
         });
     }
 
