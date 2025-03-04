@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Travel;
+namespace App\Http\Controllers\Travel\Travel;
 
 use App\Classes\Travel\Image\ImageClass;
 use App\Classes\Validation\TravelImageValidation;

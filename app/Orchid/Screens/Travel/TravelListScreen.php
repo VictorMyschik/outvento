@@ -65,7 +65,7 @@ class TravelListScreen extends Screen
     {
         $data = $request->validate([
             'travel.title'          => 'required|string|max:255',
-            'travel.description'    => 'nullable|string|max:8000',
+            'travel.preview'        => 'nullable|string',
             'travel.status'         => 'required|integer',
             'travel.user_id'        => 'required|integer',
             'travel.country_id'     => 'required|integer',
@@ -75,6 +75,7 @@ class TravelListScreen extends Screen
             'travel.date_to'        => 'required|date|after:travel.date_from',
         ])['travel'];
 
+        $data['preview'] = substr($data['preview'], 0, 350);
         if ($id > 0) {
             $this->service->updateTravel($id, $data);
         } else {

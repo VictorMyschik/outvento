@@ -113,9 +113,9 @@ class Travel extends ORM
         return $this->members;
     }
 
-    public function getMembers(): ?int
+    public function getMembers(): int
     {
-        return UIT::where('travel_id', $this->id())->where('status', UITStatus::APPROVED->value)->count();
+        return $this->members_exists;
     }
 
     public function getFullImagesList(): array

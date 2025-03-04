@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->date('date_from')->index();
             $table->date('date_to')->index();
             $table->smallInteger('members')->nullable();
+            $table->smallInteger('members_exists')->default(0);
             $table->unsignedBigInteger('travel_type_id')->index();
             $table->string('public_id', 15)->nullable()->index();
             $table->tinyInteger('visible_type')->default(0)->index();

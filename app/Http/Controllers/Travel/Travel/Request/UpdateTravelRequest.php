@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Travel\Request;
+namespace App\Http\Controllers\Travel\Travel\Request;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use InvalidArgumentException;
 
-class CreateTravelRequest extends FormRequest
+class UpdateTravelRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -17,12 +18,13 @@ class CreateTravelRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'          => 'required|string|max:255',
+            'id'             => 'required|int|exists:travels,id',
+            'title'          => 'string|max:255',
             'description'    => 'string|max:8000',
-            'status'         => 'required|int|in:-1,1,2',
-            'country_id'     => 'required|int|exists:country,id',
-            'visible_kind'   => 'required|int|in:0,1,2',
-            'travel_type_id' => 'required|int|exists:travel_type,id',
+            'status'         => 'int|in:-1,1,2',
+            'country_id'     => 'int|exists:country,id',
+            'visible_kind'   => 'int|in:0,1,2',
+            'travel_type_id' => 'int|exists:travel_type,id',
         ];
     }
 

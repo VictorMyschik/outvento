@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Travel;
+namespace App\Http\Controllers\Travel\Travel;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Travel\Request\CreateTravelRequest;
-use App\Http\Controllers\Travel\Request\SearchRequest;
-use App\Http\Controllers\Travel\Request\TravelDetailsRequest;
-use App\Http\Controllers\Travel\Request\UpdateTravelRequest;
+use App\Http\Controllers\Travel\Travel\Request\CreateTravelRequest;
+use App\Http\Controllers\Travel\Travel\Request\SearchRequest;
+use App\Http\Controllers\Travel\Travel\Request\TravelDetailsRequest;
+use App\Http\Controllers\Travel\Travel\Request\UpdateTravelRequest;
 use App\Http\Controllers\Travel\Validation\TravelValidation;
 use App\Models\Travel\Travel;
 use App\Services\Travel\TravelApiService;

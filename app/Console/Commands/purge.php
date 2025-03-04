@@ -80,6 +80,7 @@ class purge extends Command
             'countries',
             'travel_types',
             'travels',
+            'uit',
         ];
 
         foreach ($tableList as $tableName) {

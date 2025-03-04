@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Travel\Request;
+namespace App\Http\Controllers\Travel\Travel\Request;
 
 use Illuminate\Foundation\Http\FormRequest;
 

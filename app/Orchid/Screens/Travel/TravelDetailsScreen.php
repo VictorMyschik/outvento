@@ -153,7 +153,7 @@ class TravelDetailsScreen extends Screen
 
         /** @var UIT $userInTravel */
         foreach ($list as $key => &$userInTravel) {
-            if ($userInTravel->getStatus() !== UITStatus::APPROVED) {
+            if ($userInTravel->getStatus() !== UITStatus::CONFIRMED) {
                 unset($list[$key]);
             }
 

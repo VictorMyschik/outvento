@@ -27,4 +27,7 @@ values  (1, 'account', 'Профиль', 'Account', 'Profil', '2025-02-28 09:15:
         (26, 'feedback_form_send', 'Отправить', 'Send', 'Wysłać', '2025-02-28 16:03:12 +00:00'),
         (27, 'travel_members', 'Количество участников: макс (уже есть)', 'Number of participants: max (already exists)', 'Liczba uczestników: max (już istnieje)', '2025-03-04 15:05:00 +00:00'),
         (28, 'owner', 'Владелец', 'Owner', 'Właściciel', '2025-03-04 15:34:34 +00:00'),
-        (29, 'filter', 'Фильтр', 'Filter', 'filtr', '2025-03-04 15:40:13 +00:00');
+        (29, 'filter', 'Фильтр', 'Filter', 'filtr', '2025-03-04 15:40:13 +00:00'),
+        (31, 'max_member_to', 'Максимальное количество участников до', 'Maximum number of participants until', 'Maksymalna liczba uczestników do', '2025-03-04 18:33:54 +00:00'),
+        (30, 'free_members', 'Количество свободных от', 'Number of free from', 'Liczba wolnych od', '2025-03-04 18:33:34 +00:00'),
+        (32, 'max_member_from', 'Максимальное количество участников от', 'Maximum number of participants from', 'Maksymalna liczba uczestników od', '2025-03-04 18:34:49 +00:00');

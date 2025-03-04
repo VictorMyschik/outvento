@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Travel;
+namespace App\Http\Controllers\Travel\Travel;
 
 use App\Http\Controllers\Controller;
 use App\Models\EmailInvite;
@@ -29,7 +29,7 @@ class TravelInviteController extends Controller
         if ($user) {
             Auth::login($user);
 
-            $status = $status === 'true' ? UITStatus::APPROVED : UITStatus::REJECTED;
+            $status = $status === 'true' ? UITStatus::CONFIRMED : UITStatus::REJECTED;
 
             UIT::where('travel_id', $emailInvite->getTravel()->id())->where('user_id', $user->id)->updateOrCreate([
                 'travel_id' => $emailInvite->getTravel()->id(),

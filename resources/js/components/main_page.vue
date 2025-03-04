@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <div class="row justify-content-center mr-background-form">
-            <v_select :options="counties"
+            <v_select :options="counties.sort()"
                       v-model="country"
                       :placeholder="countryPlaceholder"
                       aria-autocomplete="inline"
@@ -26,7 +26,21 @@
             <span><i class="fa fa-spinner fa-spin"></i> searching</span>
         </div>
         <div v-if="searchResultList" class="row justify-content-center mr-background-form">
-        {{lang['filter']}}
+            <div href="#filter_toggle" class="mr-cursor" data-bs-toggle="collapse"><h5>{{ lang['filter'] }}</h5></div>
+            <div id="filter_toggle" ref="filter_toggle" class="row collapse">
+                <div class="col">
+                    <label>{{ lang['max_member_from'] }}</label>
+                    <input type="number" class="form-control" v-model="maxMemberFrom">
+                </div>
+                <div class="col">
+                    <label>{{ lang['max_member_to'] }}</label>
+                    <input type="number" class="form-control" v-model="maxMemberTo">
+                </div>
+                <div class="col">
+                    <label>{{ lang['free_members'] }}</label>
+                    <input type="number" class="form-control" v-model="freeMember">
+                </div>
+            </div>
         </div>
 
         <div v-if="searchResultList" class="row justify-content-center mr-background-form">
@@ -38,7 +52,7 @@
                                  :title="travel['travelType']['name']"
                                  :src="travel['travelType']['icon']"
                                  :alt="travel['travelType']['name']">
-                            <span :title="travel['members']['title']">
+                            <span v-if="travel['members']['maxMember']" :title="travel['members']['title']">
                                 {{ travel['members']['maxMember'] }}({{ travel['members']['existsMembers'] }})
                             </span>
                             {{ travel['title'] }}
@@ -82,6 +96,9 @@ export default {
 
             date_from: null,
             date_to: null,
+            maxMemberFrom: null,
+            maxMemberTo: null,
+            freeMember: null,
 
             searchResultList: null,
             runSearch: false,
@@ -97,6 +114,9 @@ export default {
                 travelType: this.travelType ? this.travelType.id : null,
                 dateFrom: this.date_from,
                 dateTo: this.date_to,
+                maxMemberFrom: this.maxMemberFrom,
+                maxMemberTo: this.maxMemberTo,
+                freeMember: this.freeMember,
             };
             this.runSearch = true;
             axios.post(this.urlList['api.travels.search'], data).then(response => {
@@ -133,6 +153,8 @@ export default {
                     id: key,
                 });
             }
+
+            this.counties.sort((a, b) => a.label.localeCompare(b.label));
         },
         buildTravelTypes: function (data) {
             this.travelTypePlaceholder = data['title'];
@@ -143,6 +165,8 @@ export default {
                     id: key,
                 });
             }
+
+            this.travelTypes.sort((a, b) => a.label.localeCompare(b.label));
         },
     },
 }

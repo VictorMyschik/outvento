@@ -11,7 +11,9 @@ use App\Models\User;
 use App\Repositories\DatabaseRepository;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\TravelVisibleType;
+use App\Services\Travel\Enum\UITStatus;
 use App\Services\Travel\TravelRepositoryInterface;
+use Illuminate\Database\Query\Builder;
 
 class TravelRepository extends DatabaseRepository implements TravelRepositoryInterface
 {
@@ -61,6 +63,20 @@ class TravelRepository extends DatabaseRepository implements TravelRepositoryInt
             $query->where('date_to', '<=', $dateTo->format('Y-m-d'));
         }
 
+        if (!empty($filter['maxMemberFrom'])) {
+            $query->where('members', '>=', (int)$filter['maxMemberFrom']);
+        }
+
+        if (!empty($filter['maxMemberTo'])) {
+            $query->where('members', '<=', (int)$filter['maxMemberTo']);
+        }
+
+        if (!empty($filter['freeMember'])) {
+            // members-members_exists
+
+            $query->whereRaw($this->db->raw('members - members_exists >= ' . (int)$filter['freeMember']));
+
+        }
 
         return $query->get()->all();
     }

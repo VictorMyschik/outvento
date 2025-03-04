@@ -3,7 +3,10 @@
 namespace Tests\Feature;
 
 // use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\Feature\Helpers\TestHelper;
+use App\Models\Travel\Travel;
+use App\Models\Travel\UIT;
+use App\Services\Travel\Enum\UITStatus;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class ExampleTest extends TestCase
@@ -13,9 +16,21 @@ class ExampleTest extends TestCase
      */
     public function test_the_application_returns_a_successful_response(): void
     {
-        for ($i = 0; $i < 100; $i++) {
-            TestHelper::createNewUser();
+        $list = Travel::all();
+        foreach ($list as $travel) {
+            for ($i = 0; $i < $travel->getMaxMembers(); $i++) {
+                if (!rand(0, 4)) {
+                    break;
+                }
+                $result = DB::table(UIT::getTableName())->insertOrIgnore([
+                    'travel_id' => $travel->id(),
+                    'user_id'   => DB::table('users')->inRandomOrder()->first()->id,
+                    'status'    => UITStatus::CONFIRMED,
+                ]);
+                if ($result) {
+                    DB::table(Travel::getTableName())->where('id', $travel->id())->increment('members_exists');
+                }
+            }
         }
-
     }
 }

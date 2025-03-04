@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Reference\ReferenceController;
-use App\Http\Controllers\Travel\TravelController;
+use App\Http\Controllers\Travel\Travel\TravelController;
 use Illuminate\Support\Facades\Route;
 
 

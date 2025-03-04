@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Travel\Validation;
 
-use App\Http\Controllers\Travel\Request\TravelDetailsRequest;
-use App\Http\Controllers\Travel\Request\UpdateTravelRequest;
+use App\Http\Controllers\Travel\Travel\Request\TravelDetailsRequest;
+use App\Http\Controllers\Travel\Travel\Request\UpdateTravelRequest;
 use App\Models\Travel\Travel;
 use App\Models\User;
 use Illuminate\Http\Request;

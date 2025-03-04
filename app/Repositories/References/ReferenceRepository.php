@@ -38,7 +38,7 @@ class ReferenceRepository extends DatabaseRepository implements ReferenceReposit
         $field = 'name_' . $language->getCode();
 
         return $this->db->table(TravelType::getTableName())
-            ->orderBy($field)->pluck($field, 'id')
+            ->pluck($field, 'id')
             ->toArray();
     }
 
