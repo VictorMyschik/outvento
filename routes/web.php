@@ -5,6 +5,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Admin\AdminTravelController;
 use App\Http\Controllers\FAQController;
 use App\Http\Controllers\Forms\FormsController;
+use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\Travel\Travel\TravelController;
 use App\Http\Controllers\Travel\Travel\TravelInviteController;
@@ -64,3 +65,5 @@ Route::group(['middleware' => ['auth'], 'prefix' => 'account'], function () {
     // Edit travel name and description
     Route::match(['get', 'post', 'put'], '/travel/{travel_id}/base/form', [TravelForm::class, 'processForm'])->name('account.travel.base.form');
 });
+
+Route::post('/subscribe', [SubscriptionController::class, 'subscribe'])->name('subscribe');

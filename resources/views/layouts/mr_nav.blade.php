@@ -1,13 +1,13 @@
-<nav class="navbar navbar-expand-md shadow-sm shadow mr-nav">
+<nav class="navbar navbar-expand-md shadow-sm shadow" style="height: 90px; font-size: 1.1rem;">
     <div class="container">
         <a class="navbar-brand text-italic mr-nav-link-color" href="{{ url('/') }}">
-            <span class="mr-nav-link-color">My Travel</span>
+            <span class="mr-nav-link-color" style="font-size: 1.5rem;">My Travel</span>
         </a>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto">
 
             </ul>
-            <ul class="navbar-nav ml-auto">
+            <ul class="navbar-nav me-auto">
                 @guest
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('faq.page') }}"><span
@@ -51,9 +51,12 @@
                             <a class="nav-link" href="/admin"><span class="mr-nav-link-color">Admin</span></a>
                         </li>
                     @endif
-                    @include('layouts.language')
-                    @include('layouts.Elements.logout')
+
                 @endguest
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                @include('layouts.language')
+                @include('layouts.Elements.logout')
             </ul>
         </div>
 

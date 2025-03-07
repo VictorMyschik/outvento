@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Helpers\System;
 
 use App\Http\Controllers\Controller;
@@ -17,36 +19,28 @@ class MrMessageHelper extends Controller
         self::KIND_SUCCESS => 'success',
     );
 
-    /**
-     * Set message
-     *
-     * @param int $kind
-     * @param string $message
-     */
-    public static function SetMessage(int $kind, string $message): void
+    public static function setMessage(int $kind, string $message): void
     {
         $name = 'alert-' . self::$kind_list[$kind];
 
         Session::flash($name, $message);
     }
 
-    public static function SetError(string $message): void
+    public static function setError(string $message): void
     {
-        self::SetMessage(self::KIND_ERROR, $message);
+        self::setMessage(self::KIND_ERROR, $message);
     }
 
     /**
      * Display message
      */
-    public static function GetMessage(): string
+    public static function getMessage(): ?string
     {
-        $out = '';
+        $out = null;
+
         foreach (self::$kind_list as $kind) {
-            $key = 'alert-' . $kind;
-            if ($message = session($key)) {
-                $out .= '<div id="alert" onclick=\'this.remove();\' class="mr-cursor alert ' . $key . '" role="alert">';
-                $out .= '<span class="badge badge-pill ' . $key . '">' . '</span> ';
-                $out .= $message . "</div>";
+            if ($message = session('alert-' . $kind)) {
+                $out .= "'<alert_modal message='$message'></alert_modal>'";
             }
         }
 

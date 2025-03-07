@@ -8,6 +8,7 @@ use App\Orchid\Layouts\Subscription\SubscriptionEditLayout;
 use App\Orchid\Layouts\Subscription\SubscriptionListLayout;
 use App\Services\Email\Enum\EmailTypeEnum;
 use App\Services\Subscription\SubscriptionService;
+use App\Services\System\Enum\Language;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -73,9 +74,9 @@ class SubscriptionScreen extends Screen
     public function saveSubscription(Request $request, int $subscription_id): void
     {
         $input = Validator::make($request->all(), [
-            'subscription.language'           => 'required|int',
-            'subscription.type'               => 'required|array',
-            'subscription.email' => 'required|regex:' . RegexHelper::EMAIL_REGEX,
+            'subscription.language' => 'required|int',
+            'subscription.type'     => 'required|array',
+            'subscription.email'    => 'required|regex:' . RegexHelper::EMAIL_REGEX,
         ])->validate()['subscription'];
 
         $types = $input['type'];

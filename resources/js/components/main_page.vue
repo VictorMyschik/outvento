@@ -1,75 +1,51 @@
 <template>
-    <div class="container">
-        <div class="row justify-content-center mr-background-form">
-            <v_select :options="counties.sort()"
-                      v-model="country"
-                      :placeholder="countryPlaceholder"
-                      aria-autocomplete="inline"
-                      class="col my-1"
-            >
-            </v_select>
-            <v_select :options="travelTypes"
-                      v-model="travelType"
-                      :placeholder="travelTypePlaceholder"
-                      aria-autocomplete="inline"
-                      class="col my-1"
-            >
-            </v_select>
-            <input type="date" v-model="date_from" class="col mx-2 my-1" style="">
-            <input type="date" v-model="date_to" class="col mx-2 my-1">
-            <button @click="search" class="col mr-btn-primary mx-2 my-1">
-                <i v-if="runSearch" class="fa fa-spinner fa-spin"></i>search
-            </button>
-        </div>
+    <div class="">
+        <section class="position-relative" style="height: 70vh;">
+            <div class="slider-home1 overflow-hidden swiper-slide">
+                <div class="silider-image">
+                    <img src="/images/slide1.jpg" alt="Travel and adventure" class="image-slide">
+                </div>
 
-        <div v-if="runSearch" class="row justify-content-center mr-background-form">
-            <span><i class="fa fa-spinner fa-spin"></i> searching</span>
-        </div>
-        <div v-if="searchResultList" class="row justify-content-center mr-background-form">
-            <div href="#filter_toggle" class="mr-cursor" data-bs-toggle="collapse"><h5>{{ lang['filter'] }}</h5></div>
-            <div id="filter_toggle" ref="filter_toggle" class="row collapse">
-                <div class="col">
-                    <label>{{ lang['max_member_from'] }}</label>
-                    <input type="number" class="form-control" v-model="maxMemberFrom">
+                <div class="container slider-content">
+                    <div class="col-lg-8">
+                        <h1 class="title-slide text-white">Travel &amp; <br>adventure</h1>
+                        <p class="text-white mt-5" style="font-size: 1.2rem;"> {{ lang['slogan'] }} </p>
+                    </div>
+                    <button class="mr-btn-primary mx-1">Board</button>
+                    <button class="mr-btn-primary mx-1">Bike</button>
+                    <button class="mr-btn-primary mx-1">Travel</button>
                 </div>
-                <div class="col">
-                    <label>{{ lang['max_member_to'] }}</label>
-                    <input type="number" class="form-control" v-model="maxMemberTo">
-                </div>
-                <div class="col">
-                    <label>{{ lang['free_members'] }}</label>
-                    <input type="number" class="form-control" v-model="freeMember">
+
+                <div class="container slider-content-search mr-background-form">
+                    <div class="row">
+                        <v_select :options="counties.sort()"
+                                  v-model="country"
+                                  :placeholder="countryPlaceholder"
+                                  aria-autocomplete="inline"
+                                  class="col my-1"
+                        >
+                        </v_select>
+                        <v_select :options="travelTypes"
+                                  v-model="travelType"
+                                  :placeholder="travelTypePlaceholder"
+                                  aria-autocomplete="inline"
+                                  class="col my-1"
+                        >
+                        </v_select>
+                        <input type="date" v-model="date_from" class="col mx-2 my-1" style="">
+                        <input type="date" v-model="date_to" class="col mx-2 my-1">
+                        <button @click="search" class="col mr-btn-primary mx-2 my-1">
+                            <i v-if="runSearch" class="fa fa-spinner fa-spin"></i> {{ lang['search'] }}
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <div v-if="searchResultList" class="row justify-content-center mr-background-form">
-            <div class="result-item-container">
-                <div v-for="travel in searchResultList" class="result-item-block">
-                    <div>
-                        <h5>
-                            <img class="icon"
-                                 :title="travel['travelType']['name']"
-                                 :src="travel['travelType']['icon']"
-                                 :alt="travel['travelType']['name']">
-                            <span v-if="travel['members']['maxMember']" :title="travel['members']['title']">
-                                {{ travel['members']['maxMember'] }}({{ travel['members']['existsMembers'] }})
-                            </span>
-                            {{ travel['title'] }}
-                        </h5>
-                    </div>
-                    <div>
-                        <span>{{ travel['dateFrom'] }}</span> - <span>{{ travel['dateTo'] }}</span>
-                    </div>
-                    <div class="text-muted">{{ travel['preview'] }}</div>
-                    <div class="text-muted">{{ lang['owner'] }}: {{ travel['owner'] }}</div>
-                </div>
-            </div>
-        </div>
+        </section>
     </div>
 </template>
 
 <script>
+import alert_modal from './alert.vue';
 import v_select from 'vue-select';
 
 export default {
@@ -82,6 +58,9 @@ export default {
     ],
     data() {
         return {
+            isAlertVisible: false,
+            alertMessage: 'This is an alert message!',
+
             urlList: {
                 "api.reference.full": "/api/reference/full",
                 "api.travels.search": "/api/travels/search",
@@ -108,6 +87,15 @@ export default {
         this.getForm();
     },
     methods: {
+        showAlert() {
+            this.isAlertVisible = true;
+        },
+        scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+        },
         search: function () {
             let data = {
                 country: this.country ? this.country.id : null,
@@ -118,12 +106,21 @@ export default {
                 maxMemberTo: this.maxMemberTo,
                 freeMember: this.freeMember,
             };
-            this.runSearch = true;
-            axios.post(this.urlList['api.travels.search'], data).then(response => {
-                    this.buildTravelResultList(response.data.content);
-                }
-            );
-            this.runSearch = false;
+
+            if (this.runSearch === false) {
+                this.runSearch = true;
+                axios.post(this.urlList['api.travels.search'], data)
+                    .then(response => {
+                        this.buildTravelResultList(response.data.content);
+                        this.runSearch = false;
+                        this.scrollToSection('results');
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        this.runSearch = false; // Отключаем спиннер в случае ошибки
+                    });
+            }
+
         },
         buildTravelResultList: function (data) {
             if (!data.length) {
@@ -171,6 +168,7 @@ export default {
     },
 }
 </script>
+
 <style scoped>
 .result-item-container {
     display: block;
@@ -193,4 +191,57 @@ export default {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+.mr-filter {
+    display: inline-block;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 8px;
+    margin: 8px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.slider-home1 {
+    .silider-image {
+        &::before {
+            background: linear-gradient(90deg, rgba(4, 27, 40, 1), rgba(0, 0, 0, 0));
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            content: '';
+            z-index: 2;
+        }
+
+        img {
+            position: absolute;
+        }
+
+        .image-slide {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    .slider-content {
+        position: relative;
+        z-index: 3;
+        padding-top: 144px;
+        padding-bottom: 202px;
+
+        .title-slide {
+            text-transform: uppercase;
+            font-size: 70px;
+            font-weight: 700;
+            line-height: 95px;
+        }
+    }
+
+    .slider-content-search {
+        position: relative;
+        z-index: 5;
+        padding-bottom: 102px;
+    }
+}
 </style>

@@ -6,6 +6,7 @@ namespace App\Services\Subscription;
 
 use App\Models\Subscription\Subscription;
 use App\Services\Email\Enum\EmailTypeEnum;
+use App\Services\Subscription\DTO\SubscriptionDto;
 use App\Services\System\Enum\Language;
 
 final readonly class SubscriptionService
@@ -38,6 +39,23 @@ final readonly class SubscriptionService
         $data['type'] = $type->value;
 
         return $this->repository->saveSubscription(0, $data);
+    }
+
+    public function createNewsSubscription(string $email, Language $language): int
+    {
+        $exists = $this->getSubscriptionByEmail($email);
+        if (!empty($exists)) {
+            return 0;
+        }
+
+        $data = new SubscriptionDto(
+            email: $email,
+            language: $language->value,
+            token: md5(uniqid()),
+            type: EmailTypeEnum::NEWS->value,
+        );
+
+        return $this->repository->saveSubscription(0, (array)$data);
     }
 
     public function updateSubscription(int $id, array $data): int

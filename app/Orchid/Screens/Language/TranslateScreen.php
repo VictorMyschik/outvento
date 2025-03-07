@@ -60,9 +60,9 @@ class TranslateScreen extends Screen
     {
         $data = $request->validate([
             'translate.code' => 'required|string|max:255',
-            'translate.ru'   => 'nullable|string|max:255',
-            'translate.en'   => 'nullable|string|max:255',
-            'translate.pl'   => 'nullable|string|max:255',
+            'translate.ru'   => 'nullable|string|max:1000',
+            'translate.en'   => 'nullable|string|max:1000',
+            'translate.pl'   => 'nullable|string|max:1000',
         ])['translate'];
 
         $this->service->saveTranslate($id, $data);

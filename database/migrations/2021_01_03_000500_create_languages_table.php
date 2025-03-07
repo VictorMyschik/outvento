@@ -10,9 +10,9 @@ return new class extends Migration {
         Schema::create('translates', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique()->index();
-            $table->string('ru')->nullable();
-            $table->string('en')->nullable();
-            $table->string('pl')->nullable();
+            $table->string('ru', 1000)->nullable();
+            $table->string('en', 1000)->nullable();
+            $table->string('pl', 1000)->nullable();
 
             $table->timestampTz('created_at')->useCurrent();
         });
