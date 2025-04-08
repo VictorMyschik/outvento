@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Travel\Travel\Response;
 
-use App\Http\Controllers\Response\Components\MembersComponent;
-use App\Http\Controllers\Response\Components\TravelTypeComponent;
 use App\Http\Controllers\Response\CountryResponse;
+use App\Http\Controllers\Travel\Travel\Response\Components\MembersComponent;
 use App\Http\Controllers\Travel\Travel\Response\Components\TravelStatusComponent;
 use App\Http\Controllers\Travel\Travel\Response\Components\TravelUserComponent;
 use App\Http\Controllers\Travel\Travel\Response\Components\TravelVisibleType;

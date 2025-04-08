@@ -11,7 +11,7 @@ use App\Http\Controllers\Travel\Travel\Request\TravelDetailsRequest;
 use App\Http\Controllers\Travel\Travel\Request\UpdateTravelRequest;
 use App\Http\Controllers\Travel\Validation\TravelValidation;
 use App\Models\Travel\Travel;
-use App\Services\Travel\TravelApiService;
+use App\Services\Travel\Api\TravelApiService;
 use App\Services\Travel\TravelService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

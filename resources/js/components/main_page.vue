@@ -48,6 +48,22 @@
 import alert_modal from './alert.vue';
 import v_select from 'vue-select';
 
+import '../components/template/jquery.min.js';
+import '../components/template/jquery.nice-select.min.js';
+import '../components/template/bootstrap.min.js';
+import '../components/template/swiper-bundle.min.js';
+import '../components/template/swiper.js';
+import '../components/template/plugin.js';
+import '../components/template/count-down.js';
+import '../components/template/countto.js';
+import '../components/template/jquery.fancybox.js';
+import '../components/template/jquery.magnific-popup.min.js';
+import '../components/template/price-ranger.js';
+import '../components/template/textanimation.js';
+import '../components/template/wow.min.js';
+import '../components/template/shortcodes.js';
+import '../components/template/main.js';
+
 export default {
     components: {
         v_select
@@ -202,46 +218,6 @@ export default {
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.slider-home1 {
-    .silider-image {
-        &::before {
-            background: linear-gradient(90deg, rgba(4, 27, 40, 1), rgba(0, 0, 0, 0));
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            content: '';
-            z-index: 2;
-        }
 
-        img {
-            position: absolute;
-        }
 
-        .image-slide {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-    }
-
-    .slider-content {
-        position: relative;
-        z-index: 3;
-        padding-top: 144px;
-        padding-bottom: 202px;
-
-        .title-slide {
-            text-transform: uppercase;
-            font-size: 70px;
-            font-weight: 700;
-            line-height: 95px;
-        }
-    }
-
-    .slider-content-search {
-        position: relative;
-        z-index: 5;
-        padding-bottom: 102px;
-    }
-}
 </style>

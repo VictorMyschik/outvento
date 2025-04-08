@@ -11,7 +11,7 @@ import mrp from './MrPopupForm.vue';
 
 export default {
     components: {
-        mrp
+        mrp,
     },
     name: "nav_bar",
     data() {

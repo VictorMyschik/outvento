@@ -16,7 +16,7 @@ import mrp from './../../MrPopupForm.vue';
 
 export default {
     components: {
-        mrp
+        mrp,
     },
     name: "new_travel",
     data() {

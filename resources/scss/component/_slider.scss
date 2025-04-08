@@ -1,0 +1,201 @@
+@use '../abstracts/' as *;
+
+.slider-home1 {
+    .silider-image {
+        &::before {
+            background: linear-gradient(90deg, rgba(4, 27, 40, 1), rgba(0, 0, 0, 0));
+            @include absolute;
+            content: '';
+            z-index: 2;
+        }
+
+        img {
+            position: absolute;
+        }
+
+        .image-slide {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .mask-slide {
+            width: auto;
+            z-index: 2;
+            height: 100%;
+        }
+
+        .mask-flane {
+            width: auto;
+            left: 0px;
+            bottom: 5.8%;
+            z-index: 2;
+            animation: dot-anim-2 3s linear 0s infinite alternate;
+        }
+
+        .booking-title {
+            position: absolute;
+            z-index: 3;
+            right: 33.6%;
+            top: 11%;
+            rotate: -5deg;
+
+            .booking {
+                font-size: 40px;
+                font-weight: 400;
+                line-height: 50.69px;
+                font-family: $font-secondary;
+                color: $white;
+                padding: 18px 33px 14px 33px;
+                border: 2px solid $primary;
+                display: inline-block;
+                position: relative;
+
+                &::before {
+                    position: absolute;
+                    content: '';
+                    width: 15px;
+                    height: 13px;
+                    background-color: $white;
+                    border: 2px solid $primary;
+                    top: -5px;
+                    left: -8px;
+                }
+
+                &::after {
+                    position: absolute;
+                    content: '';
+                    width: 15px;
+                    height: 13px;
+                    background-color: $white;
+                    border: 2px solid $primary;
+                    top: -5px;
+                    right: -8px;
+                }
+            }
+
+            span {
+                &::before {
+                    position: absolute;
+                    content: '';
+                    width: 15px;
+                    height: 13px;
+                    background-color: $white;
+                    border: 2px solid $primary;
+                    bottom: -10px;
+                    left: -10px;
+                }
+
+                &::after {
+                    position: absolute;
+                    content: '';
+                    width: 15px;
+                    height: 13px;
+                    background-color: $white;
+                    border: 2px solid $primary;
+                    bottom: 0px;
+                    right: -15px;
+                }
+            }
+        }
+
+    }
+
+    .slider-content {
+        position: relative;
+        z-index: 3;
+        padding-top: 144px;
+        padding-bottom: 202px;
+
+        .title-slide {
+            text-transform: uppercase;
+            font-size: 70px;
+            font-weight: 700;
+            line-height: 95px;
+        }
+
+        .des {
+            max-width: 570px;
+            width: 100%;
+        }
+        .btn-group{
+            .btn-main {
+                padding: 15px 24px;
+            }
+        }
+
+
+    }
+
+}
+
+.btn-group {
+    gap: 40px;
+    flex-wrap: wrap;
+    .btn-w-wa {
+        font-size: 20px;
+        font-weight: 500;
+        line-height: 29px;
+        padding: 18px 0px;
+        color: $white;
+
+        i {
+            color: $primary;
+            font-size: 16px;
+            margin-left: 7px;
+            transition: all 0.3s ease;
+        }
+
+        &:hover {
+            color: $secondary;
+        }
+        &:hover i{
+            margin-left: 12px;
+        }
+    }
+}
+
+.btn-nex-prev {
+    position: absolute;
+    right: 11.6%;
+    top: 33%;
+    z-index: 4;
+    .swiper-button-next::after {
+        content: "\e970";
+    }
+    .swiper-button-prev::after {
+        content: "\e971";
+    }
+
+    .next-home1,
+    .prev-home1 {
+        position: relative !important;
+        background-color: rgba(255, 255, 255, 0.5);
+        gap: 25px;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        margin: 25px 0;
+
+        &::before,
+        &::after {
+            color: $main;
+            font-weight: 600;
+        }
+        &:hover{
+            background-color: $secondary;
+        }
+
+        &.swiper-button-disabled {
+            opacity: 1;
+            background-color: rgba(4, 28, 41, 0.5);
+
+            &::before,
+            &::after {
+                color: $white;
+            }
+        }
+
+    }
+}

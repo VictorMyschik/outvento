@@ -16,4 +16,6 @@ interface TravelRepositoryInterface
     public function getTravelFullImages(int $travelId): array;
 
     public function getTravelById(int $travelId): ?Travel;
+
+    public function getTravelTypeList(): array;
 }

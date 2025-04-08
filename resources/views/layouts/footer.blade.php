@@ -51,7 +51,7 @@
                 <form action="/subscribe" id="footer-form" method="post" class="px-0" style="width: 100%;">
                     @csrf
                     <div class="input-wrap flex-three">
-                        <input type="email" required name="email" placeholder="Enter Email Address">
+                        <input type="email" class="mr-text" required name="email" placeholder="Enter Email Address">
                         <button type="submit" class="mr-btn-success"><i class="fa fa-paper-plane"></i></button>
                     </div>
                     <div class="check-form flex-three" style="color:white">

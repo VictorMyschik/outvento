@@ -21,7 +21,6 @@
                         <a class="nav-link" href="{{ route('register') }}"><span
                                 class="mr-nav-link-color">{{ __('mr-t.register') }}</span></a>
                     </li>
-                    @include('layouts.language')
                 @else
                     <new_travel></new_travel>
 

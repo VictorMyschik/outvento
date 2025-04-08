@@ -6,6 +6,7 @@ namespace App\Repositories\Travel;
 
 use App\Models\Travel\Travel;
 use App\Models\Travel\TravelImage;
+use App\Models\Travel\TravelType;
 use App\Models\Travel\UIT;
 use App\Models\User;
 use App\Repositories\DatabaseRepository;
@@ -89,5 +90,10 @@ class TravelRepository extends DatabaseRepository implements TravelRepositoryInt
     public function getTravelById(int $travelId): ?Travel
     {
         return Travel::find($travelId);
+    }
+
+    public function getTravelTypeList(): array
+    {
+        return TravelType::get()->all();
     }
 }
