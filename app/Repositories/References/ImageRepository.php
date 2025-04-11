@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories\References;
 
 use App\Services\References\Enum\ImageTypeEnum;
+use App\Services\References\ImageRepositoryInterface;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 

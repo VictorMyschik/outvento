@@ -10,11 +10,10 @@ use App\Models\Travel\TravelType;
 use App\Models\Travel\UIT;
 use App\Models\User;
 use App\Repositories\DatabaseRepository;
+use App\Services\Travel\Enum\ImageType;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\TravelVisibleType;
-use App\Services\Travel\Enum\UITStatus;
 use App\Services\Travel\TravelRepositoryInterface;
-use Illuminate\Database\Query\Builder;
 
 class TravelRepository extends DatabaseRepository implements TravelRepositoryInterface
 {
@@ -79,6 +78,10 @@ class TravelRepository extends DatabaseRepository implements TravelRepositoryInt
 
         }
 
+        if (!empty($filter['limit'])) {
+            $query->limit((int)$filter['limit']);
+        }
+
         return $query->get()->all();
     }
 
@@ -96,4 +99,37 @@ class TravelRepository extends DatabaseRepository implements TravelRepositoryInt
     {
         return TravelType::get()->all();
     }
+
+    public function getTravelLogo(int $travelId): ?TravelImage
+    {
+        return TravelImage::where('travel_id', $travelId)->where('type', ImageType::LOGO->value)->first();
+    }
+
+    public function getTravelPhotoList(int $travelId): array
+    {
+        return TravelImage::where('travel_id', $travelId)->where('type', ImageType::PHOTO->value)->get()->all();
+    }
+
+    #region Images
+    public function saveImage(int $id, array $input): int
+    {
+        if ($id > 0) {
+            $this->db->table(TravelImage::getTableName())->where('id', $id)->update($input);
+            return $id;
+        }
+
+        return $this->db->table(TravelImage::getTableName())->insertGetId($input);
+    }
+
+    public function deleteTravelImage(int $imageId): void
+    {
+        $this->db->table(TravelImage::getTableName())->where('id', $imageId)->delete();
+    }
+
+    public function getTravelImage(int $imageId): ?TravelImage
+    {
+        return TravelImage::find($imageId);
+    }
+
+    #endregion
 }

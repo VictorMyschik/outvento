@@ -17,7 +17,7 @@ export default {
     data() {
         return {
             urlList: {
-                "api.travel.list": "/api/travel/list",
+                "api.travel.list": "/api/travels/list",
                 "account.travel.page": "/account/travel/{travel_id}/page",
                 'account.travel.base.form': '/account/travel/{travel_id}/base/form',
             },

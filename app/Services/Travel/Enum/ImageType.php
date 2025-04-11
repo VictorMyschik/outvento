@@ -7,7 +7,7 @@ namespace App\Services\Travel\Enum;
 enum ImageType: int
 {
     case LOGO = 1;
-    case PHOTO = 3;
+    case PHOTO = 2;
 
     public static function getSelectList(): array
     {

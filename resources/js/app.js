@@ -11,7 +11,7 @@ import alert_modal from './components/alert.vue';
 import slider from './components/main/slider.vue';
 import activities from './components/main/activities.vue';
 //import public_search_page from "./components/public_search_page.vue";
-
+import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'vue-select/dist/vue-select.css';
 
 const app = createApp({
@@ -25,6 +25,8 @@ const app = createApp({
         alert_modal,
         slider,
         activities,
+        Swiper,
+        SwiperSlide,
         //public_search_page
     }
 });

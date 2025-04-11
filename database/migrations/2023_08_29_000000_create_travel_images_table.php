@@ -10,8 +10,7 @@ return new class extends Migration {
         Schema::create('travel_images', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('travel_id')->index();
-            $table->string('name', 50);
-            $table->string('original_name');
+            $table->string('path');
             $table->unsignedBigInteger('size');
             $table->integer('sort')->default(0);
             $table->string('description', 50)->nullable();

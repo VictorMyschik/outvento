@@ -27,6 +27,21 @@ final readonly class TravelApiService
         private TravelRepositoryInterface $travelRepository,
     ) {}
 
+    public function travelExamples(Language $language): array
+    {
+        $out = [];
+
+        foreach ($this->travelRepository->getTravelTypeList() as $type) {
+            $out[$type->id()] = $this->searchTravels([
+                'travelType' => $type->id(),
+                'limit'      => 3,
+                'dateFrom'   => now()->subYear()->toDateString(),
+            ], $language, null);
+        }
+
+        return $out;
+    }
+
     public function getTravelTypeList(Language $language): array
     {
         foreach ($this->travelRepository->getTravelTypeList() as $type) {
@@ -93,7 +108,6 @@ final readonly class TravelApiService
         foreach ($this->travelRepository->getTravelFullImages($travel->id()) as $image) {
             $images[] = new TravelImageComponent(
                 logo: $image->getType() === ImageType::LOGO,
-                name: $image->getName(),
                 url: $image->getUrl(),
                 description: $image->getDescription(),
             );

@@ -17,8 +17,9 @@ class WelcomeController extends Controller
     public function index(): View|Application|Factory
     {
         $out = [
-            'lang'       => TranslateService::getFullList($this->getLanguage()),
-            'activities' => $this->service->getTravelTypeList($this->getLanguage()),
+            'lang'           => TranslateService::getFullList($this->getLanguage()),
+            'travelTypeList' => $this->service->getTravelTypeList($this->getLanguage()),
+            'travelExamples' => $this->service->travelExamples($this->getLanguage()),
         ];
 
         return View('welcome')->with($out);

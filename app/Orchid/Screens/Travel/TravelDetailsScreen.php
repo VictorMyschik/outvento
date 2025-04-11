@@ -2,16 +2,26 @@
 
 namespace App\Orchid\Screens\Travel;
 
+use App\Helpers\TouchUserUpdateEvent;
+use App\Models\Catalog\CatalogGood;
+use App\Models\Catalog\CatalogGoodDetail;
+use App\Models\Catalog\CatalogImage;
 use App\Models\EmailInvite;
+use App\Models\Orchid\Attachment;
 use App\Models\Reference\Country;
 use App\Models\Travel\Travel;
+use App\Models\Travel\TravelImage;
 use App\Models\Travel\TravelType;
 use App\Models\Travel\UIT;
 use App\Models\User;
+use App\Orchid\Layouts\Catalog\GoodUploadEditLayout;
 use App\Orchid\Layouts\Travel\InviteByEmailEditLayout;
 use App\Orchid\Layouts\Travel\InviteListLayout;
 use App\Orchid\Layouts\Travel\TravelEditLayout;
+use App\Orchid\Layouts\Travel\TravelImageUploadLayout;
+use App\Services\Catalog\Enum\CatalogImageTypeEnum;
 use App\Services\Email\EmailService;
+use App\Services\Travel\Enum\ImageType;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\TravelVisibleType;
 use App\Services\Travel\Enum\UITStatus;
@@ -30,6 +40,7 @@ use Orchid\Screen\Fields\Quill;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Fields\TextArea;
 use Orchid\Screen\Fields\ViewField;
+use Orchid\Screen\Layouts\Modal;
 use Orchid\Screen\Layouts\Rows;
 use Orchid\Screen\Layouts\Tabs;
 use Orchid\Screen\Screen;
@@ -89,6 +100,8 @@ class TravelDetailsScreen extends Screen
             ])->fullWidth()
         ]);
 
+        $out[] = Layout::modal('upload_travel_photo', TravelImageUploadLayout::class)->size(Modal::SIZE_LG);
+
         return $out;
     }
 
@@ -128,6 +141,7 @@ class TravelDetailsScreen extends Screen
     private function getRightTab(): Tabs
     {
         return Layout::tabs([
+            'Фото'       => Layout::rows($this->getPhotoTab()),
             'Активные'   => Layout::rows([$this->getUITActiveListLayout()]),
             'Отказ'      => Layout::rows([$this->getUITNotActiveListLayout()]),
             'В ожидании' => InviteListLayout::class,
@@ -145,6 +159,87 @@ class TravelDetailsScreen extends Screen
                 ])->autoWidth()
             ])
         ]);
+    }
+
+    private function getPhotoTab(): array
+    {
+        $logo = $this->travelService->getTravelLogo($this->travel->id());
+        $photoList = $this->travelService->getTravelPhotoList($this->travel->id());
+
+        if ($logo) {
+            $photoList = array_merge([$logo], $photoList);
+        }
+
+        $photoTab = [
+            Group::make([
+                ModalToggle::make('Загрузить фото')
+                    ->class('mr-btn-success')
+                    ->modal('upload_travel_photo')
+                    ->modalTitle('Загрузить фото')
+                    ->method('saveTravelPhoto', ['travelId' => $this->travel->id()]),
+
+                Button::make('Удалить все фото')
+                    ->method('deleteTravelPhoto')
+                    ->novalidate()
+                    ->class('mr-btn-danger')
+                    ->canSee(count($photoList) > 0)
+                    ->confirm('Вы уверены, что хотите удалить все фото?')
+                    ->parameters(['travelId' => $this->travel->id()]),
+            ])->autoWidth(),
+        ];
+
+        $group = [];
+
+        /** @var TravelImage $img */
+        foreach ($photoList as $img) {
+            $group[] = Group::make([
+                ViewField::make('#')->view('admin.travel.photo')->value(['path' => $img->getUrl(), 'is_logo' => $img->getType() === ImageType::LOGO]),
+                ViewField::make('table')->view('admin.travel.photo_data')->value(['photo' => $img]),
+
+                DropDown::make()->icon('options-vertical')->list([
+                    ModalToggle::make('изменить')->icon('pencil')->modal('upload_travel_photo')
+                        ->modalTitle('Изменить описание')
+                        ->method('saveGoodPhoto', ['catalog_image_id' => $img->id()]),
+
+                    Button::make('Сделать главной')->icon('star')
+                        ->method('setAsLogo')
+                        ->confirm('Сделать главной?')
+                        ->parameters(['travelId' => $this->travel->id(), 'imageId' => $img->id()]),
+
+                    Button::make('удалить')->icon('trash')->method('deleteGoodPhoto')->novalidate()
+                        ->confirm('Удалить фото?')
+                        ->parameters(['travelId' => $this->travel->id(), 'imageId' => $img->id()]),
+                ]),
+            ])->autoWidth()->alignStart();
+        }
+
+        return array_merge($photoTab, [ViewField::make('')->view('space')], $group);
+    }
+
+    public function deleteTravelPhoto(int $travelId): void
+    {
+        $this->travelService->deleteTravelImages($travelId);
+    }
+
+    public function setAsLogo(int $travelId, int $imageId): void
+    {
+        $this->travelService->setAsLogo($travelId, $imageId);
+    }
+
+    public function deleteGoodPhoto(int $travelId, int $imageId): void
+    {
+        $this->travelService->deleteImage($imageId);
+    }
+
+    public function saveTravelPhoto(Request $request, int $travelId): void
+    {
+        $imageAttachIds = $request->all()['travel']['image'] ?? [];
+
+        $travel = Travel::loadByOrDie($travelId);
+
+        foreach (Attachment::whereIn('id', $imageAttachIds)->orderBy('sort')->get()->all() as $attachment) {
+            $this->travelService->saveTravelImage($travel, $attachment, ImageType::PHOTO);
+        }
     }
 
     private function getUITActiveListLayout(): ViewField

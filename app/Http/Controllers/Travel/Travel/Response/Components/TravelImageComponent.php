@@ -8,7 +8,6 @@ final readonly class TravelImageComponent
 {
     public function __construct(
         public bool    $logo,
-        public string  $name,
         public string  $url,
         public ?string $description,
     ) {}

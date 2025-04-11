@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Models\Travel;
 
 use App\Models\Lego\Fields\DescriptionNullableFieldTrait;
-use App\Models\Lego\Fields\NameFieldTrait;
 use App\Models\Lego\Fields\UserFieldTrait;
 use App\Models\ORM\ORM;
 use App\Services\Travel\Enum\ImageType;
@@ -13,7 +12,6 @@ use Illuminate\Support\Facades\Storage;
 
 class TravelImage extends ORM
 {
-    use NameFieldTrait;
     use DescriptionNullableFieldTrait;
     use UserFieldTrait;
 
@@ -21,7 +19,7 @@ class TravelImage extends ORM
 
     public function getType(): ImageType
     {
-        return ImageType::from($this->kind);
+        return ImageType::from($this->type);
     }
 
     public function getTravel(): Travel
@@ -32,11 +30,6 @@ class TravelImage extends ORM
     public function getSort(): int
     {
         return $this->sort;
-    }
-
-    public function getOriginalName(): string
-    {
-        return $this->original_name;
     }
 
     public function getSize(): int
@@ -56,11 +49,11 @@ class TravelImage extends ORM
 
     public function getPath(): string
     {
-        return '/travels/' . $this->travel_id . '/images';
+        return $this->path;
     }
 
     public function getUrl(): string
     {
-        return Storage::url($this->getPath() . '/' . $this->getName());
+        return Storage::url($this->getPath());
     }
 }

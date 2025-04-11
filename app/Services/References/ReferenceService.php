@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services\References;
 
-use App\Repositories\References\ImageRepositoryInterface;
 use App\Services\References\Enum\ImageTypeEnum;
 use App\Services\System\Enum\Language;
 use Illuminate\Database\Eloquent\Model;
