@@ -94,8 +94,8 @@ export default {
 .card {
     display: flex;
     vertical-align: top;
-    width: 300px;
-    height: 400px;
+    width: 400px;
+    height: 550px;
     margin: 10px;
     border-radius: 8px;
     transition: all 0.3s ease;
@@ -108,7 +108,7 @@ export default {
 
 .card-img-top {
     border-radius: 8px 8px 0 0;
-    height: 200px;
+    height: 300px;
     object-fit: cover;
     width: 100%;
 }

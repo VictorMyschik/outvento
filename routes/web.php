@@ -42,6 +42,7 @@ Route::get('locale/{locale}', function ($locale) {
 });
 
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
+Route::get('/travels/search', [WelcomeController::class, 'searchTravelPage'])->name('travels.search.page');
 
 Route::get('/faq', [FAQController::class, 'faqPage'])->name('faq.page');
 Route::match(['get', 'post'], '/feedback', [FormsController::class, 'feedback'])->name('feedback');

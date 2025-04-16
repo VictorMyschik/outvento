@@ -24,4 +24,11 @@ class WelcomeController extends Controller
 
         return View('welcome')->with($out);
     }
+
+    public function searchTravelPage(): View|Application|Factory
+    {
+        $out = [];
+
+        return View('search_page')->with([$out]);
+    }
 }
