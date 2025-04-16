@@ -8649,8 +8649,8 @@
 /* widget clip text
 -------------------------------------------------------------- */
 .clip-text {
-  font-size: 10vw;
-  font-weight: 800;
+  font-size: 9vw;
+  font-weight: 700;
   line-height: 1;
   text-align: center;
   text-transform: uppercase;
