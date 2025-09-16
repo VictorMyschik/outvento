@@ -10,7 +10,7 @@ use App\Services\Forms\Enum\FormTypeEnum;
 use App\Services\Forms\FormInterface;
 use App\Services\Forms\FormRepositoryInterface;
 
-final class FormDBRepository extends DatabaseRepository implements FormRepositoryInterface
+final readonly class FormDBRepository extends DatabaseRepository implements FormRepositoryInterface
 {
     public function addForm(FormInterface $dto): int
     {

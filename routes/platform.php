@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Orchid\Screens\Catalog\CatalogGoodDetailsScreen;
+use App\Orchid\Screens\Catalog\CatalogGoodsScreen;
+use App\Orchid\Screens\Catalog\CatalogGroupsScreen;
+use App\Orchid\Screens\Catalog\ManufacturerScreen;
 use App\Orchid\Screens\Email\EmailScreen;
 use App\Orchid\Screens\FAQScreen;
 use App\Orchid\Screens\Language\TranslateScreen;
@@ -15,11 +19,14 @@ use App\Orchid\Screens\Role\RoleListScreen;
 use App\Orchid\Screens\Subscription\SubscriptionScreen;
 use App\Orchid\Screens\System\CacheScreen;
 use App\Orchid\Screens\System\CronScreen;
+use App\Orchid\Screens\System\DatabaseScreen;
+use App\Orchid\Screens\System\DatabaseTableScreen;
 use App\Orchid\Screens\System\EmailLogScreen;
 use App\Orchid\Screens\System\FailedJobsScreen;
 use App\Orchid\Screens\System\JobsScreen;
 use App\Orchid\Screens\System\PurgeScreen;
 use App\Orchid\Screens\System\SettingsScreen;
+use App\Orchid\Screens\System\SupervisorScreen;
 use App\Orchid\Screens\Travel\TravelDetailsScreen;
 use App\Orchid\Screens\Travel\TravelListScreen;
 use App\Orchid\Screens\User\UserCommunicateScreen;
@@ -102,6 +109,9 @@ Route::screen('system/cron', CronScreen::class)->name('system.info.cron');
 Route::screen('system/purge', PurgeScreen::class)->name('system.purge');
 Route::screen('system/jobs', JobsScreen::class)->name('system.jobs');
 Route::screen('system/failed-jobs', FailedJobsScreen::class)->name('system.failed.jobs');
+Route::screen('system/database', DatabaseScreen::class)->name('system.database');
+Route::screen('system/database/table/{table}', DatabaseTableScreen::class)->name('system.database.table');
+Route::screen('system/supervisor', SupervisorScreen::class)->name('system.supervisor');
 // Language
 Route::screen('language/translate', TranslateScreen::class)->name('language.translate.list');
 
@@ -123,3 +133,9 @@ Route::screen('/reference/equipments/list', EquipmentScreen::class)->name('refer
 Route::screen('/reference/cities/list', CitiesScreen::class)->name('reference.cities.list');
 //// Subscriptions
 Route::screen('subscriptions/list', SubscriptionScreen::class)->name('subscriptions.list');
+
+// Onliner
+Route::screen('catalog/goods/list', CatalogGoodsScreen::class)->name('goods.list');
+Route::screen('catalog/good/{id}/details', CatalogGoodDetailsScreen::class)->name('goods.details');
+Route::screen('catalog/manufacturers/list', ManufacturerScreen::class)->name('manufacturer.list');
+Route::screen('catalog/types/list', CatalogGroupsScreen::class)->name('type.list');

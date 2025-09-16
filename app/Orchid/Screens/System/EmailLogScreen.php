@@ -29,9 +29,8 @@ class EmailLogScreen extends Screen
     {
         return [
             Button::make('Очистить лог')
-                ->class('mr-border-radius-5')
+                ->class('mr-btn-danger')
                 ->icon('trash')
-                ->type(Color::WARNING())
                 ->method('clear')
                 ->confirm('Очистить лог'),
         ];

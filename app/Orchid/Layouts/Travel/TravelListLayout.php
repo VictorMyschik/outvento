@@ -58,4 +58,9 @@ class TravelListLayout extends Table
                     ])),
         ];
     }
+
+    public function hoverable(): bool
+    {
+        return true;
+    }
 }

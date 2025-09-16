@@ -54,4 +54,14 @@ class SettingsListLayout extends Table
                 }),
         ];
     }
+
+    public function hoverable(): bool
+    {
+        return true;
+    }
+
+    public function compact(): bool
+    {
+        return true;
+    }
 }

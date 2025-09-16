@@ -1,6 +1,7 @@
 <?php
 
 use App\Orchid\Providers\TableServiceProvider;
+use App\Providers\CatalogServiceProvider;
 use App\Providers\ReferenceProvider;
 use App\Providers\SystemProvider;
 use App\Providers\TravelServiceProvider;
@@ -12,5 +13,6 @@ return [
     IconServiceProvider::class,
     TravelServiceProvider::class,
     ReferenceProvider::class,
-    SystemProvider::class
+    SystemProvider::class,
+    CatalogServiceProvider::class,
 ];

@@ -25,6 +25,7 @@ class FailedJobsScreen extends Screen
         return [
             // deleteAllFailedJobs
             Button::make('Delete all')
+                ->class('mr-btn-danger')
                 ->icon('trash')
                 ->confirm('Delete all failed jobs?')
                 ->method('deleteAllFailedJobs'),

@@ -6,19 +6,21 @@ namespace App\Jobs\Enum;
 
 enum QueueJob: string
 {
-    case DEFAULT = 'default';
+    case Default = 'default';
+    case OnlinerCatalog = 'onliner_catalog';
 
     public static function getSelectList(): array
     {
         return [
-            self::DEFAULT->value => self::DEFAULT->getLabel(),
+            self::Default->value => self::Default->getLabel(),
         ];
     }
 
     public function getLabel(): string
     {
         return match ($this) {
-            self::DEFAULT => 'Default',
+            self::Default => 'Default',
+            self::OnlinerCatalog => 'Onliner catalog',
         };
     }
 }

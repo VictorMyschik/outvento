@@ -33,6 +33,13 @@ class PlatformProvider extends OrchidServiceProvider
                 Menu::make('Cities')->icon('bs.list')->route('reference.cities.list'),
             ]),
             Menu::make('Subscriptions')->icon('bs.send')->route('subscriptions.list')->divider(),
+
+            // Catalog
+            Menu::make('Catalog')->icon('grid')->list([
+                Menu::make('Товары')->icon('list')->route('goods.list'),
+                Menu::make('Группы товаров')->icon('list')->route('type.list'),
+                Menu::make('Производители')->icon('list')->route('manufacturer.list')->divider(),
+            ]),
             // FAQ
             Menu::make('FAQ')->icon('bs.book')->route('faq.list'),
 
@@ -43,8 +50,10 @@ class PlatformProvider extends OrchidServiceProvider
                 Menu::make('Cron')->route('system.info.cron'),
                 Menu::make('Cache')->route('system.cache'),
                 Menu::make('Settings')->route('system.settings.list'),
-               // Menu::make('Jobs')->route('system.jobs'),
+                // Menu::make('Jobs')->route('system.jobs'),
                 Menu::make('Failed jobs')->route('system.failed.jobs'),
+                Menu::make('Database')->route('system.database'),
+                Menu::make('Supervisor')->route('system.supervisor'),
                 Menu::make('API documentation')->target('_blank')->href('/api/documentation'),
             ])->divider(),
 

@@ -8,7 +8,7 @@ use App\Models\System\Translate;
 use App\Repositories\DatabaseRepository;
 use App\Services\Language\TranslateRepositoryInterface;
 
-class TranslateRepository extends DatabaseRepository implements TranslateRepositoryInterface
+readonly class TranslateRepository extends DatabaseRepository implements TranslateRepositoryInterface
 {
     public function saveTranslate(int $id, array $data): int
     {

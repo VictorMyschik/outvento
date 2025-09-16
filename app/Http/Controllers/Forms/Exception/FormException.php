@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api\Forms\Exception;
+namespace App\Http\Controllers\Forms\Exception;
 
-use App\Exceptions\ExceptionAPI;
+use App\Exceptions\ExceptionAPIBase;
 
-class FormException extends ExceptionAPI
+class FormException extends ExceptionAPIBase
 {
     protected $message = 'Input missing';
 }

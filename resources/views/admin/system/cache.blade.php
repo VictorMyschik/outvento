@@ -1,7 +1,6 @@
-<div class="bg-white rounded shadow-sm mb-3">
-
+<div class="bg-white shadow-sm mb-3">
     <div class="">
-        <table class="table table-striped">
+        <table class="table table-striped table-hover table-compact">
             <tbody>
             @if($cacheInfoDTO)
                 <tr>

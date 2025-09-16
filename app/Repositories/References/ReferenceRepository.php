@@ -12,7 +12,7 @@ use App\Repositories\DatabaseRepository;
 use App\Services\References\ReferenceRepositoryInterface;
 use App\Services\System\Enum\Language;
 
-class ReferenceRepository extends DatabaseRepository implements ReferenceRepositoryInterface
+readonly class ReferenceRepository extends DatabaseRepository implements ReferenceRepositoryInterface
 {
     public function getCountrySelectList(Language $language): array
     {

@@ -15,7 +15,7 @@ use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\TravelVisibleType;
 use App\Services\Travel\TravelRepositoryInterface;
 
-class TravelRepository extends DatabaseRepository implements TravelRepositoryInterface
+readonly class TravelRepository extends DatabaseRepository implements TravelRepositoryInterface
 {
     public function saveTravel(int $travelId, array $data): int
     {

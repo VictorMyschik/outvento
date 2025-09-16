@@ -1,71 +1,58 @@
 FROM php:8.4-fpm
 
-RUN pecl install -o -f redis \
-&&  rm -rf /tmp/pear \
-&&  docker-php-ext-enable redis
-
-RUN pecl install xdebug
-RUN docker-php-ext-enable xdebug
-
-RUN apt-get update
-
-#RUN docker-php-ext-install pdo_mysql
-# Install Postgre PDO
-RUN apt-get install -y libpq-dev \
-    && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
-    && docker-php-ext-install pdo pdo_pgsql pgsql \
-    && docker-php-ext-install sockets
-
-RUN set -x && \
-    # install lib packages
-    apt-get update &&\
-    apt-get install --no-install-recommends --no-install-suggests -y \
+# Install dependencies in a single RUN to reduce layers and improve caching
+RUN apt-get update && apt-get install -y --no-install-recommends --no-install-suggests \
+        libpq-dev \
+        libxml2-dev \
+        libzip-dev \
+        librabbitmq-dev \
+        build-essential \
         openssh-server \
         nodejs \
         default-mysql-client \
         npm \
         bc \
-        libzip-dev \
         unzip \
-        # for bz2
-        #   - ref: https://github.com/docker-library/php/issues/47
         libbz2-dev \
-        # for gd
-        #   - ref: https://stackoverflow.com/questions/61228386/installing-gd-extension-in-docker
         libfreetype6-dev \
         libpng-dev \
         libjpeg62-turbo-dev \
-        && \
-    apt-get install --no-install-recommends --no-install-suggests -y \
-        # for composer
         postgresql-client \
         mc \
-        && \
-    # docker-php
-    #   - Removed `mbstring` on alpine: https://stackoverflow.com/questions/59251008/docker-laravel-configure-error-package-requirements-oniguruma-were-not-m/59253249#59253249
-    #     Due to this error: `configure: error: Package requirements (oniguruma) were not met: Package 'oniguruma', required by 'virtual:world', not found`
-    # for gd
-    #   - ref: https://github.com/docker-library/php/pull/910#issuecomment-559383597
-    docker-php-ext-configure gd --with-freetype --with-jpeg ; \
-    docker-php-ext-install -j$(nproc) \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install PHP extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
+    && docker-php-ext-install -j$(nproc) \
         bcmath \
         pdo \
         pdo_pgsql \
+        pgsql \
         bz2 \
         gd \
         exif \
         opcache \
         zip \
-        && \
-    docker-php-source delete && \
-    # composer
-    curl -sS https://getcomposer.org/installer | php -- --quiet --install-dir=/usr/local/bin --filename=composer && \
-    # clean up
-    rm -rf /var/lib/apt/lists/* && \
-    rm -rf /usr/share/nginx/html/*
+        sockets
+
+# Install PECL extensions
+RUN pecl install -o -f redis xmlrpc-1.0.0RC3 amqp xdebug \
+    && docker-php-ext-enable redis xmlrpc amqp xdebug \
+    && rm -rf /tmp/pear
+
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --quiet --install-dir=/usr/local/bin --filename=composer
+
+# Install Node.js and npm
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+    && apt-get install -y --no-install-recommends nodejs \
+    && npm install -g npm@11.1.0 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Clean up PHP source
+RUN docker-php-source delete
 
 WORKDIR /var/www/travel
-
-RUN curl -sl https://deb.nodesource.com/setup_22.x | bash -
-RUN apt-get install nodejs -y
-RUN npm install -g npm@11.1.0
