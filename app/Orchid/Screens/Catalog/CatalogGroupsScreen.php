@@ -68,9 +68,9 @@ class CatalogGroupsScreen extends Screen
         $this->service->saveCatalogGroup($groupId, $input);
     }
 
-    public function remove(int $group_id): void
+    public function remove(int $groupId): void
     {
-        $this->service->deleteCatalogType($group_id);
+        $this->service->deleteCatalogType($groupId);
     }
 
     #region Filter

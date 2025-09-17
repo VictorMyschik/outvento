@@ -23,7 +23,6 @@ class GoodListLayout extends Table
     {
         return [
             TD::make('id', 'ID')->sort(),
-            TD::make('active', 'Активно')->active()->sort(),
             TD::make('', 'Logo')->render(function (CatalogGood $good) {
                 // TODO: пока не скачиваем картинки, показываем по прямой ссылке
                 return ViewField::make('')->view('admin.table_image')->value($this->service->getGoodLogo($good->id())?->getOriginalUrl());
@@ -39,7 +38,7 @@ class GoodListLayout extends Table
             TD::make('name')->render(function (CatalogGood $good) {
                 return '<a href="' . route('goods.details', ['id' => $good->id()]) . '" target="_blank">' . $good->getName() . '</a>';
             })->sort(),
-            TD::make('string_id', 'Строковый ID')->sort(),
+            TD::make('string_id', 'onliner.by Строковый ID')->sort(),
             TD::make('link', 'Ссылка')->render(function (CatalogGood $good) {
                 return $good->link ? "<a href='{$good->link}' target='_blank'>link</a>" : null;
             })->sort(),

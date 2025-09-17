@@ -159,7 +159,7 @@ final class ImportOnlinerService
         }
     }
 
-    private function createCatalogAttributes(array $data, OnCatalogGroup $catalogGroup): array
+    private function createCatalogAttributes(array $data, CatalogGroup $catalogGroup): array
     {
         $out = [];
 

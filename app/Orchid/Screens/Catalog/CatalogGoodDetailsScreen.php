@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\Catalog;
 
-use App\Models\Catalog\Onliner\OnCatalogGood;
-use App\Models\Catalog\Onliner\OnManufacturer;
+use App\Models\Catalog\CatalogGood;
+use App\Models\Catalog\Manufacturer;
 use App\Models\Orchid\Attachment;
 use App\Orchid\Layouts\Catalog\GoodUploadEditLayout;
 use App\Orchid\Layouts\Lego\ActionDeleteModelLayout;
 use App\Orchid\Layouts\Lego\InfoModalLayout;
 use App\Services\Catalog\Enum\CatalogImageTypeEnum;
-use App\Services\Catalog\Enum\CatalogTypeEnum;
-use App\Services\Catalog\Onliner\ImportOnlinerService;
 use App\Services\Catalog\Onliner\CatalogService;
+use App\Services\Catalog\Onliner\ImportOnlinerService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -39,7 +38,7 @@ class CatalogGoodDetailsScreen extends Screen
         private readonly ImportOnlinerService $importService,
     ) {}
 
-    public ?OnCatalogGood $good = null;
+    public ?CatalogGood $good = null;
 
     public function name(): ?string
     {
@@ -48,7 +47,7 @@ class CatalogGoodDetailsScreen extends Screen
 
     public function description(): ?string
     {
-        return View('admin.created_updated', ['model' => $this->good])->toHtml();
+        return View('admin.created_updated', ['value' => $this->good])->toHtml();
     }
 
     public function query(int $id): iterable
@@ -76,8 +75,10 @@ class CatalogGoodDetailsScreen extends Screen
         ]);
 
         $out[] = Layout::rows([
+            ViewField::make('')->view('admin.raw')->value('<h6>Картинки</h6>'),
             $this->getImageBtnLayout(),
-            $this->getImageLayout()
+            ViewField::make('')->view('hr'),
+            $this->getImageLayout(),
         ]);
 
         $out[] = Layout::rows($this->getAttributeLayout());
@@ -119,8 +120,7 @@ class CatalogGoodDetailsScreen extends Screen
     {
         return Layout::rows([
             Group::make([
-                Switcher::make('good.active')->sendTrueOrFalse()->title('Активно'),
-                Relation::make('good.parent_good_id')->title('Родительский товар')->allowEmpty()->fromModel(OnCatalogGood::class, 'string_id', 'string_id'),
+                Relation::make('good.parent_good_id')->title('Родительский товар')->allowEmpty()->fromModel(CatalogGood::class, 'name', 'id'),
             ]),
             Input::make('good.name')->required()->title('Наименование'),
             Input::make('good.prefix')->title('Префикс'),
@@ -131,21 +131,30 @@ class CatalogGoodDetailsScreen extends Screen
 
     private function getAdditionalLayout(): Rows
     {
-        return Layout::rows([
-            Relation::make('good.manufacturer_id')->title('Производитель')->fromModel(OnManufacturer::class, 'name'),
-            Switcher::make('good.is_certification')->sendTrueOrFalse()->title('Требование сертификации')->horizontal(),
-            Group::make([
-                Label::make('')->title('Json данные при импорте'),
-                ModalToggle::make('Json')
-                    ->modalTitle('Json')
-                    ->modal('view_good')
-                    ->parameters(['id' => $this->good->id()]),
-            ])->autoWidth(),
-            Link::make('link')->title('Ссылка на страницу Onliner')->horizontal()->icon('link')->target('_blank')->href($this->good->link),
-            Input::make('good.string_id')->title('Строковый ID')->horizontal(),
-            Input::make('good.int_id')->title('Числовой ID')->horizontal(),
-            Input::make('good.vendor_code')->title('Наш артикул')->horizontal(),
-        ]);
+        $rows[] = Relation::make('good.manufacturer_id')->title('Производитель')->fromModel(Manufacturer::class, 'name');
+
+        $rows[] = ViewField::make('')->view('space');
+
+        if ($this->good->link) {
+            $rows[] = Link::make('link')->title('Ссылка на страницу Onliner')->horizontal()->icon('link')->target('_blank')->href($this->good->link);
+        }
+
+        $rows[] = Input::make('good.string_id')->title('Строковый ID onliner.by')->horizontal()->canSee($this->good->link !== null);
+        $rows[] = Input::make('good.int_id')->title('Числовой ID onliner.by')->horizontal()->canSee($this->good->link !== null);
+        $rows[] = Input::make('good.vendor_code')->title('Наш артикул')->horizontal();
+        $rows[] = Group::make([
+            Label::make('')->title('Json данные при импорте'),
+            ModalToggle::make('Json')
+                ->modalTitle('Json')
+                ->modal('view_good')
+                ->canSee($this->good->link !== null)
+                ->parameters(['id' => $this->good->id()]),
+        ])->autoWidth();
+        $rows[] = ViewField::make('')->view('space');
+        $rows[] = Switcher::make('good.is_certification')->sendTrueOrFalse()->title('Требование сертификации')->horizontal();
+        $rows[] = ViewField::make('')->view('space');
+        return Layout::rows($rows);
+
     }
 
     private function getImageBtnLayout(): Group
@@ -161,6 +170,7 @@ class CatalogGoodDetailsScreen extends Screen
                 ->method('reUploadGoodPhotos')
                 ->novalidate()
                 ->class('mr-btn-success')
+                ->canSee($this->good->link !== null)
                 ->confirm('Вы уверены, что хотите перезагрузить все картинки с сайта Onliner?'),
 
             Button::make('Удалить все фото')
@@ -183,7 +193,7 @@ class CatalogGoodDetailsScreen extends Screen
     public function asyncGetGood(int $id = 0): array
     {
         return [
-            'body' => OnCatalogGood::loadByOrDie($id)->getSL(),
+            'body' => CatalogGood::loadByOrDie($id)->getSL(),
         ];
     }
 
@@ -215,7 +225,7 @@ class CatalogGoodDetailsScreen extends Screen
     public function saveGoodPhoto(Request $request, int $good_id): void
     {
         $imageAttachIds = $request->get('images', []);
-        $good = OnCatalogGood::loadByOrDie($good_id);
+        $good = CatalogGood::loadByOrDie($good_id);
 
         foreach ($imageAttachIds as $imageAttachId) {
             $attachment = Attachment::loadByOrDie((int)$imageAttachId);

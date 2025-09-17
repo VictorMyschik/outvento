@@ -64,15 +64,16 @@ class CatalogGoodsScreen extends Screen
         return ['options' => $options, 'group_id' => $group_id];
     }
 
-    public function createGood(Request $request): void
+    public function createGood(Request $request): RedirectResponse
     {
         $input = Validator::make($request->all(), [
-            'good.active'   => 'required|boolean',
             'good.group_id' => 'required|exists:catalog_groups,id',
             'good.name'     => 'required|string|max:255',
         ])->validate()['good'];
 
-        $this->service->saveGood(0, $input);
+        $id = $this->service->saveGood(0, $input);
+
+        return redirect()->route('goods.details', ['id' => $id]);
     }
 
     public function remove(int $id): void

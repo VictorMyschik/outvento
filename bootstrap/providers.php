@@ -3,6 +3,7 @@
 use App\Orchid\Providers\TableServiceProvider;
 use App\Providers\CatalogServiceProvider;
 use App\Providers\ReferenceProvider;
+use App\Providers\SupervisorProvider;
 use App\Providers\SystemProvider;
 use App\Providers\TravelServiceProvider;
 use Orchid\Icons\IconServiceProvider;
@@ -15,4 +16,5 @@ return [
     ReferenceProvider::class,
     SystemProvider::class,
     CatalogServiceProvider::class,
+    SupervisorProvider::class,
 ];

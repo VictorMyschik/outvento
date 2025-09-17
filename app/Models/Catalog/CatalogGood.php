@@ -26,6 +26,7 @@ class CatalogGood extends ORM
         'group_id',
         'prefix',
         'name',
+        'manufacturer_id',
         'parent_good_id',
         'int_id',
         'string_id',

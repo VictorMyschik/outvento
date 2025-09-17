@@ -7,12 +7,13 @@ namespace App\Jobs\Enum;
 enum QueueJob: string
 {
     case Default = 'default';
-    case OnlinerCatalog = 'onliner_catalog';
+    case Catalog = 'catalog';
 
     public static function getSelectList(): array
     {
         return [
             self::Default->value => self::Default->getLabel(),
+            self::Catalog->value => self::Catalog->getLabel(),
         ];
     }
 
@@ -20,7 +21,7 @@ enum QueueJob: string
     {
         return match ($this) {
             self::Default => 'Default',
-            self::OnlinerCatalog => 'Onliner catalog',
+            self::Catalog => 'Catalog',
         };
     }
 }
