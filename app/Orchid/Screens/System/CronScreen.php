@@ -16,6 +16,8 @@ class CronScreen extends Screen
 {
     private const int ALL_ACTIVE = -1;
 
+    private const int ALL_ACTIVE_NOW = -2;
+
     protected ?string $name = 'Cron';
 
     public function __construct(private readonly CronService $service) {}
@@ -42,7 +44,13 @@ class CronScreen extends Screen
                 ->class('mr-btn-danger')
                 ->icon('refresh')
                 ->method('run', ['id' => self::ALL_ACTIVE])
-                ->confirm('Run all Cron jobs'),
+                ->confirm('Запустить все активные задания, если необходимо'),
+
+            Button::make('run all active now')
+                ->class('mr-btn-danger')
+                ->icon('refresh')
+                ->method('run', ['id' => self::ALL_ACTIVE_NOW])
+                ->confirm('Запустить все активные задания немедленно'),
         ];
     }
 
@@ -82,6 +90,12 @@ class CronScreen extends Screen
             $this->service->runAllActive();
             return;
         }
+
+        if ($id === self::ALL_ACTIVE_NOW) {
+            $this->service->runAllActiveNow();
+            return;
+        }
+
         $this->service->run(Cron::loadByOrDie($id));
     }
 }

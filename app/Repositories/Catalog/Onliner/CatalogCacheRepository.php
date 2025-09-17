@@ -10,7 +10,10 @@ class CatalogCacheRepository
 {
     public const string CACHE_CATALOG_GROUPS = 'catalog_groups';
 
-    public function __construct(private readonly CatalogDBRepository $service, private readonly CacheInterface $cache) {}
+    public function __construct(
+        private readonly CatalogDBRepository $service,
+        private readonly CacheInterface      $cache
+    ) {}
 
     private array $catalogGroupList = [];
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Orchid\Screens\Catalog;
 
 use App\Models\Catalog\CatalogGood;
+use App\Models\Catalog\CatalogGroup;
 use App\Models\Catalog\Manufacturer;
 use App\Models\Orchid\Attachment;
 use App\Orchid\Layouts\Catalog\GoodUploadEditLayout;
@@ -97,6 +98,7 @@ class CatalogGoodDetailsScreen extends Screen
         $list = $this->service->getGoodAttributes($this->good->id());
 
         return [
+            ViewField::make('')->view('admin.raw')->value('<h6>Атрибуты</h6>'),
             ViewField::make('')->view('admin.onliner.good_attributes')->value($list),
         ];
     }
@@ -120,7 +122,11 @@ class CatalogGoodDetailsScreen extends Screen
     {
         return Layout::rows([
             Group::make([
-                Relation::make('good.parent_good_id')->title('Родительский товар')->allowEmpty()->fromModel(CatalogGood::class, 'name', 'id'),
+                Relation::make('good.parent_good_id')
+                    ->title('Родительский товар')
+                    ->allowEmpty()
+                    ->canSee($this->good->link !== null)
+                    ->fromModel(CatalogGood::class, 'string_id', 'string_id'),
             ]),
             Input::make('good.name')->required()->title('Наименование'),
             Input::make('good.prefix')->title('Префикс'),
@@ -131,7 +137,8 @@ class CatalogGoodDetailsScreen extends Screen
 
     private function getAdditionalLayout(): Rows
     {
-        $rows[] = Relation::make('good.manufacturer_id')->title('Производитель')->fromModel(Manufacturer::class, 'name');
+        $rows[] = Relation::make('good.manufacturer_id')->title('Производитель')->allowEmpty()->fromModel(Manufacturer::class, 'name');
+        $rows[] = Relation::make('good.group_id')->title('Группа')->allowEmpty()->fromModel(CatalogGroup::class, 'name');
 
         $rows[] = ViewField::make('')->view('space');
 

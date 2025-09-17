@@ -10,7 +10,7 @@ use App\Services\Email\Enum\EmailTypeEnum;
 use App\Services\Subscription\SubscriptionRepositoryInterface;
 use App\Services\System\Enum\Language;
 
-final class SubscriptionRepository extends DatabaseRepository implements SubscriptionRepositoryInterface
+final readonly class SubscriptionRepository extends DatabaseRepository implements SubscriptionRepositoryInterface
 {
     public function getSubscriptionById(int $id): ?Subscription
     {

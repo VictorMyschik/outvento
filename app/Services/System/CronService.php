@@ -5,37 +5,61 @@ declare(strict_types=1);
 namespace App\Services\System;
 
 use App\Models\System\Cron;
-use App\Orchid\Screens\System\Enum\CronKeyEnum;
+use App\Services\Catalog\Onliner\ImportOnlinerService;
+use App\Services\System\Enum\CronKeyEnum;
 use DateInterval;
 use Exception;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Artisan;
+use Psr\Log\LoggerInterface;
 
 final readonly class CronService
 {
     public function __construct(
+        private ImportOnlinerService $importOnlinerService,
+        private LoggerInterface      $logger,
     ) {}
 
     public function setLog(string $message): void
     {
-        Log::info($message);
+        $this->logger->info($message);
     }
 
     public function runAllActive(): void
     {
+        $this->setLog('Cron Start');
+
         /** @var Cron $job */
         foreach (Cron::where('active', true)->get()->all() as $job) {
             if ($this->needRun($job)) {
+                $this->setLog('Run job: ' . $job->getCronKey()->getLabel());
                 $this->run($job);
             }
         }
+
+        $this->setLog('Cron End');
+    }
+
+    public function runAllActiveNow(): void
+    {
+        $this->setLog('Cron Start');
+
+        /** @var Cron $job */
+        foreach (Cron::where('active', true)->get()->all() as $job) {
+            $this->setLog('Run job: ' . $job->getCronKey()->getLabel());
+            $this->run($job);
+        }
+
+        $this->setLog('Cron End');
     }
 
     public function needRun(Cron $job): bool
     {
         $lastWork = $job->getLastWork();
+
         if (is_null($lastWork)) {
             return true;
         }
+
         $lastWork->add(new DateInterval('PT' . $job->getPeriod() . 'M'));
 
         return now() > $lastWork;
@@ -45,9 +69,8 @@ final readonly class CronService
     {
         try {
             match ($cron->getCronKey()) {
-                CronKeyEnum::UPDATE_CATALOG => $this->globalImportService->updateCatalog(),
-                CronKeyEnum::UPDATE_SHOP_GOODS => $this->globalImportService->runLoadGoods(),
-                CronKeyEnum::LOAD_GOOD_METRICS => $this->globalImportService->runLoadMetrics(),
+                CronKeyEnum::OnlinerCatalogGoods => $this->importOnlinerService->updateCatalogGoods(),
+                CronKeyEnum::ClearLogs => $this->clearLogs(),
             };
 
             $cron->setLastWork(now());
@@ -55,5 +78,14 @@ final readonly class CronService
         } catch (Exception $e) {
             $this->setLog('Wrong run cron job:' . $e->getMessage());
         }
+    }
+
+    private function clearLogs(): void
+    {
+        Artisan::call('cache:clear');
+        Artisan::call('view:clear');
+        Artisan::call('route:clear');
+        Artisan::call('config:clear');
+        file_put_contents(storage_path('logs/laravel.log'), '');
     }
 }

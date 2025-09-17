@@ -5,7 +5,7 @@ namespace App\Models\System;
 use App\Models\Lego\Fields\ActiveFieldTrait;
 use App\Models\Lego\Fields\DescriptionNullableFieldTrait;
 use App\Models\ORM\ORM;
-use App\Orchid\Screens\System\Enum\CronKeyEnum;
+use App\Services\System\Enum\CronKeyEnum;
 use Carbon\Carbon;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;

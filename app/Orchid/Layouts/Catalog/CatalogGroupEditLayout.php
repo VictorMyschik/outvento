@@ -13,7 +13,7 @@ class CatalogGroupEditLayout extends Rows
     {
         return [
             Input::make('type.name')->type('text')->max(255)->required()->title('Наименование'),
-            Input::make('type.json_link')->type('text')->max(255)->required()->title('Ссылка на Json данные'),
+            Input::make('type.json_link')->type('text')->max(255)->title('Ссылка на Json данные'),
         ];
     }
 }

@@ -81,7 +81,7 @@ readonly class CatalogDBRepository extends DatabaseRepository implements Catalog
 
     public function getCatalogGroupList(): array
     {
-        return (array)CatalogGroup::get()->keyBy('id')->all();
+        return (array)CatalogGroup::whereNotNull('json_link')->get()->keyBy('id')->all();
     }
 
     public function hasGoodByStringId(string $stringId): bool

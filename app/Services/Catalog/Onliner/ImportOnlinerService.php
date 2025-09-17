@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services\Catalog\Onliner;
 
-use App\Events\ESAddGoodEvent;
 use App\Jobs\Catalog\DownloadGoodJob;
 use App\Jobs\Catalog\SearchGoodsByCatalogGroupJob;
 use App\Models\Catalog\CatalogGood;
@@ -278,7 +277,7 @@ final class ImportOnlinerService
         $list = $this->catalogService->getCatalogGroupList();
 
         foreach ($list as $group) {
-            SearchGoodsByCatalogGroupJob::dispatch($group);
+            SearchGoodsByCatalogGroupJob::dispatch($group->id());
         }
     }
 

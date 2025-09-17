@@ -2,7 +2,7 @@
 
 namespace App\Orchid\Layouts\System\Cron;
 
-use App\Orchid\Screens\System\Enum\CronKeyEnum;
+use App\Services\System\Enum\CronKeyEnum;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Fields\Switcher;

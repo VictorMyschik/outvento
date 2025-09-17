@@ -62,7 +62,7 @@ class CatalogGroupsScreen extends Screen
     {
         $input = Validator::make($request->all(), [
             'type.name'      => 'required|string',
-            'type.json_link' => 'required|string',
+            'type.json_link' => 'nullable|string',
         ])->validate()['type'];
 
         $this->service->saveCatalogGroup($groupId, $input);
