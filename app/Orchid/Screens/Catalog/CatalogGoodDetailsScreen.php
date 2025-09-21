@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\Catalog;
 
+use App\Helpers\TouchUserUpdateEvent;
 use App\Models\Catalog\CatalogGood;
+use App\Models\Catalog\CatalogGoodDetail;
 use App\Models\Catalog\CatalogGroup;
 use App\Models\Catalog\Manufacturer;
 use App\Models\Orchid\Attachment;
+use App\Orchid\Layouts\Catalog\GoodAttributeEditLayout;
 use App\Orchid\Layouts\Catalog\GoodUploadEditLayout;
 use App\Orchid\Layouts\Lego\ActionDeleteModelLayout;
 use App\Orchid\Layouts\Lego\InfoModalLayout;
@@ -31,6 +34,7 @@ use Orchid\Screen\Layouts\Modal;
 use Orchid\Screen\Layouts\Rows;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
+use Orchid\Support\Facades\Toast;
 
 class CatalogGoodDetailsScreen extends Screen
 {
@@ -79,7 +83,7 @@ class CatalogGoodDetailsScreen extends Screen
             ViewField::make('')->view('admin.raw')->value('<h6>Картинки</h6>'),
             $this->getImageBtnLayout(),
             ViewField::make('')->view('hr'),
-            $this->getImageLayout(),
+            $this->getImageLayout() ?: ViewField::make('')->view('admin.raw')->value('Фото отсутствуют'),
         ]);
 
         $out[] = Layout::rows($this->getAttributeLayout());
@@ -89,6 +93,7 @@ class CatalogGoodDetailsScreen extends Screen
 
         $out[] = Layout::modal('view_good', InfoModalLayout::class)->async('asyncGetGood')->size(Modal::SIZE_XL);
         $out[] = Layout::modal('upload_good_photo', GoodUploadEditLayout::class)->async('asyncGetGoodPhoto');
+        $out[] = Layout::modal('edit_good_attribute', GoodAttributeEditLayout::class)->async('asyncGetGoodAttribute');
 
         return $out;
     }
@@ -96,16 +101,56 @@ class CatalogGoodDetailsScreen extends Screen
     private function getAttributeLayout(): array
     {
         $list = $this->service->getGoodAttributes($this->good->id());
+        $actionBtn[] = ModalToggle::make('Добавить атрибут')
+            ->class('mr-btn-success')
+            ->modal('edit_good_attribute')
+            ->modalTitle('Добавить атрибут')
+            ->method('saveGoodAttribute', ['goodAttributeId' => 0, 'catalogGroupId' => $this->good?->getGroupID()]);
 
+        count($list) && $actionBtn[] = Button::make('Удалить все атрибуты')
+            ->class('mr-btn-danger')
+            ->confirm('Все атрибуты этого товара будут удалены. Вы уверены, что хотите удалить все атрибуты товара?')
+            ->method('deleteAllGoodAttributes', ['good_id' => $this->good?->id()]);
+
+        $out[] = ViewField::make('')->view('admin.raw')->value('<h6>Атрибуты</h6>');
+
+        $out[] = Group::make($actionBtn)->autoWidth();
+        $out[] = ViewField::make('')->view('hr');
+        $out[] = ViewField::make('')->view('admin.onliner.good_attributes')->value($list);
+
+        return $out;
+    }
+
+    public function saveGoodAttribute(Request $request, int $goodAttributeId): void
+    {
+        $attributeValueId = (int)$request->get('attributeValueId');
+        $boolValue = $request->get('booleanValue') !== null ? (bool)$request->get('booleanValue') : null;
+
+        try {
+            $this->service->addGoodAttribute($goodAttributeId, $this->good->id(), $attributeValueId, $boolValue);
+        } catch (\Exception $e) {
+            Toast::error('Ошибка при добавлении атрибута: ' . $e->getMessage())->delay(3000);
+            return;
+        }
+
+        Toast::info('Атрибут успешно добавлен')->delay(1000);
+    }
+
+    public function asyncGetGoodAttribute(int $goodAttributeId, int $catalogGroupId): array
+    {
         return [
-            ViewField::make('')->view('admin.raw')->value('<h6>Атрибуты</h6>'),
-            ViewField::make('')->view('admin.onliner.good_attributes')->value($list),
+            'goodAttributeId' => $goodAttributeId,
+            'catalogGroupId'  => $catalogGroupId,
         ];
     }
 
-    private function getImageLayout(): ViewField
+    private function getImageLayout(): ?ViewField
     {
         $images = $this->service->getGoodImages($this->good->id());
+
+        if (!$images) {
+            return null;
+        }
 
         foreach ($images as $image) {
             $image->btn = Group::make([
@@ -255,5 +300,10 @@ class CatalogGoodDetailsScreen extends Screen
     public function deleteAllGoodPhoto(int $good_id): void
     {
         $this->service->deleteAllGoodPhoto($good_id);
+    }
+
+    public function deleteAllGoodAttributes(int $good_id): void
+    {
+        $this->service->deleteAllGoodAttributes($good_id);
     }
 }

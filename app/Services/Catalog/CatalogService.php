@@ -175,6 +175,7 @@ final readonly class CatalogService
                 'sort'        => $item->attribute_sort,
                 'bool'        => $item->bool_value,
                 'description' => $item->attribute_description,
+                'group_id'    => $item->group_id,
             );
 
             $out[$attributeGroupName]['sort'] = $attributeGroupSort;
@@ -226,5 +227,15 @@ final readonly class CatalogService
     public function saveAttribute(int $attributeId, array $data): int
     {
         return $this->repository->saveAttribute($attributeId, $data);
+    }
+
+    public function deleteAllGoodAttributes(int $goodId): void
+    {
+        $this->repository->deleteAllGoodAttributes($goodId);
+    }
+
+    public function addGoodAttribute(int $goodAttributeId, int $goodId, int $attributeValueId, ?bool $boolValue): int
+    {
+        return $this->repository->addGoodAttribute($goodAttributeId, $goodId, $attributeValueId, $boolValue);
     }
 }

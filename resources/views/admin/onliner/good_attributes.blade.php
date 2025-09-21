@@ -1,7 +1,7 @@
 <table class="table table-hover table-compact">
     <tbody>
     @foreach($value as $groupName => $attributes)
-        <tr>
+        <tr class="table-secondary">
             <th colspan="2">{{ $groupName }}</th>
         </tr>
         @foreach($attributes['data'] as $attribute)

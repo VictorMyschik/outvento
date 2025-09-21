@@ -2000,14 +2000,6 @@
   transition: all 0.4s ease;
 }
 
-.side-blog .top-detail-info ul li {
-  font-size: 15px;
-  font-weight: 500;
-  line-height: 18.9px;
-  color: #83827F;
-  position: relative;
-}
-
 .side-blog .top-detail-info ul li:not(:last-child) {
   margin-right: 33px;
 }
@@ -2021,6 +2013,14 @@
   top: 50%;
   transform: translateY(-50%);
   right: -23px;
+}
+
+.side-blog .top-detail-info ul li {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 18.9px;
+  color: #83827F;
+  position: relative;
 }
 
 .side-blog .top-detail-info ul li i {
@@ -2690,14 +2690,6 @@
   margin-right: 45px;
 }
 
-.about-us-h2 .content-about-us .about-us-list li {
-  padding: 11px 26px;
-  background-color: #FFFFFF;
-  border-radius: 26px;
-  box-shadow: 0 2px 7px 0 rgba(0, 0, 0, 0.07);
-  transition: all 0.3s ease-in-out;
-}
-
 .about-us-h2 .content-about-us .about-us-list li:not(:last-child) {
   margin-bottom: 33px;
 }
@@ -2708,6 +2700,14 @@
 
 .about-us-h2 .content-about-us .about-us-list li:hover .number, .about-us-h2 .content-about-us .about-us-list li:hover .experience {
   color: #FFFFFF;
+}
+
+.about-us-h2 .content-about-us .about-us-list li {
+  padding: 11px 26px;
+  background-color: #FFFFFF;
+  border-radius: 26px;
+  box-shadow: 0 2px 7px 0 rgba(0, 0, 0, 0.07);
+  transition: all 0.3s ease-in-out;
 }
 
 .about-us-h2 .content-about-us .about-us-list li .number {
@@ -3113,16 +3113,16 @@
   padding: 38px 55px;
 }
 
+.tf-widget-activities .tabs-activities-content .activities-content .icon-activitis:hover {
+  rotate: 45deg;
+}
+
 .tf-widget-activities .tabs-activities-content .activities-content .icon-activitis {
   width: 123px;
   height: 123px;
   border-radius: 100%;
   background-color: rgba(1, 6, 4, 0.1);
   color: #FFFFFF;
-}
-
-.tf-widget-activities .tabs-activities-content .activities-content .icon-activitis:hover {
-  rotate: 45deg;
 }
 
 .tf-widget-activities .tabs-activities-content .activities-content .icon-activitis i {
@@ -3606,15 +3606,15 @@
   flex-direction: column;
 }
 
+.testimonial-section-h4 .gallery-testimonial-h4 .mySwiperGalllery .swiper-wrapper .swiper-slide.swiper-slide-thumb-active .image {
+  border-bottom: 5px solid #4DA528;
+  border-right: 5px solid #4DA528;
+}
+
 .testimonial-section-h4 .gallery-testimonial-h4 .mySwiperGalllery .swiper-wrapper .swiper-slide {
   margin-bottom: 35px;
   margin-left: 15px;
   margin-top: 15px;
-}
-
-.testimonial-section-h4 .gallery-testimonial-h4 .mySwiperGalllery .swiper-wrapper .swiper-slide.swiper-slide-thumb-active .image {
-  border-bottom: 5px solid #4DA528;
-  border-right: 5px solid #4DA528;
 }
 
 .testimonial-section-h4 .gallery-testimonial-h4 .mySwiperGalllery .swiper-wrapper .swiper-slide .image {
@@ -4506,11 +4506,14 @@
 
 .terms-condition .tab-terms-condition .tab-content .list-term li {
   margin-left: 29px;
-  list-style: disc;
 }
 
 .terms-condition .tab-terms-condition .tab-content .list-term li:not(:last-child) {
   margin-bottom: 19px;
+}
+
+.terms-condition .tab-terms-condition .tab-content .list-term li {
+  list-style: disc;
 }
 
 .terms-condition .tab-terms-condition .tab-content .list-term li span {
@@ -4658,6 +4661,10 @@
   transform: translateY(-50%);
 }
 
+.login .login-wrap .content .input-wrap-social .login-social:not(:last-child) {
+  margin-right: 20px;
+}
+
 .login .login-wrap .content .input-wrap-social .login-social {
   font-size: 15px;
   font-weight: 500;
@@ -4666,10 +4673,6 @@
   padding: 12px 15px;
   border: 1px solid rgba(0, 0, 0, 0.26);
   border-radius: 6px;
-}
-
-.login .login-wrap .content .input-wrap-social .login-social:not(:last-child) {
-  margin-right: 20px;
 }
 
 .login .login-wrap .content .input-wrap-social .login-social img {
@@ -5130,14 +5133,14 @@
   margin-right: 15px;
 }
 
+.tour-single .review-content-tour .client-review .client-review-list .client-review-item:not(:last-child) {
+  margin-bottom: 48px;
+}
+
 .tour-single .review-content-tour .client-review .client-review-list .client-review-item {
   padding-right: 10em;
   padding-bottom: 27px;
   border-bottom: 1px solid #EDEEEE;
-}
-
-.tour-single .review-content-tour .client-review .client-review-list .client-review-item:not(:last-child) {
-  margin-bottom: 48px;
 }
 
 .tour-single .review-content-tour .client-review .client-review-list .client-review-item .avata {
@@ -5430,13 +5433,13 @@
   margin-right: 14px;
 }
 
+.has-dashboard.actives {
+  margin-left: 70px;
+}
+
 .has-dashboard {
   margin-left: 320px;
   transition: all 0.2s ease-out;
-}
-
-.has-dashboard.actives {
-  margin-left: 70px;
 }
 
 .has-dashboard .main-header.is-fixed {
@@ -5779,14 +5782,14 @@
   margin-left: 20px;
 }
 
-.has-dashboard .profile-dashboard .form-add-tour .input-wrap .button-add {
-  padding: 15px 35px;
-  border-radius: 5px;
-}
-
 .has-dashboard .profile-dashboard .form-add-tour .input-wrap .button-add i {
   font-size: 12px;
   margin-right: 5px;
+}
+
+.has-dashboard .profile-dashboard .form-add-tour .input-wrap .button-add {
+  padding: 15px 35px;
+  border-radius: 5px;
 }
 
 .has-dashboard .profile-dashboard .form-add-tour .input-wrap .icon-delete-price {
@@ -6036,11 +6039,6 @@
   gap: 20px;
 }
 
-.has-dashboard .profile-dashboard .my-booking-wrap .booking-table-title li {
-  width: 100%;
-  text-align: center;
-}
-
 .has-dashboard .profile-dashboard .my-booking-wrap .booking-table-title li:first-child {
   min-width: 400px;
   text-align: left;
@@ -6049,6 +6047,11 @@
 .has-dashboard .profile-dashboard .my-booking-wrap .booking-table-title li:last-child {
   max-width: 145px;
   width: 100%;
+}
+
+.has-dashboard .profile-dashboard .my-booking-wrap .booking-table-title li {
+  width: 100%;
+  text-align: center;
 }
 
 .has-dashboard .profile-dashboard .my-booking-wrap .booking-table-title li p {
@@ -6662,7 +6665,6 @@
 
 .wd-search .form-group {
   position: relative;
-  text-align: left;
 }
 
 .wd-search .form-group:not(:last-child) {
@@ -6676,6 +6678,10 @@
   position: absolute;
   content: "";
   right: -6px;
+}
+
+.wd-search .form-group {
+  text-align: left;
 }
 
 .wd-search .form-group i {
@@ -7157,17 +7163,13 @@
   transform: translate(-50%, -50%);
 }
 
-.swiper-button-next {
-  background-color: #4DA528;
-}
-
 .swiper-button-next::after {
   content: "\e9e0";
   font-family: "icomoon";
   font-size: 15px !important;
 }
 
-.swiper-button-prev {
+.swiper-button-next {
   background-color: #4DA528;
 }
 
@@ -7175,6 +7177,10 @@
   content: "\e9df";
   font-family: "icomoon";
   font-size: 15px !important;
+}
+
+.swiper-button-prev {
+  background-color: #4DA528;
 }
 
 .swiper-button-disabled {
@@ -7997,16 +8003,16 @@
   margin-top: 19px;
 }
 
+.destination-style:hover > img {
+  transform: scale(1.2) rotate(-1deg);
+  transition: all 0.3s ease;
+}
+
 .destination-style {
   border-radius: 7px;
   overflow: hidden;
   display: block;
   height: 100%;
-}
-
-.destination-style:hover > img {
-  transform: scale(1.2) rotate(-1deg);
-  transition: all 0.3s ease;
 }
 
 .destination-style::before {
@@ -8163,16 +8169,16 @@
   padding: 29px 66px 26px 45px;
 }
 
+.tf-widget-blog .blog-content .meta-list li:not(:last-child) {
+  margin-right: 44px;
+}
+
 .tf-widget-blog .blog-content .meta-list li {
   font-size: 14px;
   font-weight: 400;
   line-height: 17.68px;
   color: #081E2A;
   position: relative;
-}
-
-.tf-widget-blog .blog-content .meta-list li:not(:last-child) {
-  margin-right: 44px;
 }
 
 .tf-widget-blog .blog-content .meta-list li i {
@@ -8212,14 +8218,6 @@
   flex-wrap: wrap;
 }
 
-.blog-style .blog-content .meta-list li {
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 17.68px;
-  color: #081E2A;
-  position: relative;
-}
-
 .blog-style .blog-content .meta-list li:not(:last-child) {
   margin-right: 44px;
 }
@@ -8233,6 +8231,14 @@
   right: -34px;
   top: 50%;
   transform: translateY(-50%);
+}
+
+.blog-style .blog-content .meta-list li {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 17.68px;
+  color: #081E2A;
+  position: relative;
 }
 
 .blog-style .blog-content .meta-list li i {
@@ -8324,16 +8330,16 @@
   z-index: 1;
 }
 
-.blog-style2 .blog-content .meta-list li {
-  color: rgba(255, 255, 255, 0.6);
-}
-
 .blog-style2 .blog-content .meta-list li:not(:last-child) {
   margin-right: 17px;
 }
 
 .blog-style2 .blog-content .meta-list li:not(:last-child)::before {
   content: unset;
+}
+
+.blog-style2 .blog-content .meta-list li {
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .blog-style2 .blog-content .meta-list li i {

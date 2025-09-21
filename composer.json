@@ -18,7 +18,7 @@
     "laravel/tinker": "^2.9",
     "laravel/ui": "^4.6",
     "orchid/icons": "^2.2.1",
-    "orchid/platform": "14.52.0",
+    "orchid/platform": ">=14.6",
     "spatie/laravel-html": "^3.11",
     "stichoza/google-translate-php": "^5.2",
     "elasticsearch/elasticsearch": "~v9.0.0",

@@ -146,6 +146,7 @@ readonly class CatalogDBRepository extends DatabaseRepository implements Catalog
 
         return $query->select([
             CatalogGroupAttribute::getTableName() . '.name as group_name',
+            CatalogGroupAttribute::getTableName() . '.id as group_id',
             CatalogAttribute::getTableName() . '.name as attribute_name',
             CatalogAttribute::getTableName() . '.sort as attribute_sort',
             CatalogAttribute::getTableName() . '.description as attribute_description',
@@ -217,5 +218,22 @@ readonly class CatalogDBRepository extends DatabaseRepository implements Catalog
         }
 
         return $this->db->table(CatalogAttribute::getTableName())->insertGetId($data);
+    }
+
+    public function deleteAllGoodAttributes(int $goodId): void
+    {
+        $this->db->table(CatalogGoodAttribute::getTableName())->where('good_id', $goodId)->delete();
+    }
+
+    public function addGoodAttribute(int $goodAttributeId, int $goodId, int $attributeValueId, ?bool $boolValue): int
+    {
+        $data = ['good_id' => $goodId, 'attribute_value_id' => $attributeValueId, 'bool_value' => $boolValue];
+
+        if ($goodAttributeId) {
+            $this->db->table(CatalogGoodAttribute::getTableName())->where('id', $goodAttributeId)->update($data);
+            return $goodAttributeId;
+        }
+
+        return $this->db->table(CatalogGoodAttribute::getTableName())->insertGetId($data);
     }
 }
