@@ -7,7 +7,6 @@ namespace App\Repositories\Catalog\Onliner;
 use App\Models\Catalog\CatalogAttribute;
 use App\Models\Catalog\CatalogAttributeValue;
 use App\Models\Catalog\CatalogGood;
-use App\Models\Catalog\CatalogGoodAttribute;
 use App\Models\Catalog\CatalogGroup;
 use App\Models\Catalog\CatalogGroupAttribute;
 use App\Models\Catalog\CatalogImage;
@@ -72,4 +71,6 @@ interface CatalogRepositoryInterface
     public function deleteAllGoodAttributes(int $goodId): void;
 
     public function addGoodAttribute(int $goodAttributeId, int $goodId, int $attributeValueId, ?bool $boolValue): int;
+
+    public function deleteGoodAttribute(int $goodAttributeId): void;
 }

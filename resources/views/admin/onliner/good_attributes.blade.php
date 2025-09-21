@@ -2,7 +2,7 @@
     <tbody>
     @foreach($value as $groupName => $attributes)
         <tr class="table-secondary">
-            <th colspan="2">{{ $groupName }}</th>
+            <th colspan="3">{{ $groupName }}</th>
         </tr>
         @foreach($attributes['data'] as $attribute)
             <tr>
@@ -14,6 +14,9 @@
                         <x-orchid-icon path="fa.ban"/>
                     @endif
                     {!! $attribute['value'] !!}
+                </td>
+                <td>
+                    {!! $attribute['deleteBtn'] !!}
                 </td>
             </tr>
         @endforeach

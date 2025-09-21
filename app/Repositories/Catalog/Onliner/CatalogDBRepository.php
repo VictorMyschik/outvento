@@ -236,4 +236,9 @@ readonly class CatalogDBRepository extends DatabaseRepository implements Catalog
 
         return $this->db->table(CatalogGoodAttribute::getTableName())->insertGetId($data);
     }
+
+    public function deleteGoodAttribute(int $goodAttributeId): void
+    {
+        $this->db->table(CatalogGoodAttribute::getTableName())->where('id', $goodAttributeId)->delete();
+    }
 }

@@ -101,6 +101,15 @@ class CatalogGoodDetailsScreen extends Screen
     private function getAttributeLayout(): array
     {
         $list = $this->service->getGoodAttributes($this->good->id());
+
+        foreach ($list as &$groupAttribute) {
+            foreach ($groupAttribute['data'] as &$attribute) {
+                $attribute['deleteBtn'] = Button::make('')->icon('trash')->confirm('Удалить?')
+                    ->method('deleteGoodAttribute')->novalidate()
+                    ->parameters(['goodAttributeId' => $attribute['id']]);
+            }
+        }
+
         $actionBtn[] = ModalToggle::make('Добавить атрибут')
             ->class('mr-btn-success')
             ->modal('edit_good_attribute')
@@ -119,6 +128,18 @@ class CatalogGoodDetailsScreen extends Screen
         $out[] = ViewField::make('')->view('admin.onliner.good_attributes')->value($list);
 
         return $out;
+    }
+
+    public function deleteGoodAttribute(int $goodAttributeId): void
+    {
+        try {
+            $this->service->deleteGoodAttribute($goodAttributeId);
+        } catch (\Exception $e) {
+            Toast::error('Ошибка при удалении атрибута: ' . $e->getMessage())->delay(3000);
+            return;
+        }
+
+        Toast::info('Атрибут успешно удален')->delay(1000);
     }
 
     public function saveGoodAttribute(Request $request, int $goodAttributeId): void

@@ -7,6 +7,7 @@ namespace App\Services\Catalog;
 use App\Models\Catalog\CatalogAttribute;
 use App\Models\Catalog\CatalogAttributeValue;
 use App\Models\Catalog\CatalogGood;
+use App\Models\Catalog\CatalogGoodAttribute;
 use App\Models\Catalog\CatalogGroup;
 use App\Models\Catalog\CatalogGroupAttribute;
 use App\Models\Catalog\CatalogImage;
@@ -237,5 +238,10 @@ final readonly class CatalogService
     public function addGoodAttribute(int $goodAttributeId, int $goodId, int $attributeValueId, ?bool $boolValue): int
     {
         return $this->repository->addGoodAttribute($goodAttributeId, $goodId, $attributeValueId, $boolValue);
+    }
+
+    public function deleteGoodAttribute(int $goodAttributeId): void
+    {
+        $this->repository->deleteAttribute($goodAttributeId);
     }
 }
