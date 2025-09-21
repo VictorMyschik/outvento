@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Orchid\Screens\Catalog\CatalogAttributeScreen;
 use App\Orchid\Screens\Catalog\CatalogGoodDetailsScreen;
 use App\Orchid\Screens\Catalog\CatalogGoodsScreen;
 use App\Orchid\Screens\Catalog\CatalogGroupsScreen;
@@ -132,10 +133,12 @@ Route::screen('/reference/category-equipments/list', CategoryEquipmentScreen::cl
 Route::screen('/reference/equipments/list', EquipmentScreen::class)->name('reference.equipments.list');
 Route::screen('/reference/cities/list', CitiesScreen::class)->name('reference.cities.list');
 //// Subscriptions
-Route::screen('subscriptions/list', SubscriptionScreen::class)->name('subscriptions.list');
+Route::screen('/subscriptions/list', SubscriptionScreen::class)->name('subscriptions.list');
 
-// Onliner
-Route::screen('catalog/goods/list', CatalogGoodsScreen::class)->name('goods.list');
-Route::screen('catalog/good/{id}/details', CatalogGoodDetailsScreen::class)->name('goods.details');
-Route::screen('catalog/manufacturers/list', ManufacturerScreen::class)->name('manufacturer.list');
-Route::screen('catalog/types/list', CatalogGroupsScreen::class)->name('type.list');
+// Catalog
+Route::screen('/catalog/goods/list', CatalogGoodsScreen::class)->name('goods.list');
+Route::screen('/catalog/good/{id}/details', CatalogGoodDetailsScreen::class)->name('goods.details');
+Route::screen('/catalog/manufacturers/list', ManufacturerScreen::class)->name('manufacturer.list');
+Route::screen('/catalog/types/list', CatalogGroupsScreen::class)->name('type.list');
+Route::screen('/catalog/groups/list', CatalogGroupsScreen::class)->name('catalog.groups.list');
+Route::screen('/catalog/group/{group_id}/attributes/list', CatalogAttributeScreen::class)->name('catalog.group.attributes');

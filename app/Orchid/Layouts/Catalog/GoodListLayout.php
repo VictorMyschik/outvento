@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Orchid\Layouts\Catalog;
 
 use App\Models\Catalog\CatalogGood;
-use App\Services\Catalog\Onliner\CatalogService;
+use App\Services\Catalog\CatalogService;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\ModalToggle;
@@ -32,7 +32,7 @@ class GoodListLayout extends Table
                 return $good->manufacturer_id ? $this->service->getManufacturerName($good->manufacturer_id) : null;
             })->sort(),
             TD::make('group_id', 'Тип')->render(function (CatalogGood $good) {
-                return $this->service->getCatalogGroupById($good->group_id)->getName();
+                return $this->service->getGroupById($good->group_id)->getName();
             })->sort(),
             TD::make('prefix', 'Префикс')->sort(),
             TD::make('name')->render(function (CatalogGood $good) {

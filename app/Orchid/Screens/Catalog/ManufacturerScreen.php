@@ -7,7 +7,7 @@ namespace App\Orchid\Screens\Catalog;
 use App\Orchid\Filters\Catalog\ManufacturerFilter;
 use App\Orchid\Layouts\Catalog\ManufacturerEditLayout;
 use App\Orchid\Layouts\Catalog\ManufacturerListLayout;
-use App\Services\Catalog\Onliner\CatalogService;
+use App\Services\Catalog\CatalogService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;

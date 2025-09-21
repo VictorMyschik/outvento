@@ -9,7 +9,7 @@ use App\Orchid\Filters\Catalog\CatalogGoodsFilter;
 use App\Orchid\Layouts\Catalog\CatalogGoodAddNewLayout;
 use App\Orchid\Layouts\Catalog\GoodListLayout;
 use App\Orchid\Layouts\Lego\InfoModalLayout;
-use App\Services\Catalog\Onliner\CatalogService;
+use App\Services\Catalog\CatalogService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;

@@ -7,6 +7,7 @@ namespace App\Orchid\Layouts\Catalog;
 use App\Models\Catalog\CatalogGroup;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
+use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
@@ -19,7 +20,10 @@ class CatalogGroupListLayout extends Table
     {
         return [
             TD::make('id', 'ID')->sort(),
-            TD::make('name')->sort(),
+            TD::make('name', 'Наименование группы')->sort(),
+            TD::make('Атрибуты')->render(function (CatalogGroup $catalogGroup) {
+                return Link::make('link')->target('_blank')->route('catalog.group.attributes', ['group_id' => $catalogGroup->id()]);
+            })->sort(),
             TD::make('json_link', 'Ссылка на Json данные')->sort(),
 
             TD::make('#', '#')

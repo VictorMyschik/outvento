@@ -8,6 +8,7 @@ use App\Jobs\Catalog\DownloadGoodJob;
 use App\Jobs\Catalog\SearchGoodsByCatalogGroupJob;
 use App\Models\Catalog\CatalogGood;
 use App\Models\Catalog\CatalogGroup;
+use App\Services\Catalog\CatalogService;
 use App\Services\Catalog\Onliner\API\OnlinerClient;
 use Exception;
 use Illuminate\Support\Facades\Log;

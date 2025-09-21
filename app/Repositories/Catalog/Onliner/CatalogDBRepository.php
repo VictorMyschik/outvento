@@ -183,4 +183,39 @@ readonly class CatalogDBRepository extends DatabaseRepository implements Catalog
 
         return $this->db->table(CatalogImage::getTableName())->insertGetId($data);
     }
+
+    public function deleteAttribute(int $attributeId): void
+    {
+        $this->db->table(CatalogAttribute::getTableName())->where('id', $attributeId)->delete();
+    }
+
+    public function deleteAttributeValue(int $attributeValueId): void
+    {
+        $this->db->table(CatalogAttributeValue::getTableName())->where('id', $attributeValueId)->delete();
+    }
+
+    public function getAttributeById(int $attributeId): ?CatalogAttribute
+    {
+        return CatalogAttribute::loadBy($attributeId);
+    }
+
+    public function saveAttributeValue(int $attributeValueId, array $data): int
+    {
+        if ($attributeValueId > 0) {
+            $this->db->table(CatalogAttributeValue::getTableName())->where('id', $attributeValueId)->update($data);
+            return $attributeValueId;
+        }
+
+        return $this->db->table(CatalogAttributeValue::getTableName())->insertGetId($data);
+    }
+
+    public function saveAttribute(int $attributeId, array $data): int
+    {
+        if ($attributeId > 0) {
+            $this->db->table(CatalogAttribute::getTableName())->where('id', $attributeId)->update($data);
+            return $attributeId;
+        }
+
+        return $this->db->table(CatalogAttribute::getTableName())->insertGetId($data);
+    }
 }

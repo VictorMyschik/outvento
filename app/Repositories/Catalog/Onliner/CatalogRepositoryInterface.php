@@ -59,4 +59,12 @@ interface CatalogRepositoryInterface
     public function saveManufacturer(int $id, $data): int;
 
     public function saveGoodImage(int $id, array $data): int;
+
+    public function deleteAttribute(int $attributeId): void;
+
+    public function getAttributeById(int $attributeId): ?CatalogAttribute;
+
+    public function saveAttributeValue(int $attributeValueId, array $data): int;
+
+    public function saveAttribute(int $attributeId, array $data): int;
 }

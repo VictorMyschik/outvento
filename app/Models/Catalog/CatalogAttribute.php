@@ -8,9 +8,13 @@ use App\Models\Lego\Fields\DescriptionNullableFieldTrait;
 use App\Models\Lego\Fields\NameFieldTrait;
 use App\Models\Lego\Fields\SortFieldTrait;
 use App\Models\ORM\ORM;
+use Orchid\Filters\Filterable;
+use Orchid\Screen\AsSource;
 
 class CatalogAttribute extends ORM
 {
+    use AsSource;
+    use Filterable;
     use NameFieldTrait;
     use SortFieldTrait;
     use DescriptionNullableFieldTrait;
@@ -21,7 +25,6 @@ class CatalogAttribute extends ORM
         'group_attribute_id',
         'name',
         'description',
-        'sort',
     ];
 
     protected $casts = [
@@ -29,11 +32,5 @@ class CatalogAttribute extends ORM
         'group_attribute_id' => 'int',
         'name'               => 'string',
         'description'        => 'string',
-        'sort'               => 'int',
     ];
-
-    public function getGroupAttributeId(): int
-    {
-        return $this->group_attribute_id;
-    }
 }

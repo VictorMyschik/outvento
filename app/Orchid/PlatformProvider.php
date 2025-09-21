@@ -40,6 +40,7 @@ class PlatformProvider extends OrchidServiceProvider
                 Menu::make('Группы товаров')->icon('list')->route('type.list'),
                 Menu::make('Производители')->icon('list')->route('manufacturer.list')->divider(),
             ]),
+
             // FAQ
             Menu::make('FAQ')->icon('bs.book')->route('faq.list'),
 

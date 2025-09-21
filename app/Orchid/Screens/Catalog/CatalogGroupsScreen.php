@@ -9,7 +9,7 @@ use App\Models\Catalog\CatalogGroup;
 use App\Orchid\Filters\Catalog\CatalogTypeFilter;
 use App\Orchid\Layouts\Catalog\CatalogGroupEditLayout;
 use App\Orchid\Layouts\Catalog\CatalogGroupListLayout;
-use App\Services\Catalog\Onliner\CatalogService;
+use App\Services\Catalog\CatalogService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -19,7 +19,7 @@ use Orchid\Support\Facades\Layout;
 
 class CatalogGroupsScreen extends Screen
 {
-    protected $name = 'Список групп каталога';
+    protected string $name = 'Список групп каталога';
 
     public function __construct(private Request $request, private readonly CatalogService $service) {}
 

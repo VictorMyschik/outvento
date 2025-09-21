@@ -6,7 +6,6 @@ namespace App\Orchid\Layouts\Catalog;
 
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
-use Orchid\Screen\Fields\Switcher;
 use Orchid\Screen\Layouts\Rows;
 
 class CatalogGoodAddNewLayout extends Rows

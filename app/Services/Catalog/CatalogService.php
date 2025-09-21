@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Services\Catalog\Onliner;
+namespace App\Services\Catalog;
 
 use App\Models\Catalog\CatalogAttribute;
 use App\Models\Catalog\CatalogAttributeValue;
@@ -16,6 +16,7 @@ use App\Repositories\Catalog\Onliner\CatalogCacheRepository;
 use App\Repositories\Catalog\Onliner\CatalogRepositoryInterface;
 use App\Services\Catalog\Enum\CatalogImageTypeEnum;
 use App\Services\Catalog\Enum\ImageTypeEnum;
+use App\Services\Catalog\Onliner\ImageUploaderInterface;
 use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -61,9 +62,9 @@ final readonly class CatalogService
         return $this->cacheRepository->getCatalogGroupList();
     }
 
-    public function getCatalogGroupById(int $id): CatalogGroup
+    public function getGroupById(int $groupId): CatalogGroup
     {
-        return $this->repository->getCatalogGroupById($id);
+        return $this->repository->getCatalogGroupById($groupId);
     }
 
     public function saveGood(int $id, array $data): int
@@ -200,5 +201,30 @@ final readonly class CatalogService
     public function deleteAllGoodPhoto(int $good_id): void
     {
         $this->imageUploader->deleteImagesWithModels($good_id, ImageTypeEnum::Good);
+    }
+
+    public function deleteAttribute(int $attributeId): void
+    {
+        $this->repository->deleteAttribute($attributeId);
+    }
+
+    public function deleteAttributeValue(int $value): void
+    {
+        $this->repository->deleteAttributeValue($value);
+    }
+
+    public function getAttributeById(int $attributeId): ?CatalogAttribute
+    {
+        return $this->repository->getAttributeById($attributeId);
+    }
+
+    public function saveAttributeValue(int $valueId, array $data): int
+    {
+        return $this->repository->saveAttributeValue($valueId, $data);
+    }
+
+    public function saveAttribute(int $attributeId, array $data): int
+    {
+        return $this->repository->saveAttribute($attributeId, $data);
     }
 }

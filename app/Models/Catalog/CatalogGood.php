@@ -50,6 +50,7 @@ class CatalogGood extends ORM
         'link'             => 'string',
         'created_at'       => 'datetime',
         'updated_at'       => 'datetime',
+        'sl'             => 'json',
     ];
 
     public function getGroupID(): int

@@ -6,7 +6,7 @@
              data-bs-target="#collapse-{{\Illuminate\Support\Str::slug($name)}}"
              aria-expanded="true"
              aria-controls="collapse-{{\Illuminate\Support\Str::slug($name)}}">
-            <div class="pt-2 pb-2 mb-1 px-4 mt-2 bg-white" style="cursor: pointer">
+            <div class="pt-2 pb-2 mb-1 px-4 mt-2 shadow-sm" style="cursor: pointer;">
                 {!! $name !!}
             </div>
         </div>
