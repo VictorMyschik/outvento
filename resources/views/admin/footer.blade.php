@@ -1,3 +1,3 @@
 <p class="small m-n">
-    © {{date('Y')}} Eltex.
+    © {{date('Y')}} {{env('APP_NAME')}}.
 </p>

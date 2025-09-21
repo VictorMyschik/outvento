@@ -20,7 +20,7 @@ class NewsEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Eltex. Новостная рассылка',
+            subject: env('APP_NAME') . '. Новостная рассылка',
         );
     }
 
