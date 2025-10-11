@@ -27,13 +27,10 @@ class TravelListLayout extends Table
                 ->route('travel.details', ['travel' => $travel->id()])
             ),
 
-            TD::make('status', 'Status')->render(fn(Travel $travel) => $travel->getStatus()->getLabel()),
+            TD::make('status', 'Status')->render(fn(Travel $travel) => $travel->getStatus()->getLabel())->sort(),
             TD::make('members', 'Max members')->sort(),
-
             TD::make('user_id', 'User')->render(fn(Travel $travel) => $travel->getUser()->name),
-
             TD::make('country', 'Country')->render(fn(Travel $travel) => $travel->getCountry()->getName(Language::RU)),
-
             TD::make('travel_type_id', 'Travel type')->render(fn(Travel $travel) => $travel->getTravelType()->getName(Language::RU)),
 
 
@@ -44,7 +41,6 @@ class TravelListLayout extends Table
                     ->icon('bs.three-dots-vertical')
                     ->list([
                         ModalToggle::make('Edit')
-                            ->type(Color::PRIMARY())
                             ->icon('pencil')
                             ->modal('travel_modal')
                             ->modalTitle('Edit travel id ' . $travel->id)

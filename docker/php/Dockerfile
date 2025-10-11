@@ -48,7 +48,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --quiet --install-dir=/u
 # Install Node.js and npm
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
-    && npm install -g npm@11.1.0 \
+    && npm install -g npm@11.6.0 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

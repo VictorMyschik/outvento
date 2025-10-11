@@ -6,12 +6,14 @@ namespace App\Services\System\Enum;
 
 enum SettingsKeyEnum: string
 {
-    case Wb_SYSTEM_TOKEN = 'wb_system_token';
+    case AdminEmail = 'admin_email';
+    case EmailService = 'email_service';
 
     public static function getSelectList(): array
     {
         return [
-            self::Wb_SYSTEM_TOKEN->value => 'Токен системы Wildberries',
+            self::AdminEmail->value   => 'Admin Email',
+            self::EmailService->value => 'Email Service',
         ];
     }
 }
