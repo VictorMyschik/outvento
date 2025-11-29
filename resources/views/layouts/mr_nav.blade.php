@@ -1,4 +1,5 @@
-<nav class="navbar navbar-expand-md shadow-sm shadow" style="height: 90px; font-size: 1.1rem;">
+<nav class="navbar navbar-expand-md shadow-sm shadow fixed-top bg-white"
+     style="height: 90px; font-size: 1.1rem; z-index: 1080 !important;">
     <div class="container">
         <a class="navbar-brand text-italic mr-nav-link-color" href="{{ url('/') }}">
             <span class="mr-nav-link-color" style="font-size: 1.5rem;">My Travel</span>
@@ -10,16 +11,19 @@
             <ul class="navbar-nav me-auto">
                 @guest
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('faq.page') }}"><span
-                                class="mr-nav-link-color">FAQ</span></a>
+                        <a class="nav-link" href="{{ route('faq.page') }}">
+                            <span class="mr-nav-link-color">FAQ</span>
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('login') }}"><span
-                                class="mr-nav-link-color">{{ __('mr-t.login') }}</span></a>
+                        <a class="nav-link" href="{{ route('login') }}">
+                            <span class="mr-nav-link-color">{{ __('mr-t.login') }}</span>
+                        </a>
                     </li>
                     <li class="nav-item mr-5">
-                        <a class="nav-link" href="{{ route('register') }}"><span
-                                class="mr-nav-link-color">{{ __('mr-t.register') }}</span></a>
+                        <a class="nav-link" href="{{ route('register') }}">
+                            <span class="mr-nav-link-color">{{ __('mr-t.register') }}</span>
+                        </a>
                     </li>
                 @else
                     <new_travel></new_travel>
@@ -28,21 +32,22 @@
                         <a id="navbarDropdown" class="nav-link mr-nav-link-color dropdown-toggle font-weight-bolder"
                            href="#" role="button"
                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                           v-pre>{{__('mr-t.my_travels')}}<span
-                                class="caret"></span>
+                           v-pre>{{__('mr-t.my_travels')}}<span class="caret"></span>
                         </a>
 
                         <nav_bar></nav_bar>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('faq.page') }}"><span
-                                class="mr-nav-link-color">FAQ</span></a>
+                        <a class="nav-link" href="{{ route('faq.page') }}">
+                            <span class="mr-nav-link-color">FAQ</span>
+                        </a>
                     </li>
 
                     <li class="nav-item mr-5">
-                        <a class="nav-link" href="/account"><span
-                                class="mr-nav-link-color">{{__('mr-t.account')}}</span></a>
+                        <a class="nav-link" href="/account">
+                            <span class="mr-nav-link-color">{{__('mr-t.account')}}</span>
+                        </a>
                     </li>
 
                     @if(auth()->user()->isSuperAdmin())

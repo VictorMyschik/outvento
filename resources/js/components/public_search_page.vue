@@ -1,6 +1,5 @@
 <template>
   <div>
-
     <section>
       <div v-if="searchResultList" class="justify-content-center mr-background-form">
         <div href="#filter_toggle" class="mr-cursor" data-bs-toggle="collapse">
@@ -42,7 +41,7 @@
                      :src="travel['travelType']['icon']"
                      :alt="travel['travelType']['name']">
                 <span v-if="travel['members']['maxMember']" :title="travel['members']['title']">
-                                {{ travel['members']['maxM    ember'] }}({{ travel['members']['existsMembers'] }})
+                                {{ travel['members']['maxMember'] }}({{ travel['members']['existsMembers'] }})
                             </span>
                 {{ travel['title'] }}
               </h5>
