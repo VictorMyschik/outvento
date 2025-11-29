@@ -2,9 +2,10 @@
     <li class="nav-item">
         <a class="nav-link" href="#">
             <span class="mr-nav-link-color mr-color-green">
-                        <mrp btn_name="New"
+                        <mrp :btn_name="lang['create_new_travel']"
                              @response="redirectToTravel"
                              :route_url="router('account.travel.base.form', {'travel_id': 0})"
+                             :lang="lang"
                              class_arr=""></mrp>
             </span>
         </a>
@@ -18,6 +19,9 @@ export default {
     components: {
         mrp,
     },
+    props: [
+        'lang',
+    ],
     name: "new_travel",
     data() {
         return {

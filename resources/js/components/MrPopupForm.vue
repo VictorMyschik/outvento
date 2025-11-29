@@ -28,9 +28,9 @@
                      <button type="button" @click="hide()" class="mr-btn-primary">Закрыть</button>
                   </span>
                   <span v-else>
-                    <button type="button" v-if="!is_wait" @click="MrSave()" class="mr-btn-primary">Сохранить</button>
+                    <button type="button" v-if="!is_wait" @click="MrSave()" class="mr-btn-primary"> {{ lang['save'] }} </button>
                     <span v-else><i class="fa fa-spinner fa-spin"></i></span>
-                    <button type="button" @click="hide()" class="mr-btn-danger m-l-15">Отменить</button>
+                    <button type="button" @click="hide()" class="mr-btn-danger m-l-15"> {{ lang['cancel'] }} </button>
                   </span>
                 </div>
               </div>
@@ -53,6 +53,7 @@ export default {
     },
     name: "MrPopupForm",
     props: [
+        'lang',
         'route_url',
         'btn_name',
         'class_arr',
@@ -174,7 +175,6 @@ export default {
 </script>
 
 <style scoped>
-
 .modal-mask {
     position: fixed;
     z-index: 9998;
@@ -182,19 +182,65 @@ export default {
     left: 0;
     width: 100%;
     height: 100%;
-    webkit-transform: translate3d(0, 0, 0) !important;
-    background-color: rgba(0, 0, 0, .5);
-    display: table;
-    transition: opacity 0.3s ease;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.4s ease;
 }
 
+/* Убираем table-cell и делаем flex — теперь по центру на любом экране */
 .modal-wrapper {
-    display: table-cell;
-    vertical-align: middle;
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
 }
 
-.modal-body {
-    overflow-y: auto;
-    max-height: 75vh;
+/* Кнопка закрытия — белый крестик */
+.mr-btn-primary.fa-window-close {
+    color: white;
+    font-size: 1.5rem;
+    opacity: 0.9;
+    transition: opacity 0.2s;
+}
+
+.mr-btn-primary.fa-window-close:hover {
+    opacity: 1;
+}
+
+/* Кнопки внизу */
+.mr-btn-primary,
+.mr-btn-danger {
+    min-width: 110px;
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-weight: 300;
+}
+
+@media (max-width: 768px) {
+    .modal-wrapper {
+        padding: 70px 0 0 0 !important; /* отступ сверху 10px (можно 15px) */
+        align-items: flex-end;
+    }
+
+    .modal-content.mr-background-form {
+        border-radius: 24px 24px 0 0;
+        margin-top: 10px; /* гарантированный отступ от верха */
+        max-height: calc(100vh - 20px); /* не больше 100% высоты минус отступы */
+    }
+
+    .modal-dialog {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        margin: 0 !important;
+    }
+
+    .modal-content.mr-background-form {
+        border-radius: 24px 24px 0 0 !important;
+        width: 100vw !important;
+        margin: 0 !important;
+    }
 }
 </style>

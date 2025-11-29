@@ -26,7 +26,7 @@
                         </a>
                     </li>
                 @else
-                    <new_travel></new_travel>
+                    <new_travel :lang='@json($lang)'></new_travel>
 
                     <li class="nav-item dropdown">
                         <a id="navbarDropdown" class="nav-link mr-nav-link-color dropdown-toggle font-weight-bolder"

@@ -25,6 +25,7 @@ class Translate extends ORM
     );
 
     protected array $allowedSorts = [
+        'id',
         'code',
         'ru',
         'en',

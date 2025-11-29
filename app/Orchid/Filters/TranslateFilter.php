@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 use Orchid\Filters\Filter;
 use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
-use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Fields\ViewField;
 use Orchid\Screen\Layouts\Rows;
 use Orchid\Support\Facades\Layout;

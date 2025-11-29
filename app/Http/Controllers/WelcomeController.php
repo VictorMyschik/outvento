@@ -27,8 +27,10 @@ class WelcomeController extends Controller
 
     public function searchTravelPage(): View|Application|Factory
     {
-        $out = [];
+        $out = [
+            'lang' => TranslateService::getFullList($this->getLanguage()),
+        ];
 
-        return View('search_page')->with([$out]);
+        return View('search_page')->with($out);
     }
 }
