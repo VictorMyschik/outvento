@@ -17,34 +17,83 @@
                                     <p class="des text-white mb-45 fadeInDown">{{ lang['slogan'] }} </p>
                                 </div>
 
-                                <div class="container mr-background-form">
+                                <!-- ============ МОБИЛЬНАЯ ВЕРСИЯ (до md) ============ -->
+                                <div class="container mr-background-form py-3 py-md-0">
+                                    <div class="row d-md-none g-3">
+                                        <div class="col-12">
+                                            <label class="form-label-title d-block">{{ countryPlaceholder }}</label>
+                                            <select class="form-select" v-model="country">
+                                                <option disabled value="">{{ countryPlaceholder }}</option>
+                                                <option v-for="option in counties" :key="option.id" :value="option.id">
+                                                    {{ option.label }}
+                                                </option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <label class="form-label-title d-block">{{ travelTypePlaceholder }}</label>
+                                            <select class="form-select" v-model="travelType">
+                                                <option disabled value="">{{ travelTypePlaceholder }}</option>
+                                                <option v-for="option in travelTypes" :key="option.id"
+                                                        :value="option.id">
+                                                    {{ option.label }}
+                                                </option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <label class="form-label-title d-block">{{ lang['date_from'] }}</label>
+                                            <input type="date" v-model="date_from" class="form-control">
+                                        </div>
+
+                                        <div class="col-12">
+                                            <label class="form-label-title d-block">{{ lang['date_to'] }}</label>
+                                            <input type="date" v-model="date_to" class="form-control">
+                                        </div>
+
+                                        <div class="col-12">
+                                            <button @click="search" class="btn btn-primary w-100">
+                                                {{ lang['search'] }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="d-none d-md-block container mr-background-form">
                                     <div class="row forms">
-
-                                        <label class="col"> <span style="">{{ countryPlaceholder }}</span>
+                                        <label class="col form-label-mobile">
+                                            <span class="form-label-title">{{ countryPlaceholder }}</span>
                                             <select class="form-control select mt-2" v-model="country">
-                                                <option v-for="option in counties.sort()" :value="option.id">
+                                                <option disabled value="">{{ countryPlaceholder }}</option>
+                                                <option v-for="option in counties" :key="option.id" :value="option.id">
                                                     {{ option.label }}
                                                 </option>
                                             </select>
                                         </label>
 
-                                        <label class="col"> <span style="">{{ travelTypePlaceholder }}</span>
+                                        <label class="col form-label-mobile">
+                                            <span class="form-label-title">{{ travelTypePlaceholder }}</span>
                                             <select class="form-control select mt-2" v-model="travelType">
-                                                <option v-for="option in travelTypes" :value="option.id">
+                                                <option disabled value="">{{ travelTypePlaceholder }}</option>
+                                                <option v-for="option in travelTypes" :key="option.id"
+                                                        :value="option.id">
                                                     {{ option.label }}
                                                 </option>
                                             </select>
                                         </label>
 
-                                        <label class="col"> {{lang['date_from']}}
+                                        <label class="col form-label-mobile">
+                                            <span class="form-label-title">{{ lang['date_from'] }}</span>
                                             <input type="date" v-model="date_from" class="form-control mt-2">
                                         </label>
 
-                                        <label class="col"> {{ lang['date_to'] }}
+                                        <label class="col form-label-mobile">
+                                            <span class="form-label-title">{{ lang['date_to'] }}</span>
                                             <input type="date" v-model="date_to" class="form-control mt-2">
                                         </label>
 
-                                        <button @click="search" class="col form-control btn btn-primary mt-2"
+                                        <button @click="search" class="col form-control btn btn-primary mt-2 btn-mobile"
                                                 style="margin-right: 10px;">
                                             {{ lang['search'] }}
                                         </button>
@@ -197,6 +246,15 @@ export default {
     box-sizing: border-box;
 }
 
+.form-label-title {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 4px;
+    letter-spacing: 0.01em;
+}
+
 .slider-home1 {
     .silider-image {
         &::before {
@@ -231,6 +289,46 @@ export default {
             font-weight: 700;
             line-height: 95px;
         }
+    }
+}
+
+@media (max-width: 768px) {
+    .mr-background-form {
+        padding: 10px 5px;
+        border-radius: 6px;
+    }
+
+    .forms {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .form-label-mobile {
+        width: 100%;
+        margin-bottom: 10px;
+        font-size: 15px;
+    }
+
+    .form-label-title {
+        font-size: 13px;
+        margin-bottom: 2px;
+    }
+
+    .form-control, .col, .btn-mobile {
+        width: 100% !important;
+        margin-right: 0 !important;
+        font-size: 16px;
+        min-height: 44px;
+    }
+
+    .slider-content {
+        padding-top: 40px;
+        padding-bottom: 40px;
+    }
+
+    .title-slide {
+        font-size: 32px !important;
+        line-height: 40px !important;
     }
 }
 </style>

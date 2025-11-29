@@ -39,7 +39,7 @@ services:
       frontend:
       backend:
     ports:
-      - '5439:5432'
+      - '5441:5432'
     environment:
       POSTGRES_DB: travel
       POSTGRES_USER: travel

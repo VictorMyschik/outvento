@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Orchid\Screens\Language;
 
 use App\Models\System\Translate;
+use App\Orchid\Filters\TranslateFilter;
 use App\Orchid\Layouts\Language\TranslateEditLayout;
 use App\Orchid\Layouts\Language\TranslateListLayout;
 use App\Services\Language\TranslateService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Screen;
@@ -14,7 +18,10 @@ use Orchid\Support\Facades\Toast;
 
 class TranslateScreen extends Screen
 {
-    public function __construct(private TranslateService $service) {}
+    public function __construct(
+        private readonly TranslateService $service,
+        private readonly Request          $request,
+    ) {}
 
     public function name(): string
     {
@@ -24,7 +31,7 @@ class TranslateScreen extends Screen
     public function query(): iterable
     {
         return [
-            'list' => Translate::filters([])->paginate(50)
+            'list' => TranslateFilter::runQuery()->paginate(50)
         ];
     }
 
@@ -44,6 +51,7 @@ class TranslateScreen extends Screen
     public function layout(): iterable
     {
         return [
+            TranslateFilter::displayFilterCard($this->request),
             TranslateListLayout::class,
             Layout::modal('translate', TranslateEditLayout::class)->async('asyncGetTranslate'),
         ];
@@ -76,4 +84,25 @@ class TranslateScreen extends Screen
             Toast::error($e->getMessage());
         }
     }
+
+    #region Filter
+    public function runFiltering(Request $request): RedirectResponse
+    {
+        $input = $request->all(TranslateFilter::FIELDS);
+
+        $list = [];
+        foreach (TranslateFilter::FIELDS as $item) {
+            if (!is_null($input[$item])) {
+                $list[$item] = $input[$item];
+            }
+        }
+
+        return redirect()->route('language.translate.list', $list);
+    }
+
+    public function clearFilter(): RedirectResponse
+    {
+        return redirect()->route('language.translate.list');
+    }
+    #endregion
 }

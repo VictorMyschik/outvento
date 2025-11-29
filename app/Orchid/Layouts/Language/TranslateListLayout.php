@@ -18,7 +18,7 @@ class TranslateListLayout extends Table
     {
         return [
             TD::make('id', 'ID')->sort(),
-            TD::make('code', 'Code')->sort(),
+            TD::make('code', 'Code')->class('text-nowrap')->sort(),
             TD::make('ru', 'RU')->sort(),
             TD::make('en', 'EN')->sort(),
             TD::make('pl', 'PL')->sort(),

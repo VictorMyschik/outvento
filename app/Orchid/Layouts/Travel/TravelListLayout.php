@@ -12,7 +12,6 @@ use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
-use Orchid\Support\Color;
 
 class TravelListLayout extends Table
 {
@@ -23,9 +22,9 @@ class TravelListLayout extends Table
         return [
             TD::make('id', __('ID'))->sort(),
 
-            TD::make('name', 'Name')->render(fn(Travel $travel) => Link::make($travel->getTitle())
+            TD::make('title', 'Title')->render(fn(Travel $travel) => Link::make($travel->getTitle())
                 ->route('travel.details', ['travel' => $travel->id()])
-            ),
+            )->sort(),
 
             TD::make('status', 'Status')->render(fn(Travel $travel) => $travel->getStatus()->getLabel())->sort(),
             TD::make('members', 'Max members')->sort(),
@@ -56,6 +55,11 @@ class TravelListLayout extends Table
     }
 
     public function hoverable(): bool
+    {
+        return true;
+    }
+
+    public function striped(): bool
     {
         return true;
     }
