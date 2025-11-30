@@ -1,5 +1,5 @@
-<nav class="navbar navbar-expand-md shadow-sm shadow fixed-top bg-white"
-     style="height: 90px; font-size: 1.1rem; z-index: 1080 !important;">
+<nav class="navbar navbar-expand-md shadow-sm bg-white sticky-top"
+     style="height: 70px; font-size: 1.1rem; z-index: 1080 !important;">
     <div class="container">
         <a class="navbar-brand text-italic mr-nav-link-color" href="{{ url('/') }}">
             <span class="mr-nav-link-color" style="font-size: 1.5rem;">My Travel</span>

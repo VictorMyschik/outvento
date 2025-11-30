@@ -10,10 +10,11 @@ import v_select from "vue-select";
 import alert_modal from './components/alert.vue';
 import slider from './components/main/slider.vue';
 import activities from './components/main/activities.vue';
-//import public_search_page from "./components/public_search_page.vue";
+import public_search_page from "./components/public_search_page.vue";
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'vue-select/dist/vue-select.css';
 import testslider from './components/account/travel/testslider.vue';
+
 
 const app = createApp({
     components: {
@@ -28,8 +29,8 @@ const app = createApp({
         activities,
         Swiper,
         SwiperSlide,
-        testslider
-        //public_search_page
+        testslider,
+        public_search_page
     }
 });
 
