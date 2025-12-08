@@ -30,12 +30,6 @@ Route::get('/test', function () {
     return View('test');
 });
 
-Route::get('/logout', function () {
-    Session::flush();
-    Auth::logout();
-    return redirect()->route('login');
-})->name('logout');
-
 Route::get('locale/{locale}', function ($locale) {
     Session::put('locale', $locale);
     return redirect()->back();

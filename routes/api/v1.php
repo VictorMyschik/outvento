@@ -2,11 +2,41 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\API\Auth\AuthController;
+use App\Http\Controllers\API\User\UsersController;
 use App\Http\Controllers\Reference\ReferenceController;
 use App\Http\Controllers\Travel\Travel\TravelController;
+use App\Http\Controllers\Travel\Travel\TravelImageController;
 use Illuminate\Support\Facades\Route;
 
 
+Route::middleware('guest')->group(static function () {
+    Route::post('login', [AuthController::class, 'login'])->name('login');
+    Route::post('register', [AuthController::class, 'register'])->name('register');
+
+    Route::get('login/yandex', [AuthController::class, 'yandex'])->name('yandex');
+    Route::get('login/yandex/redirect', [AuthController::class, 'yandexRedirect'])->name('yandexRedirect');
+
+    Route::post('reset-password/code', [AuthController::class, 'resetPasswordCode']);
+    Route::post('reset-password/change', [AuthController::class, 'resetPasswordChange']);
+});
+
+Route::middleware('auth:sanctum')->group(static function () {
+    Route::any('logout', [AuthController::class, 'logout'])->name('logout');
+    Route::any('logout-all', [AuthController::class, 'logoutAllSessions'])->name('logoutAllSessions');
+
+    Route::prefix('user')->group(static function () {
+        Route::get('', [UsersController::class, 'profile']);
+        Route::post('profile', [UsersController::class, 'updateProfile']);
+        Route::post('password', [UsersController::class, 'changePassword']);
+        Route::post('verify', [AuthController::class, 'verifyRegistration']);
+        Route::post('verify/resend', [AuthController::class, 'verifyResend']);
+        Route::delete('avatar', [UsersController::class, 'removeAvatar']);
+    });
+
+    Route::middleware('api-verified')->group(static function () {
+    });
+});
 Route::group(['prefix' => 'travels'], function () {
     // Create Travel
     Route::post('search', [TravelController::class, 'searchTravels'])->name('api.travels.search');

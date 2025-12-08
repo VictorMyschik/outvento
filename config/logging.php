@@ -51,6 +51,16 @@ return [
     */
 
     'channels' => [
+        'stdout' => [
+            'driver' => 'monolog',
+            'level' => env('LOG_LEVEL', 'debug'),
+            'handler' => StreamHandler::class,
+            'formatter' => Monolog\Formatter\JsonFormatter::class,
+            'with' => [
+                'stream' => 'php://stdout',
+            ],
+            'processors' => [PsrLogMessageProcessor::class],
+        ],
 
         'stack' => [
             'driver' => 'stack',
@@ -69,7 +79,7 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
-            'days' => env('LOG_DAILY_DAYS', 14),
+            'days' => env('LOG_DAILY_DAYS', 5),
             'replace_placeholders' => true,
         ],
 

@@ -55,7 +55,7 @@ class PlatformProvider extends OrchidServiceProvider
                 Menu::make('Failed jobs')->route('system.failed.jobs'),
                 Menu::make('Database')->route('system.database'),
                 Menu::make('Supervisor')->route('system.supervisor'),
-                Menu::make('API documentation')->target('_blank')->href('/api/documentation'),
+                Menu::make('API documentation')->target('_blank')->href('/api/docs'),
             ])->divider(),
 
             Menu::make(__('Users'))

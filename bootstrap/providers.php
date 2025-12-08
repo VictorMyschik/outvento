@@ -6,10 +6,12 @@ use App\Providers\ReferenceProvider;
 use App\Providers\SupervisorProvider;
 use App\Providers\SystemProvider;
 use App\Providers\TravelServiceProvider;
+use App\Providers\UserProvider;
 use Orchid\Icons\IconServiceProvider;
 
 return [
     App\Providers\AppServiceProvider::class,
+    UserProvider::class,
     TableServiceProvider::class,
     IconServiceProvider::class,
     TravelServiceProvider::class,

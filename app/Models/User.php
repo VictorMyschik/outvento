@@ -2,15 +2,19 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Sanctum\HasApiTokens;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
 use Orchid\Platform\Models\User as Authenticatable;
-use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable implements JWTSubject
+class User extends Authenticatable implements MustVerifyEmail
 {
+    use Notifiable, HasApiTokens;
+
     public const TYPE_VIEW = 'view';
 
     public const TYPE_EDIT = 'edit';
@@ -117,5 +121,10 @@ class User extends Authenticatable implements JWTSubject
     public function isSuperAdmin(): bool
     {
         return !is_null($this->permissions);
+    }
+
+    public function getAvatar(): ?string
+    {
+        return $this->avatar ? asset('storage' . $this->avatar) : null;
     }
 }

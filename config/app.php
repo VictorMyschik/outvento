@@ -1,10 +1,5 @@
 <?php
 
-use App\Helpers\System\MrMessageHelper;
-use App\Http\Middleware\Authenticate;
-use App\Http\Middleware\AuthenticateAPIMiddleware;
-use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
-
 return [
 
     /*
@@ -44,7 +39,7 @@ return [
     |
     */
 
-    'debug' => (bool)env('APP_DEBUG', false),
+    'debug' => (bool) env('APP_DEBUG', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -125,14 +120,7 @@ return [
 
     'maintenance' => [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
-        'store'  => env('APP_MAINTENANCE_STORE', 'database'),
+        'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
-    'aliases' => [
-        'Auth'     => Illuminate\Support\Facades\Auth::class,
-        'MrMessage' => MrMessageHelper::class,
-        'Html'     => Spatie\Html\Facades\Html::class,
-        'Route'    => Illuminate\Support\Facades\Route::class,
-        'Language' => App\Services\System\Enum\Language::class,
-    ],
 ];
