@@ -12,7 +12,6 @@ class EquipmentEditLayout extends Rows
     public function fields(): array
     {
         return [
-
             Select::make('equipment.category_id')
                 ->fromModel(CategoryEquipment::class, 'name')
                 ->title('Category'),

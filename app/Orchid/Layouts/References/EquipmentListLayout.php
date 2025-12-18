@@ -28,15 +28,14 @@ class EquipmentListLayout extends Table
                 ->render(fn(Equipment $equipment) => DropDown::make()
                     ->icon('bs.three-dots-vertical')
                     ->list([
-                        ModalToggle::make('Edit')
-                            ->type(Color::PRIMARY())
+                        ModalToggle::make('edit')
                             ->icon('pencil')
                             ->modal('equipment')
                             ->modalTitle('Edit equipment id ' . $equipment->id)
                             ->method('saveEquipment')
                             ->asyncParameters(['id' => $equipment->id]),
 
-                        Button::make(__('Delete'))
+                        Button::make(__('delete'))
                             ->icon('bs.trash3')
                             ->confirm(__('Are you sure you want to delete the equipment?'))
                             ->method('remove', ['id' => $equipment->id]),
