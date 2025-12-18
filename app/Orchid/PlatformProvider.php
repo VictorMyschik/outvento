@@ -33,6 +33,7 @@ class PlatformProvider extends OrchidServiceProvider
                 Menu::make('Cities')->icon('bs.list')->route('reference.cities.list'),
             ]),
             Menu::make('Subscriptions')->icon('bs.send')->route('subscriptions.list')->divider(),
+            Menu::make('Wishlists')->icon('bs.list')->route('wishlist.list')->divider(),
 
             // Catalog
             Menu::make('Catalog')->icon('grid')->list([

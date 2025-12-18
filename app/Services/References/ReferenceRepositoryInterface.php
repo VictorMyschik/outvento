@@ -10,6 +10,8 @@ interface ReferenceRepositoryInterface
 {
     public function getCountrySelectList(Language $language): array;
 
+    public function getCurrencySelectList(): array;
+
     public function getUsingCountrySelectList(Language $language): array;
 
     public function getTravelTypeSelectList(Language $language): array;

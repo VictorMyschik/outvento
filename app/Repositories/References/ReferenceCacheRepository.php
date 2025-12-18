@@ -65,4 +65,9 @@ final readonly class ReferenceCacheRepository implements ReferenceRepositoryInte
 
         return $id;
     }
+
+    public function getCurrencySelectList(): array
+    {
+        return $this->repository->getCurrencySelectList();
+    }
 }

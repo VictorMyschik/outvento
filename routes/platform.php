@@ -35,6 +35,7 @@ use App\Orchid\Screens\User\UserEditScreen;
 use App\Orchid\Screens\User\UserInfoScreen;
 use App\Orchid\Screens\User\UserListScreen;
 use App\Orchid\Screens\User\UserProfileScreen;
+use App\Orchid\Screens\Wishlist\WishlistScreen;
 use Illuminate\Support\Facades\Route;
 use Tabuna\Breadcrumbs\Trail;
 
@@ -126,14 +127,20 @@ Route::screen('/travel-type/list', TravelTypeListScreen::class)->name('reference
 Route::screen('/travel/list', TravelListScreen::class)->name('travel.list');
 Route::screen('/travel/details/{travel}', TravelDetailsScreen::class)->name('travel.details');
 Route::screen('/emails', EmailScreen::class)->name('reference.email.list');
+
 // Travel Equipment
 Route::screen('/travel/{travel_id}/', EmailScreen::class)->name('2reference.email.list');
+
 // References
 Route::screen('/reference/category-equipments/list', CategoryEquipmentScreen::class)->name('reference.category.equipments.list');
 Route::screen('/reference/equipments/list', EquipmentScreen::class)->name('reference.equipments.list');
 Route::screen('/reference/cities/list', CitiesScreen::class)->name('reference.cities.list');
+
 //// Subscriptions
 Route::screen('/subscriptions/list', SubscriptionScreen::class)->name('subscriptions.list');
+
+// Wish List
+Route::screen('/wishlist/list', WishlistScreen::class)->name('wishlist.list');
 
 // Catalog
 Route::screen('/catalog/goods/list', CatalogGoodsScreen::class)->name('goods.list');

@@ -11,6 +11,7 @@ use App\Models\Travel\TravelType;
 use App\Repositories\DatabaseRepository;
 use App\Services\References\ReferenceRepositoryInterface;
 use App\Services\System\Enum\Language;
+use Brick\Money\ISOCurrencyProvider;
 
 readonly class ReferenceRepository extends DatabaseRepository implements ReferenceRepositoryInterface
 {
@@ -64,4 +65,8 @@ readonly class ReferenceRepository extends DatabaseRepository implements Referen
         return $this->db->table(City::getTableName())->insertGetId($data);
     }
 
+    public function getCurrencySelectList(): array
+    {
+        return ISOCurrencyProvider::getInstance()->getAvailableCurrencies();
+    }
 }

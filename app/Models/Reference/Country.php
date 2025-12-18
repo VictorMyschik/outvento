@@ -43,14 +43,13 @@ class Country extends ORM
         'continent',
     );
 
-    const CONTINENT_UNKNOWN = 0;
-    const CONTINENT_AF = 1;
-    const CONTINENT_AS = 2;
-    const CONTINENT_EU = 3;
-    const CONTINENT_NA = 4;
-    const CONTINENT_OC = 5;
-    const CONTINENT_SA = 6;
-    const CONTINENT_AN = 7;
+    const int CONTINENT_AF = 1;
+    const int CONTINENT_AS = 2;
+    const int CONTINENT_EU = 3;
+    const int CONTINENT_NA = 4;
+    const int CONTINENT_OC = 5;
+    const int CONTINENT_SA = 6;
+    const int CONTINENT_AN = 7;
 
     protected static array $continents = array(
         self::CONTINENT_AF => 'Africa',
@@ -72,88 +71,13 @@ class Country extends ORM
         self::CONTINENT_AN => 'AN',
     );
 
-    public static function getContinentList(): array
-    {
-        return self::$continents;
-    }
-
-    public static function getContinentShortList(): array
-    {
-        return self::$continent_short;
-    }
-
-    public function getContinent(): int
-    {
-        return $this->continent;
-    }
-
     public function getContinentName(): string
     {
-        return self::$continents[$this->getContinent()];
+        return self::$continents[$this->continent];
     }
 
     public function getContinentShortName(): string
     {
-        return self::$continent_short[$this->getContinent()];
-    }
-
-    public function setContinent(int $value): void
-    {
-        $this->continent = $value;
-    }
-
-    public function getISO3166alpha2(): string
-    {
-        return $this->iso3166alpha2;
-    }
-
-    public function setISO3166alpha2(string $value): void
-    {
-        $this->iso3166alpha2 = $value;
-    }
-
-    public function getISO3166alpha3(): string
-    {
-        return $this->iso3166alpha3;
-    }
-
-    public function setISO3166alpha3(string $value): void
-    {
-        $this->iso3166alpha3 = $value;
-    }
-
-    public function getISO3166numeric(): string
-    {
-        return $this->iso3166numeric;
-    }
-
-    public function setISO3166numeric(string $value): void
-    {
-        $this->iso3166numeric = $value;
-    }
-
-    public function getCodeWithName(): string
-    {
-        $r = $this->getISO3166alpha2();
-        $r .= ' ' . $this->getName();
-
-        return $r;
-    }
-
-    public function getCodeWithTitleName(): string
-    {
-        $title = $this->getName();
-
-        return "<span title={$title}>{$this->getISO3166alpha2()}</span>";
-    }
-
-    public function getCountryDisplay(): string
-    {
-        $title = $this->getName();
-
-        $r = "<span title='{$title}'>";
-        $r .= $this->getISO3166alpha3();
-        $r .= "</span>";
-        return $r;
+        return self::$continent_short[$this->continent];
     }
 }
