@@ -9,11 +9,13 @@ use App\Models\User;
 use App\Repositories\User\UserRepository;
 use App\Services\Notifications\ResetPasswordCode;
 use App\Services\Notifications\VerifyRegistrationCode;
+use App\Services\System\Enum\Language;
 use App\Services\Upload\UploadService;
 use App\Services\User\DTO\UserProfileDTO;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use LogicException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -23,7 +25,6 @@ final readonly class UserService
     public function __construct(
         private UploadService  $uploadService,
         private UserRepository $repository,
-        private array          $storageConfig,
     ) {}
 
     public function authorize(string $email, string $password): ?string
@@ -34,12 +35,11 @@ final readonly class UserService
             throw new AuthenticationException('Неверные учетные данные');
         }
 
-        $token = null;
         if (Hash::check($password, $user->password)) {
-            $token = $this->issueToken($user);
+            return $this->issueToken($user);
         }
 
-        return $token;
+        throw new AuthenticationException();
     }
 
     public function create(UserProfileDTO $dto): string
@@ -47,9 +47,10 @@ final readonly class UserService
         $user = new User();
 
         $user->fill([
-            'name'  => $dto->name,
-            'email'      => $dto->email,
-            'password'   => $dto->password,
+            'name'     => $dto->name,
+            'email'    => $dto->email,
+            'password' => $dto->password,
+            'language' => $dto->language,
         ])->save();
 
         Auth::login($user, true);
@@ -191,5 +192,14 @@ final readonly class UserService
             $user->avatar = null;
             $user->save();
         }
+    }
+
+    public function setLocale(?int $userId, Language $language): void
+    {
+        if ($userId) {
+            $this->repository->updateUser($userId, ['language' => $language->value]);
+        }
+
+        Session::put('locale', $language->getCode());
     }
 }

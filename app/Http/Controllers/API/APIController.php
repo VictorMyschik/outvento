@@ -6,6 +6,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\API\Response\PaginationResponse;
 use App\Http\Controllers\Controller;
+use App\Services\System\Enum\Language;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Gate;
@@ -66,5 +67,10 @@ abstract class APIController extends Controller
             'status'  => 'ok',
             'content' => $content,
         ];
+    }
+
+    protected function getLanguage(): Language
+    {
+        return Language::fromCode(app()->getLocale());
     }
 }

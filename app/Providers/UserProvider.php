@@ -23,7 +23,6 @@ class UserProvider extends ServiceProvider
                     $app->make(UploadServiceDBRepository::class),
                 ),
                 repository: $app->make(UserRepository::class),
-                storageConfig: $app->make(Repository::class)->get('storage.users'),
             );
         });
     }

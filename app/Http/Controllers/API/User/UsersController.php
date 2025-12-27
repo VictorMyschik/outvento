@@ -7,6 +7,7 @@ namespace App\Http\Controllers\API\User;
 use App\Http\Controllers\API\APIController;
 use App\Http\Controllers\API\Auth\Request\Auth\UpdatePasswordRequest;
 use App\Http\Controllers\API\User\Request\UpdateProfileRequest;
+use App\Services\System\Enum\Language;
 use App\Services\User\Api\UserApiResponse;
 use App\Services\User\DTO\UserProfileDTO;
 use App\Services\User\UserService;
@@ -137,6 +138,33 @@ class UsersController extends APIController
     public function removeAvatar(Request $request): JsonResponse
     {
         $this->userService->removeAvatar($request->user());
+
+        return $this->apiResponse(code: 204);
+    }
+
+    #[OA\Post(
+        path: "/api/v1/locale/{locale}",
+        operationId: "setLocale",
+        summary: "Установить локаль пользователя",
+        tags: ["User info"],
+        parameters: [
+            new OA\Parameter(ref: "#/components/parameters/XRequestedWithHeader"),
+            new OA\Parameter(
+                name: "locale",
+                description: "Код локали (например: en, ru)",
+                in: "path",
+                required: true,
+                schema: new OA\Schema(type: "string", example: "en")
+            ),
+        ],
+        responses: [
+            new OA\Response(response: 204, description: "Successful", content: new OA\JsonContent(ref: "#/components/schemas/SuccessfulEmptyResponse")),
+            new OA\Response(response: 422, description: "Bad Request", content: new OA\JsonContent(ref: "#/components/schemas/ValidationError")),
+        ]
+    )]
+    public function setLocale(Request $request, string $locale): JsonResponse
+    {
+        $this->userService->setLocale($request->user()?->id, Language::fromCode($locale));
 
         return $this->apiResponse(code: 204);
     }

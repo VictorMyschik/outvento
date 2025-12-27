@@ -9,6 +9,7 @@ final readonly class UserProfileDTO implements \JsonSerializable
         public ?string $email,
         public ?string $name,
         public ?string $password = null,
+        public ?string $language = null,
     ) {}
 
     public function jsonSerialize(): mixed
@@ -25,6 +26,10 @@ final readonly class UserProfileDTO implements \JsonSerializable
 
         if ($this->password) {
             $out['password'] = $this->password;
+        }
+
+        if ($this->language) {
+            $out['language'] = $this->language;
         }
 
         return $out;

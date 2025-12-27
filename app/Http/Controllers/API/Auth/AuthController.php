@@ -64,6 +64,7 @@ class AuthController extends APIController
             email: $request->getEmail(),
             name: $request->getName(),
             password: Hash::make($request->getPassword()),
+            language: $this->getLanguage()->getCode(),
         );
 
         return $this->apiResponse(['token' => $this->userService->create($dto)]);

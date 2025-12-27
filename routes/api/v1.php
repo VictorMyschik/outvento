@@ -3,12 +3,16 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\API\Auth\AuthController;
+use App\Http\Controllers\API\CommonApiController;
 use App\Http\Controllers\API\User\UsersController;
 use App\Http\Controllers\Reference\ReferenceController;
 use App\Http\Controllers\Travel\Travel\TravelController;
 use App\Http\Controllers\Travel\Travel\TravelImageController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
 
+Route::post('locale/{locale}', fn($locale) => Session::put('locale', $locale));
+Route::get('common/languages', [CommonApiController::class, 'getLanguages'])->name('languages');
 
 Route::middleware('guest')->group(static function () {
     Route::post('login', [AuthController::class, 'login'])->name('login');
@@ -34,8 +38,7 @@ Route::middleware('auth:sanctum')->group(static function () {
         Route::delete('avatar', [UsersController::class, 'removeAvatar']);
     });
 
-    Route::middleware('api-verified')->group(static function () {
-    });
+    Route::middleware('api-verified')->group(static function () {});
 });
 Route::group(['prefix' => 'travels'], function () {
     // Create Travel

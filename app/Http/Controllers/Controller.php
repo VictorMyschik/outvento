@@ -24,6 +24,6 @@ class Controller extends BaseController
 
     protected function getLanguage(): Language
     {
-        return Language::fromString(app()->getLocale());
+        return Language::fromCode(app()->getLocale());
     }
 }

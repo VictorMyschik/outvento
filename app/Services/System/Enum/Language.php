@@ -12,7 +12,7 @@ enum Language: int
     case RU = 2;
     case PL = 3;
 
-    public static function fromString(string $language): self
+    public static function fromCode(string $language): self
     {
         return match (mb_strtolower($language)) {
             'ru' => self::RU,
@@ -20,6 +20,15 @@ enum Language: int
             'pl' => self::PL,
             default => throw new NotFoundHttpException('Unknown language: ' . $language),
         };
+    }
+
+    public static function getCodeWithLabel(): array
+    {
+        return [
+            self::RU->getCode() => self::RU->getLabel(),
+            self::EN->getCode() => self::EN->getLabel(),
+            self::PL->getCode() => self::PL->getLabel(),
+        ];
     }
 
     /**

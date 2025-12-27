@@ -17,7 +17,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Blade::directive('Language', function (string $expression) {
-            return "<?php echo App\Services\System\Enum\Language::fromString({$expression})->getLabel(); ?>";
+            return "<?php echo App\Services\System\Enum\Language::fromCode({$expression})->getLabel(); ?>";
         });
     }
 }
