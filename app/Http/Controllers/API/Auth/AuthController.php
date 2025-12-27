@@ -11,7 +11,7 @@ use App\Http\Controllers\API\Auth\Request\Auth\ChangePasswordRequest;
 use App\Http\Controllers\API\Auth\Request\Auth\RegisterRequest;
 use App\Http\Controllers\API\Auth\Request\Auth\ResetPasswordRequest;
 use App\Http\Controllers\API\Auth\Request\Auth\VerifyRegistrationRequest;
-use App\Http\Controllers\API\Response\ResponseFactory;
+use App\Http\Controllers\API\Auth\Response\LoginResponse;
 use App\Services\User\DTO\UserProfileDTO;
 use App\Services\User\UserService;
 use Illuminate\Http\JsonResponse;
@@ -25,36 +25,31 @@ use OpenApi\Attributes as OA;
 class AuthController extends APIController
 {
     public function __construct(
-        private readonly UserService       $userService,
-        protected readonly ResponseFactory $responseFactory,
+        private readonly UserService $userService,
     ) {}
 
     #[OA\Post(
         path: "/api/v1/register",
+        operationId: 'register',
         description: "Регистрация нового пользователя. Успешный ответ будет содержать Bearer токен, который нужно использовать для авторизации в других запросах.",
         summary: "Регистрация",
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(ref: "#/components/schemas/RegisterRequest")
         ),
-        tags: ["Авторизация"],
+        tags: ["Auth"],
         parameters: [
             new OA\Parameter(ref: "#/components/parameters/XRequestedWithHeader"),
         ],
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Successful registration",
+                description: "Successful login",
                 content: new OA\JsonContent(
+                    required: ["status", "content"],
                     properties: [
                         new OA\Property(property: "status", type: "string", example: "ok"),
-                        new OA\Property(
-                            property: "content",
-                            properties: [
-                                new OA\Property(property: "token", type: "string", example: "54|zSA0wCsYADhnwylBCo86NPCKnz1jEYGns7cJbY8543e3b2ad")
-                            ],
-                            type: "object"
-                        )
+                        new OA\Property(property: "content", ref: "#/components/schemas/LoginResponseContent", type: "object"),
                     ],
                     type: "object"
                 )
@@ -76,6 +71,7 @@ class AuthController extends APIController
 
     #[OA\Post(
         path: "/api/v1/login",
+        operationId: 'login',
         description: "Авторизация происходит по email и паролю. Успешный ответ будет содержать Bearer токен, который нужно
         использовать для авторизации в других запросах. Токен будет действителен 60 минут. Для обновления токена следует ещё раз выполнить текущий запрос.",
         summary: "Login",
@@ -83,7 +79,7 @@ class AuthController extends APIController
             required: true,
             content: new OA\JsonContent(ref: "#/components/schemas/AuthenticateRequest")
         ),
-        tags: ["Авторизация"],
+        tags: ["Auth"],
         parameters: [
             new OA\Parameter(ref: "#/components/parameters/XRequestedWithHeader"),
         ],
@@ -92,15 +88,10 @@ class AuthController extends APIController
                 response: 200,
                 description: "Successful login",
                 content: new OA\JsonContent(
+                    required: ["status", "content"],
                     properties: [
                         new OA\Property(property: "status", type: "string", example: "ok"),
-                        new OA\Property(
-                            property: "content",
-                            properties: [
-                                new OA\Property(property: "token", type: "string", example: "54|zSA0wCsYADhnwylBCo86NPCKnz1jEYGns7cJbY8543e3b2ad")
-                            ],
-                            type: "object"
-                        )
+                        new OA\Property(property: "content", ref: "#/components/schemas/LoginResponseContent", type: "object"),
                     ],
                     type: "object"
                 )
@@ -111,21 +102,23 @@ class AuthController extends APIController
     )]
     public function login(AuthenticateRequest $request): JsonResponse
     {
-        return $this->apiResponse([
-            'token' => $this->userService->authorize($request->getEmail(), $request->getPassword())
-        ]);
+        return $this->apiResponse(
+            new LoginResponse($this->userService->authorize($request->getEmail(), $request->getPassword())),
+        );
     }
 
     #[OA\Post(
         path: "/api/v1/logout",
+        operationId: 'logout',
         description: "Выход из системы. Удаляет текущий токен доступа пользователя.",
         summary: "Logout",
-        tags: ["Авторизация"],
+        security: [["bearerAuth" => []]],
+        tags: ["Auth"],
         parameters: [
             new OA\Parameter(ref: "#/components/parameters/XRequestedWithHeader"),
         ],
         responses: [
-            new OA\Response(response: 200, description: "Successful", content: new OA\JsonContent(ref: "#/components/schemas/SuccessfulEmptyResponse")),
+            new OA\Response(response: 204, description: "Successful", content: new OA\JsonContent(ref: "#/components/schemas/SuccessfulEmptyResponse")),
             new OA\Response(response: 401, description: "Unauthorized", content: new OA\JsonContent(ref: "#/components/schemas/AuthError"))
         ]
     )]
@@ -138,14 +131,16 @@ class AuthController extends APIController
 
     #[OA\Post(
         path: "/api/v1/logout-all",
+        operationId: 'logoutAllSessions',
         description: "Выход из системы на всех устройствах. Удаляет все токены доступа пользователя.",
         summary: "Logout для всех устройств",
-        tags: ["Авторизация"],
+        security: [["bearerAuth" => []]],
+        tags: ["Auth"],
         parameters: [
             new OA\Parameter(ref: "#/components/parameters/XRequestedWithHeader"),
         ],
         responses: [
-            new OA\Response(response: 200, description: "Successful", content: new OA\JsonContent(ref: "#/components/schemas/SuccessfulEmptyResponse")),
+            new OA\Response(response: 204, description: "Successful", content: new OA\JsonContent(ref: "#/components/schemas/SuccessfulEmptyResponse")),
             new OA\Response(response: 401, description: "Unauthorized", content: new OA\JsonContent(ref: "#/components/schemas/AuthError"))
         ]
     )]
@@ -158,9 +153,10 @@ class AuthController extends APIController
 
     #[OA\Get(
         path: "/api/v1/auth/yandex",
+        operationId: 'yandexAuth',
         description: "Будет произведён редирект на страницу авторизации Яндекс. После успешной авторизации, пользователь будет перенаправлен на указанный в настройках приложения URL.",
         summary: "Yandex авторизация",
-        tags: ["Авторизация"],
+        tags: ["Auth"],
         responses: [
             new OA\Response(
                 response: 302,
@@ -189,18 +185,19 @@ class AuthController extends APIController
 
     #[OA\Post(
         path: "/api/v1/user/verify",
+        operationId: 'verifyRegistration',
         description: "Подтверждение регистрации пользователя с помощью кода верификации.",
         summary: "Подтверждение регистрации",
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(ref: "#/components/schemas/VerifyRegistrationRequest")
         ),
-        tags: ["Авторизация"],
+        tags: ["Auth"],
         parameters: [
             new OA\Parameter(ref: "#/components/parameters/XRequestedWithHeader"),
         ],
         responses: [
-            new OA\Response(response: 200, description: "Successful", content: new OA\JsonContent(ref: "#/components/schemas/SuccessfulEmptyResponse")),
+            new OA\Response(response: 204, description: "Successful", content: new OA\JsonContent(ref: "#/components/schemas/SuccessfulEmptyResponse")),
             new OA\Response(response: 401, description: "Unauthorized", content: new OA\JsonContent(ref: "#/components/schemas/AuthError")),
             new OA\Response(response: 422, description: "Validation error", content: new OA\JsonContent(ref: "#/components/schemas/ValidationError")),
             new OA\Response(response: 404, description: "Not Found", content: new OA\JsonContent(ref: "#/components/schemas/NotFoundError"))
@@ -215,14 +212,15 @@ class AuthController extends APIController
 
     #[OA\Post(
         path: "/api/v1/user/verify/resend",
+        operationId: 'verifyResend',
         description: "Повторная отправка кода верификации на email пользователя. Код будет отправлен на email, указанный при регистрации.",
         summary: "Повторная отправка кода верификации",
-        tags: ["Авторизация"],
+        tags: ["Auth"],
         parameters: [
             new OA\Parameter(ref: "#/components/parameters/XRequestedWithHeader"),
         ],
         responses: [
-            new OA\Response(response: 200, description: "Successful", content: new OA\JsonContent(ref: "#/components/schemas/SuccessfulEmptyResponse")),
+            new OA\Response(response: 204, description: "Successful", content: new OA\JsonContent(ref: "#/components/schemas/SuccessfulEmptyResponse")),
             new OA\Response(response: 401, description: "Unauthorized", content: new OA\JsonContent(ref: "#/components/schemas/AuthError")),
         ]
     )]
@@ -235,28 +233,19 @@ class AuthController extends APIController
 
     #[OA\Post(
         path: "/api/v1/reset-password/code",
+        operationId: 'resetPasswordCode',
         description: "Отправка кода для сброса пароля на email пользователя.",
         summary: "Отправка кода сброса пароля",
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(ref: "#/components/schemas/ResetPasswordRequest")
         ),
-        tags: ["Авторизация"],
+        tags: ["Auth"],
         parameters: [
             new OA\Parameter(ref: "#/components/parameters/XRequestedWithHeader"),
         ],
         responses: [
-            new OA\Response(
-                response: 200,
-                description: "Код сброса пароля успешно отправлен",
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: "status", type: "string", example: "ok"),
-                        new OA\Property(property: "content", type: "array", items: new OA\Items()),
-                    ],
-                    type: "object"
-                )
-            ),
+            new OA\Response(response: 204, description: "Successful", content: new OA\JsonContent(ref: "#/components/schemas/SuccessfulEmptyResponse")),
             new OA\Response(response: 422, description: "Validation error", content: new OA\JsonContent(ref: "#/components/schemas/ValidationError")),
             new OA\Response(response: 404, description: "Not Found", content: new OA\JsonContent(ref: "#/components/schemas/NotFoundError"))
         ]
@@ -270,28 +259,19 @@ class AuthController extends APIController
 
     #[OA\Post(
         path: "/api/v1/reset-password/change",
+        operationId: 'resetPasswordChange',
         description: "Изменение пароля пользователя с использованием кода сброса.",
         summary: "Изменение пароля",
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(ref: "#/components/schemas/ChangePasswordRequest")
         ),
-        tags: ["Авторизация"],
+        tags: ["Auth"],
         parameters: [
             new OA\Parameter(ref: "#/components/parameters/XRequestedWithHeader"),
         ],
         responses: [
-            new OA\Response(
-                response: 200,
-                description: "Successful response",
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: "status", type: "string", example: "ok"),
-                        new OA\Property(property: "content", type: "array", items: new OA\Items()),
-                    ],
-                    type: "object"
-                )
-            ),
+            new OA\Response(response: 204, description: "Successful", content: new OA\JsonContent(ref: "#/components/schemas/SuccessfulEmptyResponse")),
             new OA\Response(response: 422, description: "Validation error", content: new OA\JsonContent(ref: "#/components/schemas/ValidationError")),
             new OA\Response(response: 404, description: "Not Found", content: new OA\JsonContent(ref: "#/components/schemas/NotFoundError"))
         ]

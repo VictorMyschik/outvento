@@ -15,11 +15,11 @@ class User extends Authenticatable implements MustVerifyEmail
 {
     use Notifiable, HasApiTokens;
 
-    public const TYPE_VIEW = 'view';
+    public const string TYPE_VIEW = 'view';
 
-    public const TYPE_EDIT = 'edit';
+    public const string TYPE_EDIT = 'edit';
 
-    public const TYPE_DELETE = 'delete';
+    public const string TYPE_DELETE = 'delete';
 
     /**
      * The attributes that are mass assignable.

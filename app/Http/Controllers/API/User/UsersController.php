@@ -23,9 +23,10 @@ class UsersController extends APIController
 
     #[OA\Get(
         path: "/api/v1/user",
+        operationId: "profile",
         summary: "Получить информацию о текущем пользователе",
         security: [["bearerAuth" => []]],
-        tags: ["Пользователи. Инфо"],
+        tags: ["User info"],
         parameters: [
             new OA\Parameter(ref: "#/components/parameters/XRequestedWithHeader"),
         ],
@@ -34,11 +35,10 @@ class UsersController extends APIController
                 response: 200,
                 description: "Successful response",
                 content: new OA\JsonContent(
+                    required: ["status", "content"],
                     properties: [
                         new OA\Property(property: "status", type: "string", example: "ok"),
-                        new OA\Property(property: "content", type: "array", items: new OA\Items(
-                            ref: "#/components/schemas/UserProfileResponse"
-                        )),
+                        new OA\Property(property: "content", ref: "#/components/schemas/UserProfileResponse", type: "object"),
                     ],
                     type: "object"
                 )
@@ -53,13 +53,14 @@ class UsersController extends APIController
 
     #[OA\Post(
         path: "/api/v1/user/profile",
+        operationId: "updateProfile",
         summary: "Обновить информацию о пользователе",
         security: [["bearerAuth" => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(ref: "#/components/schemas/UpdateProfileRequest")
         ),
-        tags: ["Пользователи. Инфо"],
+        tags: ["User info"],
         parameters: [
             new OA\Parameter(ref: "#/components/parameters/XRequestedWithHeader"),
         ],
@@ -95,13 +96,14 @@ class UsersController extends APIController
 
     #[OA\Post(
         path: "/api/v1/user/password",
+        operationId: "changePassword",
         summary: "Изменить пароль пользователя",
         security: [["bearerAuth" => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(ref: "#/components/schemas/UpdatePasswordRequest")
         ),
-        tags: ["Пользователи. Инфо"],
+        tags: ["User info"],
         parameters: [
             new OA\Parameter(ref: "#/components/parameters/XRequestedWithHeader"),
         ],
@@ -120,9 +122,10 @@ class UsersController extends APIController
 
     #[OA\Delete(
         path: "/api/v1/user/avatar",
+        operationId: "removeAvatar",
         summary: "Удалить аватар пользователя",
         security: [["bearerAuth" => []]],
-        tags: ["Пользователи. Инфо"],
+        tags: ["User info"],
         parameters: [
             new OA\Parameter(ref: "#/components/parameters/XRequestedWithHeader"),
         ],

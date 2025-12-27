@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\API;
 
-use App\Enums\GateEnum;
 use App\Http\Controllers\API\Response\PaginationResponse;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
@@ -67,12 +66,5 @@ abstract class APIController extends Controller
             'status'  => 'ok',
             'content' => $content,
         ];
-    }
-
-    protected function checkGateAccess(GateEnum $gate, array $params): void
-    {
-        if (!Gate::allows($gate->value, $params)) {
-            throw new AccessDeniedHttpException('Недостаточно прав для проведения данной операции: ' . $gate->value);
-        }
     }
 }

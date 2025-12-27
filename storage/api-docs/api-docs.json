@@ -9,11 +9,11 @@
         "/api/v1/register": {
             "post": {
                 "tags": [
-                    "Авторизация"
+                    "Auth"
                 ],
                 "summary": "Регистрация",
                 "description": "Регистрация нового пользователя. Успешный ответ будет содержать Bearer токен, который нужно использовать для авторизации в других запросах.",
-                "operationId": "64a91aea1615554438a332dbda1f614a",
+                "operationId": "register",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/XRequestedWithHeader"
@@ -31,23 +31,21 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Successful registration",
+                        "description": "Successful login",
                         "content": {
                             "application/json": {
                                 "schema": {
+                                    "required": [
+                                        "status",
+                                        "content"
+                                    ],
                                     "properties": {
                                         "status": {
                                             "type": "string",
                                             "example": "ok"
                                         },
                                         "content": {
-                                            "properties": {
-                                                "token": {
-                                                    "type": "string",
-                                                    "example": "54|zSA0wCsYADhnwylBCo86NPCKnz1jEYGns7cJbY8543e3b2ad"
-                                                }
-                                            },
-                                            "type": "object"
+                                            "$ref": "#/components/schemas/LoginResponseContent"
                                         }
                                     },
                                     "type": "object"
@@ -81,11 +79,11 @@
         "/api/v1/login": {
             "post": {
                 "tags": [
-                    "Авторизация"
+                    "Auth"
                 ],
                 "summary": "Login",
                 "description": "Авторизация происходит по email и паролю. Успешный ответ будет содержать Bearer токен, который нужно\n        использовать для авторизации в других запросах. Токен будет действителен 60 минут. Для обновления токена следует ещё раз выполнить текущий запрос.",
-                "operationId": "f2f97f1efa7188a654418caae929ae05",
+                "operationId": "login",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/XRequestedWithHeader"
@@ -107,19 +105,17 @@
                         "content": {
                             "application/json": {
                                 "schema": {
+                                    "required": [
+                                        "status",
+                                        "content"
+                                    ],
                                     "properties": {
                                         "status": {
                                             "type": "string",
                                             "example": "ok"
                                         },
                                         "content": {
-                                            "properties": {
-                                                "token": {
-                                                    "type": "string",
-                                                    "example": "54|zSA0wCsYADhnwylBCo86NPCKnz1jEYGns7cJbY8543e3b2ad"
-                                                }
-                                            },
-                                            "type": "object"
+                                            "$ref": "#/components/schemas/LoginResponseContent"
                                         }
                                     },
                                     "type": "object"
@@ -153,18 +149,18 @@
         "/api/v1/logout": {
             "post": {
                 "tags": [
-                    "Авторизация"
+                    "Auth"
                 ],
                 "summary": "Logout",
                 "description": "Выход из системы. Удаляет текущий токен доступа пользователя.",
-                "operationId": "6e2e539f3fe42085b0123f27bf438f5a",
+                "operationId": "logout",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/XRequestedWithHeader"
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "204": {
                         "description": "Successful",
                         "content": {
                             "application/json": {
@@ -184,24 +180,29 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/logout-all": {
             "post": {
                 "tags": [
-                    "Авторизация"
+                    "Auth"
                 ],
                 "summary": "Logout для всех устройств",
                 "description": "Выход из системы на всех устройствах. Удаляет все токены доступа пользователя.",
-                "operationId": "6017ff4d3a4caa0205a813422d231f24",
+                "operationId": "logoutAllSessions",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/XRequestedWithHeader"
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "204": {
                         "description": "Successful",
                         "content": {
                             "application/json": {
@@ -221,17 +222,22 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/auth/yandex": {
             "get": {
                 "tags": [
-                    "Авторизация"
+                    "Auth"
                 ],
                 "summary": "Yandex авторизация",
                 "description": "Будет произведён редирект на страницу авторизации Яндекс. После успешной авторизации, пользователь будет перенаправлен на указанный в настройках приложения URL.",
-                "operationId": "33e3ebe55ed74d89af3f7957e34a647b",
+                "operationId": "yandexAuth",
                 "responses": {
                     "302": {
                         "description": "Redirect to Yandex",
@@ -259,11 +265,11 @@
         "/api/v1/user/verify": {
             "post": {
                 "tags": [
-                    "Авторизация"
+                    "Auth"
                 ],
                 "summary": "Подтверждение регистрации",
                 "description": "Подтверждение регистрации пользователя с помощью кода верификации.",
-                "operationId": "f4bbe172ad96b9d2ee61caab0d2c60bf",
+                "operationId": "verifyRegistration",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/XRequestedWithHeader"
@@ -280,7 +286,7 @@
                     }
                 },
                 "responses": {
-                    "200": {
+                    "204": {
                         "description": "Successful",
                         "content": {
                             "application/json": {
@@ -326,18 +332,18 @@
         "/api/v1/user/verify/resend": {
             "post": {
                 "tags": [
-                    "Авторизация"
+                    "Auth"
                 ],
                 "summary": "Повторная отправка кода верификации",
                 "description": "Повторная отправка кода верификации на email пользователя. Код будет отправлен на email, указанный при регистрации.",
-                "operationId": "70c118d87ada6c2fd45f8386ee7f833d",
+                "operationId": "verifyResend",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/XRequestedWithHeader"
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "204": {
                         "description": "Successful",
                         "content": {
                             "application/json": {
@@ -363,11 +369,11 @@
         "/api/v1/reset-password/code": {
             "post": {
                 "tags": [
-                    "Авторизация"
+                    "Auth"
                 ],
                 "summary": "Отправка кода сброса пароля",
                 "description": "Отправка кода для сброса пароля на email пользователя.",
-                "operationId": "3ba909d64615dc850d88148125bda14c",
+                "operationId": "resetPasswordCode",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/XRequestedWithHeader"
@@ -384,22 +390,12 @@
                     }
                 },
                 "responses": {
-                    "200": {
-                        "description": "Код сброса пароля успешно отправлен",
+                    "204": {
+                        "description": "Successful",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "ok"
-                                        },
-                                        "content": {
-                                            "type": "array",
-                                            "items": {}
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/SuccessfulEmptyResponse"
                                 }
                             }
                         }
@@ -430,11 +426,11 @@
         "/api/v1/reset-password/change": {
             "post": {
                 "tags": [
-                    "Авторизация"
+                    "Auth"
                 ],
                 "summary": "Изменение пароля",
                 "description": "Изменение пароля пользователя с использованием кода сброса.",
-                "operationId": "3729649d61e12198fe9aace6d482b41c",
+                "operationId": "resetPasswordChange",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/XRequestedWithHeader"
@@ -451,22 +447,12 @@
                     }
                 },
                 "responses": {
-                    "200": {
-                        "description": "Successful response",
+                    "204": {
+                        "description": "Successful",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "ok"
-                                        },
-                                        "content": {
-                                            "type": "array",
-                                            "items": {}
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/SuccessfulEmptyResponse"
                                 }
                             }
                         }
@@ -497,10 +483,10 @@
         "/api/v1/user": {
             "get": {
                 "tags": [
-                    "Пользователи. Инфо"
+                    "User info"
                 ],
                 "summary": "Получить информацию о текущем пользователе",
-                "operationId": "6d64a176e2a1e3e3c5df078ec6aac7ed",
+                "operationId": "profile",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/XRequestedWithHeader"
@@ -512,16 +498,17 @@
                         "content": {
                             "application/json": {
                                 "schema": {
+                                    "required": [
+                                        "status",
+                                        "content"
+                                    ],
                                     "properties": {
                                         "status": {
                                             "type": "string",
                                             "example": "ok"
                                         },
                                         "content": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/UserProfileResponse"
-                                            }
+                                            "$ref": "#/components/schemas/UserProfileResponse"
                                         }
                                     },
                                     "type": "object"
@@ -550,10 +537,10 @@
         "/api/v1/user/profile": {
             "post": {
                 "tags": [
-                    "Пользователи. Инфо"
+                    "User info"
                 ],
                 "summary": "Обновить информацию о пользователе",
-                "operationId": "5e4f308f9541211fcc0e09d237f1e539",
+                "operationId": "updateProfile",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/XRequestedWithHeader"
@@ -620,10 +607,10 @@
         "/api/v1/user/password": {
             "post": {
                 "tags": [
-                    "Пользователи. Инфо"
+                    "User info"
                 ],
                 "summary": "Изменить пароль пользователя",
-                "operationId": "46efdbbbac4abc10b0ba0772df64faf6",
+                "operationId": "changePassword",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/XRequestedWithHeader"
@@ -681,10 +668,10 @@
         "/api/v1/user/avatar": {
             "delete": {
                 "tags": [
-                    "Пользователи. Инфо"
+                    "User info"
                 ],
                 "summary": "Удалить аватар пользователя",
-                "operationId": "5eca5decdf9260b8617b3dc741f40930",
+                "operationId": "removeAvatar",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/XRequestedWithHeader"
@@ -861,6 +848,21 @@
                 },
                 "type": "object"
             },
+            "LoginResponseContent": {
+                "required": [
+                    "token"
+                ],
+                "properties": {
+                    "token": {
+                        "type": "string",
+                        "enum": [
+                            "ok"
+                        ],
+                        "example": "54|zSA0wCsYADhnwylBCo86NPCKnz1jEYGns7cJbY8543e3b2ad"
+                    }
+                },
+                "type": "object"
+            },
             "Pagination": {
                 "properties": {
                     "quantity": {
@@ -884,27 +886,15 @@
             },
             "UpdateProfileRequest": {
                 "required": [
-                    "first_name",
-                    "last_name",
+                    "name",
                     "phone",
                     "email"
                 ],
                 "properties": {
-                    "first_name": {
+                    "name": {
                         "type": "string",
                         "maxLength": 255,
                         "example": "John",
-                        "nullable": true
-                    },
-                    "last_name": {
-                        "type": "string",
-                        "maxLength": 255,
-                        "example": "Doe",
-                        "nullable": true
-                    },
-                    "phone": {
-                        "type": "string",
-                        "example": "+1234567890",
                         "nullable": true
                     },
                     "email": {
@@ -913,32 +903,26 @@
                         "maxLength": 255,
                         "example": "user@example.com",
                         "nullable": true
-                    },
-                    "avatar": {
-                        "type": "string",
-                        "format": "binary",
-                        "nullable": true
                     }
                 },
                 "type": "object"
             },
             "UserProfileResponse": {
+                "required": [
+                    "id",
+                    "name",
+                    "email",
+                    "isVerified",
+                    "defaultLanguage"
+                ],
                 "properties": {
                     "id": {
                         "description": "Идентификатор пользователя",
                         "type": "integer",
                         "format": "int64"
                     },
-                    "firstName": {
-                        "description": "Имя пользователя",
-                        "type": "string"
-                    },
-                    "lastName": {
-                        "description": "Фамилия пользователя",
-                        "type": "string"
-                    },
-                    "phone": {
-                        "description": "Номер телефона пользователя",
+                    "name": {
+                        "description": "Никнейм",
                         "type": "string"
                     },
                     "email": {
@@ -953,6 +937,10 @@
                     "isVerified": {
                         "description": "Указывает, подтверждена ли электронная почта пользователя",
                         "type": "boolean"
+                    },
+                    "defaultLanguage": {
+                        "description": "Язык по умолчанию",
+                        "type": "string"
                     }
                 },
                 "type": "object"
@@ -1007,13 +995,13 @@
                 "type": "object"
             },
             "SuccessfulEmptyResponse": {
+                "required": [
+                    "status"
+                ],
                 "properties": {
                     "status": {
                         "type": "string",
                         "example": "ok"
-                    },
-                    "content": {
-                        "type": "null"
                     }
                 },
                 "type": "object"
@@ -1111,12 +1099,12 @@
     },
     "tags": [
         {
-            "name": "Авторизация",
-            "description": "Авторизация"
+            "name": "Auth",
+            "description": "Auth"
         },
         {
-            "name": "Пользователи. Инфо",
-            "description": "Пользователи. Инфо"
+            "name": "User info",
+            "description": "User info"
         }
     ]
 }

@@ -8,9 +8,9 @@ use OpenApi\Attributes as OA;
 
 #[OA\Schema(
     schema: "SuccessfulEmptyResponse",
+    required: ["status"],
     properties: [
         new OA\Property(property: "status", type: "string", example: "ok"),
-        new OA\Property(property: "content", type: "null"),
     ],
     type: "object"
 )]
