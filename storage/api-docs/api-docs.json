@@ -519,6 +519,58 @@
                 }
             }
         },
+        "/api/v1/locale/{locale}": {
+            "post": {
+                "tags": [
+                    "Common"
+                ],
+                "summary": "Установить локаль пользователя",
+                "operationId": "setLocale",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/XRequestedWithHeader"
+                    },
+                    {
+                        "name": "locale",
+                        "in": "path",
+                        "description": "Код локали (например: en, ru)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "en"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SuccessfulEmptyResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {},
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/v1/user": {
             "get": {
                 "tags": [
@@ -743,52 +795,6 @@
                         "bearerAuth": []
                     }
                 ]
-            }
-        },
-        "/api/v1/locale/{locale}": {
-            "post": {
-                "tags": [
-                    "User info"
-                ],
-                "summary": "Установить локаль пользователя",
-                "operationId": "setLocale",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/XRequestedWithHeader"
-                    },
-                    {
-                        "name": "locale",
-                        "in": "path",
-                        "description": "Код локали (например: en, ru)",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "example": "en"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Successful",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SuccessfulEmptyResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Bad Request",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
             }
         }
     },

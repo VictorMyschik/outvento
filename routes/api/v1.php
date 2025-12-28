@@ -9,10 +9,12 @@ use App\Http\Controllers\Reference\ReferenceController;
 use App\Http\Controllers\Travel\Travel\TravelController;
 use App\Http\Controllers\Travel\Travel\TravelImageController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Session;
 
-Route::post('locale/{locale}', fn($locale) => Session::put('locale', $locale));
 Route::get('common/languages', [CommonApiController::class, 'getLanguages'])->name('languages');
+
+Route::middleware('optional:sanctum')->group(function () {
+    Route::post('locale/{locale}', [CommonApiController::class, 'setLocale']);
+});
 
 Route::middleware('guest')->group(static function () {
     Route::post('login', [AuthController::class, 'login'])->name('login');
@@ -40,6 +42,7 @@ Route::middleware('auth:sanctum')->group(static function () {
 
     Route::middleware('api-verified')->group(static function () {});
 });
+
 Route::group(['prefix' => 'travels'], function () {
     // Create Travel
     Route::post('search', [TravelController::class, 'searchTravels'])->name('api.travels.search');

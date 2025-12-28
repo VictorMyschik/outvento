@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
-use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Closure;
+use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,11 +21,11 @@ class HandleAuthenticated extends RedirectIfAuthenticated
             if (Auth::guard($guard)->check()) {
                 if ($request->expectsJson()) {
                     return response()->json([
-                        'message' => 'Данный ресурс недоступен для авторизованных пользователей.'
+                        'message' => 'Данный ресурс недоступен для неавторизованных пользователей.'
                     ], 403);
                 }
 
-                throw new UnauthorizedHttpException('Данный ресурс недоступен для авторизованных пользователей.');
+                throw new UnauthorizedHttpException('Данный ресурс недоступен для неавторизованных пользователей.');
             }
         }
 

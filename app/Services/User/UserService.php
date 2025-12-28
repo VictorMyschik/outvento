@@ -197,7 +197,7 @@ final readonly class UserService
     public function setLocale(?int $userId, Language $language): void
     {
         if ($userId) {
-            $this->repository->updateUser($userId, ['language' => $language->value]);
+            $this->repository->updateUser($userId, ['language' => strtoupper($language->getCode())]);
         }
 
         Session::put('locale', $language->getCode());
