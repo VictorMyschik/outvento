@@ -4,20 +4,21 @@ declare(strict_types=1);
 
 namespace App\Services\Travel\Api;
 
+use App\Http\Controllers\API\Travel\Response\Components\CountryComponent;
+use App\Http\Controllers\API\Travel\Response\Components\CountryContinentComponent;
 use App\Http\Controllers\API\Travel\Response\Components\MembersComponent;
 use App\Http\Controllers\API\Travel\Response\Components\TravelImageComponent;
 use App\Http\Controllers\API\Travel\Response\Components\TravelStatusComponent;
 use App\Http\Controllers\API\Travel\Response\Components\TravelUserComponent;
 use App\Http\Controllers\API\Travel\Response\Components\TravelVisibleType;
 use App\Http\Controllers\API\Travel\Response\TravelDetailsResponse;
-use App\Http\Controllers\API\Travel\Response\TravelTypeComponent;
-use App\Http\Controllers\Response\Components\CountryContinentComponent;
-use App\Http\Controllers\Response\CountryResponse;
 use App\Models\Travel\Travel;
 use App\Models\Travel\TravelImage;
 use App\Models\Travel\TravelType;
 use App\Models\User;
 use App\Services\System\Enum\Language;
+use App\Services\Travel\Api\Components\TravelListByTypeComponent;
+use App\Services\Travel\Api\Components\TravelTypeComponent;
 use App\Services\Travel\Enum\ImageType;
 use App\Services\Travel\TravelRepositoryInterface;
 
@@ -29,17 +30,20 @@ final readonly class TravelApiService
 
     public function travelExamples(Language $language): array
     {
-        $out = [];
+        $items = [];
 
         foreach ($this->travelRepository->getTravelTypeList() as $type) {
-            $out[$type->id()] = $this->searchTravels([
-                'travelType' => $type->id(),
-                'limit'      => 3,
-                'dateFrom'   => now()->subYear()->toDateString(),
-            ], $language, null);
+            $items[] = new TravelListByTypeComponent(
+                travelTypeId: $type->id(),
+                travels: $this->searchTravels([
+                    'travelType' => $type->id(),
+                    'limit'      => 3,
+                    'dateFrom'   => now()->subYear()->toDateString(),
+                ], $language, null)
+            );
         }
 
-        return $out;
+        return $items;
     }
 
     public function getTravelTypeList(Language $language): array
@@ -132,12 +136,12 @@ final readonly class TravelApiService
                 name: $user->name,
                 email: $user->email,
             ),
-            country: new CountryResponse(
+            country: new CountryComponent(
                 id: $travel->getCountry()->id(),
                 name: $travel->getCountry()->getName($language),
                 continent: new CountryContinentComponent(
                     name: $travel->getCountry()->getContinentName(),
-                    short_name: $travel->getCountry()->getContinentShortName(),
+                    shortName: $travel->getCountry()->getContinentShortName(),
                 ),
             ),
             travelType: $this->buildTravelTypeComponent($travel->getTravelType(), $language),

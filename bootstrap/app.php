@@ -34,7 +34,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
     })
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->web([
+        $middleware->api([
             'localization' => Localization::class,
         ]);
     })

@@ -7,7 +7,9 @@ namespace App\Repositories\Language;
 use App\Models\System\Translate;
 use App\Models\System\TranslateGroup;
 use App\Repositories\DatabaseRepository;
+use App\Services\Language\Enum\TranslateGroupEnum;
 use App\Services\Language\TranslateRepositoryInterface;
+use App\Services\System\Enum\Language;
 
 readonly class TranslateRepository extends DatabaseRepository implements TranslateRepositoryInterface
 {
@@ -33,5 +35,19 @@ readonly class TranslateRepository extends DatabaseRepository implements Transla
             ->where('translate_id', $translateId)
             ->pluck('group')
             ->all();
+    }
+
+    public function getTranslateForGroup(TranslateGroupEnum $group, Language $language): array
+    {
+        return $this->db->table(Translate::getTableName())
+            ->join(TranslateGroup::getTableName(), function ($join) use ($group) {
+                $join->on(Translate::getTableName() . '.id', '=', TranslateGroup::getTableName() . '.translate_id')
+                    ->where(TranslateGroup::getTableName() . '.group', '=', $group->value);
+            })
+            ->select(Translate::getTableName() . '.code', Translate::getTableName() . '.' . $language->getCode())
+            ->get()
+            ->mapWithKeys(function ($item) use ($language) {
+                return [$item->code => $item->{$language->getCode()}];
+            })->all();
     }
 }

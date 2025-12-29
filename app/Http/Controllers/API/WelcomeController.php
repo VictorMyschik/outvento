@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\API\Request\WelcomeResponse;
+use App\Services\Language\API\TranslateApiService;
+use App\Services\Language\Enum\TranslateGroupEnum;
 use App\Services\Language\TranslateService;
 use App\Services\Travel\Api\TravelApiService;
 use Illuminate\Contracts\Foundation\Application;
@@ -12,25 +14,23 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Attributes as OA;
+
 class WelcomeController extends APIController
 {
     public function __construct(
-        private readonly TranslateService $translateService,
-        private readonly TravelApiService $service,
+        private readonly TranslateApiService $translateApiService,
+        private readonly TravelApiService    $apiService,
     ) {}
 
-    #[OA\Post(
+    #[OA\Get(
         path: "/api/v1/pages/welcome",
-        operationId: 'register',
-        description: "Регистрация нового пользователя. Успешный ответ будет содержать Bearer токен, который нужно использовать для авторизации в других запросах.",
-        summary: "Регистрация",
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(ref: "#/components/schemas/RegisterRequest")
-        ),
-        tags: ["Auth"],
+        operationId: 'welcome',
+        description: 'Главная страница сайта',
+        summary: "Welcome",
+        tags: ["Pages"],
         parameters: [
             new OA\Parameter(ref: "#/components/parameters/XRequestedWithHeader"),
+            new OA\Parameter(ref: "#/components/parameters/AcceptLanguageHeader"),
         ],
         responses: [
             new OA\Response(
@@ -40,7 +40,7 @@ class WelcomeController extends APIController
                     required: ["status", "content"],
                     properties: [
                         new OA\Property(property: "status", type: "string", example: "ok"),
-                        new OA\Property(property: "content", ref: "#/components/schemas/LoginResponseContent", type: "object"),
+                        new OA\Property(property: "content", ref: "#/components/schemas/WelcomeResponse", type: "object"),
                     ],
                     type: "object"
                 )
@@ -49,11 +49,13 @@ class WelcomeController extends APIController
     )]
     public function index(): JsonResponse
     {
+        $language = $this->getLanguage();
+
         return $this->apiResponse(
             new WelcomeResponse(
-                lang: $this->translateService->getTranslateFor(),
-                travelTypeList: $this->service->getTravelTypeList($this->getLanguage()),
-                travelExamples: $this->service->travelExamples($this->getLanguage()),
+                lang: $this->translateApiService->getTranslateFor(TranslateGroupEnum::We, $language),
+                travelTypeList: $this->apiService->getTravelTypeList($language),
+                travelExamples: $this->apiService->travelExamples($language),
             ),
         );
     }

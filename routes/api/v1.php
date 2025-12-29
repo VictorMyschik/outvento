@@ -11,11 +11,13 @@ use App\Http\Controllers\Travel\Travel\TravelController;
 use App\Http\Controllers\Travel\Travel\TravelImageController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('common/languages', [CommonApiController::class, 'getLanguages'])->name('languages');
-
 Route::middleware('optional:sanctum')->group(function () {
-    Route::post('locale/{locale}', [CommonApiController::class, 'setLocale']);
+    // Список доступных языков
+    Route::get('common/languages', [CommonApiController::class, 'getLanguages']);
+    // Получить общие переводы для фронтенда
+    Route::get('translate/common', [CommonApiController::class, 'getCommonTranslate']);
 
+    // Страницы сайта
     Route::prefix('pages')->group(static function () {
         Route::get('welcome', [WelcomeController::class, 'index']);
     });
@@ -38,6 +40,8 @@ Route::middleware('auth:sanctum')->group(static function () {
 
     Route::prefix('user')->group(static function () {
         Route::get('', [UsersController::class, 'profile']);
+        // Установить локаль пользователя по умолчанию в Личном кабинете
+        Route::post('locale/{locale}', [CommonApiController::class, 'setLocale']);
         Route::post('profile', [UsersController::class, 'updateProfile']);
         Route::post('password', [UsersController::class, 'changePassword']);
         Route::post('verify', [AuthController::class, 'verifyRegistration']);

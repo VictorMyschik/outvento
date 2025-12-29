@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\API\Travel\Request;
 
-use App\Http\Controllers\Travel\Request\InvalidArgumentException;
+use App\Http\Controllers\API\Request\InvalidArgumentException;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 

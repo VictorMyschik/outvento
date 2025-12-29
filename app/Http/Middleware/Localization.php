@@ -16,7 +16,6 @@ class Localization
         $locale = Session::get('locale') ?: Cookie::get('locale');
 
         if ($locale) {
-            Cookie::queue('locale', Session::get('locale'), 60 * 24 * 30);
             App::setlocale($locale);
         }
 

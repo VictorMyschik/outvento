@@ -1,8 +1,8 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Мои магазины",
-        "description": "Для действий требуется авторизация с помощью метода Bearer Token",
+        "title": "API Documentation",
+        "description": "Для некоторых действий требуется авторизация с помощью Bearer Token",
         "version": "1.0.0"
     },
     "paths": {
@@ -519,56 +519,46 @@
                 }
             }
         },
-        "/api/v1/locale/{locale}": {
-            "post": {
+        "/api/v1/translate/common": {
+            "get": {
                 "tags": [
                     "Common"
                 ],
-                "summary": "Установить локаль пользователя",
-                "operationId": "setLocale",
+                "summary": "Get common translations",
+                "operationId": "getCommonTranslate",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/XRequestedWithHeader"
                     },
                     {
-                        "name": "locale",
-                        "in": "path",
-                        "description": "Код локали (например: en, ru)",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "example": "en"
-                        }
+                        "$ref": "#/components/parameters/AcceptLanguageHeader"
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "Successful",
+                    "200": {
+                        "description": "Successful response",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/SuccessfulEmptyResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Bad Request",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
+                                    "required": [
+                                        "status",
+                                        "content"
+                                    ],
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "ok"
+                                        },
+                                        "content": {
+                                            "$ref": "#/components/schemas/TranslateResponse"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
                     }
-                },
-                "security": [
-                    {},
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/api/v1/user": {
@@ -796,6 +786,100 @@
                     }
                 ]
             }
+        },
+        "/api/v1/user/locale/{locale}": {
+            "post": {
+                "tags": [
+                    "User info"
+                ],
+                "summary": "Установить локаль пользователя",
+                "operationId": "setLocale",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/XRequestedWithHeader"
+                    },
+                    {
+                        "name": "locale",
+                        "in": "path",
+                        "description": "Код локали (например: en, ru)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "en"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SuccessfulEmptyResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/pages/welcome": {
+            "get": {
+                "tags": [
+                    "Pages"
+                ],
+                "summary": "Welcome",
+                "description": "Главная страница сайта",
+                "operationId": "welcome",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/XRequestedWithHeader"
+                    },
+                    {
+                        "$ref": "#/components/parameters/AcceptLanguageHeader"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "status",
+                                        "content"
+                                    ],
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "ok"
+                                        },
+                                        "content": {
+                                            "$ref": "#/components/schemas/WelcomeResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -954,6 +1038,36 @@
                 },
                 "type": "object"
             },
+            "WelcomeResponse": {
+                "description": "Response returned by the welcome endpoint",
+                "required": [
+                    "lang",
+                    "travelTypeList",
+                    "travelExamples"
+                ],
+                "properties": {
+                    "lang": {
+                        "description": "Localization object (key => string)",
+                        "type": "object",
+                        "example": "{'login': 'Вход'}"
+                    },
+                    "travelTypeList": {
+                        "description": "Array of TravelTypeComponent objects",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TravelTypeComponent"
+                        }
+                    },
+                    "travelExamples": {
+                        "description": "Array of TravelListByTypeComponent objects",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TravelListByTypeComponent"
+                        }
+                    }
+                },
+                "type": "object"
+            },
             "LanguagesResponse": {
                 "description": "Response containing available languages mapped by locale code",
                 "required": [
@@ -995,6 +1109,267 @@
                     "pages": {
                         "description": "Общее количество страниц",
                         "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "CountryComponent": {
+                "title": "CountryComponent",
+                "description": "Country data returned by the API",
+                "required": [
+                    "id",
+                    "name",
+                    "continent"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Identifier",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Country name",
+                        "type": "string",
+                        "example": "France"
+                    },
+                    "continent": {
+                        "$ref": "#/components/schemas/CountryContinentComponent"
+                    }
+                },
+                "type": "object"
+            },
+            "CountryContinentComponent": {
+                "title": "CountryContinentComponent",
+                "description": "Continent information for a country",
+                "required": [
+                    "name",
+                    "shortName"
+                ],
+                "properties": {
+                    "name": {
+                        "description": "Continent full name",
+                        "type": "string",
+                        "example": "Europe"
+                    },
+                    "shortName": {
+                        "description": "Continent short code or abbreviation",
+                        "type": "string",
+                        "example": "EU"
+                    }
+                },
+                "type": "object"
+            },
+            "MembersComponent": {
+                "title": "MembersComponent",
+                "description": "Membership details for a travel item",
+                "required": [
+                    "title"
+                ],
+                "properties": {
+                    "maxMember": {
+                        "description": "Maximum allowed members",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 10,
+                        "nullable": true
+                    },
+                    "existsMembers": {
+                        "description": "Currently existing members count",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 3,
+                        "nullable": true
+                    },
+                    "title": {
+                        "description": "Title for the members block",
+                        "type": "string",
+                        "example": "Participants"
+                    },
+                    "icon": {
+                        "description": "Icon path for the members block",
+                        "type": "string",
+                        "example": "/storage/images/icons/people-group.png"
+                    }
+                },
+                "type": "object"
+            },
+            "TravelImageComponent": {
+                "title": "TravelImageComponent",
+                "description": "Image information for a travel item",
+                "required": [
+                    "logo",
+                    "url"
+                ],
+                "properties": {
+                    "logo": {
+                        "description": "Whether this image is the logo",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "url": {
+                        "description": "Image URL",
+                        "type": "string",
+                        "format": "uri",
+                        "example": "https://example.com/image.jpg"
+                    },
+                    "description": {
+                        "description": "Optional image description",
+                        "type": "string",
+                        "example": "Front view of the hiking trail",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "TravelStatusComponent": {
+                "title": "TravelStatusComponent",
+                "description": "Status information for a travel item",
+                "required": [
+                    "key",
+                    "name"
+                ],
+                "properties": {
+                    "key": {
+                        "description": "Numeric status key",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Human-readable status name",
+                        "type": "string",
+                        "example": "active"
+                    }
+                },
+                "type": "object"
+            },
+            "TravelUserComponent": {
+                "title": "TravelUserComponent",
+                "description": "User data for travel responses",
+                "required": [
+                    "name",
+                    "email"
+                ],
+                "properties": {
+                    "name": {
+                        "description": "User display name",
+                        "type": "string",
+                        "example": "john_doe"
+                    },
+                    "email": {
+                        "description": "User email address",
+                        "type": "string",
+                        "format": "email",
+                        "example": "john@example.com"
+                    }
+                },
+                "type": "object"
+            },
+            "TravelVisibleType": {
+                "title": "TravelVisibleType",
+                "description": "Visibility type information for a travel item",
+                "required": [
+                    "key",
+                    "name"
+                ],
+                "properties": {
+                    "key": {
+                        "description": "Numeric visibility key",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Human-readable visibility name",
+                        "type": "string",
+                        "example": "public"
+                    }
+                },
+                "type": "object"
+            },
+            "TravelDetailsResponse": {
+                "title": "TravelDetailsResponse",
+                "description": "Detailed travel information returned by the API",
+                "required": [
+                    "id",
+                    "title",
+                    "status",
+                    "visibleType",
+                    "user",
+                    "country",
+                    "travelType",
+                    "dateFrom",
+                    "members",
+                    "images",
+                    "owner"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Identifier",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 123
+                    },
+                    "title": {
+                        "description": "Travel title",
+                        "type": "string",
+                        "example": "Mountain Hike"
+                    },
+                    "preview": {
+                        "description": "Preview image URL",
+                        "type": "string",
+                        "format": "uri",
+                        "example": "https://example.com/preview.jpg",
+                        "nullable": true
+                    },
+                    "description": {
+                        "description": "Detailed description",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/TravelStatusComponent"
+                    },
+                    "visibleType": {
+                        "$ref": "#/components/schemas/TravelVisibleType"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/TravelUserComponent"
+                    },
+                    "country": {
+                        "$ref": "#/components/schemas/CountryComponent"
+                    },
+                    "travelType": {
+                        "$ref": "#/components/schemas/TravelTypeComponent"
+                    },
+                    "dateFrom": {
+                        "description": "Start date (ISO 8601)",
+                        "type": "string",
+                        "format": "date",
+                        "example": "2025-06-01"
+                    },
+                    "dateTo": {
+                        "description": "End date (ISO 8601)",
+                        "type": "string",
+                        "format": "date",
+                        "example": "2025-06-05",
+                        "nullable": true
+                    },
+                    "members": {
+                        "$ref": "#/components/schemas/MembersComponent"
+                    },
+                    "images": {
+                        "description": "Array of images",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TravelImageComponent"
+                        }
+                    },
+                    "owner": {
+                        "description": "Owner name or identifier",
+                        "type": "string",
+                        "example": "john_doe"
                     }
                 },
                 "type": "object"
@@ -1153,6 +1528,73 @@
                     }
                 },
                 "type": "object"
+            },
+            "TranslateResponse": {
+                "description": "Response returned by the welcome endpoint",
+                "required": [
+                    "translations"
+                ],
+                "properties": {
+                    "translations": {
+                        "description": "Localization object (key => string)",
+                        "type": "object",
+                        "example": "{'login': 'Вход'}"
+                    }
+                },
+                "type": "object"
+            },
+            "TravelListByTypeComponent": {
+                "title": "TravelListByTypeComponent",
+                "description": "List of travels grouped by travel type",
+                "required": [
+                    "travelTypeId",
+                    "travels"
+                ],
+                "properties": {
+                    "travelTypeId": {
+                        "description": "Travel type identifier (TravelTypeComponent id)",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "travels": {
+                        "description": "Array of TravelComponent objects",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TravelDetailsResponse"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "TravelTypeComponent": {
+                "title": "TravelTypeComponent",
+                "description": "Travel type response model",
+                "required": [
+                    "id",
+                    "name",
+                    "icon"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Identifier",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Type name",
+                        "type": "string",
+                        "example": "Hiking"
+                    },
+                    "icon": {
+                        "description": "Icon URL",
+                        "type": "string",
+                        "format": "uri",
+                        "example": "https://example.com/icon.png"
+                    }
+                },
+                "type": "object"
             }
         },
         "parameters": {
@@ -1174,6 +1616,21 @@
                 "schema": {
                     "type": "string",
                     "default": "XMLHttpRequest"
+                }
+            },
+            "AcceptLanguageHeader": {
+                "name": "Accept-Language",
+                "in": "header",
+                "description": "Must be 'en', 'pl' or 'ru'",
+                "required": true,
+                "schema": {
+                    "type": "string",
+                    "default": "ru",
+                    "enum": [
+                        "en",
+                        "pl",
+                        "ru"
+                    ]
                 }
             },
             "page": {
@@ -1224,6 +1681,10 @@
         {
             "name": "User info",
             "description": "User info"
+        },
+        {
+            "name": "Pages",
+            "description": "Pages"
         }
     ]
 }

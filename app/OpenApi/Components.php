@@ -30,6 +30,18 @@ use OpenApi\Attributes as OA;
                 default: "XMLHttpRequest"
             )
         ),
+        new OA\Parameter(
+            parameter: "AcceptLanguageHeader",
+            name: "Accept-Language",
+            description: "Must be 'en', 'pl' or 'ru'",
+            in: "header",
+            required: true,
+            schema: new OA\Schema(
+                type: "string",
+                default: "ru",
+                enum: ["en", "pl", "ru"]
+            )
+        ),
     ]
 )]
 class Components {}

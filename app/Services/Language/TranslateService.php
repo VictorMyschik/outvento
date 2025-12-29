@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Language;
 
 use App\Models\System\Translate;
+use App\Services\Language\Enum\TranslateGroupEnum;
 use App\Services\System\Enum\Language;
 use Illuminate\Support\Facades\Cache;
 
@@ -20,10 +21,7 @@ final readonly class TranslateService
         $this->flush();
     }
 
-    public function getTranslateFor(): array
-    {
-        
-    }
+
 
     public function getGroupsForTranslate(int $translateId): array
     {

@@ -15,7 +15,6 @@ use App\Services\User\DTO\UserProfileDTO;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use LogicException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -194,12 +193,8 @@ final readonly class UserService
         }
     }
 
-    public function setLocale(?int $userId, Language $language): void
+    public function setLocale(int $userId, Language $language): void
     {
-        if ($userId) {
-            $this->repository->updateUser($userId, ['language' => strtoupper($language->getCode())]);
-        }
-
-        Session::put('locale', $language->getCode());
+        $this->repository->updateUser($userId, ['language' => strtoupper($language->getCode())]);
     }
 }

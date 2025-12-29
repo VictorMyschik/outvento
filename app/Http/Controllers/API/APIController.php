@@ -9,14 +9,12 @@ use App\Http\Controllers\Controller;
 use App\Services\System\Enum\Language;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Gate;
 use OpenApi\Attributes as OA;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 #[OA\Info(
     version: "1.0.0",
-    description: "Для действий требуется авторизация с помощью метода Bearer Token",
-    title: "Мои магазины",
+    description: "Для некоторых действий требуется авторизация с помощью Bearer Token",
+    title: "API Documentation"
 )]
 abstract class APIController extends Controller
 {
@@ -71,6 +69,8 @@ abstract class APIController extends Controller
 
     protected function getLanguage(): Language
     {
-        return Language::fromCode(app()->getLocale());
+        // Header: Accept-Language
+        $locale = request()->getPreferredLanguage(array_keys(Language::getCodeWithLabel()));
+        return Language::fromCode($locale);
     }
 }
