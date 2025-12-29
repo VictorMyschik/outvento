@@ -17,7 +17,7 @@ class TranslateListLayout extends Table
     public function columns(): array
     {
         return [
-            TD::make('id', 'ID')->sort(),
+            TD::make('id', 'ID')->class('text-nowrap')->sort(),
             TD::make('code', 'Code')->class('text-nowrap')->sort(),
             TD::make('ru', 'RU')->sort(),
             TD::make('en', 'EN')->sort(),

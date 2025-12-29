@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Travel\Travel\Response\Components;
+namespace App\Http\Controllers\API\Travel\Response\Components;
 
 final readonly class TravelImageComponent
 {

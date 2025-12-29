@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Services\Travel\Api;
 
+use App\Http\Controllers\API\Travel\Response\Components\MembersComponent;
+use App\Http\Controllers\API\Travel\Response\Components\TravelImageComponent;
+use App\Http\Controllers\API\Travel\Response\Components\TravelStatusComponent;
+use App\Http\Controllers\API\Travel\Response\Components\TravelUserComponent;
+use App\Http\Controllers\API\Travel\Response\Components\TravelVisibleType;
+use App\Http\Controllers\API\Travel\Response\TravelDetailsResponse;
+use App\Http\Controllers\API\Travel\Response\TravelTypeComponent;
 use App\Http\Controllers\Response\Components\CountryContinentComponent;
 use App\Http\Controllers\Response\CountryResponse;
-use App\Http\Controllers\Travel\Travel\Response\Components\MembersComponent;
-use App\Http\Controllers\Travel\Travel\Response\Components\TravelImageComponent;
-use App\Http\Controllers\Travel\Travel\Response\Components\TravelStatusComponent;
-use App\Http\Controllers\Travel\Travel\Response\Components\TravelUserComponent;
-use App\Http\Controllers\Travel\Travel\Response\Components\TravelVisibleType;
-use App\Http\Controllers\Travel\Travel\Response\TravelDetailsResponse;
-use App\Http\Controllers\Travel\Travel\Response\TravelTypeComponent;
 use App\Models\Travel\Travel;
 use App\Models\Travel\TravelImage;
 use App\Models\Travel\TravelType;

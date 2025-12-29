@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Travel\Travel\Response;
+namespace App\Http\Controllers\API\Travel\Response;
 
+use App\Http\Controllers\API\Travel\Response\Components\MembersComponent;
+use App\Http\Controllers\API\Travel\Response\Components\TravelStatusComponent;
+use App\Http\Controllers\API\Travel\Response\Components\TravelUserComponent;
+use App\Http\Controllers\API\Travel\Response\Components\TravelVisibleType;
 use App\Http\Controllers\Response\CountryResponse;
-use App\Http\Controllers\Travel\Travel\Response\Components\MembersComponent;
-use App\Http\Controllers\Travel\Travel\Response\Components\TravelStatusComponent;
-use App\Http\Controllers\Travel\Travel\Response\Components\TravelUserComponent;
-use App\Http\Controllers\Travel\Travel\Response\Components\TravelVisibleType;
 
 final readonly class TravelDetailsResponse
 {

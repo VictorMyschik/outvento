@@ -6,5 +6,7 @@ namespace App\Services\Language;
 
 interface TranslateRepositoryInterface
 {
-    public function saveTranslate(int $id, array $data): int;
+    public function saveTranslate(int $id, array $data, array $groups): int;
+
+    public function getGroupsForTranslate(int $translateId): array;
 }

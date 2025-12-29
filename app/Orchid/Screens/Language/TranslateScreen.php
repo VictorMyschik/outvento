@@ -8,6 +8,7 @@ use App\Models\System\Translate;
 use App\Orchid\Filters\TranslateFilter;
 use App\Orchid\Layouts\Language\TranslateEditLayout;
 use App\Orchid\Layouts\Language\TranslateListLayout;
+use App\Services\Language\Enum\TranslateGroupEnum;
 use App\Services\Language\TranslateService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -31,7 +32,7 @@ class TranslateScreen extends Screen
     public function query(): iterable
     {
         return [
-            'list' => TranslateFilter::runQuery()->paginate(50)
+            'list' => TranslateFilter::runQuery()->paginate(50, [Translate::getTableName() . '.*']),
         ];
     }
 
@@ -59,8 +60,16 @@ class TranslateScreen extends Screen
 
     public function asyncGetTranslate(int $id = 0): array
     {
+        $groupOptions = $this->service->getGroupsForTranslate($id);
+
+        $options = [];
+        foreach ($groupOptions as $groupOption) {
+            $options[$groupOption] = TranslateGroupEnum::from($groupOption)->getLabel();
+        }
+
         return [
-            'translate' => Translate::loadBy($id) ?: new Translate()
+            'translate'       => Translate::loadBy($id),
+            'groups_selected' => $options,
         ];
     }
 
@@ -73,7 +82,9 @@ class TranslateScreen extends Screen
             'translate.pl'   => 'nullable|string|max:1000',
         ])['translate'];
 
-        $this->service->saveTranslate($id, $data);
+        $groups = $request->input('groups_selected') ?? [];
+
+        $this->service->saveTranslate($id, $data, $groups);
     }
 
     public function remove(int $id): void

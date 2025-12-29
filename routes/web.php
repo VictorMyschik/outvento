@@ -26,6 +26,10 @@ Route::get('/clear', function () {
     return back();
 })->name('clear');
 
+Route::get('/', function () {
+   return redirect('admin');
+})->name('clear');
+
 Route::get('/test', function () {
     return View('test');
 });
@@ -35,7 +39,7 @@ Route::get('locale/{locale}', function ($locale) {
     return redirect()->back();
 });
 
-Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
+//Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 Route::get('/travels/search', [WelcomeController::class, 'searchTravelPage'])->name('travels.search.page');
 
 Route::get('/faq', [FAQController::class, 'faqPage'])->name('faq.page');

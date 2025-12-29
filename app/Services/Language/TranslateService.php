@@ -10,13 +10,24 @@ use Illuminate\Support\Facades\Cache;
 
 final readonly class TranslateService
 {
+
     public function __construct(private TranslateRepositoryInterface $repository) {}
 
-    public function saveTranslate(int $id, array $data): void
+    public function saveTranslate(int $id, array $data, array $groups): void
     {
-        $this->repository->saveTranslate($id, $data);
+        $this->repository->saveTranslate($id, $data, $groups);
 
         $this->flush();
+    }
+
+    public function getTranslateFor(): array
+    {
+        
+    }
+
+    public function getGroupsForTranslate(int $translateId): array
+    {
+        return $this->repository->getGroupsForTranslate($translateId);
     }
 
     public static function getFullList(Language $language): array

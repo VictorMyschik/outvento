@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Travel\Travel\Response\Components;
+namespace App\Http\Controllers\API\Travel\Response\Components;
 
-class TravelVisibleType
+class TravelStatusComponent
 {
     public function __construct(
         public int    $key,

@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\API\Auth\AuthController;
 use App\Http\Controllers\API\CommonApiController;
 use App\Http\Controllers\API\User\UsersController;
+use App\Http\Controllers\API\WelcomeController;
 use App\Http\Controllers\Reference\ReferenceController;
 use App\Http\Controllers\Travel\Travel\TravelController;
 use App\Http\Controllers\Travel\Travel\TravelImageController;
@@ -14,6 +15,10 @@ Route::get('common/languages', [CommonApiController::class, 'getLanguages'])->na
 
 Route::middleware('optional:sanctum')->group(function () {
     Route::post('locale/{locale}', [CommonApiController::class, 'setLocale']);
+
+    Route::prefix('pages')->group(static function () {
+        Route::get('welcome', [WelcomeController::class, 'index']);
+    });
 });
 
 Route::middleware('guest')->group(static function () {
