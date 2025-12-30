@@ -35,7 +35,7 @@ use OpenApi\Attributes as OA;
             name: "Accept-Language",
             description: "Must be 'en', 'pl' or 'ru'",
             in: "header",
-            required: true,
+            required: false,
             schema: new OA\Schema(
                 type: "string",
                 default: "ru",

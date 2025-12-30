@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services\Language\Enum;
 
-use App\Models\Lego\Fields\ActiveFieldTrait;
-
 enum TranslateGroupEnum: int
 {
     case Common = 1;
@@ -20,11 +18,11 @@ enum TranslateGroupEnum: int
     {
         return match ($this) {
             self::Common => 'Common',
+            self::PageWelcome => 'Welcome Page',
             self::PageHome => 'Home Page',
             self::PageAbout => 'About Us',
             self::PageContact => 'Contact Us',
             self::PageProfile => 'User Profile',
-            self::PageWelcome => 'Welcome Page',
         };
     }
 

@@ -58,7 +58,6 @@ class CommonApiController extends APIController
         tags: ["Common"],
         parameters: [
             new OA\Parameter(ref: "#/components/parameters/XRequestedWithHeader"),
-            new OA\Parameter(ref: "#/components/parameters/AcceptLanguageHeader"),
         ],
         responses: [
             new OA\Response(

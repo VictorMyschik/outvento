@@ -69,8 +69,8 @@ abstract class APIController extends Controller
 
     protected function getLanguage(): Language
     {
-        // Header: Accept-Language
-        $locale = request()->getPreferredLanguage(array_keys(Language::getCodeWithLabel()));
+        // Header: X-Locale
+        $locale = request()->header('X-Locale') ?: Language::EN->getCode();
         return Language::fromCode($locale);
     }
 }
