@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\API\Auth\AuthController;
 use App\Http\Controllers\API\CommonApiController;
+use App\Http\Controllers\API\DownloadFileController;
 use App\Http\Controllers\API\User\UsersController;
 use App\Http\Controllers\API\WelcomeController;
 use App\Http\Controllers\Reference\ReferenceController;
@@ -78,3 +79,5 @@ Route::group(['prefix' => 'reference'], function () {
     Route::post('/full', [ReferenceController::class, 'getFullReferences'])->name('api.reference.full');
     Route::post('/country/list', [ReferenceController::class, 'getUsingCountryList'])->name('api.reference.country.list');
 });
+
+Route::get('/download', [DownloadFileController::class, 'download'])->name('download');

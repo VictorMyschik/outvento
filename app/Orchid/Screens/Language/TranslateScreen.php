@@ -4,14 +4,19 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\Language;
 
+use App\Http\Controllers\API\Shop\Requests\ShopGoodFilterRequest;
 use App\Models\System\Translate;
 use App\Orchid\Filters\TranslateFilter;
+use App\Orchid\Layouts\FileDownloadLayout;
 use App\Orchid\Layouts\Language\TranslateEditLayout;
 use App\Orchid\Layouts\Language\TranslateListLayout;
+use App\Services\Excel\ExcelShopGoodsService;
+use App\Services\Excel\ExcelTranslateService;
 use App\Services\Language\Enum\TranslateGroupEnum;
 use App\Services\Language\TranslateService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
@@ -20,8 +25,9 @@ use Orchid\Support\Facades\Toast;
 class TranslateScreen extends Screen
 {
     public function __construct(
-        private readonly TranslateService $service,
-        private readonly Request          $request,
+        private readonly TranslateService      $service,
+        private readonly ExcelTranslateService $excelService,
+        private readonly Request               $request,
     ) {}
 
     public function name(): string
@@ -46,6 +52,10 @@ class TranslateScreen extends Screen
                 ->modalTitle('Create New Translate')
                 ->method('saveTranslate')
                 ->asyncParameters(['id' => 0]),
+            ModalToggle::make('Экспорт в Excel')
+                ->class('mr-btn-success')
+                ->modal('download_excel')
+                ->modalTitle('Экспорт в Excel'),
         ];
     }
 
@@ -55,6 +65,19 @@ class TranslateScreen extends Screen
             TranslateFilter::displayFilterCard($this->request),
             TranslateListLayout::class,
             Layout::modal('translate', TranslateEditLayout::class)->async('asyncGetTranslate'),
+            Layout::modal('download_excel', FileDownloadLayout::class)->async('asyncGetDownloadUrl')->withoutApplyButton(),
+        ];
+    }
+
+    public function asyncGetDownloadUrl(Request $request): array
+    {
+        $fileName = $this->excelService->exportTranslateByFilter(
+            Translate::all()->toArray()
+        );
+
+        return [
+            'fileName'     => $fileName,
+            'downloadName' => ExcelTranslateService::FILE_NAME,
         ];
     }
 
