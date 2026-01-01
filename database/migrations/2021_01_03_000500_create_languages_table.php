@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->string('pl', 1000)->nullable();
 
             $table->timestampTz('created_at')->useCurrent();
+            $table->timestampTz('updated_at')->nullable()->useCurrentOnUpdate();
         });
     }
 

@@ -14,4 +14,10 @@ interface TranslateRepositoryInterface
     public function getGroupsForTranslate(int $translateId): array;
 
     public function getTranslateForGroup(TranslateGroupEnum $group, Language $language): array;
+
+    public function getTranslateByCode(string $code, Language $language): ?string;
+
+    public function purge(): void;
+
+    public function getExportList(): array;
 }

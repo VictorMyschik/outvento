@@ -33,4 +33,15 @@ enum TranslateGroupEnum: int
             array_map(fn($enum) => $enum->getLabel(), self::cases())
         );
     }
+
+    public static function fromLabel(string $label): ?self
+    {
+        foreach (self::cases() as $case) {
+            if ($case->getLabel() === $label) {
+                return $case;
+            }
+        }
+
+        return null;
+    }
 }

@@ -529,9 +529,6 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/XRequestedWithHeader"
-                    },
-                    {
-                        "$ref": "#/components/parameters/AcceptLanguageHeader"
                     }
                 ],
                 "responses": {
@@ -899,6 +896,10 @@
                     "password": {
                         "type": "string",
                         "example": "password123"
+                    },
+                    "remember": {
+                        "type": "boolean",
+                        "example": true
                     }
                 },
                 "type": "object"
@@ -1047,9 +1048,7 @@
                 ],
                 "properties": {
                     "lang": {
-                        "description": "Localization object (key => string)",
-                        "type": "object",
-                        "example": "{'login': 'Вход'}"
+                        "$ref": "#/components/schemas/TranslateResponse"
                     },
                     "travelTypeList": {
                         "description": "Array of TravelTypeComponent objects",
@@ -1622,7 +1621,7 @@
                 "name": "Accept-Language",
                 "in": "header",
                 "description": "Must be 'en', 'pl' or 'ru'",
-                "required": true,
+                "required": false,
                 "schema": {
                     "type": "string",
                     "default": "ru",

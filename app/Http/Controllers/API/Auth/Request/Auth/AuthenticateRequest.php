@@ -11,18 +11,9 @@ use OpenApi\Attributes as OA;
     schema: "AuthenticateRequest",
     required: ["email", "password"],
     properties: [
-        new OA\Property(
-            property: "email",
-            type: "string",
-            format: "email",
-            maxLength: 255,
-            example: "user@example.com"
-        ),
-        new OA\Property(
-            property: "password",
-            type: "string",
-            example: "password123"
-        )
+        new OA\Property(property: "email", type: "string", format: "email", maxLength: 255, example: "user@example.com"),
+        new OA\Property(property: "password", type: "string", example: "password123"),
+        new OA\Property(property: "remember", type: "boolean", example: true),
     ],
     type: "object"
 )]
@@ -33,6 +24,7 @@ class AuthenticateRequest extends FormRequest
         return [
             'email'    => ['required', 'string', 'email', 'max:255'],
             'password' => ['required', 'string'],
+            'remember' => ['sometimes', 'boolean'],
         ];
     }
 
@@ -44,5 +36,10 @@ class AuthenticateRequest extends FormRequest
     public function getPassword(): string
     {
         return $this->input('password');
+    }
+
+    public function getRemember(): bool
+    {
+        return $this->boolean('remember', false);
     }
 }

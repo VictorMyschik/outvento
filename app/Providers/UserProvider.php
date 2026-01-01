@@ -6,6 +6,7 @@ namespace App\Providers;
 
 use App\Repositories\UploadService\UploadServiceDBRepository;
 use App\Repositories\User\UserRepository;
+use App\Services\Language\TranslateService;
 use App\Services\Upload\UploadService;
 use App\Services\User\UserService;
 use Illuminate\Config\Repository;
@@ -18,6 +19,7 @@ class UserProvider extends ServiceProvider
     {
         $this->app->bind(UserService::class, function ($app) {
             return new UserService(
+                translateService: $app->make(TranslateService::class),
                 uploadService: new UploadService(
                     $app->make(Filesystem::class),
                     $app->make(UploadServiceDBRepository::class),

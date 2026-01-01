@@ -161,7 +161,7 @@ abstract readonly class ExcelBase
         $row = [];
 
         $rowEmpty = true;
-        foreach ($needHeader as $columnName => $cell) {
+        foreach ($needHeader as $cell => $columnName) {
             if (is_numeric($cell)) {
                 $cell = self::COLUMNS[--$cell];
             }

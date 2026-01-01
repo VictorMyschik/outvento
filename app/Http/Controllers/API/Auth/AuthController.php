@@ -104,7 +104,7 @@ class AuthController extends APIController
     public function login(AuthenticateRequest $request): JsonResponse
     {
         return $this->apiResponse(
-            new LoginResponse($this->userService->authorize($request->getEmail(), $request->getPassword())),
+            new LoginResponse($this->userService->authorize($request->getEmail(), $request->getPassword(), $request->getRemember())),
         );
     }
 
@@ -253,7 +253,7 @@ class AuthController extends APIController
     )]
     public function resetPasswordCode(ResetPasswordRequest $request): JsonResponse
     {
-        $this->userService->sendResetPasswordCode($request->validated('email'));
+        $this->userService->sendResetPassword($request->validated('email'));
 
         return $this->apiResponse();
     }

@@ -6,16 +6,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class NotificationCode extends Model
+class PasswordResetToken extends Model
 {
-    protected $table = 'notification_codes';
+    protected $table = 'password_reset_tokens';
     public const string ACTION_VERIFY_REG = 'verify-registration';
     public const null UPDATED_AT = null;
 
     protected $fillable = [
-        'user_id',
-        'code',
-        'action',
-        'data',
+        'email',
+        'token',
     ];
 }

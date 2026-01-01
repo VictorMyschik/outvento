@@ -46,4 +46,19 @@ class RegisterRequest extends FormRequest
     {
         return $this->input('password');
     }
+
+    public function messages(): array
+    {
+        return [
+            'name.required'      => __('register.name_required'),
+            'email.required'     => __('register.email_required'),
+            'email.email'        => __('register.email_email'),
+            'password.required'  => __('register.password_required'),
+            'password.confirmed' => __('register.password_confirmed'),
+            'password.min'       => __('register.password_min'),
+            'password.mixed'     => __('register.password_mixed'),
+            'password.numbers'   => __('register.password_numbers'),
+            'password.symbols'   => __('register.password_symbols'),
+        ];
+    }
 }

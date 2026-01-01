@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace App\Services\Excel;
 
+use Illuminate\Http\UploadedFile;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 final readonly class ExcelTranslateService extends ExcelBase
 {
     public const array HEADER = [
-        'ID'   => 10,
-        'Code' => 20,
-        'RU'   => 30,
-        'EN'   => 30,
-        'PL'   => 30,
+        'ID'     => 10,
+        'Code'   => 20,
+        'RU'     => 30,
+        'EN'     => 30,
+        'PL'     => 30,
+        'Groups' => 30,
     ];
 
     public const string FILE_NAME = 'translates.xlsx';
@@ -43,7 +45,7 @@ final readonly class ExcelTranslateService extends ExcelBase
                         break;
 
                     default:
-                        $sheet->setCellValueExplicit($cellCoordinates, $row[$columnTitle], DataType::TYPE_STRING);
+                        $sheet->setCellValueExplicit($cellCoordinates, $row[strtolower($columnTitle)], DataType::TYPE_STRING);
                         break;
                 }
 
@@ -61,5 +63,13 @@ final readonly class ExcelTranslateService extends ExcelBase
             ->setWrapText(true);
 
         return $this->saveFile($spreadsheet, time() . '.xlsx');
+    }
+
+    public function parseTranslateExcel(UploadedFile $file, int $headerRowNumber = 1): array
+    {
+        $sheet = $this->loadWorksheet($file->getRealPath());
+        $map = $this->getRowHeaderMap($sheet, $headerRowNumber);
+
+        return $this->parseExcelRows($sheet, $map, ++$headerRowNumber);
     }
 }

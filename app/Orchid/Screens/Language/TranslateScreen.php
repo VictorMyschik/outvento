@@ -4,20 +4,21 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\Language;
 
-use App\Http\Controllers\API\Shop\Requests\ShopGoodFilterRequest;
 use App\Models\System\Translate;
 use App\Orchid\Filters\TranslateFilter;
 use App\Orchid\Layouts\FileDownloadLayout;
 use App\Orchid\Layouts\Language\TranslateEditLayout;
 use App\Orchid\Layouts\Language\TranslateListLayout;
-use App\Services\Excel\ExcelShopGoodsService;
+use App\Orchid\Layouts\Language\UploadTranslateLayout;
 use App\Services\Excel\ExcelTranslateService;
 use App\Services\Language\Enum\TranslateGroupEnum;
 use App\Services\Language\TranslateService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\ModalToggle;
+use Orchid\Screen\Fields\Group;
+use Orchid\Screen\Layouts\Modal;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
@@ -52,10 +53,15 @@ class TranslateScreen extends Screen
                 ->modalTitle('Create New Translate')
                 ->method('saveTranslate')
                 ->asyncParameters(['id' => 0]),
-            ModalToggle::make('Экспорт в Excel')
+            ModalToggle::make('Export')
                 ->class('mr-btn-success')
                 ->modal('download_excel')
-                ->modalTitle('Экспорт в Excel'),
+                ->modalTitle('Export в Excel'),
+            ModalToggle::make('Import')
+                ->class('mr-btn-success')
+                ->modal('upload_excel')
+                ->modalTitle('Импорт из Excel')
+                ->method('uploadTranslateExcel'),
         ];
     }
 
@@ -64,16 +70,38 @@ class TranslateScreen extends Screen
         return [
             TranslateFilter::displayFilterCard($this->request),
             TranslateListLayout::class,
-            Layout::modal('translate', TranslateEditLayout::class)->async('asyncGetTranslate'),
+            Layout::rows($this->getActionBottomLinkLayout()),
+            Layout::modal('translate', TranslateEditLayout::class)->async('asyncGetTranslate')->size(Modal::SIZE_LG),
             Layout::modal('download_excel', FileDownloadLayout::class)->async('asyncGetDownloadUrl')->withoutApplyButton(),
+            Layout::modal('upload_excel', UploadTranslateLayout::class),
         ];
+    }
+
+    public function uploadTranslateExcel(Request $request): void
+    {
+        $file = $request->file('file');
+        if (!$file) {
+            Toast::info('Файл не загружен')->delay(1000);
+            return;
+        }
+
+        $this->service->importTranslateFromExcel(
+            file: $file,
+            headerRowNumber: (int)$request->get('header_row_number') ?: 1
+        );
+
+        Toast::info('Переводы загружены')->delay(15000);
+    }
+
+    public function purge(): void
+    {
+        $this->service->purge();
+        Toast::info('Все переводы удалены')->delay(15000);
     }
 
     public function asyncGetDownloadUrl(Request $request): array
     {
-        $fileName = $this->excelService->exportTranslateByFilter(
-            Translate::all()->toArray()
-        );
+        $fileName = $this->excelService->exportTranslateByFilter($this->service->getExportList());
 
         return [
             'fileName'     => $fileName,
@@ -117,6 +145,19 @@ class TranslateScreen extends Screen
         } catch (\Exception $e) {
             Toast::error($e->getMessage());
         }
+    }
+
+    public function getActionBottomLinkLayout(): array
+    {
+        return [
+            Group::make([
+                Button::make('Удалить все переводы')
+                    ->class('mr-btn-danger')
+                    ->method('purge')
+                    ->confirm('Вы уверены, что хотите удалить все переводы?')
+                    ->icon('trash')
+            ])->autoWidth()
+        ];
     }
 
     #region Filter

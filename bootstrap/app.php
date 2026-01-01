@@ -54,7 +54,7 @@ return Application::configure(basePath: dirname(__DIR__))
                     return new JsonResponse([
                         'status'  => 'error',
                         'content' => [
-                            'message' => 'Ошибка валидации',
+                            'message' => __('validation.validation_error'),
                             'errors'  => $e->validator->errors(),
                         ],
                     ], 422);

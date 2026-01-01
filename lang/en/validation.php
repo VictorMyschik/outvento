@@ -187,5 +187,5 @@ return [
     */
 
     'attributes' => [],
-
+    'validation_error'     => 'Validation Error',
 ];

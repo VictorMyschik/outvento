@@ -5,6 +5,7 @@ namespace App\Orchid\Layouts\Language;
 use App\Services\Language\Enum\TranslateGroupEnum;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
+use Orchid\Screen\Fields\TextArea;
 use Orchid\Screen\Layouts\Rows;
 
 class TranslateEditLayout extends Rows
@@ -25,21 +26,24 @@ class TranslateEditLayout extends Rows
                 ->required()
                 ->title('Code'),
 
-            Input::make('translate.ru')
+            TextArea::make('translate.ru')
                 ->type('text')
                 ->max(255)
+                ->rows(5)
                 ->required()
                 ->title('RU'),
 
-            Input::make('translate.en')
+            TextArea::make('translate.en')
                 ->type('text')
                 ->max(255)
+                ->rows(5)
                 ->required()
                 ->title('EN'),
 
-            Input::make('translate.pl')
+            TextArea::make('translate.pl')
                 ->type('text')
                 ->max(255)
+                ->rows(5)
                 ->required()
                 ->title('PL'),
 

@@ -111,4 +111,5 @@ return [
         ],
     ],
     'attributes'           => [],
+    'validation_error'     => 'Ошибка валидации',
 ];

@@ -41,6 +41,11 @@ class SupervisorScreen extends Screen
                 ->icon('ban')
                 ->confirm('Are you sure you want to stop all workers?')
                 ->method('stopAllWorkers'),
+            Button::make('Restart all')
+                ->class('mr-btn-danger')
+                ->icon('refresh')
+                ->confirm('Are you sure you want to stop all workers?')
+                ->method('restartAllWorkers'),
         ];
     }
 
@@ -88,6 +93,13 @@ class SupervisorScreen extends Screen
     public function stopGroupWorkers(): void
     {
         $this->service->stopGroupWorkers(request()->get('group', ''));
+    }
+
+    public function restartAllWorkers(): void
+    {
+        $this->service->stopAllWorkers();
+        sleep(1);
+        $this->service->startAllWorkers();
     }
 
     private function getGroupWorkers(): array
