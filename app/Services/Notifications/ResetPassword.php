@@ -14,7 +14,9 @@ class ResetPassword extends Notification implements ShouldQueue
     use Queueable;
 
     public function __construct(
-        private readonly string $text
+        public readonly string $url,
+        public string          $userLocale,
+        public int             $expireMinutes,
     ) {}
 
     public function via(object $notifiable): array
@@ -24,7 +26,12 @@ class ResetPassword extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)->view('mail.account.reset_password', ['text' => $this->text]);
+        return (new MailMessage)->view('mail.auth.reset_password', [
+            'url'           => $this->url,
+            'expireMinutes' => $this->expireMinutes,
+            'locale'        => $this->userLocale,
+            't'             => __('emails.reset_password', [], $this->userLocale),
+        ]);
     }
 
     public function toArray(object $notifiable): array

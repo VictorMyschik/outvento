@@ -8,7 +8,6 @@ use App\Models\NotificationCode;
 use App\Models\PasswordResetToken;
 use App\Models\User;
 use App\Repositories\User\UserRepository;
-use App\Services\Language\TranslateService;
 use App\Services\Notifications\ResetPassword;
 use App\Services\Notifications\VerifyRegistrationCode;
 use App\Services\System\Enum\Language;
@@ -23,12 +22,14 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final readonly class UserService
 {
+    public const int TOKEN_LENGTH = 60;
+    private const int RESET_PASSWORD_TOKEN_EXPIRY_MINUTES = 20;
+
     private Language $language;
 
     public function __construct(
-        private TranslateService $translateService,
-        private UploadService    $uploadService,
-        private UserRepository   $repository,
+        private UploadService  $uploadService,
+        private UserRepository $repository,
     )
     {
         $this->language = Language::fromCode(app()->getLocale());
@@ -161,34 +162,53 @@ final readonly class UserService
         $this->sendResetPasswordNotification($user);
     }
 
-    public function setPasswordByCode(string $email, string $code, string $password): void
+    public function checkActualResetPasswordToken(string $token): void
+    {
+        $datetime = now()->subMinutes(self::RESET_PASSWORD_TOKEN_EXPIRY_MINUTES);
+
+        PasswordResetToken::where('token', $token)
+            ->where(function ($query) use ($datetime) {
+                $query->where('created_at', '>=', $datetime)->whereNull('updated_at');
+            })
+            ->orWhere(function ($query) use ($datetime) {
+                $query->where('updated_at', '>=', $datetime);
+            })
+            ->firstOrFail();
+    }
+
+    public function setPasswordByCode(string $token, string $password): void
     {
         try {
-            $user = User::where('email', $email)->firstOrFail();
+            $datetime = now()->subMinutes(self::RESET_PASSWORD_TOKEN_EXPIRY_MINUTES);
+
+            $passwordResetToken = PasswordResetToken::where('token', $token)
+                ->where(function ($query) use ($datetime) {
+                    $query->where('created_at', '>=', $datetime)->whereNull('updated_at');
+                })
+                ->orWhere(function ($query) use ($datetime) {
+                    $query->where('updated_at', '>=', $datetime);
+                })
+                ->firstOrFail();;
         } catch (\Exception $e) {
-            throw new NotFoundHttpException('Пользователь с таким email не найден');
+            throw new NotFoundHttpException(__('mr-t.reset_password_token_invalid'));
         }
 
-        $codeRecord = NotificationCode::where(['code' => $code, 'user_id' => $user->id])->firstOrFail();
+        $user = User::where('email', $passwordResetToken->email)->firstOrFail();
+        $user->password = Hash::make($password);
+        $user->save();
 
-        if ($codeRecord) {
-            $user->password = Hash::make($password);
-            $user->save();
-
-            $codeRecord->delete();
-        }
+        $passwordResetToken->delete();
     }
 
     private function sendResetPasswordNotification(User $user): void
     {
-        $token = Str::random(64);
+        $token = mb_strtolower(Str::random(self::TOKEN_LENGTH));
 
         PasswordResetToken::updateOrCreate(['email' => $user->email], ['token' => $token]);
 
-        $text = $this->translateService->getTranslateByCode('reset_password_email', $this->language);
-        $text = sprintf($text, config('app.app_url') . $token, 50, config('app.name'));
+        $url = config('app.url') . '/reset-password?token=' . $token;
 
-        $user->notify(new ResetPassword($text));
+        $user->notify(new ResetPassword($url, $this->language->getCode(), self::RESET_PASSWORD_TOKEN_EXPIRY_MINUTES));
     }
 
     public function removeAvatar(User $user): void

@@ -366,14 +366,14 @@
                 }
             }
         },
-        "/api/v1/reset-password/code": {
+        "/api/v1/reset-password": {
             "post": {
                 "tags": [
                     "Auth"
                 ],
                 "summary": "Отправка кода сброса пароля",
                 "description": "Отправка кода для сброса пароля на email пользователя.",
-                "operationId": "resetPasswordCode",
+                "operationId": "resetPasswordToken",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/XRequestedWithHeader"
@@ -423,6 +423,52 @@
                 }
             }
         },
+        "/api/v1/reset-password/{token}/check": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Проверка токена сброса пароля",
+                "description": "Проверка актуальности токена для сброса пароля. Возвращает 204, если токен действителен.",
+                "operationId": "checkResetPasswordToken",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/XRequestedWithHeader"
+                    },
+                    {
+                        "name": "token",
+                        "in": "path",
+                        "description": "Токен сброса пароля",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SuccessfulEmptyResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/reset-password/change": {
             "post": {
                 "tags": [
@@ -430,7 +476,7 @@
                 ],
                 "summary": "Изменение пароля",
                 "description": "Изменение пароля пользователя с использованием кода сброса.",
-                "operationId": "resetPasswordChange",
+                "operationId": "resetPasswordConfirm",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/XRequestedWithHeader"
@@ -907,18 +953,13 @@
             "ChangePasswordRequest": {
                 "required": [
                     "email",
-                    "code",
+                    "token",
                     "password"
                 ],
                 "properties": {
-                    "email": {
+                    "token": {
                         "type": "string",
-                        "format": "email",
-                        "example": "user@example.com"
-                    },
-                    "code": {
-                        "type": "string",
-                        "example": "123456"
+                        "example": "1d23d456s"
                     },
                     "password": {
                         "type": "string",

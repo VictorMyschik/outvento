@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
 use OpenApi\Attributes as OA;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class AuthController extends APIController
 {
@@ -233,8 +234,8 @@ class AuthController extends APIController
     }
 
     #[OA\Post(
-        path: "/api/v1/reset-password/code",
-        operationId: 'resetPasswordCode',
+        path: "/api/v1/reset-password",
+        operationId: 'resetPasswordToken',
         description: "Отправка кода для сброса пароля на email пользователя.",
         summary: "Отправка кода сброса пароля",
         requestBody: new OA\RequestBody(
@@ -251,7 +252,7 @@ class AuthController extends APIController
             new OA\Response(response: 404, description: "Not Found", content: new OA\JsonContent(ref: "#/components/schemas/NotFoundError"))
         ]
     )]
-    public function resetPasswordCode(ResetPasswordRequest $request): JsonResponse
+    public function resetPassword(ResetPasswordRequest $request): JsonResponse
     {
         $this->userService->sendResetPassword($request->validated('email'));
 
@@ -259,8 +260,37 @@ class AuthController extends APIController
     }
 
     #[OA\Post(
+        path: "/api/v1/reset-password/{token}/check",
+        operationId: "checkResetPasswordToken",
+        description: "Проверка актуальности токена для сброса пароля. Возвращает 204, если токен действителен.",
+        summary: "Проверка токена сброса пароля",
+        tags: ["Auth"],
+        parameters: [
+            new OA\Parameter(ref: "#/components/parameters/XRequestedWithHeader"),
+            new OA\Parameter(name: "token", description: "Токен сброса пароля", in: "path", required: true, schema: new OA\Schema(type: "string"))
+        ],
+        responses: [
+            new OA\Response(response: 204, description: "Successful", content: new OA\JsonContent(ref: "#/components/schemas/SuccessfulEmptyResponse")),
+            new OA\Response(response: 422, description: "Validation error", content: new OA\JsonContent(ref: "#/components/schemas/ValidationError"))
+        ]
+    )]
+    public function checkActualResetPasswordToken(string $token): JsonResponse
+    {
+        // только цифры и буквы
+        $token = preg_replace("/[^a-zA-Z0-9]/", "", $token);
+        $token = substr($token, 0, UserService::TOKEN_LENGTH);
+        try {
+            $this->userService->checkActualResetPasswordToken($token);
+        } catch (\Exception $e) {
+            throw new AccessDeniedHttpException(__('mr-t.reset_password_token_invalid'));
+        }
+
+        return $this->apiResponse(code: 204);
+    }
+
+    #[OA\Post(
         path: "/api/v1/reset-password/change",
-        operationId: 'resetPasswordChange',
+        operationId: 'resetPasswordConfirm',
         description: "Изменение пароля пользователя с использованием кода сброса.",
         summary: "Изменение пароля",
         requestBody: new OA\RequestBody(
@@ -277,9 +307,9 @@ class AuthController extends APIController
             new OA\Response(response: 404, description: "Not Found", content: new OA\JsonContent(ref: "#/components/schemas/NotFoundError"))
         ]
     )]
-    public function resetPasswordChange(ChangePasswordRequest $request): JsonResponse
+    public function resetPasswordConfirm(ChangePasswordRequest $request): JsonResponse
     {
-        $this->userService->setPasswordByCode($request->validated('email'), $request->validated('code'), $request->validated('password'));
+        $this->userService->setPasswordByCode($request->validated('token'), $request->validated('password'));
 
         return $this->apiResponse();
     }

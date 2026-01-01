@@ -10,10 +10,9 @@ use OpenApi\Attributes as OA;
 
 #[OA\Schema(
     schema: "ChangePasswordRequest",
-    required: ["email", "code", "password"],
+    required: ["email", "token", "password"],
     properties: [
-        new OA\Property(property: "email", type: "string", format: "email", example: "user@example.com"),
-        new OA\Property(property: "code", type: "string", example: "123456"),
+        new OA\Property(property: "token", type: "string", example: "1d23d456s"),
         new OA\Property(property: "password", type: "string", format: "password", example: "newPassword123")
     ],
     type: "object"
@@ -23,8 +22,7 @@ class ChangePasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email'    => 'required|email',
-            'code'     => 'required|string',
+            'token'    => 'required|string',
             'password' => ['required', 'string', Password::default()],
         ];
     }

@@ -7,21 +7,19 @@ namespace App\Services\Language\Enum;
 enum TranslateGroupEnum: int
 {
     case Common = 1;
+    case Email = 2;
     // Pages
-    case PageWelcome = 4;
-    case PageHome = 5;
-    case PageAbout = 6;
-    case PageContact = 7;
-    case PageProfile = 8;
+    case PageWelcome = 10;
+    case PageAbout = 11;
+    case PageProfile = 12;
 
     public function getLabel(): string
     {
         return match ($this) {
             self::Common => 'Common',
+            self::Email => 'Email',
             self::PageWelcome => 'Welcome Page',
-            self::PageHome => 'Home Page',
             self::PageAbout => 'About Us',
-            self::PageContact => 'Contact Us',
             self::PageProfile => 'User Profile',
         };
     }

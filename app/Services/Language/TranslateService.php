@@ -9,7 +9,6 @@ use App\Services\Excel\ExcelTranslateService;
 use App\Services\Language\Enum\TranslateGroupEnum;
 use App\Services\System\Enum\Language;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Cache;
 
 final readonly class TranslateService
 {
@@ -36,17 +35,15 @@ final readonly class TranslateService
 
     public static function getFullList(Language $language): array
     {
-        return Cache::rememberForever('translate_list_' . $language->getCode(), function () use ($language) {
-            $list = Translate::select('code', $language->getCode())->get()->all();
+        $list = Translate::select('code', $language->getCode())->get()->all();
 
-            $field = $language->getCode();
-            $out = [];
-            foreach ($list as $value) {
-                $out[$value->code] = $value->$field;
-            }
+        $field = $language->getCode();
+        $out = [];
+        foreach ($list as $value) {
+            $out[$value->code] = $value->$field;
+        }
 
-            return $out;
-        });
+        return $out;
     }
 
     public function importTranslateFromExcel(UploadedFile $file, int $headerRowNumber = 1): void

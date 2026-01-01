@@ -31,8 +31,9 @@ Route::middleware('guest')->group(static function () {
     Route::get('login/yandex', [AuthController::class, 'yandex'])->name('yandex');
     Route::get('login/yandex/redirect', [AuthController::class, 'yandexRedirect'])->name('yandexRedirect');
 
-    Route::post('reset-password/code', [AuthController::class, 'resetPasswordCode']);
-    Route::post('reset-password/change', [AuthController::class, 'resetPasswordChange']);
+    Route::post('reset-password', [AuthController::class, 'resetPassword']);
+    Route::post('reset-password/{token}/check', [AuthController::class, 'checkActualResetPasswordToken']);
+    Route::post('reset-password/change', [AuthController::class, 'resetPasswordConfirm']);
 });
 
 Route::middleware('auth:sanctum')->group(static function () {

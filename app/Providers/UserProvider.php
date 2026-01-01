@@ -19,7 +19,6 @@ class UserProvider extends ServiceProvider
     {
         $this->app->bind(UserService::class, function ($app) {
             return new UserService(
-                translateService: $app->make(TranslateService::class),
                 uploadService: new UploadService(
                     $app->make(Filesystem::class),
                     $app->make(UploadServiceDBRepository::class),
