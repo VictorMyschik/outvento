@@ -8,6 +8,7 @@ use App\Http\Controllers\API\Request\WelcomeResponse;
 use App\Services\Language\API\TranslateApiService;
 use App\Services\Language\Enum\TranslateGroupEnum;
 use App\Services\Language\TranslateService;
+use App\Services\References\API\ReferenceApiService;
 use App\Services\Travel\Api\TravelApiService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -20,6 +21,7 @@ class WelcomeController extends APIController
     public function __construct(
         private readonly TranslateApiService $translateApiService,
         private readonly TravelApiService    $apiService,
+        private readonly ReferenceApiService $referenceApiService,
     ) {}
 
     #[OA\Get(
@@ -53,8 +55,9 @@ class WelcomeController extends APIController
 
         return $this->apiResponse(
             new WelcomeResponse(
-                lang: $this->translateApiService->getTranslateFor(TranslateGroupEnum::PageWelcome, $language),
-                travelTypeList: $this->apiService->getTravelTypeList($language),
+                countries: $this->referenceApiService->getUsingCountrySelectList($language),
+                translates: $this->translateApiService->getTranslateFor(TranslateGroupEnum::PageWelcome, $language),
+                travelTypeList: $this->referenceApiService->getTravelTypeList($language),
                 travelExamples: $this->apiService->travelExamples($language),
             ),
         );

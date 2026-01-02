@@ -25,10 +25,7 @@ Route::get('/clear', function () {
     file_put_contents(storage_path('logs/laravel.log'), '');
     return back();
 })->name('clear');
-
-Route::get('/', function () {
-   return redirect('admin');
-})->name('clear');
+Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 
 Route::get('/test', function () {
     return View('test');

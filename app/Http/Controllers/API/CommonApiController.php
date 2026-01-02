@@ -67,7 +67,7 @@ class CommonApiController extends APIController
                     required: ["status", "content"],
                     properties: [
                         new OA\Property(property: "status", type: "string", example: "ok"),
-                        new OA\Property(property: "content", ref: "#/components/schemas/TranslateResponse", type: "object"),
+                        new OA\Property(property: 'content', description: 'Localization object (key => string)', type: 'object', example: "{'login': 'Вход'}"),
                     ],
                     type: "object"
                 )

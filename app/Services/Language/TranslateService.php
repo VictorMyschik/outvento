@@ -12,7 +12,6 @@ use Illuminate\Http\UploadedFile;
 
 final readonly class TranslateService
 {
-
     public function __construct(
         private TranslateRepositoryInterface $repository,
         private ExcelTranslateService        $excel,

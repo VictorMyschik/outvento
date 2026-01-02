@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\API\Travel\Response;
 
-use App\Http\Controllers\API\Travel\Response\Components\CountryComponent;
 use App\Http\Controllers\API\Travel\Response\Components\MembersComponent;
 use App\Http\Controllers\API\Travel\Response\Components\TravelStatusComponent;
 use App\Http\Controllers\API\Travel\Response\Components\TravelUserComponent;
 use App\Http\Controllers\API\Travel\Response\Components\TravelVisibleType;
+use App\Services\References\API\Response\Components\CountryComponent;
 use App\Services\Travel\Api\Components\TravelTypeComponent;
 use OpenApi\Attributes as OA;
 
@@ -30,12 +30,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'dateFrom', description: 'Start date (ISO 8601)', type: 'string', format: 'date', example: '2025-06-01'),
         new OA\Property(property: 'dateTo', description: 'End date (ISO 8601)', type: 'string', format: 'date', example: '2025-06-05', nullable: true),
         new OA\Property(property: 'members', ref: '#/components/schemas/MembersComponent', description: 'Members information'),
-        new OA\Property(
-            property: 'images',
-            description: 'Array of images',
-            type: 'array',
-            items: new OA\Items(ref: '#/components/schemas/TravelImageComponent')
-        ),
+        new OA\Property(property: 'images', description: 'Array of images', type: 'array', items: new OA\Items(ref: '#/components/schemas/TravelImageComponent')),
         new OA\Property(property: 'owner', description: 'Owner name or identifier', type: 'string', example: 'john_doe'),
     ]
 )]

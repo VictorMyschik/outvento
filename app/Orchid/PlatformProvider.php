@@ -30,6 +30,7 @@ class PlatformProvider extends OrchidServiceProvider
                 Menu::make('Emails')->icon('bs.list')->route('reference.email.list'),
                 Menu::make('Category Equipments')->icon('bs.list')->route('reference.category.equipments.list'),
                 Menu::make('Equipments')->icon('bs.list')->route('reference.equipments.list'),
+                Menu::make('Countries')->icon('bs.list')->route('reference.countries.list'),
                 Menu::make('Cities')->icon('bs.list')->route('reference.cities.list'),
             ]),
             Menu::make('Subscriptions')->icon('bs.send')->route('subscriptions.list')->divider(),

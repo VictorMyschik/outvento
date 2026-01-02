@@ -6,6 +6,7 @@ namespace App\Repositories\References;
 
 use App\Services\References\ReferenceRepositoryInterface;
 use App\Services\System\Enum\Language;
+use Illuminate\Support\Collection;
 use Psr\SimpleCache\CacheInterface;
 
 final readonly class ReferenceCacheRepository implements ReferenceRepositoryInterface
@@ -69,5 +70,20 @@ final readonly class ReferenceCacheRepository implements ReferenceRepositoryInte
     public function getCurrencySelectList(): array
     {
         return $this->repository->getCurrencySelectList();
+    }
+
+    public function saveCountry(int $id, array $data): int
+    {
+        $this->repository->saveCountry($id, $data);
+
+        $this->flush(self::COUNTRIES);
+        $this->flush(self::COUNTRIES_USING);
+
+        return $id;
+    }
+
+    public function getTravelTypeList(): Collection
+    {
+        return $this->repository->getTravelTypeList();
     }
 }

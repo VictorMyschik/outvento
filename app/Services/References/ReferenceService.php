@@ -21,6 +21,11 @@ final readonly class ReferenceService
         return $this->repository->getCountrySelectList($language);
     }
 
+    public function saveCountry(int $id, array $data): int
+    {
+        return $this->repository->saveCountry($id, $data);
+    }
+
     public function getCurrencySelectList(): array
     {
         return $this->repository->getCurrencySelectList();

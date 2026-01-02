@@ -26624,6 +26624,107 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/public_search_page.vue?vue&type=script&lang=js":
+/*!************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/public_search_page.vue?vue&type=script&lang=js ***!
+  \************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var vue_select__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue-select */ "./node_modules/vue-select/dist/vue-select.es.js");
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  components: {
+    v_select: vue_select__WEBPACK_IMPORTED_MODULE_0__["default"]
+  },
+  name: 'public_search_page',
+  props: ['lang'],
+  data: function data() {
+    return {
+      urlList: {
+        "api.reference.full": "/api/reference/full",
+        "api.travels.search": "/api/travels/search"
+      },
+      country: null,
+      counties: [],
+      countryPlaceholder: null,
+      travelType: null,
+      travelTypes: [],
+      travelTypePlaceholder: null,
+      // from query parameters
+      dateFrom: null,
+      dateTo: null,
+      maxMemberFrom: null,
+      maxMemberTo: null,
+      freeMember: null,
+      searchResultList: null,
+      runSearch: false
+    };
+  },
+  created: function created() {
+    this.getForm();
+  },
+  methods: {
+    scrollToSection: function scrollToSection(sectionId) {
+      var section = document.getElementById(sectionId);
+      if (section) {
+        section.scrollIntoView({
+          behavior: 'smooth'
+        });
+      }
+    },
+    getForm: function getForm() {
+      var _this = this;
+      var params = new URLSearchParams(window.location.search);
+      axios.post(this.urlList['api.reference.full']).then(function (response) {
+        _this.buildCountries(response.data.content.countries, params.get('country'));
+        _this.buildTravelTypes(response.data.content.travelTypes, params.get('travelType'));
+      });
+      this.dateFrom = params.get('dateFrom');
+      this.dateTo = params.get('dateTo');
+      //this.maxMemberFrom = q.maxMemberFrom || null;
+      //this.maxMemberTo = q.maxMemberTo || null;
+      //this.freeMember = q.freeMember || null;
+    },
+    buildCountries: function buildCountries(data, selectedId) {
+      this.countryPlaceholder = data['title'];
+      for (var key in data.options) {
+        this.counties.push({
+          label: data.options[key],
+          id: key
+        });
+        if (selectedId === key) {
+          this.country = key;
+        }
+      }
+      this.counties.sort(function (a, b) {
+        return a.label.localeCompare(b.label);
+      });
+    },
+    buildTravelTypes: function buildTravelTypes(data, selectedId) {
+      this.travelTypePlaceholder = data['title'];
+      for (var key in data.options) {
+        this.travelTypes.push({
+          label: data.options[key],
+          id: key
+        });
+        if (selectedId === key) {
+          this.travelType = key;
+        }
+      }
+      this.travelTypes.sort(function (a, b) {
+        return a.label.localeCompare(b.label);
+      });
+    }
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/MrPopupForm.vue?vue&type=template&id=6869a4d0&scoped=true":
 /*!*********************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/MrPopupForm.vue?vue&type=template&id=6869a4d0&scoped=true ***!
@@ -27343,6 +27444,201 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       href: $options.buildLink($data.urlList['account.travel.page'], item.id)
     }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_4, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.title), 1 /* TEXT */)], 8 /* PROPS */, _hoisted_3)]);
   }), 128 /* KEYED_FRAGMENT */))], 2 /* CLASS */)]);
+}
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/public_search_page.vue?vue&type=template&id=44737f7b&scoped=true":
+/*!****************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/public_search_page.vue?vue&type=template&id=44737f7b&scoped=true ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* binding */ render)
+/* harmony export */ });
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
+
+var _hoisted_1 = {
+  "class": "breadcumb-section"
+};
+var _hoisted_2 = {
+  "class": "tf-container"
+};
+var _hoisted_3 = {
+  "class": "row"
+};
+var _hoisted_4 = {
+  "class": "col-lg-12 center z-index1"
+};
+var _hoisted_5 = {
+  "class": "title"
+};
+var _hoisted_6 = {
+  "class": "slider-home1 relative overflow-hidden swiper-slide"
+};
+var _hoisted_7 = {
+  "class": "slider-content"
+};
+var _hoisted_8 = {
+  "class": "tf-container"
+};
+var _hoisted_9 = {
+  "class": "container mr-background-form py-3 py-md-0"
+};
+var _hoisted_10 = {
+  "class": "row d-md-none g-3"
+};
+var _hoisted_11 = {
+  "class": "col-12"
+};
+var _hoisted_12 = {
+  "class": "form-label-title d-block"
+};
+var _hoisted_13 = {
+  disabled: "",
+  value: ""
+};
+var _hoisted_14 = ["value"];
+var _hoisted_15 = {
+  "class": "col-12"
+};
+var _hoisted_16 = {
+  "class": "form-label-title d-block"
+};
+var _hoisted_17 = {
+  disabled: "",
+  value: ""
+};
+var _hoisted_18 = ["value"];
+var _hoisted_19 = {
+  "class": "col-12"
+};
+var _hoisted_20 = {
+  "class": "form-label-title d-block"
+};
+var _hoisted_21 = {
+  "class": "col-12"
+};
+var _hoisted_22 = {
+  "class": "form-label-title d-block"
+};
+var _hoisted_23 = {
+  "class": "col-12"
+};
+var _hoisted_24 = {
+  "class": "d-none d-md-block container mr-background-form"
+};
+var _hoisted_25 = {
+  "class": "row forms"
+};
+var _hoisted_26 = {
+  "class": "col form-label-mobile"
+};
+var _hoisted_27 = {
+  "class": "form-label-title"
+};
+var _hoisted_28 = ["value"];
+var _hoisted_29 = {
+  "class": "col form-label-mobile"
+};
+var _hoisted_30 = {
+  "class": "form-label-title"
+};
+var _hoisted_31 = ["value"];
+var _hoisted_32 = {
+  "class": "col form-label-mobile"
+};
+var _hoisted_33 = {
+  "class": "form-label-title"
+};
+var _hoisted_34 = {
+  "class": "col form-label-mobile"
+};
+var _hoisted_35 = {
+  "class": "form-label-title"
+};
+function render(_ctx, _cache, $props, $setup, $data, $options) {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("section", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", _hoisted_5, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.lang['search_slogan']), 1 /* TEXT */)])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", _hoisted_12, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.countryPlaceholder), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
+    "class": "form-select",
+    "onUpdate:modelValue": _cache[0] || (_cache[0] = function ($event) {
+      return $data.country = $event;
+    })
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", _hoisted_13, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.countryPlaceholder), 1 /* TEXT */), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.counties, function (option) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
+      key: option.id,
+      value: option.id
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(option.label), 9 /* TEXT, PROPS */, _hoisted_14);
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.country]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_15, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", _hoisted_16, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.travelTypePlaceholder), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
+    "class": "form-select",
+    "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
+      return $data.travelType = $event;
+    })
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", _hoisted_17, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.travelTypePlaceholder), 1 /* TEXT */), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.travelTypes, function (option) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
+      key: option.id,
+      value: option.id
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(option.label), 9 /* TEXT, PROPS */, _hoisted_18);
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.travelType]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_19, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", _hoisted_20, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.lang['date_from']), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "date",
+    "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
+      return $data.dateFrom = $event;
+    }),
+    "class": "form-control"
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.dateFrom]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_21, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", _hoisted_22, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.lang['date_to']), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "date",
+    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
+      return $data.dateTo = $event;
+    }),
+    "class": "form-control"
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.dateTo]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_23, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    onClick: _cache[4] || (_cache[4] = function () {
+      return _ctx.search && _ctx.search.apply(_ctx, arguments);
+    }),
+    "class": "btn btn-primary w-100"
+  }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.lang['search']), 1 /* TEXT */)])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_24, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_25, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", _hoisted_26, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_27, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.countryPlaceholder), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
+    "class": "form-control select mt-2",
+    "onUpdate:modelValue": _cache[5] || (_cache[5] = function ($event) {
+      return $data.country = $event;
+    })
+  }, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.counties, function (option) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
+      key: option.id,
+      value: option.id
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(option.label), 9 /* TEXT, PROPS */, _hoisted_28);
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.country]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", _hoisted_29, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_30, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.travelTypePlaceholder), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
+    "class": "form-control select mt-2",
+    "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
+      return $data.travelType = $event;
+    })
+  }, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.travelTypes, function (option) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
+      key: option.id,
+      value: option.id
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(option.label), 9 /* TEXT, PROPS */, _hoisted_31);
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.travelType]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", _hoisted_32, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_33, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.lang['date_from']), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "date",
+    "onUpdate:modelValue": _cache[7] || (_cache[7] = function ($event) {
+      return $data.dateFrom = $event;
+    }),
+    "class": "form-control mt-2"
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.dateFrom]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", _hoisted_34, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_35, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.lang['date_to']), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "date",
+    "onUpdate:modelValue": _cache[8] || (_cache[8] = function ($event) {
+      return $data.dateTo = $event;
+    }),
+    "class": "form-control mt-2"
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.dateTo]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    onClick: _cache[9] || (_cache[9] = function () {
+      return _ctx.search && _ctx.search.apply(_ctx, arguments);
+    }),
+    "class": "col form-control btn btn-primary mt-2 btn-mobile",
+    style: {
+      "margin-right": "10px"
+    }
+  }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.lang['search']), 1 /* TEXT */)])])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Widget archieve tour "), _cache[10] || (_cache[10] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createStaticVNode)("<section class=\"archieve-tour\" data-v-44737f7b><div class=\"tf-container\" data-v-44737f7b><div class=\"row\" data-v-44737f7b><div class=\"col-lg-4\" data-v-44737f7b><form action=\"/\" class=\"sider-bar-tour-package\" data-v-44737f7b> Accepts Credit Cards <div class=\"widget-filter mb-40\" data-v-44737f7b><h6 class=\"title-tour\" data-v-44737f7b>Search by Filter</h6><div class=\"group-check-box-wrap\" data-v-44737f7b><div class=\"checkbox\" data-v-44737f7b><input id=\"check3\" type=\"checkbox\" name=\"check\" value=\"check\" data-v-44737f7b><label for=\"check3\" data-v-44737f7b>Adults</label></div></div></div></form></div><div class=\"col-lg-8 listing-list-car-wrap\" data-v-44737f7b><form action=\"/\" class=\"tf-my-listing mb-37\" data-v-44737f7b><div class=\"row align-center\" data-v-44737f7b><div class=\"col-sm-5\" data-v-44737f7b><p class=\"showing\" data-v-44737f7b>Showing <span class=\"text-main\" data-v-44737f7b>12</span> of 21 Results </p></div><div class=\"col-sm-7 group-bar-wrap flex-six\" data-v-44737f7b><div class=\"listing-all-wrap\" data-v-44737f7b><div class=\"flex-three\" data-v-44737f7b><div class=\"toolbar-list\" data-v-44737f7b><div class=\"form-group\" data-v-44737f7b><a class=\"btn-display-listing-grid active\" data-v-44737f7b><i class=\"icon-list\" data-v-44737f7b></i></a></div><div class=\"form-group\" data-v-44737f7b><a class=\"btn-display-listing-list\" data-v-44737f7b><i class=\"icon-Group-1000001297\" data-v-44737f7b></i></a></div></div></div></div></div></div></form><div class=\"listing-list-car-grid mb-60\" data-v-44737f7b><div class=\"tour-listing box-sd\" data-v-44737f7b><a href=\"tour-single.html\" class=\"tour-listing-image\" data-v-44737f7b><div class=\"badge-top flex-two\" data-v-44737f7b><span class=\"feature\" data-v-44737f7b>Featured</span><div class=\"badge-media flex-five\" data-v-44737f7b><span class=\"media\" data-v-44737f7b><i class=\"icon-Group-1000002909\" data-v-44737f7b></i>5</span><span class=\"media\" data-v-44737f7b><i class=\"icon-Group-1000002910\" data-v-44737f7b></i>2</span></div></div><img src=\"http://travel.test/images/gallery/gl1.jpg\" alt=\"Image Listing\" data-v-44737f7b></a><div class=\"tour-listing-content\" data-v-44737f7b><span class=\"map\" data-v-44737f7b><i class=\"icon-Vector4\" data-v-44737f7b></i>United States USA</span><h3 class=\"title-tour-list\" data-v-44737f7b><a href=\"tour-single.html\" data-v-44737f7b>Days and 6 nights From Moscow</a></h3><div class=\"review\" data-v-44737f7b><i class=\"icon-Star\" data-v-44737f7b></i><i class=\"icon-Star\" data-v-44737f7b></i><i class=\"icon-Star\" data-v-44737f7b></i><i class=\"icon-Star\" data-v-44737f7b></i><i class=\"icon-Star\" data-v-44737f7b></i><span data-v-44737f7b>(1 Review)</span></div><div class=\"icon-box flex-three\" data-v-44737f7b><div class=\"icons flex-three\" data-v-44737f7b><i class=\"icon-time-left\" data-v-44737f7b></i><span data-v-44737f7b>5 days</span></div><div class=\"icons flex-three\" data-v-44737f7b><svg width=\"21\" height=\"16\" viewBox=\"0 0 21 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" data-v-44737f7b><path d=\"M4.34766 4.79761C4.34766 2.94013 5.85346 1.43433 7.71094 1.43433C9.56841 1.43433 11.0742 2.94013 11.0742 4.79761C11.0742 6.65508 9.56841 8.16089 7.71094 8.16089C5.85346 8.16089 4.34766 6.65508 4.34766 4.79761Z\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-v-44737f7b></path><path d=\"M9.5977 15.1797H2.46098C1.34827 15.1797 0.558268 14.0954 0.898984 13.0362C1.80408 10.222 4.57804 8.18566 7.69301 8.18566C9.17897 8.18566 10.5566 8.64906 11.6895 9.43922\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-v-44737f7b></path><path d=\"M17.1035 15.1797V9.02734\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-v-44737f7b></path><path d=\"M20.1797 12.1035H14.0273\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-v-44737f7b></path></svg><span data-v-44737f7b>12 Person</span></div></div><div class=\"flex-two\" data-v-44737f7b><div class=\"price-box flex-three\" data-v-44737f7b><p data-v-44737f7b>From <span class=\"price-sale\" data-v-44737f7b>$169.00</span></p><span class=\"price\" data-v-44737f7b>$199.00</span></div><div class=\"icon-bookmark\" data-v-44737f7b><i class=\"icon-Vector-151\" data-v-44737f7b></i></div></div></div></div><div class=\"tour-listing box-sd\" data-v-44737f7b><a href=\"tour-single.html\" class=\"tour-listing-image\" data-v-44737f7b><div class=\"badge-top flex-two\" data-v-44737f7b><span class=\"feature\" data-v-44737f7b>Featured</span><div class=\"badge-media flex-five\" data-v-44737f7b><span class=\"media\" data-v-44737f7b><i class=\"icon-Group-1000002909\" data-v-44737f7b></i>5</span><span class=\"media\" data-v-44737f7b><i class=\"icon-Group-1000002910\" data-v-44737f7b></i>2</span></div></div><img src=\"http://travel.test/images/gallery/gl1.jpg\" alt=\"Image Listing\" data-v-44737f7b></a><div class=\"tour-listing-content\" data-v-44737f7b><span class=\"map\" data-v-44737f7b><i class=\"icon-Vector4\" data-v-44737f7b></i>United States USA</span><h3 class=\"title-tour-list\" data-v-44737f7b><a href=\"tour-single.html\" data-v-44737f7b>Days and 6 nights From Moscow</a></h3><div class=\"review\" data-v-44737f7b><i class=\"icon-Star\" data-v-44737f7b></i><i class=\"icon-Star\" data-v-44737f7b></i><i class=\"icon-Star\" data-v-44737f7b></i><i class=\"icon-Star\" data-v-44737f7b></i><i class=\"icon-Star\" data-v-44737f7b></i><span data-v-44737f7b>(1 Review)</span></div><div class=\"icon-box flex-three\" data-v-44737f7b><div class=\"icons flex-three\" data-v-44737f7b><i class=\"icon-time-left\" data-v-44737f7b></i><span data-v-44737f7b>5 days</span></div><div class=\"icons flex-three\" data-v-44737f7b><svg width=\"21\" height=\"16\" viewBox=\"0 0 21 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" data-v-44737f7b><path d=\"M4.34766 4.79761C4.34766 2.94013 5.85346 1.43433 7.71094 1.43433C9.56841 1.43433 11.0742 2.94013 11.0742 4.79761C11.0742 6.65508 9.56841 8.16089 7.71094 8.16089C5.85346 8.16089 4.34766 6.65508 4.34766 4.79761Z\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-v-44737f7b></path><path d=\"M9.5977 15.1797H2.46098C1.34827 15.1797 0.558268 14.0954 0.898984 13.0362C1.80408 10.222 4.57804 8.18566 7.69301 8.18566C9.17897 8.18566 10.5566 8.64906 11.6895 9.43922\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-v-44737f7b></path><path d=\"M17.1035 15.1797V9.02734\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-v-44737f7b></path><path d=\"M20.1797 12.1035H14.0273\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-v-44737f7b></path></svg><span data-v-44737f7b>12 Person</span></div></div><div class=\"flex-two\" data-v-44737f7b><div class=\"price-box flex-three\" data-v-44737f7b><p data-v-44737f7b>From <span class=\"price-sale\" data-v-44737f7b>$169.00</span></p><span class=\"price\" data-v-44737f7b>$199.00</span></div><div class=\"icon-bookmark\" data-v-44737f7b><i class=\"icon-Vector-151\" data-v-44737f7b></i></div></div></div></div><div class=\"tour-listing box-sd\" data-v-44737f7b><a href=\"tour-single.html\" class=\"tour-listing-image\" data-v-44737f7b><div class=\"badge-top flex-two\" data-v-44737f7b><span class=\"feature\" data-v-44737f7b>Featured</span><div class=\"badge-media flex-five\" data-v-44737f7b><span class=\"media\" data-v-44737f7b><i class=\"icon-Group-1000002909\" data-v-44737f7b></i>5</span><span class=\"media\" data-v-44737f7b><i class=\"icon-Group-1000002910\" data-v-44737f7b></i>2</span></div></div><img src=\"http://travel.test/images/gallery/gl1.jpg\" alt=\"Image Listing\" data-v-44737f7b></a><div class=\"tour-listing-content\" data-v-44737f7b><span class=\"map\" data-v-44737f7b><i class=\"icon-Vector4\" data-v-44737f7b></i>United States USA</span><h3 class=\"title-tour-list\" data-v-44737f7b><a href=\"tour-single.html\" data-v-44737f7b>Days and 6 nights From Moscow</a></h3><div class=\"review\" data-v-44737f7b><i class=\"icon-Star\" data-v-44737f7b></i><i class=\"icon-Star\" data-v-44737f7b></i><i class=\"icon-Star\" data-v-44737f7b></i><i class=\"icon-Star\" data-v-44737f7b></i><i class=\"icon-Star\" data-v-44737f7b></i><span data-v-44737f7b>(1 Review)</span></div><div class=\"icon-box flex-three\" data-v-44737f7b><div class=\"icons flex-three\" data-v-44737f7b><i class=\"icon-time-left\" data-v-44737f7b></i><span data-v-44737f7b>5 days</span></div><div class=\"icons flex-three\" data-v-44737f7b><svg width=\"21\" height=\"16\" viewBox=\"0 0 21 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" data-v-44737f7b><path d=\"M4.34766 4.79761C4.34766 2.94013 5.85346 1.43433 7.71094 1.43433C9.56841 1.43433 11.0742 2.94013 11.0742 4.79761C11.0742 6.65508 9.56841 8.16089 7.71094 8.16089C5.85346 8.16089 4.34766 6.65508 4.34766 4.79761Z\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-v-44737f7b></path><path d=\"M9.5977 15.1797H2.46098C1.34827 15.1797 0.558268 14.0954 0.898984 13.0362C1.80408 10.222 4.57804 8.18566 7.69301 8.18566C9.17897 8.18566 10.5566 8.64906 11.6895 9.43922\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-v-44737f7b></path><path d=\"M17.1035 15.1797V9.02734\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-v-44737f7b></path><path d=\"M20.1797 12.1035H14.0273\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-v-44737f7b></path></svg><span data-v-44737f7b>12 Person</span></div></div><div class=\"flex-two\" data-v-44737f7b><div class=\"price-box flex-three\" data-v-44737f7b><p data-v-44737f7b>From <span class=\"price-sale\" data-v-44737f7b>$169.00</span></p><span class=\"price\" data-v-44737f7b>$199.00</span></div><div class=\"icon-bookmark\" data-v-44737f7b><i class=\"icon-Vector-151\" data-v-44737f7b></i></div></div></div></div><div class=\"tour-listing box-sd\" data-v-44737f7b><a href=\"tour-single.html\" class=\"tour-listing-image\" data-v-44737f7b><div class=\"badge-top flex-two\" data-v-44737f7b><span class=\"feature\" data-v-44737f7b>Featured</span><div class=\"badge-media flex-five\" data-v-44737f7b><span class=\"media\" data-v-44737f7b><i class=\"icon-Group-1000002909\" data-v-44737f7b></i>5</span><span class=\"media\" data-v-44737f7b><i class=\"icon-Group-1000002910\" data-v-44737f7b></i>2</span></div></div><img src=\"http://travel.test/images/gallery/gl1.jpg\" alt=\"Image Listing\" data-v-44737f7b></a><div class=\"tour-listing-content\" data-v-44737f7b><span class=\"map\" data-v-44737f7b><i class=\"icon-Vector4\" data-v-44737f7b></i>United States USA</span><h3 class=\"title-tour-list\" data-v-44737f7b><a href=\"tour-single.html\" data-v-44737f7b>Days and 6 nights From Moscow</a></h3><div class=\"review\" data-v-44737f7b><i class=\"icon-Star\" data-v-44737f7b></i><i class=\"icon-Star\" data-v-44737f7b></i><i class=\"icon-Star\" data-v-44737f7b></i><i class=\"icon-Star\" data-v-44737f7b></i><i class=\"icon-Star\" data-v-44737f7b></i><span data-v-44737f7b>(1 Review)</span></div><div class=\"icon-box flex-three\" data-v-44737f7b><div class=\"icons flex-three\" data-v-44737f7b><i class=\"icon-time-left\" data-v-44737f7b></i><span data-v-44737f7b>5 days</span></div><div class=\"icons flex-three\" data-v-44737f7b><svg width=\"21\" height=\"16\" viewBox=\"0 0 21 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" data-v-44737f7b><path d=\"M4.34766 4.79761C4.34766 2.94013 5.85346 1.43433 7.71094 1.43433C9.56841 1.43433 11.0742 2.94013 11.0742 4.79761C11.0742 6.65508 9.56841 8.16089 7.71094 8.16089C5.85346 8.16089 4.34766 6.65508 4.34766 4.79761Z\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-v-44737f7b></path><path d=\"M9.5977 15.1797H2.46098C1.34827 15.1797 0.558268 14.0954 0.898984 13.0362C1.80408 10.222 4.57804 8.18566 7.69301 8.18566C9.17897 8.18566 10.5566 8.64906 11.6895 9.43922\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-v-44737f7b></path><path d=\"M17.1035 15.1797V9.02734\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-v-44737f7b></path><path d=\"M20.1797 12.1035H14.0273\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-v-44737f7b></path></svg><span data-v-44737f7b>12 Person</span></div></div><div class=\"flex-two\" data-v-44737f7b><div class=\"price-box flex-three\" data-v-44737f7b><p data-v-44737f7b>From <span class=\"price-sale\" data-v-44737f7b>$169.00</span></p><span class=\"price\" data-v-44737f7b>$199.00</span></div><div class=\"icon-bookmark\" data-v-44737f7b><i class=\"icon-Vector-151\" data-v-44737f7b></i></div></div></div></div><div class=\"tour-listing box-sd\" data-v-44737f7b><a href=\"tour-single.html\" class=\"tour-listing-image\" data-v-44737f7b><div class=\"badge-top flex-two\" data-v-44737f7b><span class=\"feature\" data-v-44737f7b>Featured</span><div class=\"badge-media flex-five\" data-v-44737f7b><span class=\"media\" data-v-44737f7b><i class=\"icon-Group-1000002909\" data-v-44737f7b></i>5</span><span class=\"media\" data-v-44737f7b><i class=\"icon-Group-1000002910\" data-v-44737f7b></i>2</span></div></div><img src=\"http://travel.test/images/gallery/gl1.jpg\" alt=\"Image Listing\" data-v-44737f7b></a><div class=\"tour-listing-content\" data-v-44737f7b><span class=\"map\" data-v-44737f7b><i class=\"icon-Vector4\" data-v-44737f7b></i>United States USA</span><h3 class=\"title-tour-list\" data-v-44737f7b><a href=\"tour-single.html\" data-v-44737f7b>Days and 6 nights From Moscow</a></h3><div class=\"review\" data-v-44737f7b><i class=\"icon-Star\" data-v-44737f7b></i><i class=\"icon-Star\" data-v-44737f7b></i><i class=\"icon-Star\" data-v-44737f7b></i><i class=\"icon-Star\" data-v-44737f7b></i><i class=\"icon-Star\" data-v-44737f7b></i><span data-v-44737f7b>(1 Review)</span></div><div class=\"icon-box flex-three\" data-v-44737f7b><div class=\"icons flex-three\" data-v-44737f7b><i class=\"icon-time-left\" data-v-44737f7b></i><span data-v-44737f7b>5 days</span></div><div class=\"icons flex-three\" data-v-44737f7b><svg width=\"21\" height=\"16\" viewBox=\"0 0 21 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" data-v-44737f7b><path d=\"M4.34766 4.79761C4.34766 2.94013 5.85346 1.43433 7.71094 1.43433C9.56841 1.43433 11.0742 2.94013 11.0742 4.79761C11.0742 6.65508 9.56841 8.16089 7.71094 8.16089C5.85346 8.16089 4.34766 6.65508 4.34766 4.79761Z\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-v-44737f7b></path><path d=\"M9.5977 15.1797H2.46098C1.34827 15.1797 0.558268 14.0954 0.898984 13.0362C1.80408 10.222 4.57804 8.18566 7.69301 8.18566C9.17897 8.18566 10.5566 8.64906 11.6895 9.43922\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-v-44737f7b></path><path d=\"M17.1035 15.1797V9.02734\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-v-44737f7b></path><path d=\"M20.1797 12.1035H14.0273\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-v-44737f7b></path></svg><span data-v-44737f7b>12 Person</span></div></div><div class=\"flex-two\" data-v-44737f7b><div class=\"price-box flex-three\" data-v-44737f7b><p data-v-44737f7b>From <span class=\"price-sale\" data-v-44737f7b>$169.00</span></p><span class=\"price\" data-v-44737f7b>$199.00</span></div><div class=\"icon-bookmark\" data-v-44737f7b><i class=\"icon-Vector-151\" data-v-44737f7b></i></div></div></div></div><div class=\"tour-listing box-sd\" data-v-44737f7b><a href=\"tour-single.html\" class=\"tour-listing-image\" data-v-44737f7b><div class=\"badge-top flex-two\" data-v-44737f7b><span class=\"feature\" data-v-44737f7b>Featured</span><div class=\"badge-media flex-five\" data-v-44737f7b><span class=\"media\" data-v-44737f7b><i class=\"icon-Group-1000002909\" data-v-44737f7b></i>5</span><span class=\"media\" data-v-44737f7b><i class=\"icon-Group-1000002910\" data-v-44737f7b></i>2</span></div></div><img src=\"http://travel.test/images/gallery/gl1.jpg\" alt=\"Image Listing\" data-v-44737f7b></a><div class=\"tour-listing-content\" data-v-44737f7b><span class=\"map\" data-v-44737f7b><i class=\"icon-Vector4\" data-v-44737f7b></i>United States USA</span><h3 class=\"title-tour-list\" data-v-44737f7b><a href=\"tour-single.html\" data-v-44737f7b>Days and 6 nights From Moscow</a></h3><div class=\"review\" data-v-44737f7b><i class=\"icon-Star\" data-v-44737f7b></i><i class=\"icon-Star\" data-v-44737f7b></i><i class=\"icon-Star\" data-v-44737f7b></i><i class=\"icon-Star\" data-v-44737f7b></i><i class=\"icon-Star\" data-v-44737f7b></i><span data-v-44737f7b>(1 Review)</span></div><div class=\"icon-box flex-three\" data-v-44737f7b><div class=\"icons flex-three\" data-v-44737f7b><i class=\"icon-time-left\" data-v-44737f7b></i><span data-v-44737f7b>5 days</span></div><div class=\"icons flex-three\" data-v-44737f7b><svg width=\"21\" height=\"16\" viewBox=\"0 0 21 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" data-v-44737f7b><path d=\"M4.34766 4.79761C4.34766 2.94013 5.85346 1.43433 7.71094 1.43433C9.56841 1.43433 11.0742 2.94013 11.0742 4.79761C11.0742 6.65508 9.56841 8.16089 7.71094 8.16089C5.85346 8.16089 4.34766 6.65508 4.34766 4.79761Z\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-v-44737f7b></path><path d=\"M9.5977 15.1797H2.46098C1.34827 15.1797 0.558268 14.0954 0.898984 13.0362C1.80408 10.222 4.57804 8.18566 7.69301 8.18566C9.17897 8.18566 10.5566 8.64906 11.6895 9.43922\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-v-44737f7b></path><path d=\"M17.1035 15.1797V9.02734\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-v-44737f7b></path><path d=\"M20.1797 12.1035H14.0273\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-miterlimit=\"10\" stroke-linecap=\"round\" stroke-linejoin=\"round\" data-v-44737f7b></path></svg><span data-v-44737f7b>12 Person</span></div></div><div class=\"flex-two\" data-v-44737f7b><div class=\"price-box flex-three\" data-v-44737f7b><p data-v-44737f7b>From <span class=\"price-sale\" data-v-44737f7b>$169.00</span></p><span class=\"price\" data-v-44737f7b>$199.00</span></div><div class=\"icon-bookmark\" data-v-44737f7b><i class=\"icon-Vector-151\" data-v-44737f7b></i></div></div></div></div></div><div class=\"row\" data-v-44737f7b><div class=\"col-md-12\" data-v-44737f7b><ul class=\"tf-pagination flex-three\" data-v-44737f7b><li data-v-44737f7b><a class=\"pages-link\" href=\"#\" data-v-44737f7b><i class=\"icon-29\" data-v-44737f7b></i></a></li><li data-v-44737f7b><a class=\"pages-link\" href=\"#\" data-v-44737f7b>1</a></li><li class=\"pages-item active\" aria-current=\"page\" data-v-44737f7b><a class=\"pages-link\" href=\"#\" data-v-44737f7b>2</a></li><li data-v-44737f7b><a class=\"pages-link\" href=\"#\" data-v-44737f7b>3</a></li><li data-v-44737f7b><a class=\"pages-link\" href=\"#\" data-v-44737f7b><i class=\"icon--1\" data-v-44737f7b></i></a></li></ul></div></div></div></div></div></section>", 1)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Widget archieve tour ")]);
 }
 
 /***/ }),
@@ -33951,6 +34247,30 @@ ___CSS_LOADER_EXPORT___.push([module.id, "\n/* Красивый дропдаун
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/public_search_page.vue?vue&type=style&index=0&id=44737f7b&scoped=true&lang=css":
+/*!***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/public_search_page.vue?vue&type=style&index=0&id=44737f7b&scoped=true&lang=css ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__);
+// Imports
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, "\n.breadcumb-section[data-v-44737f7b] {\n    padding: 80px 0 0px 0;\n}\n.mr-background-form[data-v-44737f7b] {\n    background-color: rgba(253, 253, 253, 0.5);\n    border-radius: 10px;\n    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);\n    padding: 10px 30px 0 30px;\n}\n.forms[data-v-44737f7b] {\n    display: flex;\n    align-items: center;\n}\n.form-control[data-v-44737f7b] {\n    width: 100%;\n    padding: 10px;\n    border-radius: 5px;\n    margin-bottom: 10px;\n    height: 40px;\n    box-sizing: border-box;\n}\n.form-label-title[data-v-44737f7b] {\n    display: block;\n    font-size: 14px;\n    font-weight: 600;\n    color: #222;\n    margin-bottom: 4px;\n    letter-spacing: 0.01em;\n}\n.slider-home1 {\n.slider-content[data-v-44737f7b] {\n        position: relative;\n        z-index: 3;\n}\n}\n.slider-content[data-v-44737f7b] {\n    position: relative;\n    z-index: 3;\n    padding-top: 30px;\n    padding-bottom: 30px;\n}\n@media (max-width: 768px) {\n.mr-background-form[data-v-44737f7b] {\n        padding: 10px 5px;\n        border-radius: 6px;\n}\n.forms[data-v-44737f7b] {\n        flex-direction: column;\n        align-items: stretch;\n}\n.form-label-mobile[data-v-44737f7b] {\n        width: 100%;\n        margin-bottom: 10px;\n        font-size: 15px;\n}\n.form-label-title[data-v-44737f7b] {\n        font-size: 13px;\n        margin-bottom: 2px;\n}\n.form-control[data-v-44737f7b], .col[data-v-44737f7b], .btn-mobile[data-v-44737f7b] {\n        width: 100% !important;\n        margin-right: 0 !important;\n        font-size: 16px;\n        min-height: 44px;\n}\n}\n\n", ""]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/dist/runtime/api.js":
 /*!*****************************************************!*\
   !*** ./node_modules/css-loader/dist/runtime/api.js ***!
@@ -34493,6 +34813,36 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_11_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_11_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_nav_bar_vue_vue_type_style_index_0_id_63438e08_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/public_search_page.vue?vue&type=style&index=0&id=44737f7b&scoped=true&lang=css":
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/public_search_page.vue?vue&type=style&index=0&id=44737f7b&scoped=true&lang=css ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_11_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_11_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_public_search_page_vue_vue_type_style_index_0_id_44737f7b_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./public_search_page.vue?vue&type=style&index=0&id=44737f7b&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/public_search_page.vue?vue&type=style&index=0&id=44737f7b&scoped=true&lang=css");
+
+            
+
+var options = {};
+
+options.insert = "head";
+options.singleton = false;
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_11_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_11_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_public_search_page_vue_vue_type_style_index_0_id_44737f7b_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"], options);
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_11_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_11_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_public_search_page_vue_vue_type_style_index_0_id_44737f7b_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
 
 /***/ }),
 
@@ -41739,9 +42089,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_alert_vue__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/alert.vue */ "./resources/js/components/alert.vue");
 /* harmony import */ var _components_main_slider_vue__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./components/main/slider.vue */ "./resources/js/components/main/slider.vue");
 /* harmony import */ var _components_main_activities_vue__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./components/main/activities.vue */ "./resources/js/components/main/activities.vue");
-/* harmony import */ var swiper_vue__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! swiper/vue */ "./node_modules/swiper/swiper-vue.mjs");
-/* harmony import */ var vue_select_dist_vue_select_css__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! vue-select/dist/vue-select.css */ "./node_modules/vue-select/dist/vue-select.css");
-/* harmony import */ var _components_account_travel_testslider_vue__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./components/account/travel/testslider.vue */ "./resources/js/components/account/travel/testslider.vue");
+/* harmony import */ var _components_public_search_page_vue__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./components/public_search_page.vue */ "./resources/js/components/public_search_page.vue");
+/* harmony import */ var swiper_vue__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! swiper/vue */ "./node_modules/swiper/swiper-vue.mjs");
+/* harmony import */ var vue_select_dist_vue_select_css__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! vue-select/dist/vue-select.css */ "./node_modules/vue-select/dist/vue-select.css");
+/* harmony import */ var _components_account_travel_testslider_vue__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./components/account/travel/testslider.vue */ "./resources/js/components/account/travel/testslider.vue");
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 
@@ -41753,7 +42104,7 @@ __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 
 
-//import public_search_page from "./components/public_search_page.vue";
+
 
 
 
@@ -41768,10 +42119,10 @@ var app = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createApp)({
     alert_modal: _components_alert_vue__WEBPACK_IMPORTED_MODULE_6__["default"],
     slider: _components_main_slider_vue__WEBPACK_IMPORTED_MODULE_7__["default"],
     activities: _components_main_activities_vue__WEBPACK_IMPORTED_MODULE_8__["default"],
-    Swiper: swiper_vue__WEBPACK_IMPORTED_MODULE_9__.Swiper,
-    SwiperSlide: swiper_vue__WEBPACK_IMPORTED_MODULE_9__.SwiperSlide,
-    testslider: _components_account_travel_testslider_vue__WEBPACK_IMPORTED_MODULE_11__["default"]
-    //public_search_page
+    Swiper: swiper_vue__WEBPACK_IMPORTED_MODULE_10__.Swiper,
+    SwiperSlide: swiper_vue__WEBPACK_IMPORTED_MODULE_10__.SwiperSlide,
+    testslider: _components_account_travel_testslider_vue__WEBPACK_IMPORTED_MODULE_12__["default"],
+    public_search_page: _components_public_search_page_vue__WEBPACK_IMPORTED_MODULE_9__["default"]
   }
 });
 app.mount('#app');
@@ -42389,6 +42740,83 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_nav_bar_vue_vue_type_template_id_63438e08_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
 /* harmony export */ });
 /* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_nav_bar_vue_vue_type_template_id_63438e08_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./nav_bar.vue?vue&type=template&id=63438e08&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/nav_bar.vue?vue&type=template&id=63438e08&scoped=true");
+
+
+/***/ }),
+
+/***/ "./resources/js/components/public_search_page.vue":
+/*!********************************************************!*\
+  !*** ./resources/js/components/public_search_page.vue ***!
+  \********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _public_search_page_vue_vue_type_template_id_44737f7b_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./public_search_page.vue?vue&type=template&id=44737f7b&scoped=true */ "./resources/js/components/public_search_page.vue?vue&type=template&id=44737f7b&scoped=true");
+/* harmony import */ var _public_search_page_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./public_search_page.vue?vue&type=script&lang=js */ "./resources/js/components/public_search_page.vue?vue&type=script&lang=js");
+/* harmony import */ var _public_search_page_vue_vue_type_style_index_0_id_44737f7b_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./public_search_page.vue?vue&type=style&index=0&id=44737f7b&scoped=true&lang=css */ "./resources/js/components/public_search_page.vue?vue&type=style&index=0&id=44737f7b&scoped=true&lang=css");
+/* harmony import */ var _var_www_travel_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+
+
+
+
+;
+
+
+const __exports__ = /*#__PURE__*/(0,_var_www_travel_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_public_search_page_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_public_search_page_vue_vue_type_template_id_44737f7b_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-44737f7b"],['__file',"resources/js/components/public_search_page.vue"]])
+/* hot reload */
+if (false) // removed by dead control flow
+{}
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__exports__);
+
+/***/ }),
+
+/***/ "./resources/js/components/public_search_page.vue?vue&type=script&lang=js":
+/*!********************************************************************************!*\
+  !*** ./resources/js/components/public_search_page.vue?vue&type=script&lang=js ***!
+  \********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_public_search_page_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_public_search_page_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./public_search_page.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/public_search_page.vue?vue&type=script&lang=js");
+ 
+
+/***/ }),
+
+/***/ "./resources/js/components/public_search_page.vue?vue&type=style&index=0&id=44737f7b&scoped=true&lang=css":
+/*!****************************************************************************************************************!*\
+  !*** ./resources/js/components/public_search_page.vue?vue&type=style&index=0&id=44737f7b&scoped=true&lang=css ***!
+  \****************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_11_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_11_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_public_search_page_vue_vue_type_style_index_0_id_44737f7b_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader/dist/cjs.js!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./public_search_page.vue?vue&type=style&index=0&id=44737f7b&scoped=true&lang=css */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/public_search_page.vue?vue&type=style&index=0&id=44737f7b&scoped=true&lang=css");
+
+
+/***/ }),
+
+/***/ "./resources/js/components/public_search_page.vue?vue&type=template&id=44737f7b&scoped=true":
+/*!**************************************************************************************************!*\
+  !*** ./resources/js/components/public_search_page.vue?vue&type=template&id=44737f7b&scoped=true ***!
+  \**************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_public_search_page_vue_vue_type_template_id_44737f7b_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_public_search_page_vue_vue_type_template_id_44737f7b_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./public_search_page.vue?vue&type=template&id=44737f7b&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/public_search_page.vue?vue&type=template&id=44737f7b&scoped=true");
 
 
 /***/ }),

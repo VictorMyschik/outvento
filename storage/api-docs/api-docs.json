@@ -593,7 +593,9 @@
                                             "example": "ok"
                                         },
                                         "content": {
-                                            "$ref": "#/components/schemas/TranslateResponse"
+                                            "description": "Localization object (key => string)",
+                                            "type": "object",
+                                            "example": "{'login': 'Вход'}"
                                         }
                                     },
                                     "type": "object"
@@ -1081,25 +1083,34 @@
                 "type": "object"
             },
             "WelcomeResponse": {
-                "description": "Response returned by the welcome endpoint",
                 "required": [
-                    "lang",
+                    "countries",
+                    "translates",
                     "travelTypeList",
                     "travelExamples"
                 ],
                 "properties": {
-                    "lang": {
-                        "$ref": "#/components/schemas/TranslateResponse"
+                    "countries": {
+                        "description": "List of countries",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CountryComponent"
+                        }
+                    },
+                    "translates": {
+                        "description": "Translation entries",
+                        "type": "object",
+                        "example": "{'welcome_message': 'Welcome to our site!', 'login': 'Log In'}"
                     },
                     "travelTypeList": {
-                        "description": "Array of TravelTypeComponent objects",
+                        "description": "List of travel types",
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/TravelTypeComponent"
                         }
                     },
                     "travelExamples": {
-                        "description": "Array of TravelListByTypeComponent objects",
+                        "description": "List of travel examples",
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/TravelListByTypeComponent"
@@ -1149,53 +1160,6 @@
                     "pages": {
                         "description": "Общее количество страниц",
                         "type": "integer"
-                    }
-                },
-                "type": "object"
-            },
-            "CountryComponent": {
-                "title": "CountryComponent",
-                "description": "Country data returned by the API",
-                "required": [
-                    "id",
-                    "name",
-                    "continent"
-                ],
-                "properties": {
-                    "id": {
-                        "description": "Identifier",
-                        "type": "integer",
-                        "format": "int64",
-                        "example": 1
-                    },
-                    "name": {
-                        "description": "Country name",
-                        "type": "string",
-                        "example": "France"
-                    },
-                    "continent": {
-                        "$ref": "#/components/schemas/CountryContinentComponent"
-                    }
-                },
-                "type": "object"
-            },
-            "CountryContinentComponent": {
-                "title": "CountryContinentComponent",
-                "description": "Continent information for a country",
-                "required": [
-                    "name",
-                    "shortName"
-                ],
-                "properties": {
-                    "name": {
-                        "description": "Continent full name",
-                        "type": "string",
-                        "example": "Europe"
-                    },
-                    "shortName": {
-                        "description": "Continent short code or abbreviation",
-                        "type": "string",
-                        "example": "EU"
                     }
                 },
                 "type": "object"
@@ -1579,6 +1543,52 @@
                         "description": "Localization object (key => string)",
                         "type": "object",
                         "example": "{'login': 'Вход'}"
+                    }
+                },
+                "type": "object"
+            },
+            "CountryComponent": {
+                "required": [
+                    "id",
+                    "iso2",
+                    "label"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Country ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "iso2": {
+                        "description": "Country ISO2 code",
+                        "type": "string",
+                        "example": "US"
+                    },
+                    "label": {
+                        "description": "Country name",
+                        "type": "string",
+                        "example": "United States"
+                    }
+                },
+                "type": "object"
+            },
+            "CountryContinentComponent": {
+                "title": "CountryContinentComponent",
+                "description": "Continent information for a country",
+                "required": [
+                    "name",
+                    "shortName"
+                ],
+                "properties": {
+                    "name": {
+                        "description": "Continent full name",
+                        "type": "string",
+                        "example": "Europe"
+                    },
+                    "shortName": {
+                        "description": "Continent short code or abbreviation",
+                        "type": "string",
+                        "example": "EU"
                     }
                 },
                 "type": "object"

@@ -76,9 +76,4 @@ Route::group(['prefix' => 'travels'], function () {
     Route::post('image/update', [TravelImageController::class, 'updateImage'])->name('api.travel.image.update');
 });
 
-Route::group(['prefix' => 'reference'], function () {
-    Route::post('/full', [ReferenceController::class, 'getFullReferences'])->name('api.reference.full');
-    Route::post('/country/list', [ReferenceController::class, 'getUsingCountryList'])->name('api.reference.country.list');
-});
-
 Route::get('/download', [DownloadFileController::class, 'download'])->name('download');

@@ -13,6 +13,7 @@ use App\Orchid\Screens\Language\TranslateScreen;
 use App\Orchid\Screens\PlatformScreen;
 use App\Orchid\Screens\References\CategoryEquipmentScreen;
 use App\Orchid\Screens\References\CitiesScreen;
+use App\Orchid\Screens\References\CountryScreen;
 use App\Orchid\Screens\References\EquipmentScreen;
 use App\Orchid\Screens\References\TravelTypeListScreen;
 use App\Orchid\Screens\Role\RoleEditScreen;
@@ -135,6 +136,7 @@ Route::screen('/travel/{travel_id}/', EmailScreen::class)->name('2reference.emai
 Route::screen('/reference/category-equipments/list', CategoryEquipmentScreen::class)->name('reference.category.equipments.list');
 Route::screen('/reference/equipments/list', EquipmentScreen::class)->name('reference.equipments.list');
 Route::screen('/reference/cities/list', CitiesScreen::class)->name('reference.cities.list');
+Route::screen('/reference/countries/list', CountryScreen::class)->name('reference.countries.list');
 
 //// Subscriptions
 Route::screen('/subscriptions/list', SubscriptionScreen::class)->name('subscriptions.list');

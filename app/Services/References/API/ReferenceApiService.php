@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services\References\API;
 
-use App\Http\Controllers\Reference\Response\Components\CountryComponent;
-use App\Http\Controllers\Reference\Response\Components\TravelTypeComponent;
-use App\Http\Controllers\Reference\Response\FullReferenceResponse;
+use App\Services\References\API\Response\Components\CountryComponent;
 use App\Services\References\ReferenceRepositoryInterface;
 use App\Services\System\Enum\Language;
+use App\Services\Travel\Api\Components\TravelTypeComponent;
 
 final readonly class ReferenceApiService
 {
@@ -16,30 +15,40 @@ final readonly class ReferenceApiService
         private ReferenceRepositoryInterface $repository,
     ) {}
 
-    public function getFullReference(Language $language): FullReferenceResponse
+    public function getTravelTypeList(Language $language): array
     {
-        return new FullReferenceResponse(
-            countries: new CountryComponent(
-                title: __('mr-t.country'), options: $this->getUsingCountrySelectList($language)
-            ),
-            travelTypes: new TravelTypeComponent(
-                title: __('mr-t.travel_type'), options: $this->getTravelTypes($language)
-            )
-        );
-    }
+        foreach ($this->repository->getTravelTypeList() as $type) {
+            $out[] = new TravelTypeComponent(
+                id: $type->id(),
+                name: $type->getName($language),
+                icon: $type->getImageUrl(),
+            );
+        }
 
-    public function getTravelTypes(Language $language): array
-    {
-        return $this->repository->getTravelTypeSelectList($language);
+        return $out ?? [];
     }
 
     public function getCountrySelectList(Language $language): array
     {
-        return $this->repository->getCountrySelectList($language);
+        return $this->buildCountryResponse($this->repository->getCountrySelectList($language));
     }
 
     public function getUsingCountrySelectList(Language $language): array
     {
-        return $this->repository->getUsingCountrySelectList($language);
+        return $this->buildCountryResponse($this->repository->getUsingCountrySelectList($language));
+    }
+
+    private function buildCountryResponse(array $list): array
+    {
+        $out = [];
+        foreach ($list as $country) {
+            $out[] = new CountryComponent(
+                id: $country->id,
+                iso2: $country->iso2,
+                label: $country->name,
+            );
+        }
+
+        return $out;
     }
 }

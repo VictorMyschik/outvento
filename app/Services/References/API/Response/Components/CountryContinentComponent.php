@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\API\Travel\Response\Components;
+namespace App\Services\References\API\Response\Components;
 
 use OpenApi\Attributes as OA;
 

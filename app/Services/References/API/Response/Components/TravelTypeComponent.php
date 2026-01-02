@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Reference\Response\Components;
+namespace App\Services\References\API\Response\Components;
 
 final readonly class TravelTypeComponent
 {

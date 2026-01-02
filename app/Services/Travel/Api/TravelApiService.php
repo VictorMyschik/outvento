@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services\Travel\Api;
 
-use App\Http\Controllers\API\Travel\Response\Components\CountryComponent;
-use App\Http\Controllers\API\Travel\Response\Components\CountryContinentComponent;
 use App\Http\Controllers\API\Travel\Response\Components\MembersComponent;
 use App\Http\Controllers\API\Travel\Response\Components\TravelImageComponent;
 use App\Http\Controllers\API\Travel\Response\Components\TravelStatusComponent;
@@ -16,6 +14,8 @@ use App\Models\Travel\Travel;
 use App\Models\Travel\TravelImage;
 use App\Models\Travel\TravelType;
 use App\Models\User;
+use App\Services\References\API\Response\Components\CountryComponent;
+use App\Services\References\API\Response\Components\CountryContinentComponent;
 use App\Services\System\Enum\Language;
 use App\Services\Travel\Api\Components\TravelListByTypeComponent;
 use App\Services\Travel\Api\Components\TravelTypeComponent;
@@ -46,18 +46,6 @@ final readonly class TravelApiService
         return $items;
     }
 
-    public function getTravelTypeList(Language $language): array
-    {
-        foreach ($this->travelRepository->getTravelTypeList() as $type) {
-            $out[] = new TravelTypeComponent(
-                id: $type->id(),
-                name: $type->getName($language),
-                icon: $type->getImageUrl(),
-            );
-        }
-
-        return $out ?? [];
-    }
 
     private function buildTravelTypeComponent(TravelType $travelType, Language $language): TravelTypeComponent
     {
@@ -137,12 +125,9 @@ final readonly class TravelApiService
                 email: $user->email,
             ),
             country: new CountryComponent(
-                id: $travel->getCountry()->id(),
-                name: $travel->getCountry()->getName($language),
-                continent: new CountryContinentComponent(
-                    name: $travel->getCountry()->getContinentName(),
-                    shortName: $travel->getCountry()->getContinentShortName(),
-                ),
+                id: 0,
+                iso2: '',
+                label: '',
             ),
             travelType: $this->buildTravelTypeComponent($travel->getTravelType(), $language),
             dateFrom: $travel->getDateFrom()->format('d.M.Y'),

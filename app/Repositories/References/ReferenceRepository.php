@@ -12,6 +12,7 @@ use App\Repositories\DatabaseRepository;
 use App\Services\References\ReferenceRepositoryInterface;
 use App\Services\System\Enum\Language;
 use Brick\Money\ISOCurrencyProvider;
+use Illuminate\Support\Collection;
 
 readonly class ReferenceRepository extends DatabaseRepository implements ReferenceRepositoryInterface
 {
@@ -20,8 +21,12 @@ readonly class ReferenceRepository extends DatabaseRepository implements Referen
         $field = 'name_' . $language->getCode();
 
         return $this->db->table(Country::getTableName())
-            ->orderBy($field)->pluck($field, 'id')
-            ->toArray();
+            ->orderBy($field)->selectRaw(implode(',', [
+                Country::getTableName() . '.id as id',
+                Country::getTableName() . '.iso3166alpha2 as iso2',
+                Country::getTableName() . '.' . $field . ' AS name',
+            ]))
+            ->groupBy(Country::getTableName() . '.id')->get()->all();
     }
 
     public function getUsingCountrySelectList(Language $language): array
@@ -30,17 +35,17 @@ readonly class ReferenceRepository extends DatabaseRepository implements Referen
 
         return $this->db->table(Country::getTableName())
             ->join(Travel::getTableName(), Country::getTableName() . '.id', '=', Travel::getTableName() . '.country_id')
-            ->orderBy($field)->pluck($field, Country::getTableName() . '.id')
-            ->toArray();
+            ->orderBy($field)->selectRaw(implode(',', [
+                Country::getTableName() . '.id as id',
+                Country::getTableName() . '.iso3166alpha2 as iso2',
+                Country::getTableName() . '.' . $field . ' AS name',
+            ]))
+            ->groupBy(Country::getTableName() . '.id')->get()->all();
     }
 
-    public function getTravelTypeSelectList(Language $language): array
+    public function getTravelTypeList(): Collection
     {
-        $field = 'name_' . $language->getCode();
-
-        return $this->db->table(TravelType::getTableName())
-            ->pluck($field, 'id')
-            ->toArray();
+        return TravelType::all();
     }
 
     public function saveTravelType(int $id, array $data): int
@@ -68,5 +73,16 @@ readonly class ReferenceRepository extends DatabaseRepository implements Referen
     public function getCurrencySelectList(): array
     {
         return ISOCurrencyProvider::getInstance()->getAvailableCurrencies();
+    }
+
+    public function saveCountry(int $id, array $data): int
+    {
+        if ($id > 0) {
+            $this->db->table(Country::getTableName())->where('id', $id)->update($data);
+
+            return $id;
+        }
+
+        return $this->db->table(Country::getTableName())->insertGetId($data);
     }
 }

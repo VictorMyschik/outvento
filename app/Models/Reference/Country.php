@@ -51,7 +51,7 @@ class Country extends ORM
     const int CONTINENT_SA = 6;
     const int CONTINENT_AN = 7;
 
-    protected static array $continents = array(
+    public const array CONTINENTS = array(
         self::CONTINENT_AF => 'Africa',
         self::CONTINENT_AS => 'Asia',
         self::CONTINENT_EU => 'Europe',
@@ -61,23 +61,21 @@ class Country extends ORM
         self::CONTINENT_AN => 'Antarctica',
     );
 
-    protected static array $continent_short = array(
-        self::CONTINENT_AF => 'AF',
-        self::CONTINENT_AS => 'AS',
-        self::CONTINENT_EU => 'EU',
-        self::CONTINENT_NA => 'NA',
-        self::CONTINENT_OC => 'OC',
-        self::CONTINENT_SA => 'SA',
-        self::CONTINENT_AN => 'AN',
-    );
-
     public function getContinentName(): string
     {
-        return self::$continents[$this->continent];
+        return self::CONTINENTS[$this->continent];
     }
 
     public function getContinentShortName(): string
     {
-        return self::$continent_short[$this->continent];
+        return [
+            self::CONTINENT_AF => 'AF',
+            self::CONTINENT_AS => 'AS',
+            self::CONTINENT_EU => 'EU',
+            self::CONTINENT_NA => 'NA',
+            self::CONTINENT_OC => 'OC',
+            self::CONTINENT_SA => 'SA',
+            self::CONTINENT_AN => 'AN',
+        ][$this->continent];
     }
 }
