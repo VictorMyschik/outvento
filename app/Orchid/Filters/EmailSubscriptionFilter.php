@@ -54,7 +54,7 @@ class EmailSubscriptionFilter extends Filter
 
         return Layout::rows([
             Group::make([
-                Select::make('type')->value($input['type'])->empty()->options([EmailTypeEnum::NEWS->value => EmailTypeEnum::NEWS->getLabel()])->title('Тип'),
+                Select::make('type')->value($input['type'])->empty()->options([EmailTypeEnum::News->value => EmailTypeEnum::News->getLabel()])->title('Тип'),
                 Input::make('email')->value($input['email'])->title('Email'),
                 Input::make('token')->value($input['token'])->title('Token'),
                 Select::make('language')->options(Language::getSelectList())->value($input['language'])->empty()->title('Language'),

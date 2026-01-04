@@ -16,7 +16,7 @@ interface SubscriptionRepositoryInterface
 
     public function getSubscriptionByEmail(string $email): array;
 
-    public function saveSubscription(int $id, array $data): int;
+    public function saveSubscription(int $id, array $data): void;
 
     public function deleteSubscription(string $token): void;
 

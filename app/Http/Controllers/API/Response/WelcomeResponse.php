@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\API\Request;
+namespace App\Http\Controllers\API\Response;
 
 use OpenApi\Attributes as OA;
 

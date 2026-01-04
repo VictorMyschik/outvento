@@ -5,17 +5,19 @@ declare(strict_types=1);
 namespace App\Services\System;
 
 use App\Models\System\Settings;
-use App\Orchid\Screens\System\Enum\SettingsKey;
+use App\Services\System\Enum\SettingsKey;
+use Brick\PhoneNumber\PhoneNumber;
+use Brick\PhoneNumber\PhoneNumberFormat;
 use Illuminate\Support\Facades\Cache;
 
-final class SettingsService
+final readonly class SettingsService
 {
     private const string CACHE_KEY = 'settings';
 
     /**
      * @var Settings[]
      */
-    private array $settings = [];
+    private array $settings;
 
     public function __construct()
     {
@@ -59,5 +61,14 @@ final class SettingsService
     public function clearCache(): void
     {
         Cache::forget(self::CACHE_KEY);
+    }
+
+    public function getContacts(): array
+    {
+        return [
+            'email' => $this->getByKey(SettingsKey::AdminEmail)->getValue(),
+            'phone' => PhoneNumber::parse($this->getByKey(SettingsKey::AdminPhone)->getValue())->format(PhoneNumberFormat::INTERNATIONAL),
+            'telegram' => $this->getByKey(SettingsKey::AdminTelegram)->getValue(),
+        ];
     }
 }

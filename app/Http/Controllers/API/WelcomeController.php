@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\API\Request\WelcomeResponse;
+use App\Http\Controllers\API\Response\WelcomeResponse;
 use App\Services\Language\API\TranslateApiService;
 use App\Services\Language\Enum\TranslateGroupEnum;
 use App\Services\Language\TranslateService;

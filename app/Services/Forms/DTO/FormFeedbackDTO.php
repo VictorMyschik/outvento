@@ -36,7 +36,7 @@ final class FormFeedbackDTO implements FormInterface
 
     public function getType(): FormTypeEnum
     {
-        return FormTypeEnum::FEEDBACK;
+        return FormTypeEnum::Feedback;
     }
 
     public function getJson(): string

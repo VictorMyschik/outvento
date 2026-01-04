@@ -21,7 +21,8 @@ final readonly class EmailListener
     public function getEmailType(FormTypeEnum $type): EmailTypeEnum
     {
         return match ($type) {
-            FormTypeEnum::FEEDBACK => EmailTypeEnum::FEEDBACK,
+            FormTypeEnum::Feedback => EmailTypeEnum::Feedback,
+            FormTypeEnum::NewNewsSubscription => EmailTypeEnum::NewNewsSubscription,
         };
     }
 }

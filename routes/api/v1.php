@@ -5,20 +5,19 @@ declare(strict_types=1);
 use App\Http\Controllers\API\Auth\AuthController;
 use App\Http\Controllers\API\CommonApiController;
 use App\Http\Controllers\API\DownloadFileController;
+use App\Http\Controllers\API\SubscriptionApiController;
 use App\Http\Controllers\API\User\UsersController;
 use App\Http\Controllers\API\WelcomeController;
-use App\Http\Controllers\Reference\ReferenceController;
 use App\Http\Controllers\Travel\Travel\TravelController;
 use App\Http\Controllers\Travel\Travel\TravelImageController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('optional:sanctum')->group(function () {
-    // Список доступных языков
-    Route::get('common/languages', [CommonApiController::class, 'getLanguages']);
-    // Получить общие переводы для фронтенда
-    Route::get('translate/common', [CommonApiController::class, 'getCommonTranslate']);
+Route::get('common/languages', [CommonApiController::class, 'getLanguages']);
+Route::get('translate/common', [CommonApiController::class, 'getCommonTranslate']);
+Route::get('frontend/settings', [CommonApiController::class, 'getFrontendSettings']);
+Route::post('/subscription/subscribe', [SubscriptionApiController::class, 'subscribe']);
 
-    // Страницы сайта
+Route::middleware('optional:sanctum')->group(function () {
     Route::prefix('pages')->group(static function () {
         Route::get('welcome', [WelcomeController::class, 'index']);
     });

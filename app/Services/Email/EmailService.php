@@ -6,6 +6,7 @@ namespace App\Services\Email;
 
 use App\Jobs\EmailJob;
 use App\Mail\Feedback;
+use App\Mail\NewNewsSubscriptionEmail;
 use App\Mail\NewsEmail;
 use App\Mail\TravelInviteEmail;
 use App\Models\Email\EmailLog;
@@ -32,10 +33,10 @@ final readonly class EmailService
         }
 
         switch ($type) {
-            case EmailTypeEnum::INVITE:
+            case EmailTypeEnum::Invite:
                 $className = TravelInviteEmail::class;
                 $dto = $form;
-            case EmailTypeEnum::FEEDBACK:
+            case EmailTypeEnum::Feedback:
                 $className = Feedback::class;
                 $emailDtos[] = new EmailDTO(
                     $this->settingsRepository->getAdminEmail(),
@@ -44,12 +45,23 @@ final readonly class EmailService
                         '')
                 );
                 break;
-            case EmailTypeEnum::NEWS:
+            case EmailTypeEnum::News:
                 $className = NewsEmail::class;
                 $emailDtos = [];
                 foreach ($this->service->getListTo($type, $form->form->getLanguage()) as $token => $email) {
                     $emailDtos[] = new EmailDTO($email, new $className($this->formService->getFormById($form->dto->id()), $token));
                 }
+                break;
+            case EmailTypeEnum::NewNewsSubscription:
+                $className = NewNewsSubscriptionEmail::class;
+                $dto = $form->dto;
+                $emailDtos[] = new EmailDTO(
+                    to: $dto->email,
+                    mail: new $className(
+                        $this->formService->getFormById($dto->id),
+                        $dto->token,
+                    )
+                );
                 break;
         }
 

@@ -65,7 +65,7 @@ class SubscriptionScreen extends Screen
         $this->service->getSubscriptionById($subscription_id);
 
         return [
-            'type_options'        => [EmailTypeEnum::NEWS->value => EmailTypeEnum::NEWS->getLabel()],
+            'type_options'        => [EmailTypeEnum::News->value => EmailTypeEnum::News->getLabel()],
             'type_options_exists' => $optionExists,
             'subscription'        => $this->service->getSubscriptionById($subscription_id),
         ];

@@ -3,9 +3,9 @@
 use App\Forms\Account\Travel\TravelForm;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Admin\AdminTravelController;
+use App\Http\Controllers\API\SubscriptionApiController;
 use App\Http\Controllers\FAQController;
 use App\Http\Controllers\Forms\FormsController;
-use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\Travel\Travel\TravelController;
 use App\Http\Controllers\Travel\Travel\TravelInviteController;
@@ -25,7 +25,9 @@ Route::get('/clear', function () {
     file_put_contents(storage_path('logs/laravel.log'), '');
     return back();
 })->name('clear');
-Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
+Route::get('/', function (){
+    return redirect('/admin');
+});
 
 Route::get('/test', function () {
     return View('test');
@@ -62,4 +64,4 @@ Route::group(['middleware' => ['auth'], 'prefix' => 'account'], function () {
     Route::match(['get', 'post', 'put'], '/travel/{travel_id}/base/form', [TravelForm::class, 'processForm'])->name('account.travel.base.form');
 });
 
-Route::post('/subscribe', [SubscriptionController::class, 'subscribe'])->name('subscribe');
+Route::post('/subscribe', [SubscriptionApiController::class, 'subscribe'])->name('subscribe');

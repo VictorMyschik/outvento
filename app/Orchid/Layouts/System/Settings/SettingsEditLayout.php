@@ -2,9 +2,11 @@
 
 namespace App\Orchid\Layouts\System\Settings;
 
-use App\Services\System\Enum\SettingsKeyEnum;
+use App\Models\System\Settings;
+use App\Services\System\Enum\SettingsKey;
 use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
+use Orchid\Screen\Fields\Relation;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Fields\Switcher;
 use Orchid\Screen\Fields\TextArea;
@@ -20,9 +22,9 @@ class SettingsEditLayout extends Rows
                     ->sendTrueOrFalse()
                     ->title('Active'),
 
-                Input::make('setup.category')
-                    ->type('text')
-                    ->max(255)
+                Relation::make('setup.category')
+                    ->allowAdd(true)
+                    ->fromModel(Settings::class, 'category', 'category')
                     ->required()
                     ->title('Category'),
             ]),
@@ -33,7 +35,7 @@ class SettingsEditLayout extends Rows
                 ->title('Value'),
 
             Select::make('setup.code_key')
-                ->options(SettingsKeyEnum::getSelectList())
+                ->options(SettingsKey::getSelectList())
                 ->required()
                 ->title('Key'),
 

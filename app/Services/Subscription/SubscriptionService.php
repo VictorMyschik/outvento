@@ -33,35 +33,37 @@ final readonly class SubscriptionService
         $this->repository->deleteSubscriptionByEmail($email);
     }
 
-    public function createSubscription(EmailTypeEnum $type, array $data): int
+    public function createSubscription(EmailTypeEnum $type, array $data): void
     {
         $data['token'] = md5(uniqid());
         $data['type'] = $type->value;
 
-        return $this->repository->saveSubscription(0, $data);
+        $this->repository->saveSubscription(0, $data);
     }
 
-    public function createNewsSubscription(string $email, Language $language): int
+    public function createNewsSubscription(string $email, Language $language): void
     {
         $exists = $this->getSubscriptionByEmail($email);
         if (!empty($exists)) {
-            return 0;
+            return;
         }
 
         $data = new SubscriptionDto(
             email: $email,
             language: $language->value,
             token: md5(uniqid()),
-            type: EmailTypeEnum::NEWS->value,
+            type: EmailTypeEnum::News->value,
         );
 
-        return $this->repository->saveSubscription(0, (array)$data);
+        $this->repository->saveSubscription(0, (array)$data);
+
+        event('subscription.news.created', [$data]);
     }
 
-    public function updateSubscription(int $id, array $data): int
+    public function updateSubscription(int $id, array $data): void
     {
         $data['token'] = md5(uniqid());
-        return $this->repository->saveSubscription($id, $data);
+        $this->repository->saveSubscription($id, $data);
     }
 
     public function deleteSubscription(string $token): void

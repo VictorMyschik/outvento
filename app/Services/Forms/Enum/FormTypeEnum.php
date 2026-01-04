@@ -6,19 +6,22 @@ namespace App\Services\Forms\Enum;
 
 enum FormTypeEnum: int
 {
-    case FEEDBACK = 1;
+    case Feedback = 1;
+    case NewNewsSubscription = 2;
 
     public function getLabel(): string
     {
         return match ($this) {
-            self::FEEDBACK => 'Обратная связь',
+            self::Feedback => 'Обратная связь',
+            self::NewNewsSubscription => 'Новая подписка на новости',
         };
     }
 
     public static function getSelectList(): array
     {
-        return [
-            self::FEEDBACK->value => self::FEEDBACK->getLabel(),
-        ];
+        return array_combine(
+            array_map(fn($enum) => $enum->value, self::cases()),
+            array_map(fn($enum) => $enum->getLabel(), self::cases())
+        );
     }
 }

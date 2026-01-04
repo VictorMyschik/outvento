@@ -61,10 +61,8 @@ class SettingsFilter extends Filter
         }
 
         if ($input['category'] ?? null) {
-            $result = array_intersect($input['category'], self::getCategoryList());
-
-            if (count($result) !== 0) {
-                $builder->whereIn('category', $result);
+            if (count($input['category']) !== 0) {
+                $builder->whereIn('category', $input['category']);
             }
         }
 
@@ -76,13 +74,15 @@ class SettingsFilter extends Filter
         return Layout::rows([
             Group::make([
                 Select::make('active')
-                    ->options([null => 'Все', 1 => 'active', 0 => 'not active'])
+                    ->options([1 => 'active', 0 => 'not active'])
+                    ->empty('Все')
                     ->value(request()->get('active'))
                     ->title('Активно'),
 
                 Select::make('category')
-                    ->options(self::getCategoryList())
+                    ->fromQuery(Settings::groupBy('category', 'id'), 'category', 'category')
                     ->multiple()
+                    ->empty('Все')
                     ->value(request()->get('category'))
                     ->title('Категория'),
 
@@ -95,12 +95,5 @@ class SettingsFilter extends Filter
 
             ActionFilterPanel::getActionsButtons(),
         ]);
-    }
-
-    private static function getCategoryList(): array
-    {
-        $category = array_unique(array_column(Settings::getSettingList(), 'category'));
-
-        return array_combine($category, $category);
     }
 }

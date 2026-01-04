@@ -34,7 +34,7 @@ class SubscriptionFilter extends Filter
     {
         $input = $this->request->all(self::getFilterFields());
 
-        $builder->where('type', EmailTypeEnum::NEWS->value);
+        $builder->where('type', EmailTypeEnum::News->value);
 
         if (!empty($input['email'])) {
             $builder->where('email', 'like', '%' . $input['email'] . '%');

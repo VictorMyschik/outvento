@@ -9,23 +9,20 @@ use OpenApi\Attributes as OA;
 #[OA\Schema(
     schema: "LanguagesResponse",
     description: "Response containing available languages mapped by locale code",
-    required: ["languages"],
+    required: ["en", "ru", "pl"],
     properties: [
-        new OA\Property(
-            property: "languages",
-            description: "Mapping of locale code to label",
-            type: "object",
-            additionalProperties: new OA\AdditionalProperties(type: "string", example: "English")
-        ),
+        new OA\Property(property: "en", description: "English label", type: "string", example: "English"),
+        new OA\Property(property: "ru", description: "Russian label", type: "string", example: "Русский"),
+        new OA\Property(property: "pl", description: "Polish label", type: "string", example: "Polski"),
     ],
     type: "object",
-    example: [
-        "languages" => ["en" => "English", "ru" => "Русский", "pl" => "Polski"]
-    ]
+    example: ["en" => "English", "ru" => "Русский", "pl" => "Polski"]
 )]
 final readonly class LanguagesResponse
 {
     public function __construct(
-        public array $languages,
+        public string $en,
+        public string $ru,
+        public string $pl,
     ) {}
 }

@@ -606,6 +606,45 @@
                 }
             }
         },
+        "/api/v1/frontend/settings": {
+            "get": {
+                "tags": [
+                    "Common"
+                ],
+                "summary": "Get frontend settings",
+                "operationId": "getFrontendSettings",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/XRequestedWithHeader"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "status",
+                                        "content"
+                                    ],
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "ok"
+                                        },
+                                        "content": {
+                                            "$ref": "#/components/schemas/FrontendSettingsResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user": {
             "get": {
                 "tags": [
@@ -1119,29 +1158,77 @@
                 },
                 "type": "object"
             },
+            "ContactsResponse": {
+                "description": "Response containing contact information",
+                "required": [
+                    "email",
+                    "phone"
+                ],
+                "properties": {
+                    "email": {
+                        "description": "Contact email address",
+                        "type": "string",
+                        "example": "test@test.com"
+                    },
+                    "phone": {
+                        "description": "Contact phone number",
+                        "type": "string",
+                        "example": "+4515478818"
+                    },
+                    "telegram": {
+                        "description": "Contact Telegram handle",
+                        "type": "string",
+                        "example": "@test"
+                    }
+                },
+                "type": "object"
+            },
             "LanguagesResponse": {
                 "description": "Response containing available languages mapped by locale code",
                 "required": [
-                    "languages"
+                    "en",
+                    "ru",
+                    "pl"
                 ],
                 "properties": {
-                    "languages": {
-                        "description": "Mapping of locale code to label",
-                        "type": "object",
-                        "additionalProperties": {
-                            "type": "string",
-                            "example": "English"
-                        }
+                    "en": {
+                        "description": "English label",
+                        "type": "string",
+                        "example": "English"
+                    },
+                    "ru": {
+                        "description": "Russian label",
+                        "type": "string",
+                        "example": "Русский"
+                    },
+                    "pl": {
+                        "description": "Polish label",
+                        "type": "string",
+                        "example": "Polski"
                     }
                 },
                 "type": "object",
                 "example": {
-                    "languages": {
-                        "en": "English",
-                        "ru": "Русский",
-                        "pl": "Polski"
-                    }
+                    "en": "English",
+                    "ru": "Русский",
+                    "pl": "Polski"
                 }
+            },
+            "FrontendSettingsResponse": {
+                "description": "Response containing frontend settings including languages and contacts",
+                "required": [
+                    "languages",
+                    "contacts"
+                ],
+                "properties": {
+                    "languages": {
+                        "$ref": "#/components/schemas/LanguagesResponse"
+                    },
+                    "contacts": {
+                        "$ref": "#/components/schemas/ContactsResponse"
+                    }
+                },
+                "type": "object"
             },
             "Pagination": {
                 "properties": {

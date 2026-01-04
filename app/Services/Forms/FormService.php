@@ -49,7 +49,7 @@ final readonly class FormService
     private function isEmailEnabled(FormTypeEnum $formType): bool
     {
         return in_array($formType, [
-            FormTypeEnum::FEEDBACK,
+            FormTypeEnum::Feedback,
         ]);
     }
 }

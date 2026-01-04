@@ -19,7 +19,7 @@ readonly class TranslateRepository extends DatabaseRepository implements Transla
         $this->db->beginTransaction();
 
         if ($id > 0) {
-            $this->db->table($tableName)->where('id', $id)->updateOrInsert($data);
+            $this->db->table($tableName)->where('id', $id)->updateOrInsert(['id' => $id], $data);
         } else {
             $id = $this->db->table($tableName)->insertGetId($data);
         }
