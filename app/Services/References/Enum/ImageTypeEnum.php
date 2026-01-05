@@ -6,5 +6,5 @@ namespace App\Services\References\Enum;
 
 enum ImageTypeEnum: string
 {
-    case TRAVEL_TYPE = 'travel_type';
+    case TravelType = 'travel_type';
 }

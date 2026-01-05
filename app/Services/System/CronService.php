@@ -71,6 +71,8 @@ final readonly class CronService
             match ($cron->getCronKey()) {
                 CronKeyEnum::OnlinerCatalogGoods => $this->importOnlinerService->updateCatalogGoods(),
                 CronKeyEnum::ClearLogs => $this->clearLogs(),
+                CronKeyEnum::NewsletterDispatch => $this->clearLogs(),
+
             };
 
             $cron->setLastWork(now());

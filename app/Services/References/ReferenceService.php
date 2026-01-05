@@ -39,7 +39,7 @@ final readonly class ReferenceService
     public function saveTravelType(int $id, array $data, ?UploadedFile $file): int
     {
         if ($file) {
-            $data['image_path'] = $this->saveImage(ImageTypeEnum::TRAVEL_TYPE, $file);
+            $data['image_path'] = $this->saveImage(ImageTypeEnum::TravelType, $file);
         }
 
         return $this->repository->saveTravelType($id, $data);

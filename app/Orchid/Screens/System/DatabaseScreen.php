@@ -291,7 +291,7 @@ SQL
 
     public function dropPostgreTable(string $tableName): void
     {
-        DB::statement('DROP TABLE IF EXISTS ' . $tableName . ';');
+        DB::statement('DROP TABLE IF EXISTS ' . $tableName . ' CASCADE;');
     }
 
     public function truncatePostgreTable(string $tableName): void

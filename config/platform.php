@@ -127,7 +127,9 @@ return [
 
     'resource' => [
         'stylesheets' => ['/css/mr-style.css'],
-        'scripts'     => [],
+        'scripts'     => [
+            '/js/dashboard.js'
+        ],
     ],
 
     /*

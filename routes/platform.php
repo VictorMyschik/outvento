@@ -10,6 +10,8 @@ use App\Orchid\Screens\Catalog\ManufacturerScreen;
 use App\Orchid\Screens\Email\EmailScreen;
 use App\Orchid\Screens\FAQScreen;
 use App\Orchid\Screens\Language\TranslateScreen;
+use App\Orchid\Screens\Newsletter\NewsEditScreen;
+use App\Orchid\Screens\Newsletter\NewsletterScreen;
 use App\Orchid\Screens\Notification\MessageLogEmailScreen;
 use App\Orchid\Screens\Notification\MessageLogTelegramScreen;
 use App\Orchid\Screens\Notification\UserNotificationSettingScreen;
@@ -142,6 +144,10 @@ Route::screen('/reference/countries/list', CountryScreen::class)->name('referenc
 
 //// Subscriptions
 Route::screen('/subscriptions/list', SubscriptionScreen::class)->name('subscriptions.list');
+
+//// News
+Route::screen('newsletter/list', NewsletterScreen::class)->name('newsletter.news.list');
+Route::screen('newsletter/{news_id}/edit', NewsEditScreen::class)->name('newsletter.news.edit');
 
 /// Message Log
 Route::screen('/notification/user/settings/list', UserNotificationSettingScreen::class)->name('notification.user.settings.list');

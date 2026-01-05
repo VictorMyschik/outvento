@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "803a7db9963b7653e9c924048be98ae9",
+    "content-hash": "c5fafe2354a0b6a7b953d20a8dd3cec4",
     "packages": [
         {
             "name": "brick/math",
@@ -3534,6 +3534,55 @@
             "time": "2026-01-02T08:56:05+00:00"
         },
         {
+            "name": "nakipelo/orchid-ckeditor",
+            "version": "5.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nakipelo/orchid-ckeditor.git",
+                "reference": "2834e5ba5714d075c8d472a17133052c41666f2a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nakipelo/orchid-ckeditor/zipball/2834e5ba5714d075c8d472a17133052c41666f2a",
+                "reference": "2834e5ba5714d075c8d472a17133052c41666f2a",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "orchid/platform": "^14.0",
+                "php": "^8.1"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Nakipelo\\Orchid\\CKEditor\\CKEditorServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Nakipelo\\Orchid\\CKEditor\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Egor Gruzdev",
+                    "email": "egorgruzdev@gmail.com"
+                }
+            ],
+            "description": "CKEditor editor for Laravel Orchid",
+            "support": {
+                "issues": "https://github.com/nakipelo/orchid-ckeditor/issues",
+                "source": "https://github.com/nakipelo/orchid-ckeditor/tree/5.1.2"
+            },
+            "time": "2023-08-10T20:29:05+00:00"
+        },
+        {
             "name": "nesbot/carbon",
             "version": "3.11.0",
             "source": {
@@ -6710,12 +6759,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dom-crawler.git",
-                "reference": "b661b2557bc8d7701aec9caa8fe639b3be0fdd8f"
+                "reference": "46af0307f152863ec6960f2c922871dac8e5bcfa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/dom-crawler/zipball/b661b2557bc8d7701aec9caa8fe639b3be0fdd8f",
-                "reference": "b661b2557bc8d7701aec9caa8fe639b3be0fdd8f",
+                "url": "https://api.github.com/repos/symfony/dom-crawler/zipball/46af0307f152863ec6960f2c922871dac8e5bcfa",
+                "reference": "46af0307f152863ec6960f2c922871dac8e5bcfa",
                 "shasum": ""
             },
             "require": {
@@ -6772,7 +6821,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-12-19T08:33:17+00:00"
+            "time": "2026-01-05T09:33:24+00:00"
         },
         {
             "name": "symfony/error-handler",
@@ -9994,16 +10043,16 @@
         },
         {
             "name": "laravel/pint",
-            "version": "v1.26.0",
+            "version": "v1.27.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/pint.git",
-                "reference": "69dcca060ecb15e4b564af63d1f642c81a241d6f"
+                "reference": "c67b4195b75491e4dfc6b00b1c78b68d86f54c90"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/pint/zipball/69dcca060ecb15e4b564af63d1f642c81a241d6f",
-                "reference": "69dcca060ecb15e4b564af63d1f642c81a241d6f",
+                "url": "https://api.github.com/repos/laravel/pint/zipball/c67b4195b75491e4dfc6b00b1c78b68d86f54c90",
+                "reference": "c67b4195b75491e4dfc6b00b1c78b68d86f54c90",
                 "shasum": ""
             },
             "require": {
@@ -10014,9 +10063,9 @@
                 "php": "^8.2.0"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.90.0",
-                "illuminate/view": "^12.40.1",
-                "larastan/larastan": "^3.8.0",
+                "friendsofphp/php-cs-fixer": "^3.92.4",
+                "illuminate/view": "^12.44.0",
+                "larastan/larastan": "^3.8.1",
                 "laravel-zero/framework": "^12.0.4",
                 "mockery/mockery": "^1.6.12",
                 "nunomaduro/termwind": "^2.3.3",
@@ -10057,7 +10106,7 @@
                 "issues": "https://github.com/laravel/pint/issues",
                 "source": "https://github.com/laravel/pint"
             },
-            "time": "2025-11-25T21:15:52+00:00"
+            "time": "2026-01-05T16:49:17+00:00"
         },
         {
             "name": "laravel/sail",

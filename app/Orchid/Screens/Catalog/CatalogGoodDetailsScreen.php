@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\Catalog;
 
-use App\Helpers\TouchUserUpdateEvent;
 use App\Models\Catalog\CatalogGood;
-use App\Models\Catalog\CatalogGoodDetail;
 use App\Models\Catalog\CatalogGroup;
 use App\Models\Catalog\Manufacturer;
 use App\Models\Orchid\Attachment;

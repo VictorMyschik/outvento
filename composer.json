@@ -24,6 +24,7 @@
     "spatie/laravel-html": "^3.11",
     "stichoza/google-translate-php": "^5.2",
     "elasticsearch/elasticsearch": "~v9.0.0",
+    "nakipelo/orchid-ckeditor": "5.1.2",
     "ext-simplexml": "*",
     "laravel/sanctum": "^v4.1.1",
     "phpoffice/phpspreadsheet": "^2.1.0",

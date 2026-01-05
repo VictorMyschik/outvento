@@ -1,11 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Orchid\Screens\Travel;
 
-use App\Helpers\TouchUserUpdateEvent;
-use App\Models\Catalog\CatalogGood;
-use App\Models\Catalog\CatalogGoodDetail;
-use App\Models\Catalog\CatalogImage;
 use App\Models\EmailInvite;
 use App\Models\Orchid\Attachment;
 use App\Models\Reference\Country;
@@ -14,12 +12,10 @@ use App\Models\Travel\TravelImage;
 use App\Models\Travel\TravelType;
 use App\Models\Travel\UIT;
 use App\Models\User;
-use App\Orchid\Layouts\Catalog\GoodUploadEditLayout;
 use App\Orchid\Layouts\Travel\InviteByEmailEditLayout;
 use App\Orchid\Layouts\Travel\InviteListLayout;
 use App\Orchid\Layouts\Travel\TravelEditLayout;
 use App\Orchid\Layouts\Travel\TravelImageUploadLayout;
-use App\Services\Catalog\Enum\CatalogImageTypeEnum;
 use App\Services\Email\EmailService;
 use App\Services\Travel\Enum\ImageType;
 use App\Services\Travel\Enum\TravelStatus;
