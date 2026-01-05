@@ -22,13 +22,15 @@ final readonly class SubscriptionRepository extends DatabaseRepository implement
         return Subscription::where('token', $token)->first();
     }
 
-    public function saveSubscription(int $id, array $data): void
+    public function saveSubscription(int $id, array $data): int
     {
         if ($id > 0) {
             $this->db->table(Subscription::getTableName())->update($data);
+
+            return $id;
         }
 
-        $this->db->table(Subscription::getTableName())->insertOrIgnore($data);
+        return $this->db->table(Subscription::getTableName())->insertGetId($data);
     }
 
     public function deleteSubscription(string $token): void

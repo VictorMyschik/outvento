@@ -17,7 +17,7 @@
                 <tr>
                     <td style="background:#229ED9; padding:10px; text-align:center;">
                         <h1 style="margin:0; color:#ffffff; font-size:22px;">
-                            <img src="http://localhost:5173/src/assets/images/logo-dark.png">
+                            <img src="{{env('FRONT_HOST')}}/src/assets/images/logo-dark.png" alt="{{ config('app.name') }} Logo">
                             {{ __('emails.new_news_subscription') }}
                         </h1>
                     </td>

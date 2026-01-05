@@ -18,7 +18,7 @@ class EmailScreen extends Screen
 {
     public function __construct(private readonly Request $request)
     {
-        App::setlocale(Language::from((int)$this->request->get('locale', Language::RU->value))->getCode());
+        App::setlocale(Language::from((int)$this->request->get('locale', Language::EN->value))->getCode());
     }
 
     public function query(): iterable
@@ -53,12 +53,15 @@ class EmailScreen extends Screen
             'unsubscribeUrl' => '#',
         ];
 
+        App::setlocale(Language::from((int)$this->request->get('locale', Language::RU->value))->getCode());
+
         return [
             Layout::rows([
                 Select::make('locale')->options(Language::getSelectList())->title('Язык')->value($this->request->get('locale')),
                 ViewField::make('')->view('space'),
                 Button::make('Filter')->icon('filter')->name('сменить язык')->method('runFiltering')->class('mr-btn-success'),
             ]),
+
             Layout::tabs([
                 'New Subscription' => Layout::view('mail.new_news_subscription', $fakeData['new_news_subscription']),
             ]),

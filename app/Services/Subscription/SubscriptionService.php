@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Subscription;
 
+use App\Jobs\EmailJob;
+use App\Mail\NewNewsSubscriptionEmail;
 use App\Models\Subscription\Subscription;
 use App\Services\Email\Enum\EmailTypeEnum;
 use App\Services\Subscription\DTO\SubscriptionDto;
@@ -11,7 +13,9 @@ use App\Services\System\Enum\Language;
 
 final readonly class SubscriptionService
 {
-    public function __construct(private SubscriptionRepositoryInterface $repository) {}
+    public function __construct(
+        private SubscriptionRepositoryInterface $repository
+    ) {}
 
     public function getSubscriptionById(int $id): ?Subscription
     {
@@ -48,16 +52,18 @@ final readonly class SubscriptionService
             return;
         }
 
+        $token = md5(uniqid());
+
         $data = new SubscriptionDto(
             email: $email,
             language: $language->value,
-            token: md5(uniqid()),
+            token: $token,
             type: EmailTypeEnum::News->value,
         );
 
         $this->repository->saveSubscription(0, (array)$data);
 
-        event('subscription.news.created', [$data]);
+        EmailJob::dispatch($email, new NewNewsSubscriptionEmail($token), EmailTypeEnum::NewNewsSubscription);
     }
 
     public function updateSubscription(int $id, array $data): void

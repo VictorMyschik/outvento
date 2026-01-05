@@ -15,7 +15,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('common/languages', [CommonApiController::class, 'getLanguages']);
 Route::get('translate/common', [CommonApiController::class, 'getCommonTranslate']);
 Route::get('frontend/settings', [CommonApiController::class, 'getFrontendSettings']);
+
 Route::post('/subscription/subscribe', [SubscriptionApiController::class, 'subscribe']);
+Route::get('/subscription/unsubscribe/{token}', [SubscriptionApiController::class, 'unsubscribe']);
 
 Route::middleware('optional:sanctum')->group(function () {
     Route::prefix('pages')->group(static function () {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories\System;
 
 use App\Models\System\Settings;
-use App\Orchid\Screens\System\Enum\SettingsKey;
+use App\Services\System\Enum\SettingsKey;
 use Psr\SimpleCache\CacheInterface;
 
 readonly class SettingsRepositoryCache implements SettingsRepositoryInterface
@@ -43,13 +43,13 @@ readonly class SettingsRepositoryCache implements SettingsRepositoryInterface
 
     public function isEnabledEmailSend(): bool
     {
-        $setting = $this->getByKey(SettingsKey::EMAIL_SERVICE);
+        $setting = $this->getByKey(SettingsKey::EmailService);
 
         return $setting && $setting->getValue() === '1';
     }
 
     public function getAdminEmail(): string
     {
-        return $this->getByKey(SettingsKey::ADMIN_EMAIL)->getValue();
+        return $this->getByKey(SettingsKey::AdminEmail)->getValue();
     }
 }

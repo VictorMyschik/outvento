@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories\System;
 
 use App\Models\System\Settings;
-use App\Orchid\Screens\System\Enum\SettingsKey;
+use App\Services\System\Enum\SettingsKey;
 
 interface SettingsRepositoryInterface
 {

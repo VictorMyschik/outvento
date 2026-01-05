@@ -6,10 +6,9 @@ namespace App\Services\Email;
 
 use App\Jobs\EmailJob;
 use App\Mail\Feedback;
-use App\Mail\NewNewsSubscriptionEmail;
 use App\Mail\NewsEmail;
 use App\Mail\TravelInviteEmail;
-use App\Models\Email\EmailLog;
+use App\Models\MessageLog\EmailLog;
 use App\Repositories\System\SettingsRepositoryInterface;
 use App\Services\Email\DTO\EmailDTO;
 use App\Services\Email\Enum\EmailTypeEnum;
@@ -26,6 +25,9 @@ final readonly class EmailService
         private SettingsRepositoryInterface $settingsRepository,
     ) {}
 
+    /**
+     * TODO: refactor method to separate methods for each email type
+     */
     public function createNewEmail(EmailTypeEnum $type, mixed $form): void
     {
         if (!$this->settingsRepository->isEnabledEmailSend()) {
@@ -52,17 +54,6 @@ final readonly class EmailService
                     $emailDtos[] = new EmailDTO($email, new $className($this->formService->getFormById($form->dto->id()), $token));
                 }
                 break;
-            case EmailTypeEnum::NewNewsSubscription:
-                $className = NewNewsSubscriptionEmail::class;
-                $dto = $form->dto;
-                $emailDtos[] = new EmailDTO(
-                    to: $dto->email,
-                    mail: new $className(
-                        $this->formService->getFormById($dto->id),
-                        $dto->token,
-                    )
-                );
-                break;
         }
 
         foreach ($emailDtos as $dto) {
@@ -70,7 +61,7 @@ final readonly class EmailService
         }
     }
 
-    public function send(string $to, Mailable $email, EmailTypeEnum $type): void
+    public function send(string $to, Mailable $email, EmailTypeEnum $type, bool $logging = true): void
     {
         try {
             $result = Mail::to($to)->send($email->from(config('mail.from.address'), config('mail.from.name')));
@@ -78,13 +69,15 @@ final readonly class EmailService
             $error = $e->getMessage();
         }
 
-        $log = new EmailLog();
-        $log->setType($type);
-        $log->setEmail($to);
-        $log->setSubject($email->subject);
-        $log->setEmailBody($email->render());
-        $log->setStatus((bool)($result ?? null));
-        $log->setError($error ?? null);
-        $log->save();
+        if ($logging) {
+            $log = new EmailLog();
+            $log->setType($type);
+            $log->setEmail($to);
+            $log->setSubject($email->subject);
+            $log->setEmailBody($email->render());
+            $log->setStatus((bool)($result ?? null));
+            $log->setError($error ?? null);
+            $log->save();
+        }
     }
 }

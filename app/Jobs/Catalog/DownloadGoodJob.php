@@ -22,7 +22,6 @@ class DownloadGoodJob implements ShouldQueue
     use Dispatchable;
     use InteractsWithQueue;
     use Queueable;
-    use SerializesModels;
 
     public function __construct(public CatalogGroup $group, public string $link)
     {

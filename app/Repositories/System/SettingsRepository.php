@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Repositories\System;
 
 use App\Models\System\Settings;
-use App\Orchid\Screens\System\Enum\SettingsKey;
 use App\Repositories\DatabaseRepository;
+use App\Services\System\Enum\SettingsKey;
 
-final class SettingsRepository extends DatabaseRepository implements SettingsRepositoryInterface
+final readonly class SettingsRepository extends DatabaseRepository implements SettingsRepositoryInterface
 {
     public function getSettingsList(): array
     {
@@ -38,11 +38,11 @@ final class SettingsRepository extends DatabaseRepository implements SettingsRep
 
     public function isEnabledEmailSend(): bool
     {
-        return $this->getByKey(SettingsKey::EMAIL_SERVICE)->getValue() === '1';
+        return $this->getByKey(SettingsKey::EmailService)->getValue() === '1';
     }
 
     public function getAdminEmail(): string
     {
-        return $this->getByKey(SettingsKey::ADMIN_EMAIL)->getValue();
+        return $this->getByKey(SettingsKey::AdminEmail)->getValue();
     }
 }

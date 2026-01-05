@@ -2,6 +2,7 @@
 
 use App\Orchid\Providers\TableServiceProvider;
 use App\Providers\CatalogServiceProvider;
+use App\Providers\NotificationProvider;
 use App\Providers\ReferenceProvider;
 use App\Providers\SupervisorProvider;
 use App\Providers\SystemProvider;
@@ -19,4 +20,5 @@ return [
     SystemProvider::class,
     CatalogServiceProvider::class,
     SupervisorProvider::class,
+    NotificationProvider::class,
 ];

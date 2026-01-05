@@ -17,6 +17,6 @@ class SubscriptionRequest extends FormRequest
 
     public function getEmail(): string
     {
-        return (string)$this->get('email');
+        return mb_strtolower($this->get('email'));
     }
 }

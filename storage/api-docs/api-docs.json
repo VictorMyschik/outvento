@@ -645,6 +645,87 @@
                 }
             }
         },
+        "/api/v1/subscription/subscribe": {
+            "post": {
+                "tags": [
+                    "Subscription"
+                ],
+                "summary": "Subscribe to news",
+                "operationId": "subscribe",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/XRequestedWithHeader"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SuccessfulEmptyResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/subscription/subscribe/{token}": {
+            "get": {
+                "tags": [
+                    "Subscription"
+                ],
+                "summary": "Unsubscribe for type",
+                "operationId": "unsubscribe",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/XRequestedWithHeader"
+                    },
+                    {
+                        "name": "token",
+                        "in": "path",
+                        "description": "Subscription token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SuccessfulEmptyResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user": {
             "get": {
                 "tags": [
@@ -1121,43 +1202,6 @@
                 },
                 "type": "object"
             },
-            "WelcomeResponse": {
-                "required": [
-                    "countries",
-                    "translates",
-                    "travelTypeList",
-                    "travelExamples"
-                ],
-                "properties": {
-                    "countries": {
-                        "description": "List of countries",
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/CountryComponent"
-                        }
-                    },
-                    "translates": {
-                        "description": "Translation entries",
-                        "type": "object",
-                        "example": "{'welcome_message': 'Welcome to our site!', 'login': 'Log In'}"
-                    },
-                    "travelTypeList": {
-                        "description": "List of travel types",
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/TravelTypeComponent"
-                        }
-                    },
-                    "travelExamples": {
-                        "description": "List of travel examples",
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/TravelListByTypeComponent"
-                        }
-                    }
-                },
-                "type": "object"
-            },
             "ContactsResponse": {
                 "description": "Response containing contact information",
                 "required": [
@@ -1247,6 +1291,43 @@
                     "pages": {
                         "description": "Общее количество страниц",
                         "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "WelcomeResponse": {
+                "required": [
+                    "countries",
+                    "translates",
+                    "travelTypeList",
+                    "travelExamples"
+                ],
+                "properties": {
+                    "countries": {
+                        "description": "List of countries",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CountryComponent"
+                        }
+                    },
+                    "translates": {
+                        "description": "Translation entries",
+                        "type": "object",
+                        "example": "{'welcome_message': 'Welcome to our site!', 'login': 'Log In'}"
+                    },
+                    "travelTypeList": {
+                        "description": "List of travel types",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TravelTypeComponent"
+                        }
+                    },
+                    "travelExamples": {
+                        "description": "List of travel examples",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TravelListByTypeComponent"
+                        }
                     }
                 },
                 "type": "object"
@@ -1814,6 +1895,10 @@
         {
             "name": "Common",
             "description": "Common"
+        },
+        {
+            "name": "Subscription",
+            "description": "Subscription"
         },
         {
             "name": "User info",

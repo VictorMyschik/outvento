@@ -15,7 +15,7 @@ class NewNewsSubscriptionEmail extends Mailable
     use Queueable;
     use SerializesModels;
 
-    public function __construct(public array $value, public string $unsubscribeUrl) {}
+    public function __construct(public string $unsubscribeUrl) {}
 
     public function envelope(): Envelope
     {

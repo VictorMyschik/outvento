@@ -1,0 +1,30 @@
+.column-news__row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.column-news__block {
+    border-radius: 1rem;
+    padding: 1.5rem 1.5rem 0.875rem;
+    background: #e3efff;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-height: 9.5rem;
+}
+
+.block-column__title {
+    font-size: 3rem;
+    line-height: 100%;
+    color: #0072f4;
+}
+
+
+.block-column__text {
+    font-size: 1rem;
+    line-height: 125%;
+    border-top: 0.09375rem solid #dce4f0;
+    padding: 0.75rem 0rem 0rem;
+    color: rgba(0,0,0, 0.6);
+}

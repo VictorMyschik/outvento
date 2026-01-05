@@ -10,6 +10,9 @@ use App\Orchid\Screens\Catalog\ManufacturerScreen;
 use App\Orchid\Screens\Email\EmailScreen;
 use App\Orchid\Screens\FAQScreen;
 use App\Orchid\Screens\Language\TranslateScreen;
+use App\Orchid\Screens\Notification\MessageLogEmailScreen;
+use App\Orchid\Screens\Notification\MessageLogTelegramScreen;
+use App\Orchid\Screens\Notification\UserNotificationSettingScreen;
 use App\Orchid\Screens\PlatformScreen;
 use App\Orchid\Screens\References\CategoryEquipmentScreen;
 use App\Orchid\Screens\References\CitiesScreen;
@@ -23,7 +26,6 @@ use App\Orchid\Screens\System\CacheScreen;
 use App\Orchid\Screens\System\CronScreen;
 use App\Orchid\Screens\System\DatabaseScreen;
 use App\Orchid\Screens\System\DatabaseTableScreen;
-use App\Orchid\Screens\System\EmailLogScreen;
 use App\Orchid\Screens\System\FailedJobsScreen;
 use App\Orchid\Screens\System\JobsScreen;
 use App\Orchid\Screens\System\PurgeScreen;
@@ -105,7 +107,7 @@ Route::screen('roles', RoleListScreen::class)
         ->push(__('Roles'), route('platform.systems.roles')));
 
 // System
-Route::screen('system/email/log/list', EmailLogScreen::class)->name('system.email.log');
+Route::screen('system/email/log/list', MessageLogEmailScreen::class)->name('system.email.log');
 Route::screen('system/settings/list', SettingsScreen::class)->name('system.settings.list');
 Route::screen('system/cache', CacheScreen::class)->name('system.cache');
 Route::screen('system/cron', CronScreen::class)->name('system.info.cron');
@@ -140,6 +142,11 @@ Route::screen('/reference/countries/list', CountryScreen::class)->name('referenc
 
 //// Subscriptions
 Route::screen('/subscriptions/list', SubscriptionScreen::class)->name('subscriptions.list');
+
+/// Message Log
+Route::screen('/notification/user/settings/list', UserNotificationSettingScreen::class)->name('notification.user.settings.list');
+Route::screen('/notification/log/email/list', MessageLogEmailScreen::class)->name('notification.log.email.list');
+Route::screen('/notification/log/telegram/list', MessageLogTelegramScreen::class)->name('notification.log.telegram.list');
 
 // Wish List
 Route::screen('/wishlist/list', WishlistScreen::class)->name('wishlist.list');

@@ -33,7 +33,15 @@ class PlatformProvider extends OrchidServiceProvider
                 Menu::make('Countries')->icon('bs.list')->route('reference.countries.list'),
                 Menu::make('Cities')->icon('bs.list')->route('reference.cities.list'),
             ]),
-            Menu::make('Subscriptions')->icon('bs.send')->route('subscriptions.list')->divider(),
+
+            Menu::make('Subscriptions')->icon('bs.send')->route('subscriptions.list'),
+
+            Menu::make('Notification')->icon('grid')->list([
+                Menu::make('User Settings')->icon('bs.list')->route('notification.user.settings.list'),
+                Menu::make('Email')->icon('bs.list')->route('notification.log.email.list'),
+                Menu::make('Telegram')->icon('bs.list')->route('notification.log.telegram.list'),
+            ])->divider(),
+
             Menu::make('Wishlists')->icon('bs.list')->route('wishlist.list')->divider(),
 
             // Catalog
