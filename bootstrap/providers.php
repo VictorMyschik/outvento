@@ -2,6 +2,7 @@
 
 use App\Orchid\Providers\TableServiceProvider;
 use App\Providers\CatalogServiceProvider;
+use App\Providers\ConstructorProvider;
 use App\Providers\NewsletterProvider;
 use App\Providers\NotificationProvider;
 use App\Providers\ReferenceProvider;
@@ -23,4 +24,5 @@ return [
     SupervisorProvider::class,
     NotificationProvider::class,
     NewsletterProvider::class,
+    ConstructorProvider::class,
 ];

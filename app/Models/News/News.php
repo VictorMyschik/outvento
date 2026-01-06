@@ -8,7 +8,7 @@ use App\Models\Lego\Fields\ActiveFieldTrait;
 use App\Models\Lego\Fields\CodeFieldTrait;
 use App\Models\Lego\Fields\TitleFieldTrait;
 use App\Models\ORM\ORM;
-use App\Services\Newsletter\Enum\RelationMediaType;
+use App\Services\Newsletter\ImageUploader\Enum\NewsMediaType;
 use App\Services\System\Enum\Language;
 use Carbon\Carbon;
 use Orchid\Filters\Filterable;
@@ -89,6 +89,6 @@ class News extends ORM
 
     public function getLogo(): ?NewsMedia
     {
-        return NewsMedia::where('news_id', $this->id())->where('type', RelationMediaType::NewsLogo->value)->first();
+        return NewsMedia::where('news_id', $this->id())->where('media_type', NewsMediaType::Logo->value)->first();
     }
 }

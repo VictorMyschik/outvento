@@ -190,7 +190,7 @@ class NewsletterScreen extends Screen
     public function runFiltering(Request $request): RedirectResponse
     {
         $list = [];
-        foreach (NewsFilter::getFilterFields() as $item) {
+        foreach (NewsFilter::FIELDS as $item) {
             if (!is_null($request->get($item))) {
                 $list[$item] = $request->get($item);
             }

@@ -16,53 +16,18 @@ class ConstructorItemSlide extends ORM
 
     public $timestamps = false;
 
-    public function getSliderID(): int
-    {
-        return $this->slider_id;
-    }
-
-    public function setSliderID(int $value): void
-    {
-        $this->slider_id = $value;
-    }
-
-    public function setAlt(?string $value): void
-    {
-        $this->alt = $value;
-    }
-
     public function getPath(): string
     {
         return $this->path;
     }
 
-    public function setPath(string $value): void
+    public function getDisplayName(): ?string
     {
-        $this->path = $value;
-    }
-
-    public function getFileName(): string
-    {
-        return $this->file_name;
-    }
-
-    public function setFileName(string $value): void
-    {
-        $this->file_name = $value;
-    }
-
-    public function setDisplayName(?string $value): void
-    {
-        $this->display_name = $value;
+        return $this->display_name;
     }
 
     public function getUrl(): string
     {
-        return Storage::url($this->getPath() . '/' . $this->getFileName());
-    }
-
-    public function getFilePathWithName(): string
-    {
-        return $this->getPath() . '/' . $this->getFileName();
+        return Storage::url($this->getPath());
     }
 }

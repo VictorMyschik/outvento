@@ -6,7 +6,6 @@ namespace App\Orchid\Layouts\Newsletter;
 
 use App\Models\News\News;
 use App\Services\Newsletter\NewsService;
-use App\Services\References\Enum\ImageTypeEnum;
 use Illuminate\Support\Facades\Storage;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
@@ -26,14 +25,13 @@ class NewsListLayout extends Table
             TD::make('id', 'ID')->sort(),
             TD::make('active', 'Активно')->active()->sort(),
             TD::make('public', 'Опубликовано')->active()->sort(),
-           /* TD::make('#', 'Image')->render(function (News $news) {
-                $imageName = Image::where('type', ImageTypeEnum::News->value)->where('object_id', $news->id())->latest()->first();
-                if ($imageName) {
-                    $path = Storage::url(ImageTypeEnum::News->value . '/' . $imageName->getName());
+            TD::make('#', 'Image')->render(function (News $news) {
+                if ($news->path) {
+                    $path = Storage::url($news->path);
                     return View('admin.image')->with(['path' => $path]);
                 }
                 return null;
-            }),*/
+            }),
             TD::make('language', 'Язык')->render(fn(News $news) => $news->getLanguage()->getLabel())->sort(),
             TD::make('group_id', 'Группа')->render(function (News $news) {
                 if ($news->getGroupId()) {

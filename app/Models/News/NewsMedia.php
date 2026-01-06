@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Models\News;
 
 use App\Models\ORM\ORM;
-use App\Services\Newsletter\Enum\MediaType;
-use App\Services\Newsletter\Enum\RelationMediaType;
+use App\Services\Newsletter\ImageUploader\Enum\NewsFileType;
+use App\Services\Newsletter\ImageUploader\Enum\NewsMediaType;
 use Illuminate\Support\Facades\Storage;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
@@ -23,20 +23,28 @@ class NewsMedia extends ORM
     protected array $allowedSorts = [
         'id',
         'news_id',
-        'type',
+        'file_type',
         'media_type',
         'path',
         'created_at',
     ];
 
-    public function getType(): RelationMediaType
+    public $casts = [
+        'news_id'    => 'integer',
+        'file_type'  => 'integer',
+        'media_type' => 'integer',
+        'path'       => 'string',
+        'created_at' => 'datetime',
+    ];
+
+    public function getType(): NewsFileType
     {
-        return RelationMediaType::from($this->type);
+        return NewsFileType::from($this->file_type);
     }
 
-    public function getMediaType(): MediaType
+    public function getMediaType(): NewsMediaType
     {
-        return MediaType::from($this->type);
+        return NewsMediaType::from($this->media_type);
     }
 
     public function getUrl(): string

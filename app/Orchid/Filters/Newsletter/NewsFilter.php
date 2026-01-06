@@ -6,9 +6,12 @@ namespace App\Orchid\Filters\Newsletter;
 
 use App\Models\News\News;
 use App\Models\News\NewsInSubgroup;
+use App\Models\News\NewsMedia;
 use App\Orchid\Layouts\Lego\ActionFilterPanel;
+use App\Services\Newsletter\ImageUploader\Enum\NewsMediaType;
 use App\Services\System\Enum\Language;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Http\Request;
 use Orchid\Filters\Filter;
 use Orchid\Screen\Fields\Group;
@@ -20,31 +23,26 @@ use Orchid\Support\Facades\Layout;
 
 class NewsFilter extends Filter
 {
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    public static function getFilterFields(): array
-    {
-        return [
-            'active',
-            'public',
-            'title',
-            'group_id',
-            'subgroup_id',
-            'language'
-        ];
-    }
+    public const array FIELDS = [
+        'active',
+        'public',
+        'title',
+        'group_id',
+        'subgroup_id',
+        'language'
+    ];
 
     public static function runQuery()
     {
-        return News::filters([self::class])->paginate(20);
+        return News::filters([self::class])->paginate(20, [
+            News::getTableName() . '.*',
+            NewsMedia::getTableName() . '.path as path'
+        ]);
     }
 
     public function run(Builder $builder): Builder
     {
-        $input = $this->request->all(self::getFilterFields());
+        $input = $this->request->all(self::FIELDS);
 
         if (!is_null($input['active'])) {
             $builder->where('active', (bool)$input['active']);
@@ -72,12 +70,17 @@ class NewsFilter extends Filter
             $builder->where('group_id', (int)$input['group_id']);
         }
 
+        $builder->leftJoin(NewsMedia::getTableName(), function (JoinClause $join) {
+            return $join->on(News::getTableName() . '.id', '=', NewsMedia::getTableName() . '.news_id')
+                ->where(NewsMedia::getTableName() . '.media_type', '=', NewsMediaType::Logo->value);
+        });
+
         return $builder;
     }
 
     public static function displayFilterCard(Request $request): Rows
     {
-        $input = $request->all(self::getFilterFields());
+        $input = $request->all(self::FIELDS);
 
         return Layout::rows([
             Group::make([

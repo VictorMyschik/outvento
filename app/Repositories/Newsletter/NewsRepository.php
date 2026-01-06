@@ -12,9 +12,9 @@ use App\Models\News\NewsInSubgroup;
 use App\Models\News\NewsMedia;
 use App\Models\News\NewsSubgroup;
 use App\Repositories\DatabaseRepository;
-use App\Services\Newsletter\Enum\MediaType;
 use App\Services\Newsletter\Enum\NewsAdditionalTypeEnum;
-use App\Services\Newsletter\Enum\RelationMediaType;
+use App\Services\Newsletter\ImageUploader\Enum\NewsFileType;
+use App\Services\Newsletter\ImageUploader\Enum\NewsMediaType;
 use App\Services\Newsletter\NewsRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -209,62 +209,25 @@ final readonly class NewsRepository extends DatabaseRepository implements NewsRe
         $this->db->table(NewsAdditional::getTableName())->where('id', $id)->update(['sort' => $sort]);
     }
 
-    public function cloneNews(int $newsId): int
-    {
-        $news = News::loadBy($newsId);
-        $newsData = $news->toArray();
-        $newsData['created_at'] = now();
-        $newsData['updated_at'] = null;
-        $newsData['published_at'] = null;
-        $newsData['active'] = false;
-        $newsData['public'] = false;
-        $newsData['title'] = $newsData['title'] . ' (копия)';
-        $newsData['code'] = $newsData['code'] . '-copy';
-        $newsData['language'] = $news->getLanguage()->value;
-        $newsData['group_id'] = $news->getGroupId();
-        unset($newsData['id']);
-
-        $newNewsId = $this->db->table(News::getTableName())->insertGetId($newsData);
-
-        $additionalData = $this->db->table(NewsAdditional::getTableName())->where('news_id', $newsId)->get()->all();
-
-        foreach ($additionalData as &$additional) {
-            $additional = (array)$additional;
-            $additional['created_at'] = now();
-            $additional['news_id'] = $newNewsId;
-            unset($additional['id']);
-        }
-
-        $this->db->table(NewsAdditional::getTableName())->insert($additionalData);
-
-        // news_in_subgroups
-        $subgroups = $this->db->table(NewsInSubgroup::getTableName())->where('news_id', $newsId)->get()->all();
-        $subgroupsData = [];
-        foreach ($subgroups as $subgroup) {
-            $subgroup = (array)$subgroup;
-            $subgroup['news_id'] = $newNewsId;
-            unset($subgroup['id']);
-            $subgroupsData[] = $subgroup;
-        }
-
-        $this->db->table(NewsInSubgroup::getTableName())->insert($subgroupsData);
-
-        return $newNewsId;
-    }
-
-    public function addNewsMedia(MediaType $mediaType, RelationMediaType $type, int $newsId, string $path): int
+    public function addNewsMedia(int $newsId, NewsFileType $fileType, NewsMediaType $mediaType, string $path): int
     {
         return $this->db->table(NewsMedia::getTableName())
             ->insertGetId([
-                'type'       => $type->value,
-                'path'       => $path,
                 'news_id'    => $newsId,
+                'file_type'  => $fileType->value,
                 'media_type' => $mediaType->value,
+                'path'       => $path,
+                'alt'        => null,
             ]);
     }
 
-    public function getNewsMedia(RelationMediaType $type, int $objectId): ?NewsMedia
+    public function getNewsMedia(NewsMediaType $type, int $newsId): ?NewsMedia
     {
-        return NewsMedia::where('type', $type->value)->where('news_id', $objectId)->first();
+        return NewsMedia::where('media_type', $type->value)->where('news_id', $newsId)->first();
+    }
+
+    public function getMediaById(int $id): ?NewsMedia
+    {
+        return NewsMedia::find($id);
     }
 }

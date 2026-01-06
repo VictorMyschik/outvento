@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models\Constructor;
 
+use App\Models\Lego\Fields\ConstructorFileTrait;
 use App\Models\Lego\Fields\DescriptionNullableFieldTrait;
 use App\Models\Lego\Fields\SortFieldTrait;
 use App\Models\Lego\Fields\TitleNullableFieldTrait;
@@ -12,6 +13,7 @@ use App\Models\ORM\ORM;
 class ConstructorItemSlider extends ORM
 {
     use SortFieldTrait;
+    use ConstructorFileTrait;
     use TitleNullableFieldTrait;
     use DescriptionNullableFieldTrait;
 

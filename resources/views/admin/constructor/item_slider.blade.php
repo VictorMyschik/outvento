@@ -1,20 +1,23 @@
 <tr class="border">
     <td class="align-top" style="min-width: 250px;">
         <div>Тип: слайдер</div>
-        <div>Примечание: {!! $value->getDescription() !!}</div>
         <div>Сортировка: {{ $value->getSort() }}</div>
         <div class="mt-4"> {!! $value->btn !!} </div>
     </td>
     <td>
+        <div align="center"><b>{{$value->title}}</b></div>
         <div class="slider-wrapper">
             @foreach($value->images as $image)
                 <div class="slider-item">
                     <a class="slider-item--link" href="{{$image->getUrl()}}" target="_blank">
-                        <img src="{{$image->getUrl()}}" alt="">
+                        <img src="{{$image->getUrl()}}" alt="{{$image->alt}}">
                     </a>
                     <div class="slider-item--block">
                         <div class="slider-item--desc p-2">
                             {{$image->getDisplayName()}}
+                        </div>
+                        <div class="slider-item--desc p-2">
+                            alt: {{$image->alt}}
                         </div>
                         <div class="slider-item--footer p-2">
                             {{$image->btn}}
@@ -23,8 +26,7 @@
                 </div>
             @endforeach
         </div>
-
-
+        <div>Примечание: {!! $value->getDescription() !!}</div>
     </td>
 </tr>
 
@@ -42,6 +44,7 @@
         height: 150px;
         padding: 1rem;
         margin-right: 1rem;
+        flex-shrink: 0;
     }
 
     .slider-item--link {

@@ -10,10 +10,9 @@ return new class extends Migration {
         Schema::create('constructors', function (Blueprint $table): void {
             $table->id();
             $table->unsignedBigInteger('object_id')->index();
-            $table->smallInteger('type')->index(); // ObjectEnum
+            $table->smallInteger('object_type')->index(); // ConstructorObjectTypeEnum
             $table->string('title', 1000);
             $table->string('description', 10000)->nullable();
-            $table->tinyInteger('language')->index();
             $table->unsignedInteger('sort')->default(0);
         });
 
@@ -30,7 +29,6 @@ return new class extends Migration {
             $table->id();
             $table->unsignedBigInteger('slider_id')->index();
             $table->string('display_name')->nullable();
-            $table->string('file_name');
             $table->string('alt')->nullable();
             $table->string('path');
             $table->unsignedInteger('sort')->default(0);
@@ -47,6 +45,20 @@ return new class extends Migration {
             $table->foreign('constructor_id')->references('id')->on('constructors')->onDelete('cascade');
         });
 
+        Schema::create('constructor_files', function (Blueprint $table): void {
+            $table->id();
+            $table->unsignedBigInteger('constructor_id')->index();
+            $table->unsignedSmallInteger('type')->nullable(); // ConstructorFileType enum
+            $table->string('path')->nullable();
+            $table->string('file_name')->nullable();
+            $table->unsignedBigInteger('size');
+            $table->string('extension', 20)->nullable();
+
+            $table->foreign('constructor_id')->references('id')->on('constructors')->onDelete('cascade');
+
+            $table->timestampTz('created_at')->useCurrent();
+        });
+
         Schema::create('constructor_item_videos', function (Blueprint $table): void {
             $table->id();
             $table->unsignedBigInteger('constructor_id')->index();
@@ -56,7 +68,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('file_id');
 
             $table->foreign('constructor_id')->references('id')->on('constructors')->onDelete('cascade');
-            $table->foreign('file_id')->references('id')->on('news_media')->onDelete('cascade');
+            $table->foreign('file_id')->references('id')->on('constructor_files')->onDelete('cascade');
         });
 
         Schema::create('constructor_item_out_videos', function (Blueprint $table): void {
@@ -78,6 +90,7 @@ return new class extends Migration {
         Schema::dropIfExists('constructor_item_sliders');
         Schema::dropIfExists('constructor_item_videos');
         Schema::dropIfExists('constructor_item_texts');
+        Schema::dropIfExists('constructor_files');
         Schema::dropIfExists('constructors');
     }
 };

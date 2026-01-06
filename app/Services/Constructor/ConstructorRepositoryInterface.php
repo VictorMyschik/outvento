@@ -12,19 +12,18 @@ use App\Models\Constructor\ConstructorItemText;
 use App\Models\Constructor\ConstructorItemVideo;
 use App\Models\News\NewsMedia;
 use App\Orchid\Enums\ConstructorObjectTypeEnum;
-use App\Services\System\Enum\Language;
 
 interface ConstructorRepositoryInterface
 {
-    public function getBlockById(int $blockId): ?Constructor;
+    public function getConstructorById(int $constructorId): ?Constructor;
 
     public function saveConstructorBlock(int $blockId, array $data): int;
 
-    public function deleteAllConstructorBlocks(int $objectId, ConstructorObjectTypeEnum $type, Language $language): void;
+    public function deleteAllConstructorBlocks(int $objectId, ConstructorObjectTypeEnum $type): void;
 
     public function deleteConstructorBlocks(int $objectId, int $functionId): void;
 
-    public function getConstructorBlocks(int $objectId, ConstructorObjectTypeEnum $type, Language $language): array;
+    public function getConstructorBlocks(int $objectId, ConstructorObjectTypeEnum $type): array;
 
     public function getBlockItemText(int $itemId): ?ConstructorItemText;
 
@@ -42,13 +41,13 @@ interface ConstructorRepositoryInterface
 
     public function getBlockItems(int $blockId): array;
 
-    public function deleteBlockItemText(int $itemId, int $objectId): void;
+    public function deleteBlockItemText(int $itemId): void;
 
-    public function deleteBlockItemOutVideo(int $itemId, int $objectId): void;
+    public function deleteBlockItemOutVideo(int $itemId): void;
 
-    public function deleteBlockItemSlider(int $itemId, int $objectId): void;
+    public function deleteBlockItemSlider(int $itemId): void;
 
-    public function deleteBlockItemVideo(int $itemId, int $objectId): void;
+    public function deleteBlockItemVideo(int $itemId): void;
 
     public function saveSlider(int $id, array $data): int;
 
@@ -59,4 +58,6 @@ interface ConstructorRepositoryInterface
     public function deleteBlockItemSlide(int $slideId, int $objectId): void;
 
     public function getBlockIcon(int $id): ?NewsMedia;
+
+    public function createConstructorFileModel(array $data): int;
 }

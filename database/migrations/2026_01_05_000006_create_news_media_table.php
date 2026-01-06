@@ -10,10 +10,12 @@ return new class extends Migration {
         Schema::create('news_media', function (Blueprint $table): void {
             $table->id();
             $table->unsignedBigInteger('news_id')->index();
-            $table->string('type', 50);
-            $table->tinyInteger('media_type');
+            $table->tinyInteger('file_type'); // image, video, file etc.
+            $table->tinyInteger('media_type')->index();
             $table->string('path');
             $table->string('alt')->nullable();
+
+            $table->index(['news_id', 'media_type']);
 
             $table->timestampTz('created_at')->useCurrent();
         });

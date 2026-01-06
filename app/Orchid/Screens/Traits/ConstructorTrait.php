@@ -14,7 +14,6 @@ use App\Orchid\Layouts\Constructor\ConstructorBlockItemSliderEditLayout;
 use App\Orchid\Layouts\Constructor\ConstructorBlockItemTextEditLayout;
 use App\Orchid\Layouts\Constructor\ConstructorBlockItemVideoAddLayout;
 use App\Orchid\Layouts\Constructor\ConstructorBlockItemVideoEditLayout;
-use App\Repositories\Constructor\Storage\Enum\StorageFileTypeEnum;
 use App\Services\Constructor\DTO\SlideDTO;
 use App\Services\Constructor\Enum\ConstructorTypeEnum;
 use App\Services\System\Enum\Language;
@@ -37,15 +36,17 @@ use stdClass;
 
 trait ConstructorTrait
 {
-    public function getPopupLayout(array &$out): void
+    public function getConstructorPopupLayout(): array
     {
-        $out[] = Layout::modal('edit_block_block', ConstructorBlockEditLayout::class)->async('asyncGetBlockBlock');
-        $out[] = Layout::modal('edit_block_item_text', ConstructorBlockItemTextEditLayout::class)->async('asyncGetBlockItemText')->size(Modal::SIZE_XL);
-        $out[] = Layout::modal('edit_block_item_slider', ConstructorBlockItemSliderEditLayout::class)->async('asyncGetBlockItemSlider')->size(Modal::SIZE_LG);
-        $out[] = Layout::modal('add_block_item_video', ConstructorBlockItemVideoAddLayout::class)->size(Modal::SIZE_LG);
-        $out[] = Layout::modal('edit_block_item_video', ConstructorBlockItemVideoEditLayout::class)->async('asyncGetBlockItemVideo')->size(Modal::SIZE_LG);
-        $out[] = Layout::modal('edit_block_item_out_video', ConstructorBlockItemOutVideoEditLayout::class)->async('asyncGetBlockItemOutVideo')->size(Modal::SIZE_LG);
-        $out[] = Layout::modal('edit_block_item_slide', ConstructorBlockItemSlideEditLayout::class)->async('asyncGetBlockItemSlide')->size(Modal::SIZE_LG);
+        return [
+            Layout::modal('edit_block_block', ConstructorBlockEditLayout::class)->async('asyncGetBlockBlock'),
+            Layout::modal('edit_block_item_text', ConstructorBlockItemTextEditLayout::class)->async('asyncGetBlockItemText')->size(Modal::SIZE_XL),
+            Layout::modal('edit_block_item_slider', ConstructorBlockItemSliderEditLayout::class)->async('asyncGetBlockItemSlider')->size(Modal::SIZE_LG),
+            Layout::modal('add_block_item_video', ConstructorBlockItemVideoAddLayout::class)->size(Modal::SIZE_LG),
+            Layout::modal('edit_block_item_video', ConstructorBlockItemVideoEditLayout::class)->async('asyncGetBlockItemVideo')->size(Modal::SIZE_LG),
+            Layout::modal('edit_block_item_out_video', ConstructorBlockItemOutVideoEditLayout::class)->async('asyncGetBlockItemOutVideo')->size(Modal::SIZE_LG),
+            Layout::modal('edit_block_item_slide', ConstructorBlockItemSlideEditLayout::class)->async('asyncGetBlockItemSlide')->size(Modal::SIZE_LG),
+        ];
     }
 
     public function getConstructorLayout(object $object, ConstructorObjectTypeEnum $type, Language $language, bool $need_icon = true): array
@@ -56,37 +57,36 @@ trait ConstructorTrait
             ->modal('edit_block_block')
             ->class('mr-btn-primary')
             ->modalTitle('Добавить блок')
-            ->method('saveConstructorBlock', ['object_id' => $object->id(), 'type' => $type->value, 'block_id' => 0, 'language' => $language->value, 'need_icon' => (int)$need_icon]);
+            ->method('saveConstructorBlock', ['objectId' => $object->id(), 'objectType' => $type->value, 'constructorId' => 0]);
 
         count($list) && $actionBtn[] = Button::make('Удалить все')
             ->class('mr-btn-danger')
             ->method('deleteAllConstructorBlocks')->novalidate()
             ->confirm('Удалить все?')
-            ->parameters(['object_id' => $object->id(), 'type' => $type->value, 'language' => $language->value]);
+            ->parameters(['objectId' => $object->id(), 'type' => $type->value, 'language' => $language->value]);
 
         $out[] = Group::make($actionBtn)->autoWidth();
 
         foreach ($list as $block) {
-            $this->getBlockLayout($block, $type, $object, $language, $out, $need_icon);
+            $this->getBlockLayout($block, $type, $object, $out);
         }
 
         return $out;
     }
 
-    public function getBlockLayout(Constructor $block, ConstructorObjectTypeEnum $type, object $object, Language $language, array &$out, bool $need_icon = true): void
+    public function getBlockLayout(Constructor $constructor, ConstructorObjectTypeEnum $type, object $object, array &$out): void
     {
         $out[] = ViewField::make('')->view('hr');
         $out[] = Group::make([
-            ViewField::make('')->view('admin.h6')->value($block->getSort()),
-            ViewField::make('')->view('admin.constructor.bloc_icon')->value($block->getIcon()),
-            ViewField::make('')->view('admin.h6')->value($block->getTitle()),
+            ViewField::make('')->view('admin.h6')->value($constructor->getSort()),
+            ViewField::make('')->view('admin.h6')->value($constructor->getTitle()),
             ModalToggle::make('изменить')->class('btn btn-sm')->icon('pencil')
                 ->modal('edit_block_block')
                 ->modalTitle('Изменить блок')
-                ->method('saveConstructorBlock', ['object_id' => $object->id(), 'type' => $type->value, 'block_id' => $block->id(), 'language' => $language->value, 'need_icon' => (int)$need_icon]),
+                ->method('saveConstructorBlock', ['objectId' => $object->id(), 'objectType' => $type->value, 'constructorId' => $constructor->id()]),
             Button::make('удалить')->class('btn btn-sm')->icon('trash')->confirm('Удалить?')
                 ->method('deleteConstructorBlock')->novalidate()
-                ->parameters(['object_id' => $object->id(), 'block_id' => $block->id()]),
+                ->parameters(['objectId' => $object->id(), 'blockId' => $constructor->id()]),
         ])->autoWidth();
 
         $out[] = Group::make([
@@ -95,29 +95,29 @@ trait ConstructorTrait
             ModalToggle::make('текст')->class('btn btn-sm')->icon('plus')->class('btn btn-sm fa mx-2')->type(Color::LIGHT())
                 ->modal('edit_block_item_text')
                 ->modalTitle('Добавить текстовый элемент')
-                ->method('saveBlockItemText', ['item_id' => 0, 'object_id' => $object->id(), 'block_id' => $block->id()]),
+                ->method('saveBlockItemText', ['constructorId' => $constructor->id(), 'itemId' => 0]),
 
             ModalToggle::make('слайдер')->class('btn btn-sm')->icon('plus')->class('btn btn-sm fa mx-2')->type(Color::LIGHT())
                 ->modal('edit_block_item_slider')
                 ->modalTitle('Добавить слайдер')
-                ->method('saveBlockItemSlider', ['object_id' => $object->id(), 'block_id' => $block->id(), 'item_id' => 0]),
+                ->method('saveBlockItemSlider', ['constructorId' => $constructor->id(), 'itemId' => 0]),
 
             ModalToggle::make('видео файл')->class('btn btn-sm')->icon('plus')->class('btn btn-sm fa mx-2')->type(Color::LIGHT())
                 ->modal('add_block_item_video')
                 ->modalTitle('Добавить видео')
-                ->method('saveBlockItemVideo', ['object_id' => $object->id(), 'block_id' => $block->id(), 'item_id' => 0]),
+                ->method('saveBlockItemVideo', ['constructorId' => $constructor->id(), 'itemId' => 0]),
 
             ModalToggle::make('видео ссылка')->class('btn btn-sm')->icon('plus')->class('btn btn-sm fa mx-2')->type(Color::LIGHT())
                 ->modal('edit_block_item_out_video')
-                ->modalTitle('Добавить видео')
-                ->method('saveBlockItemOutVideo', ['object_id' => $object->id(), 'block_id' => $block->id(), 'item_id' => 0]),
+                ->modalTitle('Добавить видео ссылку')
+                ->method('saveBlockItemOutVideo', ['blockId' => $constructor->id(), 'itemId' => 0]),
 
             Button::make('удалить все элементы блока')->class('btn btn-sm')->icon('trash')->confirm('Удалить?')
                 ->method('deleteBlockAllItems')->novalidate()
-                ->parameters(['object_id' => $object->id(), 'block_id' => $block->id()]),
+                ->parameters(['objectId' => $object->id(), 'blockId' => $constructor->id()]),
         ])->autoWidth();
 
-        $list = $this->constructorService->getBlockItems($block->id());
+        $list = $this->constructorService->getBlockItems($constructor->id());
 
         $rows = [];
         foreach ($list as $item) {
@@ -146,22 +146,22 @@ trait ConstructorTrait
             ModalToggle::make('изменить')->class('btn btn-sm')->icon('pencil')
                 ->modal('edit_block_item_slider')
                 ->modalTitle('Изменить элемент')
-                ->method('saveBlockItemSlider', ['object_id' => $object->id(), 'block_id' => $itemSlider->constructor_id, 'item_id' => $itemSlider->id()]),
+                ->method('saveBlockItemSlider', ['constructorId' => $itemSlider->constructor_id, 'itemId' => $itemSlider->id()]),
             Button::make('удалить')->class('btn btn-sm')->icon('trash')->confirm('Удалить?')
-                ->method('deleteBlockItem', ['object_id' => $object->id(), 'item_id' => $itemSlider->id, 'type' => ConstructorTypeEnum::Slider->value]),
+                ->method('deleteBlockItem', ['objectId' => $object->id(), 'itemId' => $itemSlider->id, 'type' => ConstructorTypeEnum::Slider->value]),
         ])->autoWidth()->render();
 
-        foreach ($itemSlider->images as $image) {
-            $image->btn = Group::make([
-                ViewField::make('')->view('admin.raw')->value('Сорт. ' . $image->getSort())->render(),
+        foreach ($itemSlider->images as $slide) {
+            $slide->btn = Group::make([
+                ViewField::make('')->view('admin.raw')->value('Сорт. ' . $slide->getSort())->render(),
                 ModalToggle::make('изменить')->class('btn btn-sm')->icon('pencil')
                     ->modal('edit_block_item_slide')
                     ->modalTitle('Изменить элемент')
-                    ->method('saveBlockItemSlide', ['slide_id' => $image->id, 'object_id' => $object->id()]),
+                    ->method('saveBlockItemSlide', ['constructorId' => $itemSlider->constructor_id, 'sliderId' => $itemSlider->id(), 'itemId' => $slide->id]),
 
                 Button::make('удалить')->class('btn btn-sm')->icon('trash')->confirm('Удалить?')
                     ->method('deleteBlockItemSlide')->novalidate()
-                    ->parameters(['object_id' => $object->id(), 'slide_id' => $image->id]),
+                    ->parameters(['objectId' => $object->id(), 'slide_id' => $slide->id]),
             ])->autoWidth()->render();
         }
         return ViewField::make('')->view('admin.constructor.item_slider')->value($itemSlider)->render();
@@ -175,10 +175,10 @@ trait ConstructorTrait
             ModalToggle::make('изменить')->class('btn btn-sm')->icon('pencil')
                 ->modal('edit_block_item_text')
                 ->modalTitle('Изменить элемент')
-                ->method('saveBlockItemText', ['item_id' => $itemText->id(), 'object_id' => $object->id(), 'block_id' => $itemText->constructor_id]),
+                ->method('saveBlockItemText', ['constructorId' => $itemText->constructor_id, 'itemId' => $itemText->id()]),
             Button::make('удалить')->class('btn btn-sm')->icon('trash')->confirm('Удалить?')
                 ->method('deleteBlockItem')->novalidate()
-                ->parameters(['object_id' => $object->id(), 'item_id' => $itemText->id(), 'type' => ConstructorTypeEnum::Text->value]),
+                ->parameters(['objectId' => $object->id(), 'itemId' => $itemText->id(), 'type' => ConstructorTypeEnum::Text->value]),
         ])->autoWidth()->render();
 
         return ViewField::make('')->view('admin.constructor.item_text')->value($itemText)->render();
@@ -192,10 +192,10 @@ trait ConstructorTrait
             ModalToggle::make('изменить')->class('btn btn-sm')->icon('pencil')
                 ->modal('edit_block_item_video')
                 ->modalTitle('Изменить элемент')
-                ->method('saveBlockItemVideo', ['item_id' => $itemText->id(), 'object_id' => $object->id(), 'block_id' => $itemText->constructor_id]),
+                ->method('saveBlockItemVideo', ['constructorId' => $itemText->constructor_id, 'itemId' => $itemText->id()]),
             Button::make('удалить')->class('btn btn-sm')->icon('trash')->confirm('Удалить?')
                 ->method('deleteBlockItem')->novalidate()
-                ->parameters(['object_id' => $object->id(), 'item_id' => $itemText->id(), 'type' => ConstructorTypeEnum::Video->value]),
+                ->parameters(['objectId' => $object->id(), 'itemId' => $itemText->id(), 'type' => ConstructorTypeEnum::Video->value]),
         ])->autoWidth()->render();
 
         return ViewField::make('')->view('admin.constructor.item_video')->value($itemText)->render();
@@ -211,58 +211,58 @@ trait ConstructorTrait
             ModalToggle::make('изменить')->class('btn btn-sm')->icon('pencil')
                 ->modal('edit_block_item_out_video')
                 ->modalTitle('Изменить элемент')
-                ->method('saveBlockItemOutVideo', ['item_id' => $itemOutVideo->id(), 'object_id' => $object->id(), 'block_id' => $itemOutVideo->constructor_id]),
+                ->method('saveBlockItemOutVideo', ['constructorId' => $itemOutVideo->constructor_id, 'itemId' => $itemOutVideo->id()]),
             Button::make('удалить')->class('btn btn-sm')->icon('trash')->confirm('Удалить?')
                 ->method('deleteBlockItem')->novalidate()
-                ->parameters(['object_id' => $object->id(), 'item_id' => $itemOutVideo->id(), 'type' => ConstructorTypeEnum::OutVideo->value]),
+                ->parameters(['objectId' => $object->id(), 'itemId' => $itemOutVideo->id(), 'type' => ConstructorTypeEnum::OutVideo->value]),
         ])->autoWidth()->render();
 
         return ViewField::make('')->view('admin.constructor.item_out_video')->value($itemOutVideo)->render();
     }
 
-    public function deleteBlockAllItems(int $object_id, int $block_id): void
+    public function deleteBlockAllItems(int $objectId, int $blockId): void
     {
-        $this->constructorService->deleteBlockAllItem($object_id, $block_id);
+        $this->constructorService->deleteBlockAllItem($objectId, $blockId);
     }
 
-    public function deleteBlockItemSlide(int $object_id, int $slide_id): void
+    public function deleteBlockItemSlide(int $objectId, int $slide_id): void
     {
-        $this->constructorService->deleteBlockItemSlide($slide_id, $object_id);
+        $this->constructorService->deleteBlockItemSlide($slide_id, $objectId);
     }
 
-    public function deleteBlockItem(int $object_id, int $item_id, string $type): void
+    public function deleteBlockItem(int $objectId, int $itemId, string $type): void
     {
-        $this->constructorService->deleteBlockItem($item_id, ConstructorTypeEnum::from($type), $object_id);
+        $this->constructorService->deleteBlockItem($itemId, ConstructorTypeEnum::from($type), $objectId);
     }
 
-    public function asyncGetBlockItemText(int $item_id = 0): array
+    public function asyncGetBlockItemText(int $itemId = 0): array
     {
-        return ['item' => $this->constructorService->getBlockItemById($item_id, ConstructorTypeEnum::Text)];
+        return ['item' => $this->constructorService->getBlockItemById($itemId, ConstructorTypeEnum::Text)];
     }
 
-    public function asyncGetBlockItemVideo(int $item_id = 0): array
+    public function asyncGetBlockItemVideo(int $itemId = 0): array
     {
-        return ['item' => $this->constructorService->getBlockItemById($item_id, ConstructorTypeEnum::Video)];
+        return ['item' => $this->constructorService->getBlockItemById($itemId, ConstructorTypeEnum::Video)];
     }
 
-    public function asyncGetBlockItemSlide(int $slide_id): array
+    public function asyncGetBlockItemSlide(int $itemId): array
     {
-        return ['item' => $this->constructorService->getBlockItemSlideById($slide_id)];
+        return ['item' => $this->constructorService->getBlockItemSlideById($itemId)];
     }
 
-    public function asyncGetBlockItemSlider(int $item_id = 0): array
+    public function asyncGetBlockItemSlider(int $itemId = 0): array
     {
         return [
-            'item' => $this->constructorService->getBlockItemById($item_id, ConstructorTypeEnum::Slider)
+            'item' => $this->constructorService->getBlockItemById($itemId, ConstructorTypeEnum::Slider)
         ];
     }
 
-    public function asyncGetBlockItemOutVideo(int $item_id = 0): array
+    public function asyncGetBlockItemOutVideo(int $itemId = 0): array
     {
-        return ['item' => $this->constructorService->getBlockItemById($item_id, ConstructorTypeEnum::OutVideo)];
+        return ['item' => $this->constructorService->getBlockItemById($itemId, ConstructorTypeEnum::OutVideo)];
     }
 
-    public function saveBlockItemSlide(Request $request, int $object_id, int $slide_id): void
+    public function saveBlockItemSlide(Request $request, int $constructorId, int $sliderId, int $itemId): void
     {
         $input = Validator::make($request->all(), [
             'item.display_name' => 'nullable|string|max:255',
@@ -270,11 +270,20 @@ trait ConstructorTrait
             'item.sort'         => 'nullable|integer|min:0|max:999',
         ])->validate()['item'];
 
-        $input['sort'] = (int)$input['sort'];
-        $this->constructorService->saveBlockItemSlide($slide_id, $input);
+        $dto = new SlideDTO(
+            constructorId: $constructorId,
+            sliderId: $sliderId,
+            slideId: $itemId,
+            image: null,
+            displayName: $input['display_name'],
+            sort: (int)$input['sort'],
+            alt: $input['alt'],
+        );
+
+        $this->constructorService->saveBlockItemSlide($dto);
     }
 
-    public function saveBlockItemSlider(Request $request, int $object_id, int $block_id, int $item_id): void
+    public function saveBlockItemSlider(Request $request, int $constructorId, int $itemId): void
     {
         $input = Validator::make($request->all(), [
             'item.title'       => 'nullable|string|max:255',
@@ -282,15 +291,14 @@ trait ConstructorTrait
             'item.sort'        => 'nullable|integer|min:0|max:999',
         ])->validate()['item'];
 
-        $sliderId = $this->constructorService->saveSlider($item_id, [
-            'constructor_id' => $block_id,
+        $sliderId = $this->constructorService->saveSlider($itemId, [
+            'constructor_id' => $constructorId,
             'title'          => $input['title'],
             'description'    => $input['description'],
             'sort'           => (int)$input['sort'],
         ]);
 
         // Add slides
-        $dtos = [];
         foreach ($request->get('item')['images'] ?? [] as $idAtt) {
             $attachment = Attachment::loadByOrDie((int)$idAtt);
             $path = Storage::path($attachment->getFullPath());
@@ -300,23 +308,23 @@ trait ConstructorTrait
                 throw new Exception('Ошибка при загрузке файла. Попробуйте ещё раз.');
             }
 
-            $dtos[] = new SlideDTO(
-                type: StorageFileTypeEnum::SlideImage,
+            $dto = new SlideDTO(
+                constructorId: $constructorId,
+                sliderId: $sliderId,
+                slideId: $itemId,
                 image: new UploadedFile($path, $attachment->getOriginalName(), $attachment->getMime(), null, true),
-                slider_id: $sliderId,
-                display_name: $attachment->getDescription(),
+                displayName: $attachment->getDescription(),
                 sort: $attachment->getSort(),
                 alt: $attachment->getAlt(),
-                user: $request->user()
             );
-        }
 
-        $this->constructorService->saveFiles($sliderId, StorageFileTypeEnum::SlideImage, $dtos);
+            $this->constructorService->saveBlockItemSlide($dto);
+        }
 
         Attachment::whereIn('id', $request->get('item')['images'] ?? [])->delete();
     }
 
-    public function saveBlockItemText(Request $request, int $item_id, int $object_id, int $block_id): void
+    public function saveBlockItemText(Request $request, int $itemId, int $constructorId): void
     {
         $input = $request->validate([
             'item.title' => 'nullable|string|max:255',
@@ -324,14 +332,14 @@ trait ConstructorTrait
             'item.sort'  => 'nullable|integer|min:0|max:999',
         ])['item'];
 
-        $input['constructor_id'] = $block_id;
+        $input['constructor_id'] = $constructorId;
         $input['sort'] = (int)$input['sort'];
 
-        $this->constructorService->saveBlockItemText($item_id, $input);
+        $this->constructorService->saveBlockItemText($itemId, $input);
         Toast::info('Элемент сохранён');
     }
 
-    public function saveBlockItemVideo(Request $request, int $block_id, int $object_id, int $item_id): void
+    public function saveBlockItemVideo(Request $request, int $constructorId, int $itemId): void
     {
         $rules = [
             'item.title'       => 'nullable|string|max:255',
@@ -339,24 +347,21 @@ trait ConstructorTrait
             'item.sort'        => 'nullable|integer|min:0|max:999',
         ];
 
-        if (!$item_id) {
+        if (!$itemId) { // For edit only
             $rules['item.file'] = 'required|file';
         }
 
         $input = $request->validate($rules)['item'];
 
-        $input['constructor_id'] = $block_id;
+        $input['constructor_id'] = $constructorId;
         $input['sort'] = (int)$input['sort'];
 
-        if (!$item_id) { // new
-            $input['file_id'] = $this->constructorService->saveFile($input['file'], StorageFileTypeEnum::Video, $request->user());
-            unset($input['file']);
-        }
-        $this->constructorService->saveBlockItemVideo($item_id, $input);
-        Toast::info('Элемент сохранен');
+        $this->constructorService->saveBlockItemVideo($itemId, $input);
+
+        Toast::info('Элемент сохранён');
     }
 
-    public function saveBlockItemOutVideo(Request $request, int $block_id, int $object_id, int $item_id): void
+    public function saveBlockItemOutVideo(Request $request, int $blockId, int $itemId): void
     {
         $rules = [
             'item.title'       => 'nullable|string|max:255',
@@ -367,54 +372,45 @@ trait ConstructorTrait
 
         $input = $request->validate($rules)['item'];
 
-        $input['constructor_id'] = $block_id;
+        $input['constructor_id'] = $blockId;
         $input['sort'] = (int)$input['sort'];
 
-        $this->constructorService->saveBlockItemOutVideo($item_id, $input);
+        $this->constructorService->saveBlockItemOutVideo($itemId, $input);
         Toast::info('Элемент сохранен');
     }
 
-    public function asyncGetBlockBlock(int $block_id = 0, int $need_icon = 0): array
+    public function asyncGetBlockBlock(int $constructorId = 0): array
     {
         return [
-            'block'     => $this->constructorService->getBlockById($block_id),
-            'need_icon' => (bool)$need_icon,
+            'block' => $this->constructorService->getBlockById($constructorId),
         ];
     }
 
-    public function saveConstructorBlock(Request $request, int $type, int $object_id, int $block_id, int $language): void
+    public function saveConstructorBlock(Request $request, int $objectId, int $objectType, int $constructorId): void
     {
-        $language = Language::from($language);
         $input = $request->validate([
             'block.title' => 'required|string|max:255',
             'block.sort'  => 'nullable|integer|min:0|max:999',
         ])['block'];
 
-        $input['object_id'] = $object_id;
-        $input['language'] = $language->value;
+        $input['object_id'] = $objectId;
         $input['sort'] = (int)$input['sort'];
-        $input['type'] = ConstructorObjectTypeEnum::from($type)->value;
-        $input['icon'] = $request->get('block')['icon'][0] ?? null;
+        $input['object_type'] = ConstructorObjectTypeEnum::from($objectType)->value;
 
-        $this->constructorService->saveConstructorBlock($block_id, $input);
-        Toast::info('Функция сохранена');
+        $this->constructorService->saveConstructorBlock($constructorId, $input);
+        Toast::info('Конструктор сохранён');
     }
 
-    public function deleteConstructorBlock(int $object_id, int $block_id): void
+    public function deleteConstructorBlock(int $objectId, int $blockId): void
     {
-        $this->constructorService->deleteConstructorBlock($object_id, $block_id);
+        $this->constructorService->deleteConstructorBlock($objectId, $blockId);
     }
 
-    public function deleteAllConstructorBlocks(int $object_id, int $type, int $language): void
+    public function deleteAllConstructorBlocks(int $objectId, int $type, int $language): void
     {
         $type = ConstructorObjectTypeEnum::from($type);
         $language = Language::from($language);
-        $this->constructorService->deleteAllConstructorBlocks($object_id, $type, $language);
+        $this->constructorService->deleteAllConstructorBlocks($objectId, $type, $language);
         Toast::info('Все функции удалены');
-    }
-
-    public function deleteBlockIcon(int $block_id): void
-    {
-        $this->constructorService->deleteBlockIcon($block_id);
     }
 }

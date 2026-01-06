@@ -7,37 +7,23 @@ namespace App\Services\Newsletter;
 use App\Models\News\News;
 use App\Models\News\NewsGroup;
 use App\Models\News\NewsMedia;
-use App\Models\User;
-use App\Services\Constructor\ConstructorService;
-use App\Services\Newsletter\Enum\MediaType;
 use App\Services\Newsletter\Enum\NewsAdditionalTypeEnum;
-use App\Services\Newsletter\Enum\RelationMediaType;
+use App\Services\Newsletter\ImageUploader\Enum\NewsFileType;
+use App\Services\Newsletter\ImageUploader\Enum\NewsMediaType;
 use App\Services\Newsletter\ImageUploader\NewsMediaUploader;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Auth;
 
 final readonly class NewsService
 {
     public function __construct(
         private NewsRepositoryInterface $repository,
-        private NewsMediaUploader       $imageUploader,
-        private ConstructorService      $constructorService,
+        private NewsMediaUploader       $mediaUploader,
     ) {}
 
     #region Groups
     public function getGroupList(): array
     {
         return $this->repository->getGroupList();
-    }
-
-    public function getGroupSelectList(): array
-    {
-        $list = [];
-        foreach ($this->repository->getGroupList() as $group) {
-            $list[$group->id] = $group->title;
-        }
-
-        return $list;
     }
 
     public function getGroupById(int $groupId): ?NewsGroup
@@ -59,7 +45,7 @@ final readonly class NewsService
     #region Logo
     public function removeLogo(int $newsId): void
     {
-        $this->imageUploader->deleteMedia(RelationMediaType::NewsLogo, $newsId);
+        $this->mediaUploader->deleteMedia(NewsMediaType::Logo, $newsId);
     }
     #endregion
 
@@ -81,8 +67,8 @@ final readonly class NewsService
 
     private function saveLogo(int $newsId, UploadedFile $image): void
     {
-        $this->imageUploader->deleteMedia(RelationMediaType::NewsLogo, $newsId);
-        $this->imageUploader->uploadMedia($image, $newsId, RelationMediaType::NewsLogo);
+        $this->mediaUploader->deleteMedia(NewsMediaType::Logo, $newsId);
+        $this->mediaUploader->uploadMedia($image, $newsId, NewsMediaType::Logo, NewsFileType::Image);
     }
 
     public function deleteNews(int $newsId): void
@@ -92,7 +78,7 @@ final readonly class NewsService
 
     public function getLogo(int $newsId): ?NewsMedia
     {
-        return $this->imageUploader->get(Type::News, $newsId);
+        return $this->repository->getNewsMedia(NewsMediaType::Logo, $newsId);
     }
     #endregion
 
@@ -132,23 +118,5 @@ final readonly class NewsService
     public function updateNewsAdditionalSort(int $id, int $newsId, int $sort): void
     {
         $this->repository->updateNewsAdditionalSort($id, $newsId, $sort);
-    }
-
-    public function cloneNews(int $newsId): int
-    {
-        $news = $this->getNewsById($newsId);
-        $newNewsId = $this->repository->cloneNews($newsId);
-        $logo = $this->getLogo($newsId);
-        $logo && $this->saveLogo($newNewsId, new UploadedFile($logo->getFullPath(), $logo->getName(), $logo->getMime(), null, true));
-
-        $this->constructorService->cloneConstructorBlocks(
-            ConstructorObjectTypeEnum::NEWS,
-            $newsId,
-            $newNewsId,
-            $news->getLanguage(),
-            User::find(Auth::id())
-        );
-
-        return $newNewsId;
     }
 }

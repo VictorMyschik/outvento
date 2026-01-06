@@ -5,24 +5,23 @@ declare(strict_types=1);
 namespace App\Repositories\Constructor;
 
 use App\Models\Constructor\Constructor;
+use App\Models\Constructor\ConstructorFile;
 use App\Models\Constructor\ConstructorItemOutVideo;
 use App\Models\Constructor\ConstructorItemSlide;
 use App\Models\Constructor\ConstructorItemSlider;
 use App\Models\Constructor\ConstructorItemText;
 use App\Models\Constructor\ConstructorItemVideo;
-use App\Models\Constructor\Video;
 use App\Models\News\NewsMedia;
 use App\Orchid\Enums\ConstructorObjectTypeEnum;
 use App\Repositories\DatabaseRepository;
 use App\Services\Constructor\ConstructorRepositoryInterface;
-use App\Services\Newsletter\Enum\RelationMediaType;
-use App\Services\System\Enum\Language;
+use App\Services\Constructor\Enum\ConstructorItemType;
 
 final readonly class ConstructorRepository extends DatabaseRepository implements ConstructorRepositoryInterface
 {
-    public function getBlockById(int $blockId): ?Constructor
+    public function getConstructorById(int $constructorId): ?Constructor
     {
-        return Constructor::where('id', $blockId)->first();
+        return Constructor::loadBy($constructorId);
     }
 
     public function saveConstructorBlock(int $blockId, array $data): int
@@ -35,9 +34,9 @@ final readonly class ConstructorRepository extends DatabaseRepository implements
         return $this->db->table(Constructor::getTableName())->insertGetId($data);
     }
 
-    public function deleteAllConstructorBlocks(int $objectId, ConstructorObjectTypeEnum $type, Language $language): void
+    public function deleteAllConstructorBlocks(int $objectId, ConstructorObjectTypeEnum $type): void
     {
-        $this->db->table(Constructor::getTableName())->where('object_id', $objectId)->where('type', $type->value)->where('language', $language->value)->delete();
+        $this->db->table(Constructor::getTableName())->where('object_id', $objectId)->where('object_type', $type->value)->delete();
     }
 
     public function deleteConstructorBlocks(int $objectId, int $functionId): void
@@ -45,9 +44,9 @@ final readonly class ConstructorRepository extends DatabaseRepository implements
         $this->db->table(Constructor::getTableName())->where('id', $functionId)->delete();
     }
 
-    public function getConstructorBlocks(int $objectId, ConstructorObjectTypeEnum $type, Language $language): array
+    public function getConstructorBlocks(int $objectId, ConstructorObjectTypeEnum $type): array
     {
-        return Constructor::where('object_id', $objectId)->where('type', $type->value)->where('language', $language->value)->orderBy('sort')->get()->all();
+        return Constructor::where('object_id', $objectId)->where('object_type', $type->value)->orderBy('sort')->get()->all();
     }
 
     public function getBlockItemText(int $itemId): ?ConstructorItemText
@@ -58,19 +57,18 @@ final readonly class ConstructorRepository extends DatabaseRepository implements
     public function getBlockItemVideo(int $itemId): ?ConstructorItemVideo
     {
         return ConstructorItemVideo::join(
-            Video::getTableName(),
+            ConstructorFile::getTableName(),
             ConstructorItemVideo::getTableName() . '.file_id',
             '=',
-            Video::getTableName() . '.id'
+            ConstructorFile::getTableName() . '.id'
         )
             ->where(ConstructorItemVideo::getTableName() . '.id', $itemId)->get([
                 ConstructorItemVideo::getTableName() . '.*',
-                Video::getTableName() . '.path',
-                Video::getTableName() . '.file_name',
-                Video::getTableName() . '.path',
-                Video::getTableName() . '.size',
-                Video::getTableName() . '.extension',
-                Video::getTableName() . '.user_id',
+                ConstructorFile::getTableName() . '.path',
+                ConstructorFile::getTableName() . '.file_name',
+                ConstructorFile::getTableName() . '.path',
+                ConstructorFile::getTableName() . '.size',
+                ConstructorFile::getTableName() . '.extension',
             ])->first();
     }
 
@@ -141,22 +139,22 @@ final readonly class ConstructorRepository extends DatabaseRepository implements
         return $union->all();
     }
 
-    public function deleteBlockItemText(int $itemId, int $objectId): void
+    public function deleteBlockItemText(int $itemId): void
     {
         $this->db->table(ConstructorItemText::getTableName())->where('id', $itemId)->delete();
     }
 
-    public function deleteBlockItemOutVideo(int $itemId, int $objectId): void
+    public function deleteBlockItemOutVideo(int $itemId): void
     {
         $this->db->table(ConstructorItemOutVideo::getTableName())->where('id', $itemId)->delete();
     }
 
-    public function deleteBlockItemSlider(int $itemId, int $objectId): void
+    public function deleteBlockItemSlider(int $itemId): void
     {
         $this->db->table(ConstructorItemSlider::getTableName())->where('id', $itemId)->delete();
     }
 
-    public function deleteBlockItemVideo(int $itemId, int $objectId): void
+    public function deleteBlockItemVideo(int $itemId): void
     {
         $this->db->table(ConstructorItemVideo::getTableName())->where('id', $itemId)->delete();
     }
@@ -193,6 +191,11 @@ final readonly class ConstructorRepository extends DatabaseRepository implements
 
     public function getBlockIcon(int $id): ?NewsMedia
     {
-        return NewsMedia::where('type', RelationMediaType::ConstructorBlockIcon->value)->where('id', $id)->first();
+        return NewsMedia::where('type', ConstructorItemType::ConstructorBlockIcon->value)->where('id', $id)->first();
+    }
+
+    public function createConstructorFileModel(array $data): int
+    {
+        return $this->db->table(ConstructorFile::getTableName())->insertGetId($data);
     }
 }

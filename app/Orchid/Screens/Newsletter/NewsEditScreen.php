@@ -107,12 +107,6 @@ class NewsEditScreen extends Screen
                     ->method('remove')
                     ->class('mr-btn-danger')
                     ->novalidate(),
-
-                Button::make('Клонировать новость')->confirm('Клонировать?')->class('btn btn-sm')
-                    ->name('Клонировать новость')
-                    ->class('mr-btn-success')
-                    ->method('cloneNews')
-                    ->novalidate(),
             ])->autoWidth()
         ]);
 
@@ -121,9 +115,7 @@ class NewsEditScreen extends Screen
         $out[] = Layout::modal('upload_good_photo', NewsUploadEditLayout::class)->async('asyncGetNewsPhoto');
         $out[] = Layout::modal('sort_object', CatalogGoodSortEditLayout::class)->async('asyncGetGoodSort');
 
-        $this->getPopupLayout($out);
-
-        return $out;
+        return array_merge($this->getConstructorPopupLayout(), $out);
     }
 
     public function asyncGetGoodSort(int $news_id = 0, int $id = 0, int $type = 0): array
@@ -141,10 +133,7 @@ class NewsEditScreen extends Screen
 
     private function photoTab(): Rows
     {
-        $hasLogo = false;
-        if ($this->news) {
-            $hasLogo = (bool)$this->news->getLogo();
-        }
+        $hasLogo = (bool)$this->service->getLogo($this->news->id());
 
         return Layout::rows([
             Upload::make('news.logo')->groups('photo')->maxFiles(1)
@@ -272,14 +261,5 @@ class NewsEditScreen extends Screen
         Toast::info('Новость удалена')->delay(1000);
 
         return redirect()->route('newsletter.news.list');
-    }
-
-    public function cloneNews(int $news_id): RedirectResponse
-    {
-        $news_id = $this->service->cloneNews($news_id);
-
-        Toast::info('Новость клонирована')->delay(1000);
-
-        return redirect()->route('newsletter.news.edit', ['news_id' => $news_id]);
     }
 }

@@ -2,18 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Services\Newsletter\Enum;
+namespace App\Services\Newsletter\ImageUploader\Enum;
 
-enum MediaType: int
+enum NewsFileType: int
 {
     case Image = 1;
     case Video = 2;
+    case File = 3;
+    case Archive = 4;
 
     public function getLabel(): string
     {
         return match ($this) {
             self::Image => 'Image',
             self::Video => 'Video',
+            self::File => 'File',
+            self::Archive => 'Archive',
         };
     }
 

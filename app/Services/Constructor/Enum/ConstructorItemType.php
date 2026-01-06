@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Services\Newsletter\Enum;
+namespace App\Services\Constructor\Enum;
 
-enum RelationMediaType: string
+enum ConstructorItemType: string
 {
     case NewsLogo = 'news_logo';
     case ConstructorBlockIcon = 'constructor_block_icon';

@@ -14,7 +14,7 @@ class ConstructorBlockItemTextEditLayout extends Rows
     public function fields(): array
     {
         return [
-           // Input::make('item.title')->type('text')->max(255)->title('Заголовок'),
+            Input::make('item.title')->type('text')->max(255)->title('Заголовок'),
             ViewField::make('')->view('space'),
             ViewField::make('')->view('admin.h6')->value('Текст'),
             CKEditor::make('item.text'),

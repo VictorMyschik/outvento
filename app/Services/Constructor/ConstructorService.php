@@ -7,73 +7,40 @@ namespace App\Services\Constructor;
 use App\Models\Constructor\Constructor;
 use App\Models\Constructor\ConstructorItemOutVideo;
 use App\Models\Constructor\ConstructorItemSlide;
-use App\Models\Constructor\ConstructorItemSlider;
 use App\Models\Constructor\ConstructorItemText;
-use App\Models\Constructor\ConstructorItemVideo;
 use App\Models\News\NewsMedia;
-use App\Models\Orchid\Attachment;
-use App\Models\User;
 use App\Orchid\Enums\ConstructorObjectTypeEnum;
-use App\Repositories\Constructor\Storage\Enum\StorageFileTypeEnum;
-use App\Repositories\Constructor\Storage\FileStorage;
+use App\Repositories\Constructor\ConstructorFileStorage;
+use App\Services\Constructor\DTO\SlideDTO;
+use App\Services\Constructor\Enum\ConstructorFileType;
 use App\Services\Constructor\Enum\ConstructorTypeEnum;
-use App\Services\Newsletter\Enum\RelationMediaType;
-use App\Services\Newsletter\ImageUploader\NewsMediaUploader;
-use App\Services\System\Enum\Language;
 use Exception;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 
 final readonly class ConstructorService
 {
     public function __construct(
         private ConstructorRepositoryInterface $repository,
-        private FileStorage                    $storage,
-        private NewsMediaUploader              $imageUploader
+        private ConstructorFileStorage         $storage,
     ) {}
 
     public function getBlockById(int $id): ?Constructor
     {
-        return $this->repository->getBlockById($id);
+        return $this->repository->getConstructorById($id);
     }
 
     public function saveConstructorBlock(int $id, array $input): int
     {
-        $icon = $input['icon'] ?? null;
-        unset($input['icon']);
-
-        $id = $this->repository->saveConstructorBlock($id, $input);
-
-        if ($icon && $id) {
-            $attachment = Attachment::loadByOrDie((int)$icon);
-            $path = Storage::path($attachment->getFullPath());
-            if (!file_exists($path) || !is_file($path)) {
-                Attachment::where('hash', $attachment->getHash())->delete();
-                throw new Exception('Ошибка при загрузке файла. Попробуйте ещё раз.');
-            }
-
-            $this->imageUploader->deleteMedia(RelationMediaType::ConstructorBlockIcon, $id);
-            $this->imageUploader->uploadMedia(
-                image: new UploadedFile($path, $attachment->getOriginalName(), $attachment->getMime(), null, true),
-                newsId: $id,
-                type: RelationMediaType::ConstructorBlockIcon,
-            );
-        }
-
-        if ($attachment ?? null) {
-            $attachment->deleteMr();
-        }
-
-        return $id;
+        return $this->repository->saveConstructorBlock($id, $input);
     }
 
-    public function deleteAllConstructorBlocks(int $objectId, ConstructorObjectTypeEnum $type, Language $language): void
+    public function deleteAllConstructorBlocks(int $objectId, ConstructorObjectTypeEnum $type): void
     {
-        foreach ($this->getConstructorBlocks($objectId, $type, $language) as $item) {
+        foreach ($this->getConstructorBlocks($objectId, $type) as $item) {
             $this->deleteBlockAllItem($objectId, $item->id);
         }
 
-        $this->repository->deleteAllConstructorBlocks($objectId, $type, $language);
+        $this->repository->deleteAllConstructorBlocks($objectId, $type);
     }
 
     public function deleteConstructorBlock(int $objectId, int $blockId): void
@@ -82,9 +49,9 @@ final readonly class ConstructorService
         $this->repository->deleteConstructorBlocks($objectId, $blockId);
     }
 
-    public function getConstructorBlocks(int $objectId, ConstructorObjectTypeEnum $type, Language $language): array
+    public function getConstructorBlocks(int $objectId, ConstructorObjectTypeEnum $type): array
     {
-        return $this->repository->getConstructorBlocks($objectId, $type, $language);
+        return $this->repository->getConstructorBlocks($objectId, $type);
     }
 
     public function getBlockItemById(int $itemId, ConstructorTypeEnum $type): mixed
@@ -104,6 +71,17 @@ final readonly class ConstructorService
 
     public function saveBlockItemVideo(int $itemId, array $input): int
     {
+        if (!empty($input['file'])) {
+            $input['file_id'] = $this->saveFile(
+                constructorId: $input['constructor_id'],
+                itemId: $itemId,
+                file: $input['file'],
+                type: ConstructorFileType::Video
+            );
+
+            unset($input['file']);
+        }
+
         return $this->repository->saveBlockItemVideo($itemId, $input);
     }
 
@@ -130,28 +108,28 @@ final readonly class ConstructorService
         match ($type) {
             ConstructorTypeEnum::Text => $this->repository->deleteBlockItemText($itemId, $objectId),
             ConstructorTypeEnum::Slider => $this->deleteSlider($itemId, $objectId),
-            ConstructorTypeEnum::Video => $this->deleteBlockItemVideo($itemId, $objectId),
+            ConstructorTypeEnum::Video => $this->deleteBlockItemVideo($itemId),
             ConstructorTypeEnum::OutVideo => $this->repository->deleteBlockItemOutVideo($itemId, $objectId),
         };
     }
 
-    private function deleteSlider(int $itemId, int $objectId): void
+    private function deleteSlider(int $itemId): void
     {
         $slider = $this->getBlockItemById($itemId, ConstructorTypeEnum::Slider);
 
         foreach ($slider->images as $slide) {
-            $this->storage->deleteFileById((int)$slide->id(), StorageFileTypeEnum::SlideImage);
+            $this->storage->deleteFile($slide->path);
         }
 
-        $this->repository->deleteBlockItemSlider($itemId, $objectId);
+        $this->repository->deleteBlockItemSlider($itemId);
     }
 
-    private function deleteBlockItemVideo(int $itemId, int $objectId): void
+    private function deleteBlockItemVideo(int $itemId): void
     {
         try {
             $item = $this->repository->getBlockItemVideo($itemId);
-            $this->storage->deleteFileById((int)$item->file_id, StorageFileTypeEnum::Video);
-            $this->repository->deleteBlockItemVideo($itemId, $objectId);
+            $this->storage->deleteFileById($item->getFile());
+            $this->repository->deleteBlockItemVideo($itemId);
         } catch (Exception $exception) {
             // do nothing
         }
@@ -167,34 +145,41 @@ final readonly class ConstructorService
         return $this->repository->getBlockItemSlideById($slideId);
     }
 
-    public function saveBlockItemSlide(int $slide_id, array $data): int
+    public function saveBlockItemSlide(SlideDTO $dto): int
     {
-        return $this->repository->saveBlockItemSlide($slide_id, $data);
+        $data = [
+            'slider_id'    => $dto->sliderId,
+            'display_name' => $dto->displayName,
+            'alt'          => $dto->alt,
+            'sort'         => $dto->sort,
+        ];
+
+        if ($dto->image) {
+            $data['path'] = $this->storage->saveFile(constructorId: $dto->constructorId, itemId: $dto->slideId, file: $dto->image);
+        }
+
+        return $this->repository->saveBlockItemSlide($dto->slideId, $data);
     }
 
     public function deleteBlockItemSlide(int $slide_id, int $objectId): void
     {
+        $slide = $this->getBlockItemSlideById($slide_id);
+        $this->storage->deleteFile($slide->path);
         $this->repository->deleteBlockItemSlide($slide_id, $objectId);
     }
 
-    public function saveFiles(int $sliderId, int $objectId, StorageFileTypeEnum $type, array $dtos): void
+    public function saveFile(int $constructorId, int $itemId, UploadedFile $file, ConstructorFileType $type): int
     {
-        //TODO: Разобраться с конструктором
-        $baseDir = config('storage.images');
+        $path = $this->storage->saveFile(constructorId: $constructorId, itemId: $itemId, file: $file);
 
-        foreach ($dtos as $dto) {
-            $this->storage->saveFile($dto->image, $type, $baseDir, [
-                'slider_id'    => $sliderId,
-                'display_name' => $dto->display_name,
-                'sort'         => $dto->sort,
-                'alt'          => $dto->alt,
-            ]);
-        }
-    }
-
-    public function saveFile(UploadedFile $file, StorageFileTypeEnum $type): int
-    {
-        return $this->storage->saveFile($file, $type);
+        return $this->repository->createConstructorFileModel([
+            'constructor_id' => $constructorId,
+            'type'           => $type->value,
+            'path'           => $path,
+            'file_name'      => $file->getClientOriginalName(),
+            'size'           => $file->getSize(),
+            'extension'      => $file->extension(),
+        ]);
     }
 
     public function getBlockIcon(int $id): ?NewsMedia
@@ -202,14 +187,9 @@ final readonly class ConstructorService
         return $this->repository->getBlockIcon($id);
     }
 
-    public function deleteBlockIcon(int $blockId): void
+    public function cloneConstructorBlocks(ConstructorObjectTypeEnum $type, int $oldId, int $newId): void
     {
-        $this->imageUploader->deleteMedia(RelationMediaType::ConstructorBlockIcon, $blockId);
-    }
-
-    public function cloneConstructorBlocks(ConstructorObjectTypeEnum $type, int $oldId, int $newId, Language $language): void
-    {
-        foreach ($this->getConstructorBlocks($oldId, $type, $language) as $constructorBlock) {
+        foreach ($this->getConstructorBlocks($oldId, $type) as $constructorBlock) {
             $input = $constructorBlock->toArray();
             $input['object_id'] = $newId;
             unset($input['id']);
@@ -218,9 +198,8 @@ final readonly class ConstructorService
             foreach ($this->getBlockItems($constructorBlock->id()) as $blockItem) {
                 match ($blockItem->type) {
                     ConstructorTypeEnum::Text->value => $this->cloneBlockItemText($blockItem, $newConstructorBlockId),
-                    ConstructorTypeEnum::Video->value => $this->cloneBlockItemVideo($blockItem, $newConstructorBlockId),
                     ConstructorTypeEnum::OutVideo->value => $this->cloneBlockItemOutVideo($blockItem, $newConstructorBlockId),
-                    ConstructorTypeEnum::Slider->value => $this->cloneSlider($blockItem, $newConstructorBlockId),
+                    default => throw new Exception('Unknown block item type for cloning: ' . $blockItem->type),
                 };
             }
         }
@@ -237,33 +216,6 @@ final readonly class ConstructorService
         $this->saveBlockItemText(0, $data);
     }
 
-    private function cloneBlockItemVideo(object $block, int $constrictorBlockId): void
-    {
-        /** @var ConstructorItemVideo $video */
-        $video = $this->getBlockItemById($block->id, ConstructorTypeEnum::Video);
-        $file = $this->storage->getFileByID($video->getFileId(), StorageFileTypeEnum::Video);
-
-        $fileId = $this->saveFile(
-            new UploadedFile(
-                Storage::path($file->getFilePathWithName()),
-                $file->getFileName(),
-                $file->getExtension(),
-                null,
-                true
-            ),
-            StorageFileTypeEnum::Video,
-        );
-
-        $data = $video->toArray();
-        $newItemVideo['constructor_id'] = $constrictorBlockId;
-        $newItemVideo['file_id'] = $fileId;
-        $newItemVideo['title'] = $data['title'];
-        $newItemVideo['description'] = $data['description'];
-        $newItemVideo['sort'] = $data['sort'];
-
-        $this->saveBlockItemVideo(0, $newItemVideo);
-    }
-
     private function cloneBlockItemOutVideo(object $block, int $constrictorBlockId): void
     {
         /** @var ConstructorItemOutVideo $outVideo */
@@ -273,38 +225,5 @@ final readonly class ConstructorService
         unset($data['id']);
 
         $this->saveBlockItemOutVideo(0, $data);
-    }
-
-    private function cloneSlider(object $block, int $constrictorBlockId): void
-    {
-        /** @var ConstructorItemSlider $slider */
-        $slider = $this->getBlockItemById($block->id, ConstructorTypeEnum::Slider);
-        $images = $slider->images;
-        unset($slider->images);
-        $data = $slider->toArray();
-        $data['constructor_id'] = $constrictorBlockId;
-        unset($data['id']);
-
-        $newSliderId = $this->saveSlider(0, $data);
-
-        /** @var  ConstructorItemSlide $slide */
-        foreach ($images as $slide) {
-            $file = new UploadedFile(
-                Storage::path($slide->getFilePathWithName()),
-                $slide->getFileName(),
-                $slide->getMime(),
-                null,
-                true
-            );
-
-            $slideData = [
-                'slider_id'    => $newSliderId,
-                'display_name' => $slide->getDisplayName(),
-                'sort'         => $slide->getSort(),
-                'alt'          => $slide->getAlt(),
-            ];
-
-            $this->storage->saveFile($file, StorageFileTypeEnum::SlideImage, $slideData);
-        }
     }
 }

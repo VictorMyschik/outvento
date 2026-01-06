@@ -13,7 +13,7 @@ class ConstructorBlockItemVideoAddLayout extends Rows
     public function fields(): array
     {
         return [
-            //Input::make('item.title')->title('Заголовок')->placeholder('Введите заголовок (можно оставить пустым)'),
+            Input::make('item.title')->title('Заголовок')->placeholder('Введите заголовок (можно оставить пустым)'),
             Input::make('item.file')->type('file')->required()->title('Файл'),
             TextArea::make('item.description')->rows(5)->title('Описание'),
             Input::make('item.sort')->type('number')->min(0)->max(999)->title('Сортировка')
