@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Mail;
 
+use App\Models\News\News;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -15,7 +16,7 @@ class NewsEmail extends Mailable
     use Queueable;
     use SerializesModels;
 
-    public function __construct(public array $value, public string $unsubscribeUrl) {}
+    public function __construct(public News $news, public string $unsubscribeUrl) {}
 
     public function envelope(): Envelope
     {

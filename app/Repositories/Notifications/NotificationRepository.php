@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Repositories\Notifications;
 
 use App\Models\Notification\UserNotificationSetting;
+use App\Models\User;
 use App\Repositories\DatabaseRepository;
+use App\Services\Notifications\Enum\NotificationType;
 use App\Services\Notifications\NotificationRepositoryInterface;
 
 final readonly class NotificationRepository extends DatabaseRepository implements NotificationRepositoryInterface
@@ -28,5 +30,16 @@ final readonly class NotificationRepository extends DatabaseRepository implement
         }
 
         return $this->db->table(UserNotificationSetting::getTableName())->insertGetId($data);
+    }
+
+    /**
+     * @return User[]
+     */
+    public function getSubscriptionUsersList(NotificationType $type): array
+    {
+        return User::join(UserNotificationSetting::getTableName(), 'users.id', '=', UserNotificationSetting::getTableName() . '.user_id')
+            ->where(UserNotificationSetting::getTableName() . '.notification_key', $type->value)
+            ->where(UserNotificationSetting::getTableName() . '.active', true)
+            ->get()->all();
     }
 }

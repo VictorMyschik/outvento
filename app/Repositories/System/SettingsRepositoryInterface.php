@@ -15,7 +15,7 @@ interface SettingsRepositoryInterface
 
     public function getByKey(SettingsKey $key): ?Settings;
 
-    public function isEnabledEmailSend(): bool;
+    public function notificationEnabled(): bool;
 
     public function getAdminEmail(): string;
 }

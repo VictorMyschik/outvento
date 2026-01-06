@@ -10,7 +10,7 @@ return new class extends Migration {
     {
         Schema::create('subscriptions', function (Blueprint $table): void {
             $table->id();
-            $table->unsignedSmallInteger('type')->index();
+            $table->string('type')->index(); // NotificationType
             $table->string('email', 100)->index();
             $table->string('token', 32)->unique()->index();
             $table->tinyInteger('language')->default(Language::RU->value)->index();

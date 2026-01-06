@@ -6,6 +6,7 @@ namespace App\Models\MessageLog;
 
 use App\Models\ORM\ORM;
 use App\Services\Email\Enum\EmailTypeEnum;
+use App\Services\Notifications\Enum\NotificationType;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
 
@@ -24,12 +25,12 @@ class EmailLog extends ORM
         'sl' => 'json'
     ];
 
-    public function getType(): EmailTypeEnum
+    public function getType(): NotificationType
     {
-        return EmailTypeEnum::from((int)$this->type);
+        return NotificationType::from((string)$this->type);
     }
 
-    public function setType(EmailTypeEnum $value): void
+    public function setType(NotificationType $value): void
     {
         $this->type = $value->value;
     }

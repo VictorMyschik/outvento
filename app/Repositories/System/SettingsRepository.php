@@ -36,9 +36,9 @@ final readonly class SettingsRepository extends DatabaseRepository implements Se
         return Settings::where('code_key', $key->value)->first();
     }
 
-    public function isEnabledEmailSend(): bool
+    public function notificationEnabled(): bool
     {
-        return $this->getByKey(SettingsKey::EmailService)->getValue() === '1';
+        return $this->getByKey(SettingsKey::NotificationEnabled)->getValue() === '1';
     }
 
     public function getAdminEmail(): string

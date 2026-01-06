@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Notification\UserNotificationSetting;
+use App\Services\Notifications\NotificationRecipientInterface;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\HasApiTokens;
@@ -11,7 +14,7 @@ use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
 use Orchid\Platform\Models\User as Authenticatable;
 
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable implements MustVerifyEmail, NotificationRecipientInterface
 {
     use Notifiable, HasApiTokens;
 
@@ -126,5 +129,26 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getAvatar(): ?string
     {
         return $this->avatar ? asset('storage' . $this->avatar) : null;
+    }
+
+    public function notificationSettings(): HasMany
+    {
+        return $this->hasMany(UserNotificationSetting::class);
+    }
+
+    public function notificationChannelsFor(string $notificationClass): array
+    {
+        $key = $notificationClass::KEY;
+
+        return $this->notificationSettings()
+            ->where('notification_key', $key)
+            ->where('enabled', true)
+            ->pluck('channel')
+            ->toArray();
+    }
+
+    public function routeNotificationForTelegram(): ?string
+    {
+        return $this->telegram_chat_id;
     }
 }

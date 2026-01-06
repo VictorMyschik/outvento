@@ -8,6 +8,7 @@ use App\Jobs\EmailJob;
 use App\Mail\NewNewsSubscriptionEmail;
 use App\Models\Subscription\Subscription;
 use App\Services\Email\Enum\EmailTypeEnum;
+use App\Services\Notifications\Enum\NotificationType;
 use App\Services\Subscription\DTO\SubscriptionDto;
 use App\Services\System\Enum\Language;
 
@@ -37,7 +38,7 @@ final readonly class SubscriptionService
         $this->repository->deleteSubscriptionByEmail($email);
     }
 
-    public function createSubscription(EmailTypeEnum $type, array $data): void
+    public function createSubscription(NotificationType $type, array $data): void
     {
         $data['token'] = md5(uniqid());
         $data['type'] = $type->value;
@@ -58,12 +59,12 @@ final readonly class SubscriptionService
             email: $email,
             language: $language->value,
             token: $token,
-            type: EmailTypeEnum::News->value,
+            type: NotificationType::News->value,
         );
 
         $this->repository->saveSubscription(0, (array)$data);
 
-        EmailJob::dispatch($email, new NewNewsSubscriptionEmail($token), EmailTypeEnum::NewNewsSubscription);
+        EmailJob::dispatch($email, new NewNewsSubscriptionEmail($token), NotificationType::NewNewsSubscription);
     }
 
     public function updateSubscription(int $id, array $data): void
@@ -77,8 +78,8 @@ final readonly class SubscriptionService
         $this->repository->deleteSubscription($token);
     }
 
-    public function getListTo(EmailTypeEnum $type, Language $language): array
+    public function getListTo(NotificationType $type, Language $language): array
     {
-        return $this->repository->getListEmailsByType($type, $language);
+        return $this->repository->getListByType($type, $language);
     }
 }

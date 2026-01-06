@@ -28,4 +28,11 @@ enum NotificationType: string
             array_map(fn($enum) => $enum->getLabel(), self::cases())
         );
     }
+
+    public static function getSelectListForGuest(): array
+    {
+        return [
+            self::News->value => self::News->getLabel(),
+        ];
+    }
 }

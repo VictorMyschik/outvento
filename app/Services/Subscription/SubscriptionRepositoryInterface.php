@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Subscription;
 
 use App\Models\Subscription\Subscription;
-use App\Services\Email\Enum\EmailTypeEnum;
+use App\Services\Notifications\Enum\NotificationType;
 use App\Services\System\Enum\Language;
 
 interface SubscriptionRepositoryInterface
@@ -22,5 +22,5 @@ interface SubscriptionRepositoryInterface
 
     public function deleteSubscriptionByEmail(string $email): void;
 
-    public function getListEmailsByType(EmailTypeEnum $type, Language $language): array;
+    public function getListByType(NotificationType $type): array;
 }

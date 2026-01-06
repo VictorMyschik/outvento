@@ -7,6 +7,7 @@ namespace App\Repositories\Subscription;
 use App\Models\Subscription\Subscription;
 use App\Repositories\DatabaseRepository;
 use App\Services\Email\Enum\EmailTypeEnum;
+use App\Services\Notifications\Enum\NotificationType;
 use App\Services\Subscription\SubscriptionRepositoryInterface;
 use App\Services\System\Enum\Language;
 
@@ -38,13 +39,9 @@ final readonly class SubscriptionRepository extends DatabaseRepository implement
         $this->db->table(Subscription::getTableName())->where('token', $token)->delete();
     }
 
-    public function getListEmailsByType(EmailTypeEnum $type, Language $language): array
+    public function getListByType(NotificationType $type): array
     {
-        return $this->db->table(Subscription::getTableName())
-            ->where('type', $type->value)
-            ->where('language', $language->value)
-            ->pluck('email', 'token')
-            ->toArray();
+        return Subscription::where('type', $type->value)->get()->all();
     }
 
     public function getSubscriptionByEmail(string $email): array
@@ -55,5 +52,10 @@ final readonly class SubscriptionRepository extends DatabaseRepository implement
     public function deleteSubscriptionByEmail(string $email): void
     {
         $this->db->table(Subscription::getTableName())->where('email', $email)->delete();
+    }
+
+    public function deleteSubscriptionByEmailAndType(NotificationType $type, string $email): void
+    {
+        $this->db->table(Subscription::getTableName())->where('email', $email)->where('type', $type->value)->delete();
     }
 }

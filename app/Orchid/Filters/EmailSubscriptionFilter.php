@@ -5,6 +5,7 @@ namespace App\Orchid\Filters;
 use App\Models\Subscription\Subscription;
 use App\Orchid\Layouts\Lego\ActionFilterPanel;
 use App\Services\Email\Enum\EmailTypeEnum;
+use App\Services\Notifications\Enum\NotificationType;
 use App\Services\System\Enum\Language;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -54,7 +55,7 @@ class EmailSubscriptionFilter extends Filter
 
         return Layout::rows([
             Group::make([
-                Select::make('type')->value($input['type'])->empty()->options([EmailTypeEnum::News->value => EmailTypeEnum::News->getLabel()])->title('Тип'),
+                Select::make('type')->value($input['type'])->empty()->options(NotificationType::getSelectListForGuest())->title('Тип'),
                 Input::make('email')->value($input['email'])->title('Email'),
                 Input::make('token')->value($input['token'])->title('Token'),
                 Select::make('language')->options(Language::getSelectList())->value($input['language'])->empty()->title('Language'),

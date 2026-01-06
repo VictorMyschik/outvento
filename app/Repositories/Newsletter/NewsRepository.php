@@ -230,4 +230,19 @@ final readonly class NewsRepository extends DatabaseRepository implements NewsRe
     {
         return NewsMedia::find($id);
     }
+
+    public function getTodayNewsList(): array
+    {
+        return News::where('active', true)
+            ->where('public', true)
+            ->where(function ($query) {
+                $today = Carbon::now()->toDateString();
+                $query->whereDate('published_at', $today)
+                    ->orWhere(function ($query) use ($today) {
+                        $query->whereNull('published_at')->whereDate('created_at', $today);
+                    });
+            })
+            ->get()
+            ->all();
+    }
 }

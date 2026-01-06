@@ -265,7 +265,7 @@ return [
 
     'turbo' => [
         'cache'          => true,
-        'prefetch'       => true,
+        'prefetch'       => false,
         'refresh-method' => 'replace',
         'refresh-scroll' => 'reset',
     ],

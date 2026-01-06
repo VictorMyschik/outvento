@@ -5,13 +5,17 @@ namespace App\Models\Subscription;
 use App\Models\Lego\Fields\LanguageFieldTrait;
 use App\Models\ORM\ORM;
 use App\Services\Email\Enum\EmailTypeEnum;
+use App\Services\Notifications\Enum\NotificationType;
+use App\Services\Notifications\NotificationRecipientInterface;
+use Illuminate\Notifications\Notifiable;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
 
-class Subscription extends ORM
+class Subscription extends ORM implements NotificationRecipientInterface
 {
     use AsSource;
     use Filterable;
+    use Notifiable;
     use LanguageFieldTrait;
 
     protected $table = 'subscriptions';
@@ -35,13 +39,18 @@ class Subscription extends ORM
         return $this->token;
     }
 
-    public function getType(): EmailTypeEnum
+    public function getType(): NotificationType
     {
-        return EmailTypeEnum::from($this->type);
+        return NotificationType::from($this->type);
     }
 
     public function getEmail(): string
     {
         return $this->email;
+    }
+
+    public function routeNotificationForMail(): string
+    {
+        return $this->getEmail();
     }
 }

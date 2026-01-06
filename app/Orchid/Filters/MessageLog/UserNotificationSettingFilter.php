@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Orchid\Layouts\Lego\ActionFilterPanel;
 use App\Services\Email\Enum\EmailTypeEnum;
 use App\Services\Notifications\Enum\NotificationChannel;
+use App\Services\Notifications\Enum\NotificationType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Orchid\Filters\Filter;
@@ -79,7 +80,7 @@ class UserNotificationSettingFilter extends Filter
             Input::make('id')->value($input['id'])->type('number')->title('ID'),
 
             Select::make('notificationKey')
-                ->options(EmailTypeEnum::getSelectList())
+                ->options(NotificationType::getSelectList())
                 ->value($input['notificationKey'])
                 ->empty()
                 ->title('Тип оповещения'),

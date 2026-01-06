@@ -6,6 +6,7 @@ namespace App\Services\System;
 
 use App\Models\System\Cron;
 use App\Services\Catalog\Onliner\ImportOnlinerService;
+use App\Services\Newsletter\NewsletterDispatchService;
 use App\Services\System\Enum\CronKeyEnum;
 use DateInterval;
 use Exception;
@@ -15,8 +16,9 @@ use Psr\Log\LoggerInterface;
 final readonly class CronService
 {
     public function __construct(
-        private ImportOnlinerService $importOnlinerService,
-        private LoggerInterface      $logger,
+        private ImportOnlinerService      $importOnlinerService,
+        private LoggerInterface           $logger,
+        private NewsletterDispatchService $newsletterDispatchService,
     ) {}
 
     public function setLog(string $message): void
@@ -71,7 +73,7 @@ final readonly class CronService
             match ($cron->getCronKey()) {
                 CronKeyEnum::OnlinerCatalogGoods => $this->importOnlinerService->updateCatalogGoods(),
                 CronKeyEnum::ClearLogs => $this->clearLogs(),
-                CronKeyEnum::NewsletterDispatch => $this->clearLogs(),
+                CronKeyEnum::NewsletterDispatch => $this->newsletterDispatchService->runDispatch(),
 
             };
 

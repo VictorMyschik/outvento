@@ -48,8 +48,8 @@ class UserNotificationSetting extends ORM
         return NotificationChannel::from($this->channel);
     }
 
-    public function user(): BelongsTo
+    public function getUser(): ?User
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return User::find($this->user_id);
     }
 }

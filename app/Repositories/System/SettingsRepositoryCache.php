@@ -41,9 +41,9 @@ readonly class SettingsRepositoryCache implements SettingsRepositoryInterface
         $this->cache->delete(self::API_SETTINGS_LIST_CACHE_KEY);
     }
 
-    public function isEnabledEmailSend(): bool
+    public function notificationEnabled(): bool
     {
-        $setting = $this->getByKey(SettingsKey::EmailService);
+        $setting = $this->getByKey(SettingsKey::NotificationEnabled);
 
         return $setting && $setting->getValue() === '1';
     }

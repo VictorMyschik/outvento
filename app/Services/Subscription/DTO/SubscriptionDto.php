@@ -10,6 +10,6 @@ final readonly class SubscriptionDto
         public string $email,
         public int    $language,
         public string $token,
-        public int    $type,
+        public string $type,
     ) {}
 }

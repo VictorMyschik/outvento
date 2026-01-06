@@ -34,4 +34,6 @@ interface NewsRepositoryInterface
     public function deleteSubgroup(int $subgroupId): void;
 
     public function updateNewsAdditionalSort(int $id, int $newsId, int $sort): void;
+
+    public function getTodayNewsList(): array;
 }

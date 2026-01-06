@@ -5,6 +5,7 @@ namespace App\Orchid\Filters\Subscription;
 use App\Models\Subscription\Subscription;
 use App\Orchid\Layouts\Lego\ActionFilterPanel;
 use App\Services\Email\Enum\EmailTypeEnum;
+use App\Services\Notifications\Enum\NotificationType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Orchid\Filters\Filter;
@@ -34,7 +35,7 @@ class SubscriptionFilter extends Filter
     {
         $input = $this->request->all(self::getFilterFields());
 
-        $builder->where('type', EmailTypeEnum::News->value);
+        $builder->where('type', NotificationType::News->value);
 
         if (!empty($input['email'])) {
             $builder->where('email', 'like', '%' . $input['email'] . '%');

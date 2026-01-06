@@ -7,6 +7,7 @@ use App\Orchid\Filters\EmailSubscriptionFilter;
 use App\Orchid\Layouts\Subscription\SubscriptionEditLayout;
 use App\Orchid\Layouts\Subscription\SubscriptionListLayout;
 use App\Services\Email\Enum\EmailTypeEnum;
+use App\Services\Notifications\Enum\NotificationType;
 use App\Services\Subscription\SubscriptionService;
 use App\Services\System\Enum\Language;
 use Illuminate\Http\RedirectResponse;
@@ -65,7 +66,7 @@ class SubscriptionScreen extends Screen
         $this->service->getSubscriptionById($subscription_id);
 
         return [
-            'type_options'        => [EmailTypeEnum::News->value => EmailTypeEnum::News->getLabel()],
+            'type_options'        => NotificationType::getSelectListForGuest(),
             'type_options_exists' => $optionExists,
             'subscription'        => $this->service->getSubscriptionById($subscription_id),
         ];
@@ -97,7 +98,7 @@ class SubscriptionScreen extends Screen
         }
 
         foreach ($types as $type) {
-            $this->service->createSubscription(EmailTypeEnum::from($type), ['email' => $email, 'language' => $input['language']]);
+            $this->service->createSubscription(NotificationType::from($type), ['email' => $email, 'language' => $input['language']]);
         }
     }
 
