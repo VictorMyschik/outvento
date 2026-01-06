@@ -26,6 +26,7 @@ class UserNotificationSetting extends ORM
         'notification_key',
         'channel',
         'active',
+        'token',
         'created_at',
         'updated_at',
     ];

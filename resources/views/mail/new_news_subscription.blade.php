@@ -15,9 +15,10 @@
 
                 <!-- Header -->
                 <tr>
-                    <td style="background:#229ED9; padding:10px; text-align:center;">
-                        <h1 style="margin:0; color:#ffffff; font-size:22px;">
-                            <img src="{{env('FRONT_HOST')}}/src/assets/images/logo-dark.png" alt="{{ config('app.name') }} Logo">
+                    <td style="padding:10px; text-align:center;">
+                        <h1 style="margin:0; font-size:22px;">
+                            <img src="{{env('FRONT_HOST')}}/src/assets/images/email_600.png"
+                                 alt="{{ config('app.name') }} Logo">
                             {{ __('emails.new_news_subscription') }}
                         </h1>
                     </td>

@@ -80,15 +80,29 @@ class News extends ORM
         return 'Новость не участвует в поиске и не доступна по прямой ссылке ' . $link;
     }
 
-    public function getSubgroup(): ?NewsSubgroup
+    /**
+     * @return NewsSubgroup[]
+     */
+    public function getSubgroupList(): array
     {
-        $subgroupId = NewsInSubgroup::where('news_id', $this->id())->value('subgroup_id') ?: 0;
-
-        return NewsSubgroup::loadBy($subgroupId);
+        return NewsSubgroup::join(NewsInSubgroup::getTableName(), NewsSubgroup::getTableName() . '.id', '=', NewsInSubgroup::getTableName() . '.subgroup_id')
+            ->where(NewsInSubgroup::getTableName() . '.news_id', $this->id())
+            ->get()
+            ->all();
     }
 
     public function getLogo(): ?NewsMedia
     {
         return NewsMedia::where('news_id', $this->id())->where('media_type', NewsMediaType::Logo->value)->first();
+    }
+
+    public function getGroup(): NewsGroup
+    {
+        return NewsGroup::loadByOrDie($this->getGroupId());
+    }
+
+    public function getUrl(): string
+    {
+        return env('FRONT_HOST') . "/news/{$this->getGroup()->getCode()}/{$this->getCode()}";
     }
 }

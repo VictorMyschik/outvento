@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Services\Notifications;
 
+use App\Models\MessageLog\EmailLog;
 use App\Models\Notification\UserNotificationSetting;
 use App\Notifications\NewsNotification;
 use App\Repositories\System\SettingsRepositoryInterface;
 use App\Services\Notifications\Enum\NotificationType;
-use App\Services\Subscription\SubscriptionRepositoryInterface;
+use Illuminate\Mail\Mailable;
+use Illuminate\Support\Facades\Mail;
 
 final readonly class NotificationService
 {
@@ -20,6 +22,8 @@ final readonly class NotificationService
 
     public function saveUserSetting(int $id, array $data): int
     {
+        $data['token'] = md5(uniqid());
+
         return $this->repository->saveUserSetting($id, $data);
     }
 
@@ -48,8 +52,28 @@ final readonly class NotificationService
 
     public function sendNewsNotification(NotificationRecipientInterface $recipient, array $newsList): void
     {
+        $token = $recipient->getUnsubscribeToken(NotificationType::News);
 
+        $unsubscribeUrl = env('FRONT_HOST') . '/unsubscribe?token=' . $token;
 
-        $recipient->notify(new NewsNotification($newsList));
+        $recipient->notify(new NewsNotification($newsList, $unsubscribeUrl));
+    }
+
+    public function customEmailNotify(string $to, Mailable $email, NotificationType $type): void
+    {
+        try {
+            Mail::to($to)->send($email->from(config('mail.from.address'), config('mail.from.name')));
+        } catch (\Exception $e) {
+            $error = $e->getMessage();
+        }
+
+        $log = new EmailLog();
+        $log->setType($type);
+        $log->setEmail($to);
+        $log->setSubject($email->subject);
+        $log->setEmailBody($email->render());
+        $log->setStatus((bool)($result ?? null));
+        $log->setError($error ?? null);
+        $log->save();
     }
 }

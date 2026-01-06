@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Notifications;
 
-use App\Mail\NewsEmail;
-use App\Models\News\News;
+use App\Services\Notifications\NotificationRecipientInterface;
 use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use NotificationChannels\Telegram\TelegramMessage;
 
@@ -14,23 +14,34 @@ class NewsNotification extends Notification
 {
     use Queueable;
 
+    public array $data;
     public const string KEY = 'new_comment';
 
+    public function __construct(public array $newsList, public string $unsubscribeUrl) {}
 
-    public function __construct(public News $news, public string $unsubscribeUrl) {}
-
-    public function via($notifiable)
+    public function via(NotificationRecipientInterface $notifiable): array
     {
         return $notifiable->notificationChannelsFor(self::class);
     }
 
-    public function toMail($notifiable): NewsEmail
+    public function toMail($notifiable): MailMessage
     {
-        return new NewsEmail(news: $this->news, unsubscribeUrl: $this->unsubscribeUrl);
+        $newsDataList = [];
+        foreach ($this->newsList as $newsList) {
+            $newsDataList[] = [
+                'title' => $newsList->title,
+                'url'   => $newsList->getUrl(),
+            ];
+        }
+
+        return (new MailMessage)->view('mail.news_digest', [
+            'newsDataList'   => $newsDataList,
+            'unsubscribeUrl' => $this->unsubscribeUrl
+        ]);
     }
 
     public function toTelegram($notifiable): TelegramMessage
     {
-        return TelegramMessage::create()->content("📰 {$this->news->title}");
+        return TelegramMessage::create()->content('');
     }
 }

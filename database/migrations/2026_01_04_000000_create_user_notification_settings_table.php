@@ -12,6 +12,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('user_id')->index();
             $table->string('notification_key')->index();
             $table->string('channel')->index();
+            $table->string('token', 32)->unique()->index();
             $table->boolean('active')->default(false)->index();;
 
             $table->unique(['user_id', 'notification_key', 'channel']);

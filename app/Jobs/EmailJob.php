@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Services\Email\EmailService;
-use App\Services\Email\Enum\EmailTypeEnum;
+use App\Services\Notifications\Enum\NotificationType;
+use App\Services\Notifications\NotificationService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -18,10 +18,10 @@ class EmailJob implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    public function __construct(public string $to, public Mailable $email, public EmailTypeEnum $type) {}
+    public function __construct(public string $to, public Mailable $email, public NotificationType $type) {}
 
-    public function handle(EmailService $service): void
+    public function handle(NotificationService $service): void
     {
-        $service->send($this->to, $this->email, $this->type);
+        $service->customEmailNotify($this->to, $this->email, $this->type);
     }
 }

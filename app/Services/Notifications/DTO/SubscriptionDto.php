@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Services\Subscription\DTO;
+namespace App\Services\Notifications\DTO;
 
 final readonly class SubscriptionDto
 {

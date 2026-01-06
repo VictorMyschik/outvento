@@ -42,6 +42,11 @@ class GroupSubgroupListenerLayout extends Listener
         $createdAt = $news->created_at->format('d.m.Y');
         $link = '<a href="' . env('FRONT_HOST') . '/news/' . $news->id() . '" target="_blank"><b>ссылке</b></a>';
 
+        $subgroupSelectedList = [];
+        foreach ($news->getSubgroupList() ?? [] as $subgroup) {
+            $subgroupSelectedList[] = $subgroup->id();
+        }
+
         return [
             Layout::rows([
                 Input::make('news.id')->type('hidden'),
@@ -61,7 +66,8 @@ class GroupSubgroupListenerLayout extends Listener
                         ->title('Группа'),
                     Select::make('news.subgroups')->empty('[без рубрики]')
                         ->options(NewsSubgroup::whereIn('group_id', array_keys($groupOptions))->get()->pluck('title', 'id')->toArray())
-                        ->value($news->getSubgroup()?->id())
+                        ->multiple()
+                        ->value($subgroupSelectedList)
                         ->title('Рубрика'),
                 ]),
 

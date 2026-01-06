@@ -2,14 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Services\Subscription;
+namespace App\Services\Notifications;
 
 use App\Jobs\EmailJob;
 use App\Mail\NewNewsSubscriptionEmail;
 use App\Models\Subscription\Subscription;
-use App\Services\Email\Enum\EmailTypeEnum;
+use App\Services\Notifications\DTO\SubscriptionDto;
 use App\Services\Notifications\Enum\NotificationType;
-use App\Services\Subscription\DTO\SubscriptionDto;
 use App\Services\System\Enum\Language;
 
 final readonly class SubscriptionService
@@ -76,10 +75,5 @@ final readonly class SubscriptionService
     public function deleteSubscription(string $token): void
     {
         $this->repository->deleteSubscription($token);
-    }
-
-    public function getListTo(NotificationType $type, Language $language): array
-    {
-        return $this->repository->getListByType($type, $language);
     }
 }

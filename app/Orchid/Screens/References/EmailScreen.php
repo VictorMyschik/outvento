@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Orchid\Screens\Email;
+namespace App\Orchid\Screens\References;
 
 use App\Services\System\Enum\Language;
 use Illuminate\Http\RedirectResponse;
@@ -53,6 +53,20 @@ class EmailScreen extends Screen
             'unsubscribeUrl' => '#',
         ];
 
+        $fakeData['news_digest'] = [
+            'newsDataList'       => [
+                [
+                    'title' => 'Новая статья о путешествиях',
+                    'url'   => 'https://example.com/news/1',
+                ],
+                [
+                    'title' => 'Лучшие маршруты 2026 года',
+                    'url'   => 'https://example.com/news/2',
+                ],
+            ],
+            'unsubscribeUrl' => '#',
+        ];
+
         App::setlocale(Language::from((int)$this->request->get('locale', Language::RU->value))->getCode());
 
         return [
@@ -64,6 +78,7 @@ class EmailScreen extends Screen
 
             Layout::tabs([
                 'New Subscription' => Layout::view('mail.new_news_subscription', $fakeData['new_news_subscription']),
+                'News Digest'      => Layout::view('mail.news_digest', $fakeData['news_digest']),
             ]),
         ];
     }

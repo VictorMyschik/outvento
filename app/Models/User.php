@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Notification\UserNotificationSetting;
+use App\Services\Notifications\Enum\NotificationType;
 use App\Services\Notifications\NotificationRecipientInterface;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -150,5 +151,17 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
     public function routeNotificationForTelegram(): ?string
     {
         return $this->telegram_chat_id;
+    }
+
+    public function getUnsubscribeToken(NotificationType $type): string
+    {
+        return UserNotificationSetting::where('user_id', $this->id)
+            ->where('notification_key', $type->value)
+            ->value('token');
+    }
+
+    public function routeNotificationForMail($notification = null): string
+    {
+        return $this->email;
     }
 }

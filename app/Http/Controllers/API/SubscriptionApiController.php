@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\API\Request\SubscriptionRequest;
-use App\Services\Subscription\SubscriptionService;
+use App\Services\Notifications\SubscriptionService;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Attributes as OA;
 

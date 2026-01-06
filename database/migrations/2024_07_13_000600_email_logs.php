@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('email_logs', function (Blueprint $table): void {
             $table->id();
-            $table->unsignedSmallInteger('type')->index();
+            $table->string('type')->index();
             $table->string('email')->index();
             $table->string('subject')->nullable();
             $table->jsonb('sl')->index()->nullable();

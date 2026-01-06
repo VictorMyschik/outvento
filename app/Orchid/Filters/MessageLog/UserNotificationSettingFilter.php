@@ -7,7 +7,6 @@ namespace App\Orchid\Filters\MessageLog;
 use App\Models\Notification\UserNotificationSetting;
 use App\Models\User;
 use App\Orchid\Layouts\Lego\ActionFilterPanel;
-use App\Services\Email\Enum\EmailTypeEnum;
 use App\Services\Notifications\Enum\NotificationChannel;
 use App\Services\Notifications\Enum\NotificationType;
 use Illuminate\Database\Eloquent\Builder;
@@ -28,6 +27,7 @@ class UserNotificationSettingFilter extends Filter
         'notificationKey',
         'channelType',
         'active',
+        'token',
         'createdAt',
         'updatedAt',
     ];
@@ -69,6 +69,10 @@ class UserNotificationSettingFilter extends Filter
             $builder->whereDate('updated_at', $input['updatedAt']);
         }
 
+        if (!empty($input['token'])) {
+            $builder->where('token', $input['token']);
+        }
+
         return $builder;
     }
 
@@ -96,17 +100,19 @@ class UserNotificationSettingFilter extends Filter
                 ->value($input['userId'])
                 ->empty('Все')
                 ->title('Пользователь'),
+        ]);
 
+        $group2 = Group::make([
             Select::make('active')
                 ->options([1 => 'Активные', 0 => 'Неактивные'])
                 ->value($input['active'])
                 ->empty('Все')
                 ->title('Состояние'),
-
+            Input::make('token')->value($input['token'])->title('Token'),
             Input::make('createdAt')->value($input['createdAt'])->type('date')->title('Дата создания'),
             Input::make('updatedAt')->value($input['updatedAt'])->type('date')->title('Дата обновления'),
         ]);
 
-        return Layout::rows([$group, ViewField::make('')->view('space'), ActionFilterPanel::getActionsButtons($request->all())]);
+        return Layout::rows([$group, $group2, ViewField::make('')->view('space'), ActionFilterPanel::getActionsButtons($request->all())]);
     }
 }

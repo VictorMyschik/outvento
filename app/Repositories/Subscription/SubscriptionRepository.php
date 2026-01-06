@@ -8,8 +8,7 @@ use App\Models\Subscription\Subscription;
 use App\Repositories\DatabaseRepository;
 use App\Services\Email\Enum\EmailTypeEnum;
 use App\Services\Notifications\Enum\NotificationType;
-use App\Services\Subscription\SubscriptionRepositoryInterface;
-use App\Services\System\Enum\Language;
+use App\Services\Notifications\SubscriptionRepositoryInterface;
 
 final readonly class SubscriptionRepository extends DatabaseRepository implements SubscriptionRepositoryInterface
 {

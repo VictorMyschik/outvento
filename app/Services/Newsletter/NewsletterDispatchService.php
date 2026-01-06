@@ -16,13 +16,17 @@ final readonly class NewsletterDispatchService
 
     public function runDispatch(): void
     {
-        if(!$this->notificationService->isNotificationEnabled()) {
+        if (!$this->notificationService->isNotificationEnabled()) {
             return;
         }
 
         $recipients = $this->notificationService->getSubscribersList(NotificationType::News);
 
         $newsList = $this->repository->getTodayNewsList();
+
+        if (empty($newsList)) {
+            return;
+        }
 
         foreach ($recipients as $recipient) {
             $this->notificationService->sendNewsNotification($recipient, $newsList);

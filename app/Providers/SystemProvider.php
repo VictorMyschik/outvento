@@ -10,7 +10,7 @@ use App\Repositories\System\SettingsRepositoryCache;
 use App\Repositories\System\SettingsRepositoryInterface;
 use App\Services\Forms\FormRepositoryInterface;
 use App\Services\Language\TranslateRepositoryInterface;
-use App\Services\Subscription\SubscriptionRepositoryInterface;
+use App\Services\Notifications\SubscriptionRepositoryInterface;
 use Illuminate\Cache\Repository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\DatabaseManager;

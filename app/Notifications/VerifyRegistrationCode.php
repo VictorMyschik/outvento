@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Services\Notifications;
+namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class VerifyRegistrationCode extends Notification implements ShouldQueue
+class VerifyRegistrationCode extends Notification
 {
     use Queueable;
 
@@ -35,7 +35,7 @@ class VerifyRegistrationCode extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)->view('mail.account.verify_account', ['code' => $this->code]);
+        return (new MailMessage)->view('mail.auth.verify_account', ['code' => $this->code]);
     }
 
     /**

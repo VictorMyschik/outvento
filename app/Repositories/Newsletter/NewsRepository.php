@@ -238,8 +238,8 @@ final readonly class NewsRepository extends DatabaseRepository implements NewsRe
             ->where(function ($query) {
                 $today = Carbon::now()->toDateString();
                 $query->whereDate('published_at', $today)
-                    ->orWhere(function ($query) use ($today) {
-                        $query->whereNull('published_at')->whereDate('created_at', $today);
+                    ->orWhere(function ($q) use ($today) {
+                        $q->whereNull('published_at')->whereDate('created_at', $today);
                     });
             })
             ->get()

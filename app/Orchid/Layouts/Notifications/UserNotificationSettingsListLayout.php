@@ -24,6 +24,7 @@ class UserNotificationSettingsListLayout extends Table
             TD::make('channel', 'Канал')->render(fn(UserNotificationSetting $setting) => $setting->getChannel()->getLabel())->sort(),
             TD::make('user_id', 'User ID')->sort(),
             TD::make('user_id', 'User')->render(fn(UserNotificationSetting $setting) => $setting->getUser()?->name ?? '—')->sort(),
+            TD::make('token', 'Token')->sort(),
             TD::make('created_at', 'Дата создания')->render(fn($setting) => $setting->created_at->format('d/m/Y H:i:s'))->sort(),
             TD::make('updated_at', 'Дата обновления')->render(fn($setting) => $setting->updated_at?->format('d/m/Y H:i:s'))->sort(),
 

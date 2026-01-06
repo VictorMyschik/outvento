@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Subscription;
 
 use App\Models\Lego\Fields\LanguageFieldTrait;
 use App\Models\ORM\ORM;
-use App\Services\Email\Enum\EmailTypeEnum;
 use App\Services\Notifications\Enum\NotificationType;
 use App\Services\Notifications\NotificationRecipientInterface;
 use Illuminate\Notifications\Notifiable;
@@ -49,7 +50,17 @@ class Subscription extends ORM implements NotificationRecipientInterface
         return $this->email;
     }
 
-    public function routeNotificationForMail(): string
+    public function getUnsubscribeToken(NotificationType $type): string
+    {
+        return $this->getToken();
+    }
+
+    public function notificationChannelsFor(string $notificationClass): array
+    {
+        return ['mail'];
+    }
+
+    public function routeNotificationForMail($notification = null): string
     {
         return $this->getEmail();
     }

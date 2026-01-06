@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Models\MessageLog;
 
 use App\Models\ORM\ORM;
-use App\Services\Email\Enum\EmailTypeEnum;
 use App\Services\Notifications\Enum\NotificationType;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;

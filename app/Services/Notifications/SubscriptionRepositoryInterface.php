@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Services\Subscription;
+namespace App\Services\Notifications;
 
 use App\Models\Subscription\Subscription;
 use App\Services\Notifications\Enum\NotificationType;
-use App\Services\System\Enum\Language;
 
 interface SubscriptionRepositoryInterface
 {

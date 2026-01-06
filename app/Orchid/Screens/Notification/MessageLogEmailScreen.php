@@ -9,7 +9,7 @@ use App\Models\MessageLog\EmailLog;
 use App\Orchid\Filters\MessageLog\MessageLogEmailFilter;
 use App\Orchid\Layouts\Lego\RawLogViewLayout;
 use App\Orchid\Layouts\Notifications\EmailLogListLayout;
-use App\Services\Email\EmailService;
+use App\Services\Notifications\NotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
@@ -20,8 +20,8 @@ use Orchid\Support\Facades\Layout;
 final class MessageLogEmailScreen extends Screen
 {
     public function __construct(
-        private readonly Request      $request,
-        private readonly EmailService $emailService,
+        private readonly Request             $request,
+        private readonly NotificationService $notificationService,
     ) {}
 
     public string $name = 'Лог отправленных писем';
@@ -79,7 +79,11 @@ final class MessageLogEmailScreen extends Screen
     {
         $log = EmailLog::loadByOrDie($id);
 
-        $this->emailService->send($log->getEmail(), new RawEmail($log->getSubject(), $log->getBody()), $log->getType(), false);
+        $this->notificationService->customEmailNotify(
+            to: $log->getEmail(),
+            email: new RawEmail($log->getSubject(), $log->getBody()),
+            type: $log->getType(),
+        );
     }
 
     #region Filter
