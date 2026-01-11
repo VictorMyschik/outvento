@@ -1,10 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Orchid\Screens\User;
 
-use App\Models\UserInfo\UserInfo;
 use App\Orchid\Filters\UserInfoFilter;
-use App\Orchid\Layouts\User\UserInfoEditLayout;
 use App\Orchid\Layouts\User\UserInfoListLayout;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,9 +20,6 @@ class UserInfoScreen extends Screen
         return 'Пользователи';
     }
 
-    /**
-     * Display header description.
-     */
     public function description(): ?string
     {
         return 'Список пользователей платформы';

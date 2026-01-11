@@ -1,5 +1,6 @@
 <?php
 
+use App\Services\System\Enum\Language;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,7 +18,12 @@ return new class extends Migration {
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('telegram_chat_id')->nullable();
-            $table->string('language', 2)->default('EN');
+            $table->smallInteger('language')->default(Language::EN->value);
+            $table->string('first_name', 100)->nullable();
+            $table->string('last_name', 100)->nullable();
+            $table->tinyInteger('gender')->nullable();
+            $table->date('birthday')->nullable();
+            $table->string('about', 8000)->nullable();
             $table->jsonb('permissions')->nullable();
             $table->rememberToken();
             $table->timestamps();

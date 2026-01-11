@@ -27,9 +27,9 @@ class EmailInvite extends ORM
         'status',
     ];
 
-    const STATUS_NEW = 0; // Новый
-    const STATUS_SEND = 1; // Отправлен
-    const STATUS_ERROR = 2; // Ошибка
+    const int STATUS_NEW = 0; // Новый
+    const int STATUS_SEND = 1; // Отправлен
+    const int STATUS_ERROR = 2; // Ошибка
 
     public static function getStatusList(): array
     {

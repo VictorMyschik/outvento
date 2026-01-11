@@ -38,8 +38,10 @@ use App\Orchid\Screens\Travel\TravelListScreen;
 use App\Orchid\Screens\User\UserCommunicateScreen;
 use App\Orchid\Screens\User\UserEditScreen;
 use App\Orchid\Screens\User\UserInfoScreen;
+use App\Orchid\Screens\User\UserListInfoScreen;
 use App\Orchid\Screens\User\UserListScreen;
 use App\Orchid\Screens\User\UserProfileScreen;
+use App\Orchid\Screens\User\UsersScreen;
 use App\Orchid\Screens\Wishlist\WishlistScreen;
 use Illuminate\Support\Facades\Route;
 use Tabuna\Breadcrumbs\Trail;
@@ -119,13 +121,17 @@ Route::screen('system/failed-jobs', FailedJobsScreen::class)->name('system.faile
 Route::screen('system/database', DatabaseScreen::class)->name('system.database');
 Route::screen('system/database/table/{table}', DatabaseTableScreen::class)->name('system.database.table');
 Route::screen('system/supervisor', SupervisorScreen::class)->name('system.supervisor');
+
 // Language
 Route::screen('language/translate', TranslateScreen::class)->name('language.translate.list');
 
-
+// FAQ
 Route::screen('/faq/list', FAQScreen::class)->name('faq.list');
-Route::screen('/user-info/list', UserInfoScreen::class)->name('user.info.list');
-Route::screen('/user-info/address/list', UserCommunicateScreen::class)->name('user.info.address.list');
+
+// Users
+Route::screen('/users/list', UserListInfoScreen::class)->name('users.list');
+//Route::screen('/users/{id}/profile', UserInfoScreen::class)->name('users.list');
+Route::screen('/users/communicates/list', UserCommunicateScreen::class)->name('users.communicates.list');
 
 // Travel
 Route::screen('/travel-type/list', TravelTypeListScreen::class)->name('reference.travel-type.list');

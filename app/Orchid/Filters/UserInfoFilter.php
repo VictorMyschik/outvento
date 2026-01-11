@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Orchid\Filters;
 
 use App\Models\User;
-use App\Models\UserInfo\UserInfo;
 use App\Orchid\Layouts\Lego\ActionFilterPanel;
 use Illuminate\Database\Eloquent\Builder;
 use Orchid\Filters\Filter;
@@ -21,31 +20,7 @@ class UserInfoFilter extends Filter
 
     public static function runQuery()
     {
-        $query = UserInfo::filters([self::class])
-            ->join(User::getTableName(), 'user_info.user_id', '=', 'users.id');
-
-        $query->select(
-            'user_id',
-            'user_info.id as id',
-            'name',
-            'email',
-            'users.created_at',
-            'full_name',
-            'gender',
-            'birthday',
-        );
-
-        // Final
-        if ($sort = request()->get('sort')) {
-            if (str_contains($sort, '-')) {
-                $sort = str_replace('-', '', $sort);
-                $query->orderByRaw('"' . $sort . '" ASC');
-            } else {
-                $query->orderByRaw('"' . $sort . '" DESC');
-            }
-        }
-
-        return $query->paginate(20);
+        return User::filters([self::class]);
     }
 
     public function run(Builder $builder): Builder

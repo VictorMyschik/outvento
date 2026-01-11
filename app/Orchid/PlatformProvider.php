@@ -39,11 +39,15 @@ class PlatformProvider extends OrchidServiceProvider
             Menu::make('Notification')->icon('grid')->list([
                 Menu::make('Subscriptions')->icon('bs.send')->route('subscriptions.list'),
                 Menu::make('User Settings')->icon('bs.list')->route('notification.user.settings.list'),
-                Menu::make('Email')->icon('bs.list')->route('notification.log.email.list'),
-                Menu::make('Telegram')->icon('bs.list')->route('notification.log.telegram.list'),
+                Menu::make('Log. Email')->icon('bs.list')->route('notification.log.email.list'),
+                Menu::make('Log. Telegram')->icon('bs.list')->route('notification.log.telegram.list'),
             ])->divider(),
 
-            Menu::make('Wishlists')->icon('bs.list')->route('wishlist.list')->divider(),
+            Menu::make('Users')->icon('grid')->list([
+                Menu::make('Users list')->icon('bs.people')->route('users.list'),
+                Menu::make('Communicates')->icon('bs.person-lines-fill')->route('users.communicates.list'),
+            ])->divider(),
+            // Menu::make('Wishlists')->icon('bs.list')->route('wishlist.list')->divider(),
 
             // Catalog
             Menu::make('Catalog')->icon('grid')->list([

@@ -74,6 +74,7 @@ class purge extends Command
 
         $tableList = [
             'settings',
+            'translates',
             'users',
             'cron',
             'translates',
