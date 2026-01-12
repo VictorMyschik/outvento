@@ -5,22 +5,21 @@ networks:
 
 services:
   nginx:
-    build: ./docker/nginx
+    build: ./docker/dev/nginx
     container_name: nginx_travel
+    restart: unless-stopped
     volumes:
       - .:/var/www/travel
-    environment:
-      - VIRTUAL_HOST=travel.test
     ports:
-      - "80:80"
+      - "127.0.0.1:8081:80"
     networks:
-      frontend:
       backend:
         aliases:
           - travel.test
 
+
   php:
-    build: ./docker/php
+    build: ./docker/dev/php
     container_name: php_travel
     networks:
       - backend
@@ -33,29 +32,27 @@ services:
       - ./docker/php/php.ini:/usr/local/etc/php/php.ini
 
   postgres:
-    image: postgres:latest
-    networks:
-      frontend:
-      backend:
-    ports:
-      - '5441:5432'
+    image: postgres:16
+    container_name: travel_postgres
+    restart: unless-stopped
     environment:
       POSTGRES_DB: travel
       POSTGRES_USER: travel
       POSTGRES_PASSWORD: travel
-      PGDATA: "/var/lib/postgresql/data/pgdata"
+      PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - ./docker/postgres/travel:/var/lib/postgresql/data
-
-  redis:
-    image: bitnami/redis:latest
+      - pgdata_travel:/var/lib/postgresql/data
     networks:
       - backend
-      - frontend
-    ports:
-      - '6379:6379'
+
+  redis:
+    image: bitnami/redis:7.2
+    container_name: travel_redis
+    restart: unless-stopped
     environment:
-      - ALLOW_EMPTY_PASSWORD=yes
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    networks:
+      - backend
 
   supervisor:
     build: ./docker/supervisor
@@ -77,36 +74,3 @@ services:
       - ./docker/rabbitmq/data/:/var/lib/rabbitmq/
     networks:
       - backend
-
-  #elasticsearch:
-  #  image: elasticsearch:9.0.2
-  #  container_name: elasticsearch_travel
-  #  environment:
-  #    - xpack.security.enabled=true
-  #    - xpack.security.authc.api_key.enabled=true
-  #    - discovery.type=single-node
-  #    - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-  #    - ELASTIC_USERNAME=elastic
-  #    - ELASTIC_PASSWORD=root
-  #  volumes:
-  #    - ./docker/elasticsearch/data:/usr/share/elasticsearch/data
-  #  networks:
-  #    - frontend
-  #    - backend
-  #  ports:
-  #    - "9200:9200"
-  #    - "9300:9300"
-
-  #kibana:
-  #  image: kibana:9.0.2
-  #  environment:
-  #    - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-  #    - ELASTICSEARCH_USERNAME=elastic
-  #    - ELASTICSEARCH_PASSWORD=root
-  #  ports:
-  #    - "5601:5601"
-  #  networks:
-  #    frontend:
-  #    backend:
-  #  depends_on:
-  #    - elasticsearch
