@@ -32,7 +32,7 @@ services:
       - ./docker/php/php.ini:/usr/local/etc/php/php.ini
 
   postgres:
-    image: postgres:16
+    image: postgres:latest
     container_name: travel_postgres
     restart: unless-stopped
     environment:
@@ -55,7 +55,7 @@ services:
       - backend
 
   supervisor:
-    build: ./docker/supervisor
+    build: ./docker/dev/supervisor
     container_name: supervisor_travel
     networks:
       - backend
