@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Notification\UserNotificationSetting;
 use App\Services\Notifications\Enum\NotificationType;
 use App\Services\Notifications\NotificationRecipientInterface;
+use App\Services\System\Enum\Language;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
@@ -163,5 +164,10 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
     public function routeNotificationForMail($notification = null): string
     {
         return $this->email;
+    }
+
+    public function getLanguage(): Language
+    {
+        return Language::from($this->language);
     }
 }

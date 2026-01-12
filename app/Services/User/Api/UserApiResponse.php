@@ -17,7 +17,7 @@ final readonly class UserApiResponse
             email: $user->email,
             avatar: $user->getAvatar(),
             isVerified: (bool)$user->email_verified_at,
-            defaultLanguage: $user->language,
+            defaultLanguage: $user->getLanguage()->getCode(),
         );
     }
 }

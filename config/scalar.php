@@ -179,7 +179,7 @@ return [
          */
         'servers'               => [
             [
-                'url'         => 'http://localhost:80',
+                'url'         => env('APP_URL'),
                 'description' => 'Local server',
             ],
         ],
