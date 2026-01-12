@@ -50,7 +50,7 @@ services:
     container_name: travel_redis
     restart: unless-stopped
     environment:
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      - ALLOW_EMPTY_PASSWORD=yes
     networks:
       - backend
 
