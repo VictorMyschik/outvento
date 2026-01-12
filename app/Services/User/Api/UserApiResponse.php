@@ -17,6 +17,7 @@ final readonly class UserApiResponse
             email: $user->email,
             avatar: $user->getAvatar(),
             isVerified: (bool)$user->email_verified_at,
+            telegram: $user->telegram_chat_id,
             defaultLanguage: $user->getLanguage()->getCode(),
         );
     }

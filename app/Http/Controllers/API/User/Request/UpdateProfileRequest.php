@@ -24,9 +24,9 @@ class UpdateProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'     => ['nullable', 'string', 'max:255', Rule::unique('users')->ignore(Auth::id())],
-            'email'    => ['nullable', 'string', 'email', 'max:255', Rule::unique('users')->ignore(Auth::id())],
-            'telegram' => ['nullable', 'string', 'max:255'],
+            'name'     => ['sometimes', 'nullable', 'string', 'max:255', Rule::unique('users')->ignore(Auth::id())],
+            'email'    => ['sometimes', 'nullable', 'string', 'email', 'max:255', Rule::unique('users')->ignore(Auth::id())],
+            'telegram' => ['sometimes', 'nullable', 'string', 'max:255'],
         ];
     }
 
@@ -43,5 +43,24 @@ class UpdateProfileRequest extends FormRequest
     public function getTelegram(): ?string
     {
         return $this->input('telegram');
+    }
+
+    public function getUpdateData(): array
+    {
+        $out = [];
+
+        if ($this->has('name')) {
+            $out['name'] = $this->getName();
+        }
+
+        if ($this->has('email')) {
+            $out['email'] = $this->getEmail();
+        }
+
+        if ($this->has('telegram')) {
+            $out['telegram_chat_id'] = $this->getTelegram();
+        }
+
+        return $out;
     }
 }

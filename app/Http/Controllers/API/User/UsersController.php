@@ -83,12 +83,7 @@ class UsersController extends APIController
     )]
     public function updateProfile(UpdateProfileRequest $request): JsonResponse
     {
-        $dto = new UserProfileDTO(
-            email: $request->getEmail(),
-            name: $request->getName(),
-        );
-
-        $updatedUser = $this->userService->update($dto, $request->user());
+        $updatedUser = $this->userService->update($request->user(), $request->getUpdateData());
 
         return $this->apiResponse(
             $this->response->getUserResponse($updatedUser),

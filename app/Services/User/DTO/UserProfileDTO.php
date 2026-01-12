@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Services\User\DTO;
@@ -9,10 +10,11 @@ final readonly class UserProfileDTO implements \JsonSerializable
         public ?string $email,
         public ?string $name,
         public ?string $password = null,
+        public ?string $telegram = null,
         public ?string $language = null,
     ) {}
 
-    public function jsonSerialize(): mixed
+    public function jsonSerialize(): array
     {
         $out = [];
 
@@ -30,6 +32,10 @@ final readonly class UserProfileDTO implements \JsonSerializable
 
         if ($this->language) {
             $out['language'] = $this->language;
+        }
+
+        if ($this->telegram !== null) {
+            $out['telegram_chat_id'] = $this->telegram;
         }
 
         return $out;

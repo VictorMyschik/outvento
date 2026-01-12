@@ -27,6 +27,7 @@ final readonly class UserProfileResponse
         public string  $email,
         public ?string $avatar,
         public bool    $isVerified,
+        public ?string  $telegram,
         public string  $defaultLanguage = 'RU',
     ) {}
 }

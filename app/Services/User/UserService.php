@@ -91,17 +91,17 @@ final readonly class UserService
         )->plainTextToken;
     }
 
-    public function update(UserProfileDTO $dto, User $user): User
+    public function update(User $user, array $data): User
     {
-        if (!empty($dto->email) && $dto->email !== $user->email) {
+        if (!empty($data['email']) && $data['email'] !== $user->email) {
             $user->email_verified_at = null;
 
             $this->sendVerifyNotification($user);
         }
 
-        $updateData = $dto->jsonSerialize();
-
-        $this->repository->updateUser($user->id, $updateData);
+        if (count($data)) {
+            $this->repository->updateUser($user->id, $data);
+        }
 
         return $this->repository->getUserById($user->id);
     }
