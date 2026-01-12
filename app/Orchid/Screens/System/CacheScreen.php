@@ -12,7 +12,7 @@ use Orchid\Support\Facades\Layout;
 
 class CacheScreen extends Screen
 {
-    public ?string $name = 'Cache System';
+    public string $name = 'Cache System';
 
     public function __construct(private readonly CacheRedisClass $cacheInfoClass) {}
 

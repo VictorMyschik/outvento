@@ -15,10 +15,7 @@ use Orchid\Support\Facades\Layout;
 
 class FailedJobsScreen extends Screen
 {
-    public function name(): ?string
-    {
-        return 'Failed Jobs';
-    }
+    public string $name = 'Failed Jobs';
 
     public function commandBar(): iterable
     {

@@ -69,6 +69,7 @@ class PlatformProvider extends OrchidServiceProvider
                 // Menu::make('Jobs')->route('system.jobs'),
                 Menu::make('Failed jobs')->route('system.failed.jobs'),
                 Menu::make('Database')->route('system.database'),
+                Menu::make('PHP Info')->route('system.phpinfo'),
                 Menu::make('Supervisor')->route('system.config'),
                 Menu::make('API documentation')->target('_blank')->href('/api/docs'),
             ])->divider(),

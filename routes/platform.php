@@ -30,6 +30,7 @@ use App\Orchid\Screens\System\DatabaseScreen;
 use App\Orchid\Screens\System\DatabaseTableScreen;
 use App\Orchid\Screens\System\FailedJobsScreen;
 use App\Orchid\Screens\System\JobsScreen;
+use App\Orchid\Screens\System\PhpInfoScreen;
 use App\Orchid\Screens\System\PurgeScreen;
 use App\Orchid\Screens\System\SettingsScreen;
 use App\Orchid\Screens\System\SupervisorScreen;
@@ -121,6 +122,7 @@ Route::screen('system/failed-jobs', FailedJobsScreen::class)->name('system.faile
 Route::screen('system/database', DatabaseScreen::class)->name('system.database');
 Route::screen('system/database/table/{table}', DatabaseTableScreen::class)->name('system.database.table');
 Route::screen('system/config', SupervisorScreen::class)->name('system.config');
+Route::screen('system/phpinfo', PhpInfoScreen::class)->name('system.phpinfo');
 
 // Language
 Route::screen('language/translate', TranslateScreen::class)->name('language.translate.list');

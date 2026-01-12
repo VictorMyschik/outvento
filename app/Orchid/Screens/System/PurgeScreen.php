@@ -12,11 +12,7 @@ use Orchid\Support\Facades\Toast;
 
 class PurgeScreen extends Screen
 {
-
-    public function name(): ?string
-    {
-        return 'Полная очистка базы данных';
-    }
+public string $name = 'Purge Database';
 
     public function description(): ?string
     {

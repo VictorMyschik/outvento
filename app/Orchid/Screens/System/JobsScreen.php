@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\System;
 
-use App\Jobs\EmailJob;
 use App\Models\Job;
-use App\Models\System\FailedJobs;
 use App\Orchid\Filters\System\JobsFilter;
 use App\Orchid\Layouts\Lego\ShowLayout;
 use App\Orchid\Layouts\System\JobsListLayout;
-use Illuminate\Support\Facades\Artisan;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Layouts\Modal;
 use Orchid\Screen\Screen;
@@ -18,10 +15,7 @@ use Orchid\Support\Facades\Layout;
 
 class JobsScreen extends Screen
 {
-    public function name(): ?string
-    {
-        return 'Jobs';
-    }
+    public string $name = 'Jobs';
 
     public function commandBar(): iterable
     {

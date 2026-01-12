@@ -18,10 +18,7 @@ class SettingsScreen extends Screen
 {
     public function __construct(private readonly SettingsService $service) {}
 
-    public function name(): string
-    {
-        return 'Settings';
-    }
+    public string $name = 'Settings';
 
     public function description(): string
     {
