@@ -8,6 +8,7 @@ services:
     build: ./docker/nginx
     container_name: nginx_travel
     volumes:
+      - ./docker/logs/nginx:/var/log/nginx
       - .:/var/www/travel
     environment:
       - VIRTUAL_HOST=travel.test
@@ -65,6 +66,8 @@ services:
     volumes:
       - .:/var/www/travel
       - ./storage/logs:/var/log/php
+      - ./docker/php/php.ini:/usr/local/etc/php/php.ini
+      - ./docker/php/opcache.ini:/usr/local/etc/php/conf.d/opcache.ini
 
   rabbitmq:
     image: rabbitmq:3-management-alpine

@@ -120,7 +120,7 @@ Route::screen('system/jobs', JobsScreen::class)->name('system.jobs');
 Route::screen('system/failed-jobs', FailedJobsScreen::class)->name('system.failed.jobs');
 Route::screen('system/database', DatabaseScreen::class)->name('system.database');
 Route::screen('system/database/table/{table}', DatabaseTableScreen::class)->name('system.database.table');
-Route::screen('system/supervisor', SupervisorScreen::class)->name('system.supervisor');
+Route::screen('system/config', SupervisorScreen::class)->name('system.config');
 
 // Language
 Route::screen('language/translate', TranslateScreen::class)->name('language.translate.list');

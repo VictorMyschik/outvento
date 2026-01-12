@@ -1,53 +1,72 @@
-FROM php:8.4-rc-cli
+FROM php:8.5-cli-alpine
 
-RUN pecl install -o -f redis \
-&&  rm -rf /tmp/pear \
-&&  docker-php-ext-enable redis
+# --------------------------------------------------
+# Environment
+# --------------------------------------------------
+ENV TZ=UTC
 
-RUN apt-get update
+# --------------------------------------------------
+# System dependencies
+# --------------------------------------------------
+RUN apk add --no-cache \
+    bash \
+    pkgconf \
+    icu-dev \
+    libzip-dev \
+    oniguruma-dev \
+    postgresql-dev \
+    libxml2-dev \
+    linux-headers \
+    $PHPIZE_DEPS
 
-# Install Postgre PDO
-RUN apt-get install -y libpq-dev \
-    && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
-    && docker-php-ext-install pdo pdo_pgsql pgsql
 
-RUN set -x && \
-    # install lib packages
-    apt-get update &&\
-    apt-get install --no-install-recommends --no-install-suggests -y \
-        openssh-server \
-        bc \
-        libzip-dev \
-        unzip \
-        libbz2-dev \
-        libfreetype6-dev \
-        libpng-dev \
-    && \
-    apt-get install --no-install-recommends --no-install-suggests -y \
-        # for composer
-        postgresql-client \
-        mc \
-        && \
-    docker-php-ext-configure gd --with-freetype --with-jpeg ; \
-    docker-php-ext-install -j$(nproc) \
-        bcmath \
-        pdo \
-        pdo_pgsql \
-        bz2 \
-        gd \
-        exif \
-        opcache \
-        zip
 
+# --------------------------------------------------
+# PHP extensions (core)
+# --------------------------------------------------
+RUN docker-php-ext-install \
+    pdo \
+    pdo_pgsql \
+    intl \
+    zip \
+    mbstring
+
+# --------------------------------------------------
+# PHP extensions (PECL)
+# --------------------------------------------------
+
+# Redis
+RUN pecl install redis \
+ && docker-php-ext-enable redis
+
+# --------------------------------------------------
+# Composer (artisan нужен)
+# --------------------------------------------------
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# --------------------------------------------------
+# PHP config
+# --------------------------------------------------
+COPY php.ini /usr/local/etc/php/php.ini
+COPY jit.ini /usr/local/etc/php/conf.d/99-jit.ini
+
+
+# --------------------------------------------------
+# Supervisor config
+# --------------------------------------------------
+RUN apk add --no-cache supervisor
+
+RUN mkdir -p /etc/config/conf.d
+
+COPY config/conf.d/* /etc/supervisor/conf.d/
+COPY config/supervisord.conf /etc/supervisor/
+
+# --------------------------------------------------
+# Workdir
+# --------------------------------------------------
 WORKDIR /var/www/travel
 
-# Supervisor config
-RUN apt-get update && apt-get upgrade -y
-RUN apt-get install supervisor -y
-
-RUN mkdir -p /var/log/supervisor
-
-COPY supervisor/conf.d/* /etc/supervisor/conf.d/
-COPY supervisor/supervisord.conf /etc/supervisor/
-
+# --------------------------------------------------
+# Run config
+# --------------------------------------------------
 CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]
