@@ -1,6 +1,4 @@
 networks:
-  frontend:
-    external: true
   backend:
 
 services:
@@ -14,7 +12,6 @@ services:
     ports:
       - "80:80"
     networks:
-      frontend:
       backend:
         aliases:
           - travel.test
@@ -35,7 +32,6 @@ services:
   postgres:
     image: postgres:latest
     networks:
-      frontend:
       backend:
     ports:
       - '5441:5432'
@@ -51,7 +47,6 @@ services:
     image: bitnami/redis:latest
     networks:
       - backend
-      - frontend
     ports:
       - '6379:6379'
     environment:

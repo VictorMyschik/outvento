@@ -21,7 +21,18 @@ RUN docker-php-ext-install \
     pdo_pgsql \
     intl \
     zip \
+    sockets \
     mbstring
+
+RUN apk add --no-cache \
+    freetype-dev \
+    libjpeg-turbo-dev \
+    libpng-dev \
+ && docker-php-ext-configure gd \
+    --with-freetype \
+    --with-jpeg \
+ && docker-php-ext-install gd
+
 
 # Xdebug (dev / qa)
 ARG INSTALL_XDEBUG=true
