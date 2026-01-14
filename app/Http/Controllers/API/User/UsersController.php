@@ -91,7 +91,7 @@ class UsersController extends APIController
         $updatedUser = $this->userService->updateUser($request->user(), $request->getUpdateData());
 
         return $this->apiResponse(
-            $this->response->getUserResponse($updatedUser),
+            $this->response->getUserFullResponse($updatedUser),
         );
     }
 
@@ -138,35 +138,6 @@ class UsersController extends APIController
     public function removeAvatar(Request $request): JsonResponse
     {
         $this->userService->removeAvatar($request->user());
-
-        return $this->apiResponse(code: 204);
-    }
-
-    #[OA\Post(
-        path: "/api/v1/user/locale/{locale}",
-        operationId: "setLocale",
-        summary: "Установить локаль пользователя",
-        security: [["bearerAuth" => []],
-        ],
-        tags: ["User info"],
-        parameters: [
-            new OA\Parameter(ref: "#/components/parameters/XRequestedWithHeader"),
-            new OA\Parameter(
-                name: "locale",
-                description: "Код локали (например: en, ru)",
-                in: "path",
-                required: true,
-                schema: new OA\Schema(type: "string", example: "en")
-            ),
-        ],
-        responses: [
-            new OA\Response(response: 204, description: "Successful", content: new OA\JsonContent(ref: "#/components/schemas/SuccessfulEmptyResponse")),
-            new OA\Response(response: 422, description: "Bad Request", content: new OA\JsonContent(ref: "#/components/schemas/ValidationError")),
-        ]
-    )]
-    public function setLocale(Request $request, UserService $userService, string $locale): JsonResponse
-    {
-        $userService->setLocale($request->user()->id, Language::fromCode($locale));
 
         return $this->apiResponse(code: 204);
     }

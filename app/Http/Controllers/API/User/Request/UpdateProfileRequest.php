@@ -6,6 +6,7 @@ namespace App\Http\Controllers\API\User\Request;
 
 use App\Services\System\Enum\Language;
 use App\Services\User\Enum\Gender;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -39,8 +40,8 @@ class UpdateProfileRequest extends FormRequest
             'first_name' => ['sometimes', 'nullable', 'string', 'max:100'],
             'last_name'  => ['sometimes', 'nullable', 'string', 'max:100'],
             'gender'     => ['sometimes', 'nullable', 'integer', Rule::enum(Gender::class)],
-            'birthday'   => ['sometimes', 'nullable', 'date', 'dimensions:min_year=1900,max_year=' . date('Y')],
-            'about'      => ['sometimes', 'nullable', 'string', 'max:8000']
+            'birthday'   => ['sometimes', 'nullable', 'date', 'before_or_equal:' . Carbon::now()->toDateString()],
+            'about'      => ['sometimes', 'nullable', 'string', 'max:8000', 'not_regex:/<[^>]+>/',]
         ];
     }
 
