@@ -20,6 +20,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
+use LogicException;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -228,6 +229,10 @@ class AuthController extends APIController
     )]
     public function verifyResend(Request $request): JsonResponse
     {
+        if ($request->user()->hasVerifiedEmail()) {
+            throw new LogicException('Текущий аккаунт уже подтвержден');
+        }
+
         $this->userService->sendVerifyNotification($request->user());
 
         return $this->apiResponse();
@@ -236,8 +241,8 @@ class AuthController extends APIController
     #[OA\Post(
         path: "/api/v1/reset-password",
         operationId: 'resetPasswordToken',
-        description: "Отправка кода для сброса пароля на email пользователя.",
-        summary: "Отправка кода сброса пароля",
+        description: "Отправка ссылки для сброса пароля на email пользователя.",
+        summary: "Отправка ссылки для сброса пароля",
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(ref: "#/components/schemas/ResetPasswordRequest")
@@ -291,7 +296,7 @@ class AuthController extends APIController
     #[OA\Post(
         path: "/api/v1/reset-password/change",
         operationId: 'resetPasswordConfirm',
-        description: "Изменение пароля пользователя с использованием кода сброса.",
+        description: "Изменение пароля пользователя с использованием ссылки сброса.",
         summary: "Изменение пароля",
         requestBody: new OA\RequestBody(
             required: true,

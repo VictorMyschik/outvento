@@ -38,11 +38,9 @@ use App\Orchid\Screens\Travel\TravelDetailsScreen;
 use App\Orchid\Screens\Travel\TravelListScreen;
 use App\Orchid\Screens\User\UserCommunicateScreen;
 use App\Orchid\Screens\User\UserEditScreen;
-use App\Orchid\Screens\User\UserInfoScreen;
 use App\Orchid\Screens\User\UserListInfoScreen;
 use App\Orchid\Screens\User\UserListScreen;
 use App\Orchid\Screens\User\UserProfileScreen;
-use App\Orchid\Screens\User\UsersScreen;
 use App\Orchid\Screens\Wishlist\WishlistScreen;
 use Illuminate\Support\Facades\Route;
 use Tabuna\Breadcrumbs\Trail;
@@ -132,7 +130,6 @@ Route::screen('/faq/list', FAQScreen::class)->name('faq.list');
 
 // Users
 Route::screen('/users/list', UserListInfoScreen::class)->name('users.list');
-//Route::screen('/users/{id}/profile', UserInfoScreen::class)->name('users.list');
 Route::screen('/users/communicates/list', UserCommunicateScreen::class)->name('users.communicates.list');
 
 // Travel

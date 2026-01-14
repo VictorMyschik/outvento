@@ -43,9 +43,9 @@ Route::middleware('auth:sanctum')->group(static function () {
 
     Route::prefix('user')->group(static function () {
         Route::get('', [UsersController::class, 'profile']);
+        Route::get('full', [UsersController::class, 'profileFull']);
         // Установить локаль пользователя по умолчанию в Личном кабинете
-        Route::post('locale/{locale}', [CommonApiController::class, 'setLocale']);
-        Route::post('profile', [UsersController::class, 'updateProfile']);
+        Route::post('profile/edit', [UsersController::class, 'updateProfile']);
         Route::post('password', [UsersController::class, 'changePassword']);
         Route::post('verify', [AuthController::class, 'verifyRegistration']);
         Route::post('verify/resend', [AuthController::class, 'verifyResend']);

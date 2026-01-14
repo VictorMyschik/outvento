@@ -20,6 +20,11 @@ final readonly class NotificationService
         private SettingsRepositoryInterface     $settingsRepository,
     ) {}
 
+    public static function getUnsubscribeUrl(string $token): string
+    {
+        return env('FRONT_HOST') . '/unsubscribe?token=' . $token;
+    }
+
     public function saveUserSetting(int $id, array $data): int
     {
         $data['token'] = md5(uniqid());
@@ -52,9 +57,9 @@ final readonly class NotificationService
 
     public function sendNewsNotification(NotificationRecipientInterface $recipient, array $newsList): void
     {
-        $token = $recipient->getUnsubscribeToken(NotificationType::News);
-
-        $unsubscribeUrl = env('FRONT_HOST') . '/unsubscribe?token=' . $token;
+        $unsubscribeUrl = self::getUnsubscribeUrl(
+            $recipient->getUnsubscribeToken(NotificationType::News)
+        );
 
         $recipient->notify(new NewsNotification($newsList, $unsubscribeUrl));
     }

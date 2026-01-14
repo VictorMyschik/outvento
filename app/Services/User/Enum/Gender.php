@@ -6,22 +6,20 @@ namespace App\Services\User\Enum;
 
 enum Gender: int
 {
-    case MALE = 0;
-    case FEMALE = 1;
+    case MALE = 1;
+    case FEMALE = 2;
 
     public function getLabel(): string
     {
-        return match ($this) {
-            self::MALE => 'Мужской',
-            self::FEMALE => 'Женский',
-        };
+        return __('enums.gender.' . $this->name);
     }
 
     public static function getSelectList(): array
     {
-        return array_combine(
-            array_map(fn($enum) => $enum->value, self::cases()),
-            array_map(fn($enum) => $enum->getLabel(), self::cases())
-        );
+        return collect(self::cases())
+            ->mapWithKeys(fn (self $case) => [
+                $case->value => $case->getLabel(),
+            ])
+            ->toArray();
     }
 }

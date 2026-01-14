@@ -28,4 +28,14 @@ return [
         'intro'       => 'New articles have been published:',
         'footer_text' => 'Click the links to read more.',
     ],
+
+    'verify_email' => [
+        'subject'     => 'Verify your email address',
+        'greeting'    => 'Thank you for registering!',
+        'instruction' => 'Use the following code to verify your email address:',
+        'expire'      => 'This code will expire in',
+        'ignore'      => 'If you did not create an account, no further action is required.',
+        "minutes"     => "minutes",
+        "regards"     => "Best regards",
+    ],
 ];

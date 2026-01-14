@@ -20,7 +20,7 @@ class LogNotificationSent
      */
     public function handle(NotificationSent $event): void
     {
-        NotificationLog::create([
+       /* NotificationLog::create([
             'notifiable_type' => get_class($event->notifiable),
             'notifiable_id' => $event->notifiable->id ?? null,
             'notification_key' => $event->notification::KEY ?? null,
@@ -37,6 +37,6 @@ class LogNotificationSent
         $log->setEmailBody($email->render());
         $log->setStatus((bool)($result ?? null));
         $log->setError($event->exception?->getMessage());
-        $log->save();
+        $log->save();*/
     }
 }

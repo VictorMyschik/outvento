@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Notifications;
 
-use App\Jobs\EmailJob;
-use App\Mail\NewNewsSubscriptionEmail;
 use App\Models\Subscription\Subscription;
+use App\Notifications\NewNewsSubscriptionNotification;
 use App\Services\Notifications\DTO\SubscriptionDto;
 use App\Services\Notifications\Enum\NotificationType;
 use App\Services\System\Enum\Language;
@@ -61,9 +60,11 @@ final readonly class SubscriptionService
             type: NotificationType::News->value,
         );
 
-        $this->repository->saveSubscription(0, (array)$data);
+        $id = $this->repository->saveSubscription(0, (array)$data);
 
-        EmailJob::dispatch($email, new NewNewsSubscriptionEmail($token), NotificationType::NewNewsSubscription);
+        $this->getSubscriptionById($id)->notify(
+            new NewNewsSubscriptionNotification(NotificationService::getUnsubscribeUrl($token))
+        );
     }
 
     public function updateSubscription(int $id, array $data): void

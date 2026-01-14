@@ -34,7 +34,7 @@ class NewsNotification extends Notification
             ];
         }
 
-        return (new MailMessage)->view('mail.news_digest', [
+        return (new MailMessage)->view('emails.news_digest', [
             'newsDataList'   => $newsDataList,
             'unsubscribeUrl' => $this->unsubscribeUrl
         ]);

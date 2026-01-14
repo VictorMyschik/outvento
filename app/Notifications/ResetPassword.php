@@ -26,7 +26,7 @@ class ResetPassword extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)->view('mail.auth.reset_password', [
+        return (new MailMessage)->view('emails.reset_password', [
             'url'           => $this->url,
             'expireMinutes' => $this->expireMinutes,
             'locale'        => $this->userLocale,

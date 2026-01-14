@@ -24,6 +24,7 @@ final readonly class UserService
 {
     public const int TOKEN_LENGTH = 60;
     private const int RESET_PASSWORD_TOKEN_EXPIRY_MINUTES = 20;
+    private const int ACTION_VERIFY_REG_TIME_EXPIRY_MINUTES = 20;
 
     private Language $language;
 
@@ -91,10 +92,10 @@ final readonly class UserService
         )->plainTextToken;
     }
 
-    public function update(User $user, array $data): User
+    public function updateUser(User $user, array $data): User
     {
         if (!empty($data['email']) && $data['email'] !== $user->email) {
-            $user->email_verified_at = null;
+            $data['email_verified_at'] = null;
 
             $this->sendVerifyNotification($user);
         }
@@ -132,10 +133,6 @@ final readonly class UserService
 
     public function sendVerifyNotification(User $user): void
     {
-        if ($user->hasVerifiedEmail()) {
-            throw new LogicException('Текущий аккаунт уже подтвержден');
-        }
-
         $code = (string)rand(100000, 999999);
 
         NotificationCode::updateOrCreate(
@@ -148,7 +145,7 @@ final readonly class UserService
             ]
         );
 
-        $user->notify(new VerifyRegistrationCode($code));
+        $user->notify(new VerifyRegistrationCode($code, self::ACTION_VERIFY_REG_TIME_EXPIRY_MINUTES));
     }
 
     public function sendResetPassword(string $email): void
@@ -167,10 +164,12 @@ final readonly class UserService
         $datetime = now()->subMinutes(self::RESET_PASSWORD_TOKEN_EXPIRY_MINUTES);
 
         PasswordResetToken::where('token', $token)
-            ->where(function ($query) use ($datetime) {
+            ->where(function ($query) use ($datetime)
+            {
                 $query->where('created_at', '>=', $datetime)->whereNull('updated_at');
             })
-            ->orWhere(function ($query) use ($datetime) {
+            ->orWhere(function ($query) use ($datetime)
+            {
                 $query->where('updated_at', '>=', $datetime);
             })
             ->firstOrFail();
@@ -182,10 +181,12 @@ final readonly class UserService
             $datetime = now()->subMinutes(self::RESET_PASSWORD_TOKEN_EXPIRY_MINUTES);
 
             $passwordResetToken = PasswordResetToken::where('token', $token)
-                ->where(function ($query) use ($datetime) {
+                ->where(function ($query) use ($datetime)
+                {
                     $query->where('created_at', '>=', $datetime)->whereNull('updated_at');
                 })
-                ->orWhere(function ($query) use ($datetime) {
+                ->orWhere(function ($query) use ($datetime)
+                {
                     $query->where('updated_at', '>=', $datetime);
                 })
                 ->firstOrFail();;

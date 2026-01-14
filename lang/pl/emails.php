@@ -28,4 +28,14 @@ return [
         'intro'       => 'Na naszej stronie pojawiły się nowe artykuły:',
         'footer_text' => 'Kliknij linki, aby dowiedzieć się więcej.',
     ],
+
+    'verify_email' => [
+        'subject'     => 'Potwierdzenie adresu e-mail',
+        'greeting'    => 'Dziękujemy za rejestrację!',
+        'instruction' => 'Użyj poniższego kodu, aby potwierdzić swój adres e-mail:',
+        'expire'      => 'Kod wygaśnie za',
+        'ignore'      => 'Jeśli nie zakładałeś konta, zignoruj tę wiadomość.',
+        "minutes"     => "minut",
+        "regards"     => "Z poważaniem",
+    ],
 ];

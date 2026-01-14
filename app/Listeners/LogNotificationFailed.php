@@ -9,7 +9,7 @@ class LogNotificationFailed
 {
     public function handle(object $event): void
     {
-        NotificationLog::create([
+        /*NotificationLog::create([
             'notifiable_type' => get_class($event->notifiable),
             'notifiable_id' => $event->notifiable->id ?? null,
             'notification_key' => $event->notification::KEY,
@@ -17,6 +17,6 @@ class LogNotificationFailed
             'entity_type' => get_class($event->notification->news ?? null),
             'entity_id' => $event->notification->news->id ?? null,
             'status' => 'sent',
-        ]);
+        ]);*/
     }
 }

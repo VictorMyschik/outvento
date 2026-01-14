@@ -4,22 +4,32 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\User;
 
-use App\Orchid\Filters\UserInfoFilter;
+use App\Http\Controllers\API\User\Request\UpdateProfileRequest;
+use App\Models\User;
+use App\Orchid\Filters\User\UserInfoFilter;
 use App\Orchid\Layouts\User\UserInfoListLayout;
+use App\Orchid\Layouts\User\UserProfileEditLayout;
+use App\Services\User\UserService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Screen;
+use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
 
 class UserListInfoScreen extends Screen
 {
+    public function __construct(
+        private readonly Request     $request,
+        private readonly UserService $service,
+    ) {}
+
     public string $name = 'Пользователи';
 
     public function query(): iterable
     {
         return [
-            'list' => UserInfoFilter::runQuery()->paginate(20),
+            'list' => UserInfoFilter::runQuery()->paginate(50),
         ];
     }
 
@@ -32,6 +42,7 @@ class UserListInfoScreen extends Screen
                 ->method('saveUserInfo')
                 ->modalTitle('Добавить информацию о пользователе')
                 ->asyncParameters(['id' => 0])
+                ->novalidate()
                 ->icon('plus'),
         ];
     }
@@ -39,47 +50,33 @@ class UserListInfoScreen extends Screen
     public function layout(): iterable
     {
         return [
-            UserInfoFilter::displayFilterCard(),
+            // UserInfoFilter::displayFilterCard($this->request),
             UserInfoListLayout::class,
-            // Layout::modal('user_info_modal', UserInfoEditLayout::class)->async('asyncGetUserInfo'),
+            Layout::modal('user_modal', UserProfileEditLayout::class)->async('asyncGetUserProfile'),
         ];
     }
 
-    public function saveUserInfo(Request $request): void
+    public function asyncGetUserProfile(int $id): array
     {
-        $input = $request->validate([
-            'info.user_id'   => 'required|integer|unique:user_info,user_id,' . (int)$request->get('id') . ',id',
-            'info.full_name' => 'required|string|max:255|min:3',
-            'info.gender'    => 'required|integer|max:1|min:0',
-            'info.about'     => 'nullable|string|max:8000|min:3',
-            'info.birthday'  => 'nullable|date',
-        ])['info'];
+        return User::find($id)->getAttributes();
+    }
 
-        $input['full_name'] = trim($input['full_name']);
+    public function saveUser(Request $request, int $id): void
+    {
+        $input = $request->validate(new UpdateProfileRequest()->rules($id), $request->all());
 
-        $userInfo = UserInfo::loadBy($request->get('id')) ?: new UserInfo();
-        $userInfo->setUserID((int)$input['user_id']);
-        $userInfo->setFullName($input['full_name']);
-        $userInfo->setGender((int)$input['gender']);
-        $userInfo->setAbout($input['about']);
-        $userInfo->setBirthday($input['birthday']);
+        $input['email_verified_at'] = $request->get('email_verified_at') ? now() : null;
+        $input['telegram_chat_id'] = $request->get('telegram_chat_id') ?? null;
+        unset($input['telegram']);
 
-        $userInfo->save();
+        $this->service->updateUser(User::find($id), $input);
 
         Toast::info('Информация о пользователе успешно сохранена');
     }
 
-    public function remove(int $id): void
-    {
-        $info = UserInfo::loadByOrDie($id);
-        $info->delete();
-
-        Toast::info('Информация о пользователе успешно удалена');
-    }
-
     public function asyncGetUserInfo(int $id = 0): array
     {
-        return ['info' => UserInfo::loadBy($id)];
+        return ['info' => User::loadBy($id)];
     }
 
     public function runFiltering(Request $request): RedirectResponse
@@ -91,11 +88,11 @@ class UserListInfoScreen extends Screen
             }
         }
 
-        return redirect()->route('user.info.list', $list);
+        return redirect()->route('users.list', $list);
     }
 
     public function clearFilter(): RedirectResponse
     {
-        return redirect()->route('user.info.list');
+        return redirect()->route('users.list');
     }
 }

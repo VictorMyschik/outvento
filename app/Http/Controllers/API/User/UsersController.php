@@ -52,8 +52,13 @@ class UsersController extends APIController
         return $this->apiResponse($this->response->getUserResponse($request->user()));
     }
 
+    public function profileFull(Request $request): JsonResponse
+    {
+        return $this->apiResponse($this->response->getUserFullResponse($request->user()));
+    }
+
     #[OA\Post(
-        path: "/api/v1/user/profile",
+        path: "/api/v1/user/profile/edit",
         operationId: "updateProfile",
         summary: "Обновить информацию о пользователе",
         security: [["bearerAuth" => []]],
@@ -83,7 +88,7 @@ class UsersController extends APIController
     )]
     public function updateProfile(UpdateProfileRequest $request): JsonResponse
     {
-        $updatedUser = $this->userService->update($request->user(), $request->getUpdateData());
+        $updatedUser = $this->userService->updateUser($request->user(), $request->getUpdateData());
 
         return $this->apiResponse(
             $this->response->getUserResponse($updatedUser),
