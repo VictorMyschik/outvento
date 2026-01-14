@@ -34,9 +34,10 @@ class UserProfileEditLayout extends Rows
 
             Select::make('email_verified_at')
                 ->title('Email verified')
+                ->value((bool)$this->query->get('email_verified_at'))
                 ->options([
-                    '1' => 'Verified',
-                    '0' => 'Not verified',
+                    1 => 'Verified',
+                    0 => 'Not verified',
                 ]),
 
             Input::make('telegram_chat_id')

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\API\Auth\Request\Auth;
 
 use App\Models\User;
+use App\Services\System\Enum\Language;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
@@ -29,6 +30,7 @@ class RegisterRequest extends FormRequest
             'name'     => ['required', 'string', 'max:255', Rule::unique(User::class)],
             'email'    => ['required', 'string', 'email', 'max:255', Rule::unique(User::class)],
             'password' => ['required', 'string', Password::default(), 'confirmed'],
+            'language' => ['sometimes', 'nullable', 'integer', Rule::enum(Language::class)],
         ];
     }
 
@@ -45,6 +47,11 @@ class RegisterRequest extends FormRequest
     public function getPassword(): string
     {
         return $this->input('password');
+    }
+
+    public function getLanguage(): ?Language
+    {
+        return $this->has('language') ? Language::from((int)$this->input('language')) : null;
     }
 
     public function messages(): array

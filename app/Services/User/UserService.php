@@ -17,7 +17,6 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use LogicException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final readonly class UserService
@@ -53,7 +52,18 @@ final readonly class UserService
         return $this->issueToken($user, $isRememberMe);
     }
 
-    public function create(UserProfileDTO $dto): string
+    public function createWithAuth(UserProfileDTO $dto): string
+    {
+        $user = $this->create($dto);
+
+        Auth::login($user, true);
+
+        $this->sendVerifyNotification($user);
+
+        return $this->issueToken($user);
+    }
+
+    public function create(UserProfileDTO $dto): User
     {
         $user = new User();
 
@@ -64,11 +74,7 @@ final readonly class UserService
             'language' => $dto->language,
         ])->save();
 
-        Auth::login($user, true);
-
-        $this->sendVerifyNotification($user);
-
-        return $this->issueToken($user);
+        return $user;
     }
 
     public function registerWithYandex(object $user): string
@@ -164,12 +170,10 @@ final readonly class UserService
         $datetime = now()->subMinutes(self::RESET_PASSWORD_TOKEN_EXPIRY_MINUTES);
 
         PasswordResetToken::where('token', $token)
-            ->where(function ($query) use ($datetime)
-            {
+            ->where(function ($query) use ($datetime) {
                 $query->where('created_at', '>=', $datetime)->whereNull('updated_at');
             })
-            ->orWhere(function ($query) use ($datetime)
-            {
+            ->orWhere(function ($query) use ($datetime) {
                 $query->where('updated_at', '>=', $datetime);
             })
             ->firstOrFail();
@@ -181,12 +185,10 @@ final readonly class UserService
             $datetime = now()->subMinutes(self::RESET_PASSWORD_TOKEN_EXPIRY_MINUTES);
 
             $passwordResetToken = PasswordResetToken::where('token', $token)
-                ->where(function ($query) use ($datetime)
-                {
+                ->where(function ($query) use ($datetime) {
                     $query->where('created_at', '>=', $datetime)->whereNull('updated_at');
                 })
-                ->orWhere(function ($query) use ($datetime)
-                {
+                ->orWhere(function ($query) use ($datetime) {
                     $query->where('updated_at', '>=', $datetime);
                 })
                 ->firstOrFail();;

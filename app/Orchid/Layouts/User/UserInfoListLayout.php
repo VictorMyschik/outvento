@@ -6,6 +6,7 @@ namespace App\Orchid\Layouts\User;
 
 use App\Models\User;
 use Orchid\Screen\Actions\DropDown;
+use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
@@ -45,6 +46,9 @@ class UserInfoListLayout extends Table
                 ->render(fn($user) => DropDown::make()
                     ->icon('bs.three-dots-vertical')
                     ->list([
+                        Link::make(__('Profile'))
+                            ->icon('user')
+                            ->route('users.details', $user->id),
                         ModalToggle::make('Edit')
                             ->icon('pencil')
                             ->modal('user_modal')

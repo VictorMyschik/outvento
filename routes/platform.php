@@ -36,9 +36,10 @@ use App\Orchid\Screens\System\SettingsScreen;
 use App\Orchid\Screens\System\SupervisorScreen;
 use App\Orchid\Screens\Travel\TravelDetailsScreen;
 use App\Orchid\Screens\Travel\TravelListScreen;
+use App\Orchid\Screens\User\ProfileScreen;
 use App\Orchid\Screens\User\UserCommunicateScreen;
 use App\Orchid\Screens\User\UserEditScreen;
-use App\Orchid\Screens\User\UserListInfoScreen;
+use App\Orchid\Screens\User\UserProfileListScreen;
 use App\Orchid\Screens\User\UserListScreen;
 use App\Orchid\Screens\User\UserProfileScreen;
 use App\Orchid\Screens\Wishlist\WishlistScreen;
@@ -127,9 +128,13 @@ Route::screen('language/translate', TranslateScreen::class)->name('language.tran
 
 // FAQ
 Route::screen('/faq/list', FAQScreen::class)->name('faq.list');
+//// News
+Route::screen('newsletter/list', NewsletterScreen::class)->name('newsletter.news.list');
+Route::screen('newsletter/{news_id}/edit', NewsEditScreen::class)->name('newsletter.news.edit');
 
 // Users
-Route::screen('/users/list', UserListInfoScreen::class)->name('users.list');
+Route::screen('/users/list', UserProfileListScreen::class)->name('users.list');
+Route::screen('/users/{user}/details', ProfileScreen::class)->name('users.details');
 Route::screen('/users/communicates/list', UserCommunicateScreen::class)->name('users.communicates.list');
 
 // Travel
@@ -146,10 +151,6 @@ Route::screen('/reference/emails', EmailScreen::class)->name('reference.email.li
 
 //// Subscriptions
 Route::screen('/subscriptions/list', SubscriptionScreen::class)->name('subscriptions.list');
-
-//// News
-Route::screen('newsletter/list', NewsletterScreen::class)->name('newsletter.news.list');
-Route::screen('newsletter/{news_id}/edit', NewsEditScreen::class)->name('newsletter.news.edit');
 
 /// Message Log
 Route::screen('/notification/user/settings/list', UserNotificationSettingScreen::class)->name('notification.user.settings.list');

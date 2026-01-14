@@ -66,10 +66,10 @@ class AuthController extends APIController
             email: $request->getEmail(),
             name: $request->getName(),
             password: Hash::make($request->getPassword()),
-            language: $this->getLanguage()->getCode(),
+            language: $this->getLanguage()->value,
         );
 
-        return $this->apiResponse(['token' => $this->userService->create($dto)]);
+        return $this->apiResponse(['token' => $this->userService->createWithAuth($dto)]);
     }
 
     #[OA\Post(

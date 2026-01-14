@@ -46,9 +46,9 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
     ];
 
     protected $casts = [
-        'permissions' => 'array',
+        'permissions'       => 'array',
         'email_verified_at' => 'datetime',
-        'birthday' => 'date',
+        'birthday'          => 'date',
     ];
 
 
@@ -106,6 +106,11 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
     public function getAvatar(): ?string
     {
         return $this->avatar ? asset('storage' . $this->avatar) : null;
+    }
+
+    public function getFullName(): string
+    {
+        return trim($this->first_name . ' ' . $this->last_name);
     }
 
     public function notificationSettings(): HasMany
