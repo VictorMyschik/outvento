@@ -50,6 +50,7 @@ class UserProfileEditLayout extends Rows
 
                 DateTimer::make('birthday')
                     ->title('Birthday')
+                    ->serverFormat('d.m.Y')
                     ->format('d.m.Y'),
             ]),
 

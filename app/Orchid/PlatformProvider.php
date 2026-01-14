@@ -33,9 +33,10 @@ class PlatformProvider extends OrchidServiceProvider
                 Menu::make('Countries')->icon('bs.list')->route('reference.countries.list'),
                 Menu::make('Cities')->icon('bs.list')->route('reference.cities.list'),
             ]),
-
-            Menu::make('Newsletter')->icon('bs.list')->route('newsletter.news.list')->divider(),
-
+            Menu::make('Articles')->icon('grid')->list([
+                Menu::make('Newsletter')->icon('bs.list')->route('newsletter.news.list'),
+                Menu::make('FAQ')->icon('bs.book')->route('faq.list'),
+            ]),
             Menu::make('Notification')->icon('grid')->list([
                 Menu::make('Subscriptions')->icon('bs.send')->route('subscriptions.list'),
                 Menu::make('User Settings')->icon('bs.list')->route('notification.user.settings.list'),
@@ -43,7 +44,7 @@ class PlatformProvider extends OrchidServiceProvider
                 Menu::make('Log. Telegram')->icon('bs.list')->route('notification.log.telegram.list'),
             ])->divider(),
 
-            Menu::make('Users')->icon('grid')->list([
+            Menu::make('User List')->icon('grid')->list([
                 Menu::make('Users list')->icon('bs.people')->route('users.list'),
                 Menu::make('Communicates')->icon('bs.person-lines-fill')->route('users.communicates.list'),
             ])->divider(),
@@ -55,9 +56,6 @@ class PlatformProvider extends OrchidServiceProvider
                 Menu::make('Группы товаров')->icon('list')->route('type.list'),
                 Menu::make('Производители')->icon('list')->route('manufacturer.list')->divider(),
             ]),
-
-            // FAQ
-            Menu::make('FAQ')->icon('bs.book')->route('faq.list'),
 
             Menu::make('Language')->icon('language')->route('language.translate.list'),
 
@@ -74,17 +72,17 @@ class PlatformProvider extends OrchidServiceProvider
                 Menu::make('API documentation')->target('_blank')->href('/api/docs'),
             ])->divider(),
 
-            Menu::make(__('Users'))
-                ->icon('bs.people')
-                ->route('platform.systems.users')
-                ->permission('platform.systems.users')
-                ->title(__('Access Controls')),
+            Menu::make('Access Controls')->icon('grid')->list([
+                Menu::make(__('Users'))
+                    ->icon('bs.people')
+                    ->route('platform.systems.users')
+                    ->permission('platform.systems.users'),
 
-            Menu::make(__('Roles'))
-                ->icon('bs.shield')
-                ->route('platform.systems.roles')
-                ->permission('platform.systems.roles')
-                ->divider(),
+                Menu::make(__('Roles'))
+                    ->icon('bs.shield')
+                    ->route('platform.systems.roles')
+                    ->permission('platform.systems.roles'),
+            ])->divider(),
         ];
     }
 

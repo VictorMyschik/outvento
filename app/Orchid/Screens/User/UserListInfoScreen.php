@@ -50,7 +50,7 @@ class UserListInfoScreen extends Screen
     public function layout(): iterable
     {
         return [
-            // UserInfoFilter::displayFilterCard($this->request),
+            UserInfoFilter::displayFilterCard($this->request),
             UserInfoListLayout::class,
             Layout::modal('user_modal', UserProfileEditLayout::class)->async('asyncGetUserProfile'),
         ];
@@ -68,6 +68,10 @@ class UserListInfoScreen extends Screen
         $input['email_verified_at'] = $request->get('email_verified_at') ? now() : null;
         $input['telegram_chat_id'] = $request->get('telegram_chat_id') ?? null;
         unset($input['telegram']);
+
+        if ($input['birthday']) {
+            $input['birthday'] = date('Y-m-d', strtotime($input['birthday']));
+        }
 
         $this->service->updateUser(User::find($id), $input);
 

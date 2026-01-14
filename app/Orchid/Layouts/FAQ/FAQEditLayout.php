@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Orchid\Layouts\FAQ;
 
+use App\Orchid\Fields\CKEditor;
 use App\Services\System\Enum\Language;
 use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
-use Orchid\Screen\Fields\Quill;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Fields\Switcher;
 use Orchid\Screen\Layouts\Rows;
@@ -31,8 +31,7 @@ class FAQEditLayout extends Rows
                 ->required()
                 ->title('Title'),
 
-            Quill::make('faq.text')
-                ->title('Text')
+            CKEditor::make('faq.text')->title('Text'),
         ];
     }
 }

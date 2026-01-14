@@ -53,4 +53,9 @@ class FAQListLayout extends Table
                     ])),
         ];
     }
+
+    public function hoverable(): true
+    {
+        return true;
+    }
 }
