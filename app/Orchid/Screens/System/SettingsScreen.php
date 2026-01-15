@@ -1,15 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Orchid\Screens\System;
 
 use App\Models\System\Settings;
 use App\Orchid\Filters\System\SettingsFilter;
 use App\Orchid\Layouts\System\Settings\SettingsEditLayout;
 use App\Orchid\Layouts\System\Settings\SettingsListLayout;
+use App\Services\System\Enum\SettingsKey;
 use App\Services\System\SettingsService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Actions\ModalToggle;
+use Orchid\Screen\Fields\ViewField;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
@@ -34,14 +39,22 @@ class SettingsScreen extends Screen
 
     public function commandBar(): iterable
     {
+        if (!empty($this->getSettingsOptions())) {
+            return [
+                ModalToggle::make('add')
+                    ->class('mr-btn-success')
+                    ->icon('plus')
+                    ->modal('setup_modal')
+                    ->modalTitle('Settings')
+                    ->method('saveSettings')
+                    ->asyncParameters(['id' => 0]),
+            ];
+        }
+
         return [
-            ModalToggle::make('add')
-                ->class('mr-btn-success')
-                ->icon('plus')
-                ->modal('setup_modal')
-                ->modalTitle('Settings')
-                ->method('saveSettings')
-                ->asyncParameters(['id' => 0]),
+           Link::make('All settings are configured')
+               ->class('mr-btn-default')
+               ->icon('check'),
         ];
     }
 
@@ -57,7 +70,21 @@ class SettingsScreen extends Screen
     #region Popup From
     public function asyncGetSettings(int $id = 0): iterable
     {
-        return ['setup' => Settings::loadBy($id) ?: new Settings()];
+        return [
+            'setup'   => Settings::loadBy($id) ?: new Settings(),
+            'options' => $this->getSettingsOptions(),
+        ];
+    }
+
+    private function getSettingsOptions(): array
+    {
+        $options = SettingsKey::getSelectList();
+
+        foreach ($this->service->getList() as $key => $value) {
+            unset($options[$key]);
+        }
+
+        return $options;
     }
 
     public function saveSettings(Request $request): void

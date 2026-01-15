@@ -35,7 +35,12 @@ final readonly class SettingsService
         return $this->settings;
     }
 
-    private function getByKey(SettingsKey $key): Settings
+    public function getList(): array
+    {
+        return $this->all();
+    }
+
+    public function getByKey(SettingsKey $key): Settings
     {
         $setup = $this->all()[$key->value] ?? null;
         if (!$setup) {
@@ -66,9 +71,10 @@ final readonly class SettingsService
     public function getContacts(): array
     {
         return [
-            'email' => $this->getByKey(SettingsKey::AdminEmail)->getValue(),
-            'phone' => PhoneNumber::parse($this->getByKey(SettingsKey::AdminPhone)->getValue())->format(PhoneNumberFormat::INTERNATIONAL),
-            'telegram' => $this->getByKey(SettingsKey::AdminTelegram)->getValue(),
+            'email'            => $this->getByKey(SettingsKey::AdminEmail)->getValue(),
+            'phone'            => PhoneNumber::parse($this->getByKey(SettingsKey::AdminPhone)->getValue())->format(PhoneNumberFormat::INTERNATIONAL),
+            'telegram'         => $this->getByKey(SettingsKey::AdminTelegram)->getValue(),
+            'telegramChannel' => $this->getByKey(SettingsKey::TelegramChannel)->getValue(),
         ];
     }
 }

@@ -35,7 +35,7 @@ class SettingsEditLayout extends Rows
                 ->title('Value'),
 
             Select::make('setup.code_key')
-                ->options(SettingsKey::getSelectList())
+                ->options($this->query->get('options', []))
                 ->required()
                 ->title('Key'),
 

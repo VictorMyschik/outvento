@@ -4,57 +4,40 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens;
 
+use App\Services\System\Enum\SettingsKey;
+use App\Services\System\SettingsService;
+use Orchid\Screen\Actions\Link;
+use Orchid\Screen\Fields\ViewField;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
 
 class PlatformScreen extends Screen
 {
-    /**
-     * Fetch data to be displayed on the screen.
-     *
-     * @return array
-     */
+    public function __construct(private readonly SettingsService $service) {}
+
     public function query(): iterable
     {
         return [];
     }
 
-    /**
-     * The name of the screen displayed in the header.
-     */
-    public function name(): ?string
-    {
-        return 'Get Started';
-    }
+    public string $name = 'Get Started';
 
-    /**
-     * Display header description.
-     */
-    public function description(): ?string
-    {
-        return 'Welcome to your Orchid application.';
-    }
+    public string $description = 'Welcome to our platform.';
 
-    /**
-     * The screen's action buttons.
-     *
-     * @return \Orchid\Screen\Action[]
-     */
     public function commandBar(): iterable
     {
         return [];
     }
 
-    /**
-     * The screen's layout elements.
-     *
-     * @return \Orchid\Screen\Layout[]
-     */
     public function layout(): iterable
     {
         return [
-            Layout::view('platform::partials.update-assets'),
-            Layout::view('platform::partials.welcome'),
+            Layout::split([
+                Layout::rows([
+                    Link::make('Telegram channel link')->target('_blank')->href($this->service->getByKey(SettingsKey::TelegramChannel)->getValue()),
+                    ViewField::make('')->view('qr-code')->value($this->service->getByKey(SettingsKey::TelegramChannel)->getValue()),
+                ])
+            ])
         ];
     }
 }

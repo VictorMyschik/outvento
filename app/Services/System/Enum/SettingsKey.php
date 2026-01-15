@@ -10,6 +10,7 @@ enum SettingsKey: string
     case AdminPhone = 'admin_phone';
     case AdminTelegram = 'admin_telegram';
     case NotificationEnabled = 'notification_enabled';
+    case TelegramChannel = 'telegram_channel';
 
     public static function getSelectList(): array
     {
@@ -18,6 +19,7 @@ enum SettingsKey: string
             self::AdminPhone->value          => 'Admin Phone',
             self::NotificationEnabled->value => 'Notification Service',
             self::AdminTelegram->value       => 'Admin Telegram',
+            self::TelegramChannel->value     => 'Telegram Channel',
         ];
     }
 }
