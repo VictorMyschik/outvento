@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\User;
 
+use App\Http\Controllers\API\User\Request\CommunicationRequest;
+use App\Models\User;
 use App\Models\UserInfo\Communication;
 use App\Orchid\Filters\UserCommunicateFilter;
 use App\Orchid\Layouts\User\UserCommunicateEditLayout;
 use App\Orchid\Layouts\User\UserCommunicateListLayout;
+use App\Services\User\UserService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\ModalToggle;
@@ -18,6 +21,8 @@ use Orchid\Support\Facades\Toast;
 class UserCommunicateScreen extends Screen
 {
     public string $name = 'Контакты пользователей';
+
+    public function __construct(private readonly UserService $service) {}
 
     public function query(): iterable
     {
@@ -32,7 +37,7 @@ class UserCommunicateScreen extends Screen
             ModalToggle::make('Добавить контакт')
                 ->class('mr-btn-success')
                 ->modal('communicate_modal')
-                ->method('saveCommunicate')
+                ->method('saveCommunication')
                 ->modalTitle('Добавить контакт')
                 ->asyncParameters(['id' => 0])
                 ->icon('plus'),
@@ -57,34 +62,32 @@ class UserCommunicateScreen extends Screen
             }
         }
 
-        return redirect()->route('users.communicates.list', $list);
+        return redirect()->route('profiles.communication.list', $list);
     }
 
     public function clearFilter(): RedirectResponse
     {
-        return redirect()->route('users.communicates.list');
+        return redirect()->route('profiles.communication.list');
     }
 
     public function asyncGetCommunicate(int $id = 0): array
     {
-        return ['communicate' => Communication::loadBy($id)];
+        return Communication::loadBy($id)?->getAttributes() ?: [];
     }
 
-    public function saveCommunicate(Request $request): void
+    public function saveCommunication(CommunicationRequest $request, int $id): void
     {
-        $input = $request->validate([
-            'communicate.address' => 'required',
-            'communicate.kind'    => 'required',
-            'communicate.user_id' => 'required',
-        ])['communicate'];
+        $data = $request->getUpdateData();
+        $data['user_id'] = $request->get('user_id');
 
-        $communicate = Communication::loadBy((int)$request->get('id')) ?: new Communication();
-        $communicate->setUserId($input['user_id']);
-        $communicate->setAddress($input['address']);
-        $communicate->setKind((int)$input['kind']);
-        $communicate->save();
+        $this->service->saveCommunicate($id, $data);
 
         Toast::info('Контакт сохранен');
+    }
+
+    public function removeCommunication(int $userId, int $id): void
+    {
+        $this->service->deleteCommunication(User::findOrFail($userId), $id);
     }
 
     public function remove(int $id): void

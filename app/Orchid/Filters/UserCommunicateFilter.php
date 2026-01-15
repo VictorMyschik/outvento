@@ -36,20 +36,21 @@ class UserCommunicateFilter extends Filter
     public static function runQuery()
     {
         $query = Communication::filters([self::class])
-            ->rightJoin(User::getTableName(), Communication::getTableName() . '.user_id', '=', 'users.id');
+            ->join(CommunicationType::getTableName(), Communication::getTableName() . '.type_id', '=', CommunicationType::getTableName() . '.id')
+            ->join(User::getTableName(), Communication::getTableName() . '.user_id', '=', 'users.id');
 
         $query->selectRaw(implode(', ', [
+                'communications.*',
                 'users.id as user_id',
                 'users.name as name',
                 'users.email as email',
                 'users.telegram_chat_id as telegram_chat_id',
-               // 'CONCAT(users.first_name, " ", users.last_name) as full_name',
-                'communicates.*',
-                'type',
+                'CONCAT(users.first_name, \' \', users.last_name) as full_name',
+                'name_ru as type',
                 'address',
                 'description',
-                'communicates.created_at as created_at',
-                'communicates.updated_at as updated_at',
+                'communications.created_at as created_at',
+                'communications.updated_at as updated_at',
             ])
         );
 
@@ -58,17 +59,18 @@ class UserCommunicateFilter extends Filter
 
     public function run(Builder $builder): Builder
     {
+
         $input = $this->request->only($this->parameters());
 
         if (!empty($input['id'])) {
-            $builder->where('id', (int)$input['id']);
+            $builder->where('users.id', (int)$input['id']);
         }
 
         if (!empty($input['userId'])) {
             $builder->where('users.id', (int)$input['userId']);
         }
 
-        if (isset($input['email']) && !empty($input['email'])) {
+        if (!empty($input['email'])) {
             $input['email'] = substr($input['email'], 0, 255);
             $builder->where('email', $input['email']);
         }
@@ -86,27 +88,19 @@ class UserCommunicateFilter extends Filter
         }
 
         if (!empty($input['type'])) {
-            $builder->where('communicates.type', (int)$input['type']);
+            $builder->where('type_id', (int)$input['type']);
         }
 
         if (isset($input['address']) && !empty($input['address'])) {
             $input['address'] = substr($input['address'], 0, 255);
-            $builder->where('communicates.address', 'like', '%' . $input['address'] . '%');
+            $builder->where('address', 'like', '%' . $input['address'] . '%');
         }
 
         if (!empty($input['description'])) {
             $builder->where('description', 'like', '%' . $input['description'] . '%');
         }
 
-        if (!empty($input['createdAt'])) {
-            $builder->whereDate('communicates.created_at', $input['createdAt']);
-        }
-
-        if (!empty($input['updatedAt'])) {
-            $builder->whereDate('communicates.updated_at', $input['updatedAt']);
-        }
-
-        return $builder->orderBy('id', 'desc');
+        return $builder;
     }
 
     public static function displayFilterCard(): Rows
@@ -117,7 +111,7 @@ class UserCommunicateFilter extends Filter
             ->title('User ID');
 
         $outLine[] = Relation::make('email')
-            ->fromModel(User::class, 'email')
+            ->fromModel(User::class, 'email', 'email')
             ->value(request()->get('email'))
             ->title('Email (registered)');
 
@@ -126,20 +120,14 @@ class UserCommunicateFilter extends Filter
             ->value(request()->get('telegram_chat_id'))
             ->title('Telegram Chat ID');
 
-        $outLine[] = Relation::make('login')
-            ->fromModel(User::class, 'name')
-            ->value(request()->get('login'))
+        $outLine[] = Relation::make('name')
+            ->fromModel(User::class, 'name', 'name')
+            ->value(request()->get('name'))
             ->title('Login');
 
         $outLine2[] = Input::make('full_name')
             ->value(request()->get('full_name'))
             ->title('Full name');
-
-        $outLine[] = Select::make('gender')
-            ->empty('[не выбрано]')
-            ->fromEnum(Gender::class)
-            ->value(request()->get('gender'))
-            ->title('Gender');
 
         $outLine2[] = Relation::make('type')
             ->fromModel(CommunicationType::class, 'name_ru')

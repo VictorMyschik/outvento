@@ -9,7 +9,7 @@ use Illuminate\Validation\Rule;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(
-    schema: "CommunicateRequest",
+    schema: "CommunicationRequest",
     required: ["type", "address"],
     properties: [
         new OA\Property(property: "type", type: "integer", example: 1),
@@ -18,20 +18,20 @@ use OpenApi\Attributes as OA;
     ],
     type: "object"
 )]
-class CommunicateRequest extends FormRequest
+class CommunicationRequest extends FormRequest
 {
-    public function rules(?int $id = null): array
+    public function rules(): array
     {
         return [
-            'type'        => ['required', 'integer', Rule::exists('communication_types', 'id')],
+            'type_id'     => ['required', 'integer', Rule::exists('communication_types', 'id')],
             'address'     => ['required', 'string', 'max:255'],
             'description' => ['sometimes', 'nullable', 'string', 'max:8000', 'not_regex:/<[^>]+>/',]
         ];
     }
 
-    public function getType(): int
+    public function getTypeId(): int
     {
-        return (int)$this->input('type');
+        return (int)$this->input('type_id');
     }
 
     public function getAddress(): string
@@ -47,7 +47,7 @@ class CommunicateRequest extends FormRequest
     public function getUpdateData(): array
     {
         $out = [
-            'type_id' => $this->getType(),
+            'type_id' => $this->getTypeId(),
             'address' => $this->getAddress(),
         ];
 

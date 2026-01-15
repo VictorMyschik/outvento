@@ -6,7 +6,7 @@ namespace App\Http\Controllers\API\User;
 
 use App\Http\Controllers\API\APIController;
 use App\Http\Controllers\API\Auth\Request\Auth\UpdatePasswordRequest;
-use App\Http\Controllers\API\User\Request\CommunicateRequest;
+use App\Http\Controllers\API\User\Request\CommunicationRequest;
 use App\Http\Controllers\API\User\Request\UpdateProfileRequest;
 use App\Services\User\Api\UserApiResponse;
 use App\Services\User\UserService;
@@ -190,7 +190,7 @@ class UsersController extends APIController
         security: [["bearerAuth" => []]],
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(ref: "#/components/schemas/CommunicateRequest")
+            content: new OA\JsonContent(ref: "#/components/schemas/CommunicationRequest")
         ),
         tags: ["User info"],
         parameters: [
@@ -202,7 +202,7 @@ class UsersController extends APIController
             new OA\Response(response: 401, description: "Unauthorized", content: new OA\JsonContent(ref: "#/components/schemas/AuthError")),
         ]
     )]
-    public function createCommunication(CommunicateRequest $request): JsonResponse
+    public function createCommunication(CommunicationRequest $request): JsonResponse
     {
         $data = $request->getUpdateData();
         $data['user_id'] = $request->user()->id;
@@ -219,7 +219,7 @@ class UsersController extends APIController
         security: [["bearerAuth" => []]],
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(ref: "#/components/schemas/CommunicateRequest")
+            content: new OA\JsonContent(ref: "#/components/schemas/CommunicationRequest")
         ),
         tags: ["User info"],
         parameters: [
@@ -232,7 +232,7 @@ class UsersController extends APIController
             new OA\Response(response: 401, description: "Unauthorized", content: new OA\JsonContent(ref: "#/components/schemas/AuthError")),
         ]
     )]
-    public function updateCommunication(CommunicateRequest $request, int $id): JsonResponse
+    public function updateCommunication(CommunicationRequest $request, int $id): JsonResponse
     {
         $data = $request->getUpdateData();
         $data['user_id'] = $request->user()->id;

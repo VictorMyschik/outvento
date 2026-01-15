@@ -100,6 +100,11 @@ final readonly class UserService
 
     public function updateUser(User $user, array $data): User
     {
+        if (count($data)) {
+            $this->repository->updateUser($user->id, $data);
+            $user->refresh();
+        }
+
         if (!empty($data['email']) && $data['email'] !== $user->email) {
             $data['email_verified_at'] = null;
 

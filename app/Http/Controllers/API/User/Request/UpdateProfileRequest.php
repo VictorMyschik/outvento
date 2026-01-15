@@ -30,11 +30,11 @@ use OpenApi\Attributes as OA;
 )]
 class UpdateProfileRequest extends FormRequest
 {
-    public function rules(?int $id = null): array
+    public function rules(): array
     {
         return [
-            'name'       => ['sometimes', 'string', 'max:255', Rule::unique('users')->ignore($id ?: Auth::id())],
-            'email'      => ['sometimes', 'string', 'email', 'max:255', Rule::unique('users')->ignore($id ?: Auth::id())],
+            'name'       => ['sometimes', 'string', 'max:255', Rule::unique('users')->ignore((int)$this->get('id', Auth::id()))],
+            'email'      => ['sometimes', 'string', 'email', 'max:255', Rule::unique('users')->ignore((int)$this->get('id', Auth::id()))],
             'telegram'   => ['sometimes', 'nullable', 'string', 'max:255'],
             'language'   => ['sometimes', 'nullable', 'integer', Rule::enum(Language::class)],
             'first_name' => ['sometimes', 'nullable', 'string', 'max:100'],

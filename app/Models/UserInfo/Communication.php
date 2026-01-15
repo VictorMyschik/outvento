@@ -37,7 +37,12 @@ class Communication extends ORM
         'user_id',
         'full_name',
         'address',
+        'type',
+        'email',
+        'name',
         'description',
+        'created_at',
+        'updated_at',
     ];
 
     public function getType(): CommunicationType

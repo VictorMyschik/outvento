@@ -669,7 +669,7 @@
                         }
                     },
                     "422": {
-                        "description": "Bad Request",
+                        "description": "Unprocessable Entity",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -714,7 +714,7 @@
                         }
                     },
                     "422": {
-                        "description": "Bad Request",
+                        "description": "Unprocessable Entity",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -823,7 +823,7 @@
                         }
                     },
                     "422": {
-                        "description": "Bad Request",
+                        "description": "Unprocessable Entity",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -884,7 +884,7 @@
                         }
                     },
                     "422": {
-                        "description": "Bad Request",
+                        "description": "Unprocessable Entity",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -921,6 +921,252 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/XRequestedWithHeader"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SuccessfulEmptyResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/user/communications": {
+            "get": {
+                "tags": [
+                    "User info"
+                ],
+                "summary": "Получить список способов связи с пользователя",
+                "operationId": "getCommunications",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/XRequestedWithHeader"
+                    },
+                    {
+                        "name": "X-Locale",
+                        "in": "header",
+                        "description": "Locale",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "en"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "status",
+                                        "content"
+                                    ],
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "ok"
+                                        },
+                                        "content": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/UserCommunicationComponent"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "User info"
+                ],
+                "summary": "Создать способ связи пользователя",
+                "operationId": "createCommunication",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/XRequestedWithHeader"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CommunicationRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SuccessfulEmptyResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/user/communications/{id}": {
+            "put": {
+                "tags": [
+                    "User info"
+                ],
+                "summary": "Обновить способ связи пользователя",
+                "operationId": "updateCommunication",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/XRequestedWithHeader"
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Communication id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CommunicationRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SuccessfulEmptyResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "User info"
+                ],
+                "summary": "Удалить способ связи пользователя",
+                "operationId": "deleteCommunication",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/XRequestedWithHeader"
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Communication id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
                     }
                 ],
                 "responses": {
@@ -1495,6 +1741,31 @@
                 },
                 "type": "object"
             },
+            "CommunicationRequest": {
+                "required": [
+                    "type",
+                    "address"
+                ],
+                "properties": {
+                    "type": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "address": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "@JonDoe",
+                        "nullable": false
+                    },
+                    "description": {
+                        "type": "string",
+                        "maxLength": 8000,
+                        "example": "This is a sample description.",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
             "UpdateProfileRequest": {
                 "required": [
                     "name",
@@ -1555,74 +1826,6 @@
                         "type": "string",
                         "maxLength": 8000,
                         "example": "This is a sample about me section.",
-                        "nullable": true
-                    }
-                },
-                "type": "object"
-            },
-            "UserProfileResponse": {
-                "required": [
-                    "id",
-                    "name",
-                    "email",
-                    "defaultLanguage"
-                ],
-                "properties": {
-                    "id": {
-                        "description": "Идентификатор пользователя",
-                        "type": "integer",
-                        "format": "int64"
-                    },
-                    "name": {
-                        "description": "Никнейм",
-                        "type": "string"
-                    },
-                    "email": {
-                        "description": "Адрес электронной почты пользователя",
-                        "type": "string"
-                    },
-                    "avatar": {
-                        "description": "URL аватара пользователя",
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "defaultLanguage": {
-                        "description": "Язык по умолчанию",
-                        "type": "string"
-                    },
-                    "isVerified": {
-                        "description": "Указывает, подтверждена ли электронная почта пользователя",
-                        "type": "boolean"
-                    },
-                    "telegram": {
-                        "description": "Telegram чат ID пользователя",
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "firstName": {
-                        "description": "Имя пользователя",
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "lastName": {
-                        "description": "Фамилия пользователя",
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "gender": {
-                        "description": "Пол пользователя",
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "birthday": {
-                        "description": "Дата рождения пользователя",
-                        "type": "string",
-                        "format": "date",
-                        "nullable": true
-                    },
-                    "about": {
-                        "description": "Информация о пользователе",
-                        "type": "string",
                         "nullable": true
                     }
                 },
@@ -1831,6 +2034,102 @@
                         "type": "string",
                         "format": "uri",
                         "example": "https://example.com/icon.png"
+                    }
+                },
+                "type": "object"
+            },
+            "UserCommunicationComponent": {
+                "required": [
+                    "id",
+                    "type",
+                    "address"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Идентификатор пользователя",
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "type": {
+                        "description": "Никнейм",
+                        "type": "string"
+                    },
+                    "address": {
+                        "description": "Адрес электронной почты пользователя",
+                        "type": "string"
+                    },
+                    "description": {
+                        "description": "URL аватара пользователя",
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "UserProfileResponse": {
+                "required": [
+                    "id",
+                    "name",
+                    "email",
+                    "defaultLanguage"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Идентификатор пользователя",
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "name": {
+                        "description": "Никнейм",
+                        "type": "string"
+                    },
+                    "email": {
+                        "description": "Адрес электронной почты пользователя",
+                        "type": "string"
+                    },
+                    "avatar": {
+                        "description": "URL аватара пользователя",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "defaultLanguage": {
+                        "description": "Язык по умолчанию",
+                        "type": "string"
+                    },
+                    "isVerified": {
+                        "description": "Указывает, подтверждена ли электронная почта пользователя",
+                        "type": "boolean"
+                    },
+                    "telegram": {
+                        "description": "Telegram чат ID пользователя",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "firstName": {
+                        "description": "Имя пользователя",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "lastName": {
+                        "description": "Фамилия пользователя",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "gender": {
+                        "description": "Пол пользователя",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "birthday": {
+                        "description": "Дата рождения пользователя",
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "about": {
+                        "description": "Информация о пользователе",
+                        "type": "string",
+                        "nullable": true
                     }
                 },
                 "type": "object"

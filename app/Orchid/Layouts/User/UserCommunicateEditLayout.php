@@ -17,11 +17,11 @@ class UserCommunicateEditLayout extends Rows
         return [
             Relation::make('user_id')
                 ->fromModel(User::class, 'email', 'id')
-                ->value(request()->get('email'))
-                ->title('Email (registered)'),
+                ->value(request()->get('user_id'))
+                ->title('User'),
 
-            Relation::make('type')
-                ->fromModel(CommunicationType::class, 'name_ru')
+            Relation::make('type_id')
+                ->fromModel(CommunicationType::class, 'name_ru', 'id')
                 ->value(request()->get('type'))
                 ->title('Type'),
 

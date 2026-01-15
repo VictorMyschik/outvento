@@ -77,9 +77,9 @@ class UserProfileListScreen extends Screen
         $this->service->create($dto);
     }
 
-    public function saveUser(Request $request, int $id): void
+    public function saveUser(UpdateProfileRequest $request, int $id): void
     {
-        $input = $request->validate(new UpdateProfileRequest()->rules($id), $request->all());
+        $input = $request->getUpdateData();
 
         $input['email_verified_at'] = $request->get('email_verified_at') ? now() : null;
         $input['telegram_chat_id'] = $request->get('telegram_chat_id') ?? null;
@@ -113,11 +113,11 @@ class UserProfileListScreen extends Screen
             }
         }
 
-        return redirect()->route('users.list', $list);
+        return redirect()->route('profiles.list', $list);
     }
 
     public function clearFilter(): RedirectResponse
     {
-        return redirect()->route('users.list');
+        return redirect()->route('profiles.list');
     }
 }
