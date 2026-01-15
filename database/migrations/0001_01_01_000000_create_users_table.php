@@ -25,6 +25,7 @@ return new class extends Migration {
             $table->date('birthday')->nullable();
             $table->string('about', 8000)->nullable();
             $table->jsonb('permissions')->nullable();
+            $table->timestampTz('deleted_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

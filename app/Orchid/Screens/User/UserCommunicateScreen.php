@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\User;
 
-use App\Models\UserInfo\Communicate;
+use App\Models\UserInfo\Communication;
 use App\Orchid\Filters\UserCommunicateFilter;
+use App\Orchid\Layouts\User\UserCommunicateEditLayout;
+use App\Orchid\Layouts\User\UserCommunicateListLayout;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\ModalToggle;
@@ -17,18 +19,10 @@ class UserCommunicateScreen extends Screen
 {
     public string $name = 'Контакты пользователей';
 
-    /**
-     * Display header description.
-     */
-    public function description(): ?string
-    {
-        return 'Список пользователей платформы';
-    }
-
     public function query(): iterable
     {
         return [
-            'user-info-address' => UserCommunicateFilter::runQuery(),
+            'list' => UserCommunicateFilter::runQuery()->paginate(20),
         ];
     }
 
@@ -36,6 +30,7 @@ class UserCommunicateScreen extends Screen
     {
         return [
             ModalToggle::make('Добавить контакт')
+                ->class('mr-btn-success')
                 ->modal('communicate_modal')
                 ->method('saveCommunicate')
                 ->modalTitle('Добавить контакт')
@@ -48,31 +43,31 @@ class UserCommunicateScreen extends Screen
     {
         return [
             UserCommunicateFilter::displayFilterCard(),
-            //UserCommunicateListLayout::class,
-            //Layout::modal('communicate_modal', UserCommunicateEditLayout::class)->async('asyncGetCommunicate'),
+            UserCommunicateListLayout::class,
+            Layout::modal('communicate_modal', UserCommunicateEditLayout::class)->async('asyncGetCommunicate'),
         ];
     }
 
     public function runFiltering(Request $request): RedirectResponse
     {
         $list = [];
-        foreach (UserCommunicateFilter::getFilterFields() as $item) {
+        foreach (UserCommunicateFilter::FIELDS as $item) {
             if (!is_null($request->get($item))) {
                 $list[$item] = $request->get($item);
             }
         }
 
-        return redirect()->route('user.info.address.list', $list);
+        return redirect()->route('users.communicates.list', $list);
     }
 
     public function clearFilter(): RedirectResponse
     {
-        return redirect()->route('user.info.address.list');
+        return redirect()->route('users.communicates.list');
     }
 
     public function asyncGetCommunicate(int $id = 0): array
     {
-        return ['communicate' => Communicate::loadBy($id)];
+        return ['communicate' => Communication::loadBy($id)];
     }
 
     public function saveCommunicate(Request $request): void
@@ -83,7 +78,7 @@ class UserCommunicateScreen extends Screen
             'communicate.user_id' => 'required',
         ])['communicate'];
 
-        $communicate = Communicate::loadBy((int)$request->get('id')) ?: new Communicate();
+        $communicate = Communication::loadBy((int)$request->get('id')) ?: new Communication();
         $communicate->setUserId($input['user_id']);
         $communicate->setAddress($input['address']);
         $communicate->setKind((int)$input['kind']);
@@ -94,7 +89,7 @@ class UserCommunicateScreen extends Screen
 
     public function remove(int $id): void
     {
-        $communicate = Communicate::loadByOrDie($id);
+        $communicate = Communication::loadByOrDie($id);
         $communicate->delete();
 
         Toast::info('Контакт удален');

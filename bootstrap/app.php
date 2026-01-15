@@ -60,6 +60,16 @@ return Application::configure(basePath: dirname(__DIR__))
                     ], 422);
                 }
 
+                if ($e instanceof ValidationException) {
+                    return new JsonResponse([
+                        'status'  => 'error',
+                        'content' => [
+                            'message' => __('validation.validation_error'),
+                            'errors'  => $e->validator->errors(),
+                        ],
+                    ], 422);
+                }
+
                 if ($e instanceof AccessDeniedHttpException) {
                     return new JsonResponse([
                         'status'  => 'error',

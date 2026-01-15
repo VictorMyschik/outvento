@@ -223,8 +223,26 @@ final readonly class UserService
         }
     }
 
-    public function setLocale(int $userId, Language $language): void
+    public function deleteUser(User $user): void
     {
-        $this->repository->updateUser($userId, ['language' => strtoupper($language->getCode())]);
+        $this->repository->deleteCommunicates($user->id());
+        $this->removeAvatar($user);
+        $user->tokens()->delete();
+        $user->softDelete();
+    }
+
+    public function saveCommunicate(int $id, array $data): void
+    {
+        $this->repository->saveCommunicate($id, $data);
+    }
+
+    public function getCommunicates(User $user, Language $language): array
+    {
+        return $this->repository->getCommunicates($user->id, $language);
+    }
+
+    public function deleteCommunication(User $user, int $id): void
+    {
+        $this->repository->deleteCommunicate($user->id, $id);
     }
 }

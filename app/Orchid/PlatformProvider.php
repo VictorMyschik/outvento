@@ -46,8 +46,8 @@ class PlatformProvider extends OrchidServiceProvider
             ])->divider(),
 
             Menu::make('User List')->icon('grid')->list([
-                Menu::make('Users list')->icon('bs.people')->route('users.list'),
-                Menu::make('Communicates')->icon('bs.person-lines-fill')->route('users.communicates.list'),
+                Menu::make('Users list')->icon('bs.people')->route('profiles.list'),
+                Menu::make('Communication')->icon('bs.person-lines-fill')->route('profiles.communication.list'),
             ])->divider(),
             // Menu::make('Wishlists')->icon('bs.list')->route('wishlist.list')->divider(),
 

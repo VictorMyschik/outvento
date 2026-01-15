@@ -48,7 +48,7 @@ class UserInfoListLayout extends Table
                     ->list([
                         Link::make(__('Profile'))
                             ->icon('user')
-                            ->route('users.details', $user->id),
+                            ->route('profiles.details', $user->id),
                         ModalToggle::make('Edit')
                             ->icon('pencil')
                             ->modal('user_modal')

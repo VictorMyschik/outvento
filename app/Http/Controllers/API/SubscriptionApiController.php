@@ -23,7 +23,7 @@ class SubscriptionApiController extends APIController
         ],
         responses: [
             new OA\Response(response: 204, description: "Successful", content: new OA\JsonContent(ref: "#/components/schemas/SuccessfulEmptyResponse")),
-            new OA\Response(response: 422, description: "Bad Request", content: new OA\JsonContent(ref: "#/components/schemas/ValidationError")),
+            new OA\Response(response: 422, description: "Unprocessable Entity", content: new OA\JsonContent(ref: "#/components/schemas/ValidationError")),
         ]
     )]
     public function subscribe(SubscriptionRequest $request): JsonResponse
@@ -44,7 +44,7 @@ class SubscriptionApiController extends APIController
         ],
         responses: [
             new OA\Response(response: 204, description: "Successful", content: new OA\JsonContent(ref: "#/components/schemas/SuccessfulEmptyResponse")),
-            new OA\Response(response: 422, description: "Bad Request", content: new OA\JsonContent(ref: "#/components/schemas/ValidationError")),
+            new OA\Response(response: 422, description: "Unprocessable Entity", content: new OA\JsonContent(ref: "#/components/schemas/ValidationError")),
         ]
     )]
     public function unsubscribe(string $token): JsonResponse

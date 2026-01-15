@@ -134,9 +134,9 @@ Route::screen('newsletter/list', NewsletterScreen::class)->name('newsletter.news
 Route::screen('newsletter/{news_id}/edit', NewsEditScreen::class)->name('newsletter.news.edit');
 
 // Users
-Route::screen('/users/list', UserProfileListScreen::class)->name('users.list');
-Route::screen('/users/{user}/details', ProfileScreen::class)->name('users.details');
-Route::screen('/users/communicates/list', UserCommunicateScreen::class)->name('users.communicates.list');
+Route::screen('/profiles/list', UserProfileListScreen::class)->name('profiles.list');
+Route::screen('/profiles/{user}/details', ProfileScreen::class)->name('profiles.details');
+Route::screen('/profiles/communications/list', UserCommunicateScreen::class)->name('profiles.communication.list');
 
 // Travel
 Route::screen('/travel/list', TravelListScreen::class)->name('travel.list');

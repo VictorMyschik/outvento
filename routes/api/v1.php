@@ -50,6 +50,12 @@ Route::middleware('auth:sanctum')->group(static function () {
         Route::post('verify', [AuthController::class, 'verifyRegistration']);
         Route::post('verify/resend', [AuthController::class, 'verifyResend']);
         Route::delete('avatar', [UsersController::class, 'removeAvatar']);
+
+        // Communications
+        Route::get('communications', [UsersController::class, 'getCommunications']);
+        Route::post('communications/create', [UsersController::class, 'createCommunication']);
+        Route::put('communications/{id}', [UsersController::class, 'updateCommunication']);
+        Route::delete('communications/{id}', [UsersController::class, 'deleteCommunication']);
     });
 
     Route::middleware('api-verified')->group(static function () {});

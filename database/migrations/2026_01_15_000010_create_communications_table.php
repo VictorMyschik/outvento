@@ -7,10 +7,10 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('communicates', function (Blueprint $table) {
+        Schema::create('communications', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->index();
-            $table->tinyInteger('type')->default(0);// Тип: телефон, email, url...
+            $table->unsignedBigInteger('type_id'); // Тип: телефон, email, url...
             $table->string('address');
             $table->string('description', 8000)->nullable();
 
@@ -18,11 +18,12 @@ return new class extends Migration {
             $table->timestamp('updated_at')->nullable()->useCurrentOnUpdate();
 
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
+            $table->foreign('type_id')->references('id')->on('communication_types')->restrictOnDelete();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('communicates');
+        Schema::dropIfExists('communications');
     }
 };

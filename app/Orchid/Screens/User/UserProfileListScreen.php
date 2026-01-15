@@ -29,7 +29,7 @@ class UserProfileListScreen extends Screen
         private readonly UserService $service,
     ) {}
 
-    public string $name = 'Пользователи';
+    public string $name = 'Пользователиs';
 
     public function query(): iterable
     {

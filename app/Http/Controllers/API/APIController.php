@@ -7,9 +7,12 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\API\Response\PaginationResponse;
 use App\Http\Controllers\Controller;
 use App\Services\System\Enum\Language;
+use Dotenv\Exception\ValidationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
 use OpenApi\Attributes as OA;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 #[OA\Info(
     version: "1.0.0",
@@ -70,7 +73,13 @@ abstract class APIController extends Controller
     protected function getLanguage(): Language
     {
         // Header: X-Locale
-        $locale = request()->header('X-Locale') ?: Language::EN->getCode();
-        return Language::fromCode($locale);
+        $locale = request()->header('X-Locale')
+            ?? throw new BadRequestHttpException('X-Locale header is required');
+
+        try {
+            return Language::fromCode($locale);
+        } catch (\ValueError) {
+            throw new UnprocessableEntityHttpException('Unsupported locale value');
+        }
     }
 }

@@ -11,6 +11,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 use Orchid\Filters\Filterable;
 use Orchid\Platform\Models\User as Authenticatable;
@@ -37,6 +38,11 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
         'password',
         'language',
         'first_name',
+        'last_name',
+        'birthday',
+        'deleted_at',
+        'telegram_chat_id',
+        'about',
     ];
 
     protected $hidden = [
@@ -159,5 +165,22 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
     public function getGender(): ?Gender
     {
         return $this->gender ? Gender::from($this->gender) : null;
+    }
+
+    public function softDelete(): void
+    {
+        $this->fill([
+            'deleted_at'       => now(),
+            'name'             => 'deleted',
+            'email'            => 'deleted',
+            'password'         => Hash::make(str()->random(32)),
+            'first_name'       => null,
+            'last_name'        => null,
+            'birthday'         => null,
+            'telegram_chat_id' => null,
+            'about'            => null,
+        ]);
+
+        $this->save();
     }
 }

@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\User\Api;
 
-use App\Http\Controllers\API\User\Response\UserProfileResponse;
 use App\Models\User;
+use App\Services\User\Api\Response\UserCommunicationComponent;
+use App\Services\User\Api\Response\UserProfileResponse;
 
 final readonly class UserApiResponse
 {
@@ -43,5 +44,20 @@ final readonly class UserApiResponse
             birthday: $user->birthday?->format('Y-m-d') ?? '',
             about: $user->about,
         );
+    }
+
+    public function getCommunicationsList(array $list): array
+    {
+        $out = [];
+        foreach ($list as $communication) {
+            $out[] = new UserCommunicationComponent(
+                id: $communication->id,
+                type: $communication->communication_type,
+                address: $communication->address,
+                description: $communication->description,
+            );
+        }
+
+        return $out;
     }
 }
