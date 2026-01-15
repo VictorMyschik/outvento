@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace App\Orchid\Layouts\References;
 
-use App\Models\Travel\TravelType;
-use App\Models\UserInfo\CommunicationType;
+use App\Models\Reference\ReferenceBaseInterface;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
 
-class CommunicationTypeListLayout extends Table
+class BaseReferenceListLayout extends Table
 {
     public $target = 'list';
 
@@ -20,7 +19,7 @@ class CommunicationTypeListLayout extends Table
     {
         return [
             TD::make('id', __('ID'))->sort(),
-            TD::make('#', 'Image')->render(function (CommunicationType $communicationType) {
+            TD::make('#', 'Image')->render(function (ReferenceBaseInterface $communicationType) {
                 return View('admin.image')->with(['path' => $communicationType->getImageUrl()]);
             }),
             TD::make('name_ru', 'RU')->sort(),
@@ -30,14 +29,14 @@ class CommunicationTypeListLayout extends Table
             TD::make(__('Actions'))
                 ->align(TD::ALIGN_CENTER)
                 ->width('100px')
-                ->render(fn(CommunicationType $communicationType) => DropDown::make()
+                ->render(fn(ReferenceBaseInterface $communicationType) => DropDown::make()
                     ->icon('bs.three-dots-vertical')
                     ->list([
                         ModalToggle::make('Edit')
                             ->icon('pencil')
-                            ->modal('communication_type')
+                            ->modal('reference')
                             ->modalTitle('Edit type id ' . $communicationType->id)
-                            ->method('saveCommunicationType')
+                            ->method('saveReferenceType')
                             ->asyncParameters(['id' => $communicationType->id]),
 
                         Button::make(__('Delete'))

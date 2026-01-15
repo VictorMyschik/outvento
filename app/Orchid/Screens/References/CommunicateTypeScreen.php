@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Orchid\Screens\References;
 
 use App\Models\UserInfo\CommunicationType;
-use App\Orchid\Layouts\References\CommunicationTypeEditLayout;
-use App\Orchid\Layouts\References\CommunicationTypeListLayout;
+use App\Orchid\Layouts\References\BaseReferenceListLayout;
+use App\Orchid\Layouts\References\ReferenceBaseTypeEditLayout;
 use App\Orchid\Rebuild\AttachmentHelper;
 use App\Services\References\ReferenceService;
 use Illuminate\Http\Request;
@@ -35,9 +35,9 @@ class CommunicateTypeScreen extends Screen
             ModalToggle::make('Add')
                 ->class('mr-btn-success')
                 ->icon('plus')
-                ->modal('communication_type')
-                ->modalTitle('Create New Communication Type')
-                ->method('saveCommunicationType')
+                ->modal('reference')
+                ->modalTitle('Create New Reference Type')
+                ->method('saveReferenceType')
                 ->asyncParameters(['id' => 0])
         ];
     }
@@ -45,27 +45,27 @@ class CommunicateTypeScreen extends Screen
     public function layout(): iterable
     {
         return [
-            CommunicationTypeListLayout::class,
-            Layout::modal('communication_type', CommunicationTypeEditLayout::class)->async('asyncGetCommunicationTypeList'),
+            BaseReferenceListLayout::class,
+            Layout::modal('reference', ReferenceBaseTypeEditLayout::class)->async('asyncGetReferenceTypeList'),
         ];
     }
 
-    public function asyncGetCommunicationTypeList(int $id): array
+    public function asyncGetReferenceTypeList(int $id): array
     {
         return [
-            'communication-type' => CommunicationType::loadBy($id)
+            'reference' => CommunicationType::loadBy($id)
         ];
     }
 
-    public function saveCommunicationType(Request $request, int $id): void
+    public function saveReferenceType(Request $request, int $id): void
     {
         $data = $request->validate([
-            'communication-type.name_ru' => 'required|string',
-            'communication-type.name_en' => 'required|string',
-            'communication-type.name_pl' => 'required|string',
-        ])['communication-type'];
+            'reference.name_ru' => 'required|string',
+            'reference.name_en' => 'required|string',
+            'reference.name_pl' => 'required|string',
+        ])['reference'];
 
-        $attachment = AttachmentHelper::getFile($request, 'communication-type');
+        $attachment = AttachmentHelper::getFile($request, 'reference');
 
         $this->service->saveCommunicationType($id, $data, $attachment?->file);
 
@@ -74,9 +74,9 @@ class CommunicateTypeScreen extends Screen
         }
     }
 
-    public function deleteImage(int $communicationTypeId): void
+    public function deleteImage(int $referenceTypeId): void
     {
-        $this->service->deleteImage(CommunicationType::loadByOrDie($communicationTypeId));
+        $this->service->deleteImage(CommunicationType::loadByOrDie($referenceTypeId));
     }
 
     public function remove(int $id): void

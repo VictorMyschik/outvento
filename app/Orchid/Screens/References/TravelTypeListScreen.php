@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Orchid\Screens\References;
 
 use App\Models\Travel\TravelType;
-use App\Orchid\Layouts\References\TravelTypeEditLayout;
-use App\Orchid\Layouts\References\TravelTypeListLayout;
+use App\Orchid\Layouts\References\BaseReferenceListLayout;
+use App\Orchid\Layouts\References\ReferenceBaseTypeEditLayout;
 use App\Orchid\Rebuild\AttachmentHelper;
 use App\Services\References\ReferenceService;
 use Illuminate\Http\Request;
@@ -33,9 +35,9 @@ class TravelTypeListScreen extends Screen
             ModalToggle::make('Add')
                 ->class('mr-btn-success')
                 ->icon('plus')
-                ->modal('travel_type')
+                ->modal('reference')
                 ->modalTitle('Create New Travel Type')
-                ->method('saveTravelType')
+                ->method('saveReferenceType')
                 ->asyncParameters(['id' => 0])
         ];
     }
@@ -43,27 +45,27 @@ class TravelTypeListScreen extends Screen
     public function layout(): iterable
     {
         return [
-            TravelTypeListLayout::class,
-            Layout::modal('travel_type', TravelTypeEditLayout::class)->async('asyncGetTravelTypeList'),
+            BaseReferenceListLayout::class,
+            Layout::modal('reference', ReferenceBaseTypeEditLayout::class)->async('asyncGetReferenceTypeList'),
         ];
     }
 
-    public function asyncGetTravelTypeList(int $id = 0): array
+    public function asyncGetReferenceTypeList(int $id = 0): array
     {
         return [
-            'travel-type' => TravelType::loadBy($id)
+            'reference' => TravelType::loadBy($id)
         ];
     }
 
-    public function saveTravelType(Request $request, int $id): void
+    public function saveReferenceType(Request $request, int $id): void
     {
         $data = $request->validate([
-            'travel-type.name_ru' => 'required|string',
-            'travel-type.name_en' => 'required|string',
-            'travel-type.name_pl' => 'required|string',
-        ])['travel-type'];
+            'reference.name_ru' => 'required|string',
+            'reference.name_en' => 'required|string',
+            'reference.name_pl' => 'required|string',
+        ])['reference'];
 
-        $attachment = AttachmentHelper::getFile($request, 'travel-type');
+        $attachment = AttachmentHelper::getFile($request, 'reference');
 
         $this->service->saveTravelType($id, $data, $attachment?->file);
 
@@ -72,9 +74,9 @@ class TravelTypeListScreen extends Screen
         }
     }
 
-    public function deleteImage(int $travelTypeId): void
+    public function deleteImage(int $referenceTypeId): void
     {
-        $this->service->deleteImage(TravelType::loadByOrDie($travelTypeId));
+        $this->service->deleteImage(TravelType::loadByOrDie($referenceTypeId));
     }
 
     public function remove(int $id): void

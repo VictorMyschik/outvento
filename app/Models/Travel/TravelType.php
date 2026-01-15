@@ -7,11 +7,12 @@ namespace App\Models\Travel;
 use App\Models\Lego\Fields\NameByLanguageFieldTrait;
 use App\Models\Lego\Fields\ReferenceImageFieldTrait;
 use App\Models\ORM\ORM;
+use App\Models\Reference\ReferenceBaseInterface;
 use Illuminate\Support\Facades\Storage;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
 
-class TravelType extends ORM
+class TravelType extends ORM implements ReferenceBaseInterface
 {
     use AsSource;
     use Filterable;

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Orchid;
 
-use App\Orchid\Layouts\References\CommunicationTypeEditLayout;
 use Orchid\Platform\Dashboard;
 use Orchid\Platform\ItemPermission;
 use Orchid\Platform\OrchidServiceProvider;
