@@ -6,6 +6,7 @@ namespace Tests\Feature;
 use App\Models\Travel\Travel;
 use App\Models\Travel\UIT;
 use App\Services\Newsletter\NewsletterDispatchService;
+use App\Services\Telegram\Client;
 use App\Services\Travel\Enum\UITStatus;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -17,6 +18,6 @@ class ExampleTest extends TestCase
      */
     public function test_the_application_returns_a_successful_response(): void
     {
-        app(NewsletterDispatchService::class)->runDispatch();
+        app(Client::class)->sendMessage('488545536', '*Test*');
     }
 }

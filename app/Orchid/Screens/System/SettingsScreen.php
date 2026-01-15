@@ -39,7 +39,7 @@ class SettingsScreen extends Screen
 
     public function commandBar(): iterable
     {
-        if (!empty($this->getSettingsOptions())) {
+        if (!empty($this->getSettingsOptions(null))) {
             return [
                 ModalToggle::make('add')
                     ->class('mr-btn-success')
@@ -52,9 +52,9 @@ class SettingsScreen extends Screen
         }
 
         return [
-           Link::make('All settings are configured')
-               ->class('mr-btn-default')
-               ->icon('check'),
+            Link::make('All settings are configured')
+                ->class('mr-btn-default')
+                ->icon('check'),
         ];
     }
 
@@ -70,17 +70,23 @@ class SettingsScreen extends Screen
     #region Popup From
     public function asyncGetSettings(int $id = 0): iterable
     {
+        $setup =  Settings::loadBy($id);
+
         return [
-            'setup'   => Settings::loadBy($id) ?: new Settings(),
-            'options' => $this->getSettingsOptions(),
+            'setup'   => $setup,
+            'options' => $this->getSettingsOptions($setup?->getCodeKey()),
         ];
     }
 
-    private function getSettingsOptions(): array
+    private function getSettingsOptions(?SettingsKey $excludeKey): array
     {
         $options = SettingsKey::getSelectList();
 
         foreach ($this->service->getList() as $key => $value) {
+            if ($value->getCodeKey() === $excludeKey) {
+                continue;
+            }
+
             unset($options[$key]);
         }
 

@@ -6,6 +6,7 @@ use App\Models\Lego\Fields\ActiveFieldTrait;
 use App\Models\Lego\Fields\DescriptionNullableFieldTrait;
 use App\Models\Lego\Fields\NameFieldTrait;
 use App\Models\ORM\ORM;
+use App\Services\System\Enum\SettingsKey;
 use Illuminate\Support\Facades\Cache;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
@@ -56,9 +57,9 @@ class Settings extends ORM
         $this->category = $value;
     }
 
-    public function getCodeKey(): string
+    public function getCodeKey(): SettingsKey
     {
-        return $this->code_key;
+        return SettingsKey::from($this->code_key);
     }
 
     public function setCodeKey(string $value): void
