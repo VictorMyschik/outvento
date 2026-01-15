@@ -173,7 +173,7 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
         $this->fill([
             'deleted_at'       => now(),
             'name'             => 'deleted',
-            'email'            => 'deleted',
+            'email'            => (int)now()->timestamp . '@deleted.com',
             'password'         => Hash::make(str()->random(32)),
             'first_name'       => null,
             'last_name'        => null,

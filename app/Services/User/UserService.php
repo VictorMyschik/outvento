@@ -229,6 +229,9 @@ final readonly class UserService
         $this->removeAvatar($user);
         $user->tokens()->delete();
         $user->softDelete();
+
+        // TODO: сдклать проверку на возможность полного удаления
+        $user->delete();
     }
 
     public function saveCommunicate(int $id, array $data): void
