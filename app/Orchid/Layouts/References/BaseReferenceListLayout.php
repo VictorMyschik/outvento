@@ -46,4 +46,9 @@ class BaseReferenceListLayout extends Table
                     ])),
         ];
     }
+
+    public function hoverable(): true
+    {
+        return true;
+    }
 }

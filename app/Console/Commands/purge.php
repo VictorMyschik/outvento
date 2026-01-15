@@ -79,6 +79,7 @@ class purge extends Command
             'cron',
             'countries',
             'travel_types',
+            'communication_types',
             'travels',
             'uit',
         ];
