@@ -69,6 +69,11 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
         'updated_at',
     ];
 
+    public static function getTableName(): string
+    {
+        return 'users';
+    }
+
     public static function canView(string $objectCheckName): bool
     {
         $user = Auth::user();

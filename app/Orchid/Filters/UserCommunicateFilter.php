@@ -4,9 +4,7 @@ namespace App\Orchid\Filters;
 
 use App\Models\User;
 use App\Models\UserInfo\Communicate;
-use App\Models\UserInfo\UserInfo;
 use App\Orchid\Layouts\Lego\ActionFilterPanel;
-use App\Orchid\Layouts\Lego\ViewHelper;
 use Illuminate\Database\Eloquent\Builder;
 use Orchid\Filters\Filter;
 use Orchid\Screen\Fields\Group;
@@ -15,59 +13,34 @@ use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Layouts\Rows;
 use Orchid\Support\Facades\Layout;
 
-class UserInfoCommunicateFilter extends Filter
+class UserCommunicateFilter extends Filter
 {
-    private static array $fields = [
+    public const array FIELDS = [
         'id',
         'user_id',
         'name',
         'email',
-        'full_name',
-        'gender',
-        'kind',
+        'type',
         'address',
         'description'
     ];
 
-    public function parameters(): ?array
-    {
-        return self::$fields;
-    }
-
-    public static function getFilterFields(): array
-    {
-        return self::$fields;
-    }
-
     public static function runQuery()
     {
-        $query = User::filters([self::class])
-            ->join(Communicate::getTableName(), 'communicate.user_id', '=', 'users.id')
-            ->leftJoin(UserInfo::getTableName(), 'user_info.user_id', '=', 'users.id');
+        $query = Communicate::filters([self::class])
+            ->join(User::getTableName(), Communicate::getTableName() . '.user_id', '=', 'users.id');
 
         $query->select(
             'users.id as user_id',
-            'communicate.id as id',
-            'name',
-            'email',
-            'full_name',
-            'gender',
-            'kind',
+            'users.name as name',
+            'users.email as email',
+            'communicate.*',
+            'type',
             'address',
             'description',
             'communicate.created_at as created_at',
             'communicate.updated_at as updated_at',
         );
-
-        // Final
-        if ($sort = request()->get('sort')) {
-            if (str_contains($sort, '-')) {
-                $sort = str_replace('-', '', $sort);
-                $query->orderByRaw('"' . $sort . '" ASC');
-            } else {
-                $query->orderByRaw('"' . $sort . '" DESC');
-            }
-        }
 
         return $query->paginate(20);
     }
@@ -76,48 +49,17 @@ class UserInfoCommunicateFilter extends Filter
     {
         $input = $this->request->only($this->parameters());
 
-        if (isset($input['user_id']) && is_numeric($input['user_id']) && $input['user_id'] > 0) {
-            $builder->where('users.id', $input['user_id']);
+        if (!empty($input['user_id'])) {
+            $builder->where('users.id', (int)$input['user_id']);
         }
 
-        // email
         if (isset($input['email']) && !empty($input['email'])) {
             $input['email'] = substr($input['email'], 0, 255);
-            // regex email
-            if (preg_match('/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/', $input['email'])) {
-                $builder->where('email', 'like', '%' . $input['email'] . '%');
-            } else {
-                $builder->whereNull('email');
-            }
+            $builder->where('email', $input['email']);
         }
 
-        if (isset($input['login']) && !empty($input['login'])) {
-            $input['login'] = substr($input['login'], 0, 255);
-            // regex login
-            if (preg_match('/^[a-zA-Z0-9_]+$/', $input['login'])) {
-                $builder->where('name', 'like', '%' . $input['login'] . '%');
-            }
-        }
-
-        // Full Name
-        if (isset($input['full_name']) && !empty($input['full_name'])) {
-            $input['full_name'] = substr($input['full_name'], 0, 255);
-            // regex Full name
-            $regex = '/^[a-zA-Zа-яА-ЯёЁ0-9\s\.\,\-]+$/u';
-            if (preg_match($regex, $input['full_name'])) {
-                $builder->where('full_name', 'like', '%' . $input['full_name'] . '%');
-            }
-        }
-
-        // Gender
-        if (isset($input['gender']) && is_numeric($input['gender'])) {
-            if (isset(UserInfo::getGenderList()[$input['gender']])) {
-                $builder->where('gender', (int)$input['gender']);
-            }
-
-            if ((int)$input['gender'] === -2) {
-                $builder->whereNull('gender');
-            }
+        if (isset($input['name']) && !empty($input['name'])) {
+            $builder->where('name', $input['name']);
         }
 
         // Address kind

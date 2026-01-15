@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\Orchid\Layouts\References;
 
 use App\Models\Travel\TravelType;
+use App\Models\UserInfo\CommunicationType;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
 
-class TravelTypeListLayout extends Table
+class CommunicationTypeListLayout extends Table
 {
     public $target = 'list';
 
@@ -19,8 +20,8 @@ class TravelTypeListLayout extends Table
     {
         return [
             TD::make('id', __('ID'))->sort(),
-            TD::make('#', 'Image')->render(function (TravelType $travelType) {
-                return View('admin.image')->with(['path' => $travelType->getImageUrl()]);
+            TD::make('#', 'Image')->render(function (CommunicationType $communicationType) {
+                return View('admin.image')->with(['path' => $communicationType->getImageUrl()]);
             }),
             TD::make('name_ru', 'RU')->sort(),
             TD::make('name_en', 'EN')->sort(),
@@ -29,20 +30,20 @@ class TravelTypeListLayout extends Table
             TD::make(__('Actions'))
                 ->align(TD::ALIGN_CENTER)
                 ->width('100px')
-                ->render(fn(TravelType $travelType) => DropDown::make()
+                ->render(fn(CommunicationType $communicationType) => DropDown::make()
                     ->icon('bs.three-dots-vertical')
                     ->list([
                         ModalToggle::make('Edit')
                             ->icon('pencil')
-                            ->modal('travel_type')
-                            ->modalTitle('Edit type id ' . $travelType->id)
-                            ->method('saveTravelType')
-                            ->asyncParameters(['id' => $travelType->id]),
+                            ->modal('communication_type')
+                            ->modalTitle('Edit type id ' . $communicationType->id)
+                            ->method('saveCommunicationType')
+                            ->asyncParameters(['id' => $communicationType->id]),
 
                         Button::make(__('Delete'))
                             ->icon('bs.trash3')
-                            ->confirm(__('Are you sure you want to delete the travel type?'))
-                            ->method('remove', ['id' => $travelType->id]),
+                            ->confirm(__('Are you sure you want to delete the communication type?'))
+                            ->method('remove', ['id' => $communicationType->id]),
                     ])),
         ];
     }

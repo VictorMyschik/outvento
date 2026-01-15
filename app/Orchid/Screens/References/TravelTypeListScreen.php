@@ -15,23 +15,16 @@ use Orchid\Support\Facades\Toast;
 
 class TravelTypeListScreen extends Screen
 {
-    public function __construct(private ReferenceService $service) {}
+    public string $name = 'Типы походов';
+    public string $description = 'Справочник типов походов';
+
+    public function __construct(private readonly ReferenceService $service) {}
 
     public function query(): iterable
     {
         return [
             'list' => TravelType::filters([])->paginate(20)
         ];
-    }
-
-    public function name(): ?string
-    {
-        return 'Типы походов';
-    }
-
-    public function description(): ?string
-    {
-        return 'Справочник типов походов';
     }
 
     public function commandBar(): iterable

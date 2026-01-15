@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Orchid\Screens\References;
 
 use App\Models\Reference\City;
@@ -14,6 +16,8 @@ use Orchid\Support\Facades\Toast;
 
 class CitiesScreen extends Screen
 {
+    public string $name = 'Справочник городов';
+
     public function __construct(private ReferenceService $service) {}
 
     public function query(): iterable
@@ -21,11 +25,6 @@ class CitiesScreen extends Screen
         return [
             'list' => City::filters([])->paginate(50)
         ];
-    }
-
-    public function name(): ?string
-    {
-        return 'Справочник городов';
     }
 
     public function commandBar(): iterable

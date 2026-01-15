@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid;
 
+use App\Orchid\Layouts\References\CommunicationTypeEditLayout;
 use Orchid\Platform\Dashboard;
 use Orchid\Platform\ItemPermission;
 use Orchid\Platform\OrchidServiceProvider;
@@ -32,6 +33,7 @@ class PlatformProvider extends OrchidServiceProvider
                 Menu::make('Equipments')->icon('bs.list')->route('reference.equipments.list'),
                 Menu::make('Countries')->icon('bs.list')->route('reference.countries.list'),
                 Menu::make('Cities')->icon('bs.list')->route('reference.cities.list'),
+                Menu::make('Communication Type')->icon('bs.list')->route('reference.communication-type.list'),
             ]),
             Menu::make('Articles')->icon('grid')->list([
                 Menu::make('Newsletter')->icon('bs.list')->route('newsletter.news.list'),

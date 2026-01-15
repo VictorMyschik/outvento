@@ -21,5 +21,7 @@ interface ReferenceRepositoryInterface
 
     public function saveTravelType(int $id, array $data): int;
 
+    public function saveCommunicationType(int $id, array $data): int;
+
     public function saveCity(int $id, array $data): int;
 }

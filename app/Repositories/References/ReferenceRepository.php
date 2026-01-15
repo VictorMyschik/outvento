@@ -8,6 +8,7 @@ use App\Models\Reference\City;
 use App\Models\Reference\Country;
 use App\Models\Travel\Travel;
 use App\Models\Travel\TravelType;
+use App\Models\UserInfo\CommunicationType;
 use App\Repositories\DatabaseRepository;
 use App\Services\References\ReferenceRepositoryInterface;
 use App\Services\System\Enum\Language;
@@ -84,5 +85,16 @@ readonly class ReferenceRepository extends DatabaseRepository implements Referen
         }
 
         return $this->db->table(Country::getTableName())->insertGetId($data);
+    }
+
+    public function saveCommunicationType(int $id, array $data): int
+    {
+        if ($id > 0) {
+            $this->db->table(CommunicationType::getTableName())->where('id', $id)->update($data);
+
+            return $id;
+        }
+
+        return $this->db->table(CommunicationType::getTableName())->insertGetId($data);
     }
 }

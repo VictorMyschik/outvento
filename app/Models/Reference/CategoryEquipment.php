@@ -20,6 +20,7 @@ class CategoryEquipment extends ORM
     protected $table = 'category_equipments';
 
     protected $fillable = array(
+        'id',
         'name',
         'description',
     );

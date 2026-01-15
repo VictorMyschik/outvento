@@ -1,11 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Orchid\Screens\User;
 
 use App\Models\UserInfo\Communicate;
-use App\Orchid\Filters\UserInfoCommunicateFilter;
-use App\Orchid\Layouts\User\UserCommunicateEditLayout;
-use App\Orchid\Layouts\User\UserCommunicateListLayout;
+use App\Orchid\Filters\UserCommunicateFilter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\ModalToggle;
@@ -15,10 +15,7 @@ use Orchid\Support\Facades\Toast;
 
 class UserCommunicateScreen extends Screen
 {
-    public function name(): ?string
-    {
-        return 'Контакты пользователей';
-    }
+    public string $name = 'Контакты пользователей';
 
     /**
      * Display header description.
@@ -31,7 +28,7 @@ class UserCommunicateScreen extends Screen
     public function query(): iterable
     {
         return [
-            'user-info-address' => UserInfoCommunicateFilter::runQuery(),
+            'user-info-address' => UserCommunicateFilter::runQuery(),
         ];
     }
 
@@ -50,16 +47,16 @@ class UserCommunicateScreen extends Screen
     public function layout(): iterable
     {
         return [
-            Layout::modal('communicate_modal', UserCommunicateEditLayout::class)->async('asyncGetCommunicate'),
-            UserInfoCommunicateFilter::displayFilterCard(),
-            UserCommunicateListLayout::class,
+            UserCommunicateFilter::displayFilterCard(),
+            //UserCommunicateListLayout::class,
+            //Layout::modal('communicate_modal', UserCommunicateEditLayout::class)->async('asyncGetCommunicate'),
         ];
     }
 
     public function runFiltering(Request $request): RedirectResponse
     {
         $list = [];
-        foreach (UserInfoCommunicateFilter::getFilterFields() as $item) {
+        foreach (UserCommunicateFilter::getFilterFields() as $item) {
             if (!is_null($request->get($item))) {
                 $list[$item] = $request->get($item);
             }

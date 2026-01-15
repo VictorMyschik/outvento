@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Orchid\Screens\References;
 
 use App\Models\Equipment\Equipment;
@@ -15,21 +17,14 @@ use Orchid\Support\Facades\Toast;
 
 class EquipmentScreen extends Screen
 {
+    public string $name = 'Снаряжение';
+    public string $description = 'Справочник снаряжение';
+
     public function query(): iterable
     {
         return [
             'list' => EquipmentFilter::runQuery()
         ];
-    }
-
-    public function name(): ?string
-    {
-        return 'Снаряжение';
-    }
-
-    public function description(): ?string
-    {
-        return 'Справочник снаряжение';
     }
 
     public function commandBar(): iterable

@@ -8,7 +8,7 @@ trait UserFieldTrait
 {
     public function getUser(): User
     {
-        return User::find($this->user_id);
+        return User::findOrFail($this->user_id);
     }
 
     public function setUserID(int $value): void

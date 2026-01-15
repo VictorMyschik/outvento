@@ -18,7 +18,7 @@ class CountryScreen extends Screen
     public string $name = 'Countries';
     public string $description = 'List of countries available in the system';
 
-    public function __construct(private ReferenceService $service) {}
+    public function __construct(private readonly ReferenceService $service) {}
 
     public function query(): iterable
     {

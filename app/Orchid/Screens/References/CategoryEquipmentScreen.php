@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Orchid\Screens\References;
 
 use App\Models\Reference\CategoryEquipment;
@@ -13,6 +15,9 @@ use Orchid\Support\Facades\Toast;
 
 class CategoryEquipmentScreen extends Screen
 {
+    public string $name = 'Категории вещей';
+    public string $description = 'Справочник категорий вещей, снаряжения и т.д.';
+
     public function query(): iterable
     {
         return [
@@ -20,15 +25,6 @@ class CategoryEquipmentScreen extends Screen
         ];
     }
 
-    public function name(): ?string
-    {
-        return 'Категории вещей';
-    }
-
-    public function description(): ?string
-    {
-        return 'Справочник категорий вещей, снаряжения и т.д.';
-    }
 
     public function commandBar(): iterable
     {

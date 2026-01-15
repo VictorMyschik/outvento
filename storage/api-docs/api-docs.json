@@ -371,8 +371,8 @@
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Отправка кода сброса пароля",
-                "description": "Отправка кода для сброса пароля на email пользователя.",
+                "summary": "Отправка ссылки для сброса пароля",
+                "description": "Отправка ссылки для сброса пароля на email пользователя.",
                 "operationId": "resetPasswordToken",
                 "parameters": [
                     {
@@ -475,7 +475,7 @@
                     "Auth"
                 ],
                 "summary": "Изменение пароля",
-                "description": "Изменение пароля пользователя с использованием кода сброса.",
+                "description": "Изменение пароля пользователя с использованием ссылки сброса.",
                 "operationId": "resetPasswordConfirm",
                 "parameters": [
                     {
@@ -780,7 +780,7 @@
                 ]
             }
         },
-        "/api/v1/user/profile": {
+        "/api/v1/user/profile/edit": {
             "post": {
                 "tags": [
                     "User info"
@@ -940,57 +940,6 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/AuthError"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/user/locale/{locale}": {
-            "post": {
-                "tags": [
-                    "User info"
-                ],
-                "summary": "Установить локаль пользователя",
-                "operationId": "setLocale",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/XRequestedWithHeader"
-                    },
-                    {
-                        "name": "locale",
-                        "in": "path",
-                        "description": "Код локали (например: en, ru)",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "example": "en"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Successful",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SuccessfulEmptyResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Bad Request",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
                                 }
                             }
                         }

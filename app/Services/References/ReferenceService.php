@@ -45,6 +45,15 @@ final readonly class ReferenceService
         return $this->repository->saveTravelType($id, $data);
     }
 
+    public function saveCommunicationType(int $id, array $data, ?UploadedFile $file): int
+    {
+        if ($file) {
+            $data['image_path'] = $this->saveImage(ImageTypeEnum::CommunicationType, $file);
+        }
+
+        return $this->repository->saveCommunicationType($id, $data);
+    }
+
     public function saveCity(int $id, array $data): int
     {
         return $this->repository->saveCity($id, $data);
@@ -59,6 +68,7 @@ final readonly class ReferenceService
     {
         $model->getImagePath() && $this->imageRepository->deleteImage($model->getImagePath());
 
-        $this->saveTravelType($model->id(), ['image_path' => null], null);
+        $model->image_path = null;
+        $model->save();
     }
 }

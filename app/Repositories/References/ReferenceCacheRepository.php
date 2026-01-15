@@ -86,4 +86,9 @@ final readonly class ReferenceCacheRepository implements ReferenceRepositoryInte
     {
         return $this->repository->getTravelTypeList();
     }
+
+    public function saveCommunicationType(int $id, array $data): int
+    {
+        return $this->repository->saveCommunicationType($id, $data);
+    }
 }

@@ -19,11 +19,12 @@ class Equipment extends ORM
     protected $table = 'equipments';
     public $timestamps = false;
 
-    protected $fillable = array(
+    protected $fillable = [
+        'id',
         'name',
         'description',
         'category_id',
-    );
+    ];
 
     protected array $allowedSorts = [
         'id',

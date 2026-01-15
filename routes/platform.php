@@ -17,6 +17,7 @@ use App\Orchid\Screens\Notification\UserNotificationSettingScreen;
 use App\Orchid\Screens\PlatformScreen;
 use App\Orchid\Screens\References\CategoryEquipmentScreen;
 use App\Orchid\Screens\References\CitiesScreen;
+use App\Orchid\Screens\References\CommunicateTypeScreen;
 use App\Orchid\Screens\References\CountryScreen;
 use App\Orchid\Screens\References\EmailScreen;
 use App\Orchid\Screens\References\EquipmentScreen;
@@ -138,16 +139,17 @@ Route::screen('/users/{user}/details', ProfileScreen::class)->name('users.detail
 Route::screen('/users/communicates/list', UserCommunicateScreen::class)->name('users.communicates.list');
 
 // Travel
-Route::screen('/travel-type/list', TravelTypeListScreen::class)->name('reference.travel-type.list');
 Route::screen('/travel/list', TravelListScreen::class)->name('travel.list');
 Route::screen('/travel/details/{travel}', TravelDetailsScreen::class)->name('travel.details');
 
 // References
+Route::screen('/reference/travel-type/list', TravelTypeListScreen::class)->name('reference.travel-type.list');
 Route::screen('/reference/category-equipments/list', CategoryEquipmentScreen::class)->name('reference.category.equipments.list');
 Route::screen('/reference/equipments/list', EquipmentScreen::class)->name('reference.equipments.list');
 Route::screen('/reference/cities/list', CitiesScreen::class)->name('reference.cities.list');
 Route::screen('/reference/countries/list', CountryScreen::class)->name('reference.countries.list');
 Route::screen('/reference/emails', EmailScreen::class)->name('reference.email.list');
+Route::screen('/reference/communication-type/list', CommunicateTypeScreen::class)->name('reference.communication-type.list');
 
 //// Subscriptions
 Route::screen('/subscriptions/list', SubscriptionScreen::class)->name('subscriptions.list');
