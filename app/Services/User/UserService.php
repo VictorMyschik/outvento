@@ -225,7 +225,7 @@ final readonly class UserService
 
     public function deleteUser(User $user): void
     {
-        $this->repository->deleteCommunicates($user->id());
+        $this->repository->deleteCommunicates($user->id);
         $this->removeAvatar($user);
         $user->tokens()->delete();
         $user->softDelete();

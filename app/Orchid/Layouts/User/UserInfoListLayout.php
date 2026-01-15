@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Orchid\Layouts\User;
 
 use App\Models\User;
+use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Actions\ModalToggle;
@@ -39,6 +40,10 @@ class UserInfoListLayout extends Table
                 ->render(fn(User $user) => $user->updated_at?->format('d.m.Y H:i:s'))
                 ->sort()
                 ->defaultHidden(),
+            TD::make('deleted_at', 'Deleted')
+                ->render(fn(User $user) => $user->deleted_at?->format('d.m.Y H:i:s'))
+                ->sort()
+                ->defaultHidden(),
 
             TD::make('#')
                 ->align(TD::ALIGN_CENTER)
@@ -55,6 +60,10 @@ class UserInfoListLayout extends Table
                             ->modalTitle('User id ' . $user->id)
                             ->method('saveUser')
                             ->asyncParameters(['id' => $user->id]),
+                        Button::make(__('Delete'))
+                            ->icon('bs.trash3')
+                            ->confirm('Are you sure you want to delete the user?')
+                            ->method('remove', ['id' => $user->id]),
                     ])),
         ];
     }

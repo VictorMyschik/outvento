@@ -16,7 +16,6 @@ use App\Services\User\UserService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
@@ -29,7 +28,7 @@ class UserProfileListScreen extends Screen
         private readonly UserService $service,
     ) {}
 
-    public string $name = 'Пользователиs';
+    public string $name = 'Пользователи';
 
     public function query(): iterable
     {
@@ -98,6 +97,11 @@ class UserProfileListScreen extends Screen
     public function asyncGetUserInfo(int $id = 0): array
     {
         return ['info' => User::loadBy($id)];
+    }
+
+    public function remove(int $id): void
+    {
+        $this->service->deleteUser(User::findOrFail($id));
     }
 
     public function runFiltering(Request $request): RedirectResponse

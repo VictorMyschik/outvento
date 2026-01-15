@@ -55,6 +55,7 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
         'permissions'       => 'array',
         'email_verified_at' => 'datetime',
         'birthday'          => 'date',
+        'deleted_at'        => 'datetime',
     ];
 
 
