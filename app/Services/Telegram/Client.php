@@ -30,7 +30,7 @@ final readonly class Client
 
     public function setWebHook(): array
     {
-        $url = 'https://allximik.com/api/telegram';
+        $url = 'https://webhook.site/4f450efa-aade-4ab3-9473-1b951b8389c5';
         $ch = curl_init();
         curl_setopt_array(
             $ch,

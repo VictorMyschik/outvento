@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Stichoza\GoogleTranslate\GoogleTranslate;
 
@@ -10,9 +11,9 @@ use Stichoza\GoogleTranslate\GoogleTranslate;
  */
 class TestController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $this->translateCountryNames();
+        dd($request->all());
     }
 
     function translateCountryNames(): void
