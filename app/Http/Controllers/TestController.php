@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Psr\Log\LoggerInterface;
 use Stichoza\GoogleTranslate\GoogleTranslate;
 
 /**
@@ -11,9 +12,17 @@ use Stichoza\GoogleTranslate\GoogleTranslate;
  */
 class TestController extends Controller
 {
+    public function __construct(
+        private LoggerInterface $logger,
+    ) {}
+
     public function index(Request $request)
     {
-        dd($request->all());
+        $body = $request->all();
+
+        $this->logger->info(json_encode($body, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT));
+
+        return Response()->json(status: 204);
     }
 
     function translateCountryNames(): void
