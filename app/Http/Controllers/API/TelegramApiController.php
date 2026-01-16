@@ -22,13 +22,13 @@ final readonly class TelegramApiController
         $user = (string)$body['message']['chat']['id'];
 
         $this->logger->info(json_encode($body, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT));
-        try {
+       /* try {
             $this->telegramService->manageBot($user, $message);
         } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
             $this->telegramService->sendRawMessage($user, 'Error: ' . $e->getMessage());
         }
 
-        $this->telegramService->sendRawMessage($user, 'Done!');
+        $this->telegramService->sendRawMessage($user, 'Done!');*/
     }
 }

@@ -6,11 +6,14 @@ use App\Http\Controllers\API\Auth\AuthController;
 use App\Http\Controllers\API\CommonApiController;
 use App\Http\Controllers\API\DownloadFileController;
 use App\Http\Controllers\API\SubscriptionApiController;
+use App\Http\Controllers\API\TelegramApiController;
 use App\Http\Controllers\API\User\UsersController;
 use App\Http\Controllers\API\WelcomeController;
 use App\Http\Controllers\Travel\Travel\TravelController;
 use App\Http\Controllers\Travel\Travel\TravelImageController;
 use Illuminate\Support\Facades\Route;
+
+Route::post('/telegram', [TelegramApiController::class, 'index'])->name('telegram.webhook');
 
 Route::get('common/languages', [CommonApiController::class, 'getLanguages']);
 Route::get('translate/common', [CommonApiController::class, 'getCommonTranslate']);
