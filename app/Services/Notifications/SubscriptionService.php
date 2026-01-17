@@ -7,7 +7,7 @@ namespace App\Services\Notifications;
 use App\Models\Subscription\Subscription;
 use App\Notifications\NewNewsSubscriptionNotification;
 use App\Services\Notifications\DTO\SubscriptionDto;
-use App\Services\Notifications\Enum\NotificationType;
+use App\Services\Notifications\Enum\EventType;
 use App\Services\System\Enum\Language;
 
 final readonly class SubscriptionService
@@ -36,7 +36,7 @@ final readonly class SubscriptionService
         $this->repository->deleteSubscriptionByEmail($email);
     }
 
-    public function createSubscription(NotificationType $type, array $data): void
+    public function createSubscription(EventType $type, array $data): void
     {
         $data['token'] = md5(uniqid());
         $data['type'] = $type->value;
@@ -57,7 +57,7 @@ final readonly class SubscriptionService
             email: $email,
             language: $language->value,
             token: $token,
-            type: NotificationType::News->value,
+            type: EventType::News->value,
         );
 
         $id = $this->repository->saveSubscription(0, (array)$data);

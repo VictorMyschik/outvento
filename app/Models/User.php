@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Models\Notification\UserNotificationSetting;
-use App\Services\Notifications\Enum\NotificationType;
+use App\Services\Notifications\Enum\EventType;
 use App\Services\Notifications\NotificationRecipientInterface;
 use App\Services\System\Enum\Language;
 use App\Services\User\Enum\Gender;
@@ -41,7 +41,7 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
         'last_name',
         'birthday',
         'deleted_at',
-        'telegram_chat_id',
+        'subscription_token',
         'about',
     ];
 
@@ -64,7 +64,7 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
         'name',
         'email',
         'email_verified_at',
-        'telegram_chat_id',
+        'subscription_token',
         'first_name',
         'last_name',
         'language',
@@ -146,7 +146,7 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
         return $this->telegram_chat_id;
     }
 
-    public function getUnsubscribeToken(NotificationType $type): string
+    public function getUnsubscribeToken(EventType $type): string
     {
         return UserNotificationSetting::where('user_id', $this->id)
             ->where('notification_key', $type->value)

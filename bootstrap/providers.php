@@ -8,6 +8,7 @@ use App\Providers\NotificationProvider;
 use App\Providers\ReferenceProvider;
 use App\Providers\SupervisorProvider;
 use App\Providers\SystemProvider;
+use App\Providers\TelegramProvider;
 use App\Providers\TravelServiceProvider;
 use App\Providers\UserProvider;
 use Orchid\Icons\IconServiceProvider;
@@ -25,4 +26,5 @@ return [
     NotificationProvider::class,
     NewsletterProvider::class,
     ConstructorProvider::class,
+    TelegramProvider::class,
 ];

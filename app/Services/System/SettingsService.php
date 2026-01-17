@@ -42,7 +42,7 @@ final readonly class SettingsService
 
     public function getByKey(SettingsKey $key): Settings
     {
-        $setup = $this->all()[$key->value] ?? null;
+        $setup = $this->getList()[$key->value] ?? null;
         if (!$setup) {
             throw new \InvalidArgumentException('Setting with key "' . $key->value . '" not found');
         }
@@ -71,9 +71,9 @@ final readonly class SettingsService
     public function getContacts(): array
     {
         return [
-            'email'            => $this->getByKey(SettingsKey::AdminEmail)->getValue(),
-            'phone'            => PhoneNumber::parse($this->getByKey(SettingsKey::AdminPhone)->getValue())->format(PhoneNumberFormat::INTERNATIONAL),
-            'telegram'         => $this->getByKey(SettingsKey::AdminTelegram)->getValue(),
+            'email'           => $this->getByKey(SettingsKey::AdminEmail)->getValue(),
+            'phone'           => PhoneNumber::parse($this->getByKey(SettingsKey::AdminPhone)->getValue())->format(PhoneNumberFormat::INTERNATIONAL),
+            'telegram'        => $this->getByKey(SettingsKey::AdminTelegram)->getValue(),
             'telegramChannel' => $this->getByKey(SettingsKey::TelegramChannel)->getValue(),
         ];
     }

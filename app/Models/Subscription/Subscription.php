@@ -6,7 +6,7 @@ namespace App\Models\Subscription;
 
 use App\Models\Lego\Fields\LanguageFieldTrait;
 use App\Models\ORM\ORM;
-use App\Services\Notifications\Enum\NotificationType;
+use App\Services\Notifications\Enum\EventType;
 use App\Services\Notifications\NotificationRecipientInterface;
 use Illuminate\Notifications\Notifiable;
 use Orchid\Filters\Filterable;
@@ -40,9 +40,9 @@ class Subscription extends ORM implements NotificationRecipientInterface
         return $this->token;
     }
 
-    public function getType(): NotificationType
+    public function getType(): EventType
     {
-        return NotificationType::from($this->type);
+        return EventType::from($this->type);
     }
 
     public function getEmail(): string
@@ -50,7 +50,7 @@ class Subscription extends ORM implements NotificationRecipientInterface
         return $this->email;
     }
 
-    public function getUnsubscribeToken(NotificationType $type): string
+    public function getUnsubscribeToken(EventType $type): string
     {
         return $this->getToken();
     }

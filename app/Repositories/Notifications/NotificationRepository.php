@@ -7,7 +7,7 @@ namespace App\Repositories\Notifications;
 use App\Models\Notification\UserNotificationSetting;
 use App\Models\User;
 use App\Repositories\DatabaseRepository;
-use App\Services\Notifications\Enum\NotificationType;
+use App\Services\Notifications\Enum\EventType;
 use App\Services\Notifications\NotificationRepositoryInterface;
 
 final readonly class NotificationRepository extends DatabaseRepository implements NotificationRepositoryInterface
@@ -35,7 +35,7 @@ final readonly class NotificationRepository extends DatabaseRepository implement
     /**
      * @return User[]
      */
-    public function getSubscriptionUsersList(NotificationType $type): array
+    public function getSubscriptionUsersList(EventType $type): array
     {
         return User::join(UserNotificationSetting::getTableName(), 'users.id', '=', UserNotificationSetting::getTableName() . '.user_id')
             ->where(UserNotificationSetting::getTableName() . '.notification_key', $type->value)

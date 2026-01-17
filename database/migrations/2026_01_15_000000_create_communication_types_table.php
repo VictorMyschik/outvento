@@ -9,6 +9,7 @@ return new class extends Migration {
     {
         Schema::create('communication_types', function (Blueprint $table) {
             $table->id();
+            $table->string('code', 50);
             $table->string('name_ru', 50);
             $table->string('name_en', 50);
             $table->string('name_pl', 50);

@@ -6,14 +6,17 @@ namespace App\Orchid\Filters\MessageLog;
 
 use App\Models\Notification\UserNotificationSetting;
 use App\Models\User;
+use App\Models\UserInfo\Communication;
+use App\Models\UserInfo\CommunicationType;
 use App\Orchid\Layouts\Lego\ActionFilterPanel;
+use App\Services\Notifications\Enum\EventType;
 use App\Services\Notifications\Enum\NotificationChannel;
-use App\Services\Notifications\Enum\NotificationType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Orchid\Filters\Filter;
 use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
+use Orchid\Screen\Fields\Relation;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Fields\ViewField;
 use Orchid\Screen\Layouts\Rows;
@@ -23,8 +26,9 @@ class UserNotificationSettingFilter extends Filter
 {
     public const array FIELDS = [
         'id',
+        'active',
         'userId',
-        'notificationKey',
+        'eventType',
         'channelType',
         'active',
         'token',
@@ -34,23 +38,38 @@ class UserNotificationSettingFilter extends Filter
 
     public static function runQuery(): Builder
     {
-        return UserNotificationSetting::filters([self::class]);
+        return UserNotificationSetting::filters([self::class])->selectRaw(implode(',', [
+            UserNotificationSetting::getTableName() . '.id',
+            UserNotificationSetting::getTableName() . '.*',
+            CommunicationType::getTableName() . '.name_ru as communication_type',
+            Communication::getTableName() . '.address as communication_address',
+            User::getTableName() . '.subscription_token as token',
+            User::getTableName() . '.email as email'
+        ]));
     }
 
     public function run(Builder $builder): Builder
     {
         $input = $this->request->all(self::FIELDS);
 
+        $builder->join(User::getTableName(), User::getTableName() . '.id', '=', UserNotificationSetting::getTableName() . '.user_id');
+        $builder->join(Communication::getTableName(), Communication::getTableName() . '.id', '=', UserNotificationSetting::getTableName() . '.communication_id');
+        $builder->join(CommunicationType::getTableName(), CommunicationType::getTableName() . '.id', '=', Communication::getTableName() . '.type_id');
+
         if (!empty($input['id'])) {
-            $builder->where('id', (int)$input['id']);
+            $builder->where(UserNotificationSetting::getTableName() . '.id', (int)$input['id']);
         }
 
-        if (!empty($input['notificationKey'])) {
-            $builder->where('notification_key', (string)$input['notificationKey']);
+        if (isset($input['active'])) {
+            $builder->where('active', (bool)$input['active']);
+        }
+
+        if (!empty($input['eventType'])) {
+            $builder->where('event_type', (string)$input['eventType']);
         }
 
         if (!empty($input['channelType'])) {
-            $builder->where('channel', (string)$input['channelType']);
+            $builder->where(CommunicationType::getTableName() . '.id', (string)$input['channelType']);
         }
 
         if (!empty($input['active'])) {
@@ -58,19 +77,19 @@ class UserNotificationSettingFilter extends Filter
         }
 
         if (!empty($input['userId'])) {
-            $builder->where('user_id', (int)$input['userId']);
+            $builder->where(UserNotificationSetting::getTableName() . '.user_id', (int)$input['userId']);
         }
 
         if (!empty($input['createdAt'])) {
-            $builder->whereDate('created_at', $input['createdAt']);
+            $builder->whereDate(UserNotificationSetting::getTableName() . '.created_at', $input['createdAt']);
         }
 
         if (!empty($input['updatedAt'])) {
-            $builder->whereDate('updated_at', $input['updatedAt']);
+            $builder->whereDate(UserNotificationSetting::getTableName() . '.updated_at', $input['updatedAt']);
         }
 
         if (!empty($input['token'])) {
-            $builder->where('token', $input['token']);
+            $builder->where('subscription_token', $input['token']);
         }
 
         return $builder;
@@ -83,9 +102,9 @@ class UserNotificationSettingFilter extends Filter
         $group = Group::make([
             Input::make('id')->value($input['id'])->type('number')->title('ID'),
 
-            Select::make('notificationKey')
-                ->options(NotificationType::getSelectList())
-                ->value($input['notificationKey'])
+            Select::make('eventType')
+                ->options(EventType::getSelectList())
+                ->value($input['eventType'])
                 ->empty()
                 ->title('Тип оповещения'),
 
@@ -95,7 +114,7 @@ class UserNotificationSettingFilter extends Filter
                 ->empty()
                 ->title('Канал'),
 
-            Select::make('userId')
+            Relation::make('userId')
                 ->fromModel(User::class, 'name', 'id')
                 ->value($input['userId'])
                 ->empty('Все')

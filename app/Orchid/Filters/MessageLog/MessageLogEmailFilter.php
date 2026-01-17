@@ -7,7 +7,7 @@ namespace App\Orchid\Filters\MessageLog;
 use App\Models\MessageLog\EmailLog;
 use App\Orchid\Layouts\Lego\ActionFilterPanel;
 use App\Services\Email\Enum\EmailTypeEnum;
-use App\Services\Notifications\Enum\NotificationType;
+use App\Services\Notifications\Enum\EventType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Orchid\Filters\Filter;
@@ -71,7 +71,7 @@ class MessageLogEmailFilter extends Filter
 
         $group = Group::make([
             Select::make('type')
-                ->options(NotificationType::getSelectList())
+                ->options(EventType::getSelectList())
                 ->value($input['type'])
                 ->empty()
                 ->title('Тип письма'),

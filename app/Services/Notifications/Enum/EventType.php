@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Notifications\Enum;
 
-enum NotificationType: string
+enum EventType: string
 {
     case Invite = 'invite';
     case Feedback = 'feedback';
@@ -33,6 +33,14 @@ enum NotificationType: string
     {
         return [
             self::News->value => self::News->getLabel(),
+        ];
+    }
+
+    public static function getAllowedForUser(): array
+    {
+        return [
+            self::Invite,
+            self::News,
         ];
     }
 }

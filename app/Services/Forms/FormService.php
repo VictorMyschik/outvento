@@ -7,7 +7,7 @@ namespace App\Services\Forms;
 use App\Events\FormRequestEvent;
 use App\Models\Forms\Form;
 use App\Services\Forms\Enum\FormTypeEnum;
-use App\Services\Notifications\Enum\NotificationType;
+use App\Services\Notifications\Enum\EventType;
 
 final readonly class FormService
 {
@@ -50,7 +50,7 @@ final readonly class FormService
     private function isEmailEnabled(FormTypeEnum $formType): bool
     {
         return in_array($formType, [
-            NotificationType::Feedback,
+            EventType::Feedback,
         ]);
     }
 }

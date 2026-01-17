@@ -29,7 +29,7 @@ Route::get('/', function (){
     return redirect('/admin');
 });
 
-Route::get('/test', function () {
+Route::post('/test', function () {
     return View('test');
 });
 

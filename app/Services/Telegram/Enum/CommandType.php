@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Services\Telegram\Enum;
 
-enum ManageWords: string
+enum CommandType: string
 {
-    case START = '/start';
+    case Start = '/start';
     case HELP = 'help';
     case CLEAR = 'clear';
 
     public static function tryFromCode(string $message): ?self
     {
         return match ($message) {
-            self::START->value => self::START,
+            self::Start->value => self::Start,
             self::HELP->value => self::HELP,
             self::CLEAR->value => self::CLEAR,
             default => null,
@@ -23,7 +23,7 @@ enum ManageWords: string
     public function getLabel(): string
     {
         return match ($this) {
-            self::START => 'Start',
+            self::Start => 'Start',
             self::HELP => 'Help',
             self::CLEAR => 'Clear all subscriptions',
         };
@@ -32,7 +32,7 @@ enum ManageWords: string
     public static function getSelectList(): array
     {
         return [
-            self::START->value => self::START->getLabel(),
+            self::Start->value => self::Start->getLabel(),
             self::HELP->value  => self::HELP->getLabel(),
             self::CLEAR->value => self::CLEAR->getLabel(),
         ];

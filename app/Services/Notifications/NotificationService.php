@@ -8,7 +8,7 @@ use App\Models\MessageLog\EmailLog;
 use App\Models\Notification\UserNotificationSetting;
 use App\Notifications\NewsNotification;
 use App\Repositories\System\SettingsRepositoryInterface;
-use App\Services\Notifications\Enum\NotificationType;
+use App\Services\Notifications\Enum\EventType;
 use Illuminate\Mail\Mailable;
 use Illuminate\Support\Facades\Mail;
 
@@ -22,13 +22,11 @@ final readonly class NotificationService
 
     public static function getUnsubscribeUrl(string $token): string
     {
-        return env('FRONT_HOST') . '/unsubscribe?token=' . $token;
+        return config('app.front_host') . '/unsubscribe?token=' . $token;
     }
 
     public function saveUserSetting(int $id, array $data): int
     {
-        $data['token'] = md5(uniqid());
-
         return $this->repository->saveUserSetting($id, $data);
     }
 
@@ -42,7 +40,7 @@ final readonly class NotificationService
         $this->repository->deleteUserSetting($id);
     }
 
-    public function getSubscribersList(NotificationType $type): array
+    public function getSubscribersList(EventType $type): array
     {
         return array_merge(
             $this->repository->getSubscriptionUsersList($type),
@@ -58,13 +56,13 @@ final readonly class NotificationService
     public function sendNewsNotification(NotificationRecipientInterface $recipient, array $newsList): void
     {
         $unsubscribeUrl = self::getUnsubscribeUrl(
-            $recipient->getUnsubscribeToken(NotificationType::News)
+            $recipient->getUnsubscribeToken(EventType::News)
         );
 
         $recipient->notify(new NewsNotification($newsList, $unsubscribeUrl));
     }
 
-    public function customEmailNotify(string $to, Mailable $email, NotificationType $type): void
+    public function customEmailNotify(string $to, Mailable $email, EventType $type): void
     {
         try {
             Mail::to($to)->send($email->from(config('mail.from.address'), config('mail.from.name')));

@@ -18,6 +18,7 @@ class ExampleTest extends TestCase
      */
     public function test_the_application_returns_a_successful_response(): void
     {
-        app(Client::class)->setWebHook();
+        // https://t.me/Allximik_bot?start=connect_qwerty
+        app(Client::class)->sendMessage();
     }
 }

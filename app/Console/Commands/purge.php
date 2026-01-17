@@ -80,6 +80,8 @@ class purge extends Command
             'countries',
             'travel_types',
             'communication_types',
+            'communications',
+            'user_notification_settings',
             'travels',
             'uit',
         ];

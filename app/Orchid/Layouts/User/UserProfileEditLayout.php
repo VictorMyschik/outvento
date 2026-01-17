@@ -40,8 +40,8 @@ class UserProfileEditLayout extends Rows
                     0 => 'Not verified',
                 ]),
 
-            Input::make('telegram_chat_id')
-                ->title('Telegram Chat ID'),
+            Input::make('subscription_token')
+                ->title('Subscription token'),
 
             Group::make([
                 Select::make('gender')

@@ -44,7 +44,6 @@ class UserCommunicateFilter extends Filter
                 'users.id as user_id',
                 'users.name as name',
                 'users.email as email',
-                'users.telegram_chat_id as telegram_chat_id',
                 'CONCAT(users.first_name, \' \', users.last_name) as full_name',
                 'name_ru as type',
                 'address',

@@ -235,7 +235,7 @@ final readonly class UserService
         $user->tokens()->delete();
         $user->softDelete();
 
-        // TODO: сдклать проверку на возможность полного удаления
+        // TODO: сделать проверку на возможность полного удаления
         $user->delete();
     }
 
@@ -244,9 +244,9 @@ final readonly class UserService
         $this->repository->saveCommunicate($id, $data);
     }
 
-    public function getCommunicates(User $user, Language $language): array
+    public function getCommunications(int $userId, Language $language): array
     {
-        return $this->repository->getCommunicates($user->id, $language);
+        return $this->repository->getCommunicates($userId, $language);
     }
 
     public function deleteCommunication(User $user, int $id): void

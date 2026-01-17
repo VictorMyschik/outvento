@@ -82,7 +82,7 @@ class UserProfileListScreen extends Screen
         $input = $request->getUpdateData();
 
         $input['email_verified_at'] = $request->get('email_verified_at') ? now() : null;
-        $input['telegram_chat_id'] = $request->get('telegram_chat_id') ?? null;
+        $input['subscription_token'] = $request->get('subscription_token') ?? null;
         unset($input['telegram']);
 
         if ($input['birthday']) {

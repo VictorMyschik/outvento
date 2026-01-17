@@ -23,7 +23,7 @@ class UserInfoListLayout extends Table
             TD::make('name', 'Login')->sort(),
             TD::make('email', 'Email')->sort(),
             TD::make('email_verified_at', 'Email Verified At')->render(fn(User $user) => $user->email_verified_at)->active()->sort(),
-            TD::make('telegram_chat_id', 'Telegram Chat ID')->sort(),
+            TD::make('subscription_token', 'Subscription Token')->sort(),
             TD::make('first_name', 'First Name')->sort(),
             TD::make('last_name', 'Last Name')->sort(),
             TD::make('language', 'Language')->render(fn(User $user) => $user->getLanguage()->getLabel())->sort(),

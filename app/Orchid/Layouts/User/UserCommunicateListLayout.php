@@ -21,7 +21,6 @@ class UserCommunicateListLayout extends Table
             TD::make('id', 'ID')->sort(),
             TD::make('name', 'Login')->sort(),
             TD::make('email', 'Email')->sort(),
-            TD::make('telegram_chat_id', 'Telegram Chat ID')->sort(),
             TD::make('full_name', 'Full Name')->sort(),
             TD::make('type', 'Type')->sort(),
             TD::make('address', 'Address')->sort(),

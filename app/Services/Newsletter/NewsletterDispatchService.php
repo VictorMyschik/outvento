@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Newsletter;
 
-use App\Services\Notifications\Enum\NotificationType;
+use App\Services\Notifications\Enum\EventType;
 use App\Services\Notifications\NotificationService;
 
 final readonly class NewsletterDispatchService
@@ -20,7 +20,7 @@ final readonly class NewsletterDispatchService
             return;
         }
 
-        $recipients = $this->notificationService->getSubscribersList(NotificationType::News);
+        $recipients = $this->notificationService->getSubscribersList(EventType::News);
 
         $newsList = $this->repository->getTodayNewsList();
 

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Forms\DTO;
 
 use App\Services\Forms\FormInterface;
-use App\Services\Notifications\Enum\NotificationType;
+use App\Services\Notifications\Enum\EventType;
 use App\Services\System\Enum\Language;
 
 final class FormFeedbackDTO implements FormInterface
@@ -34,9 +34,9 @@ final class FormFeedbackDTO implements FormInterface
         $this->id = $id;
     }
 
-    public function getType(): NotificationType
+    public function getType(): EventType
     {
-        return NotificationType::Feedback;
+        return EventType::Feedback;
     }
 
     public function getJson(): string

@@ -41,7 +41,8 @@ final readonly class UserRepository extends DatabaseRepository
             ->selectRaw(
                 implode(',', [
                     Communication::getTableName() . '.*',
-                    CommunicationType::getTableName() . '.name_' . $language->getCode() . ' AS communication_type'
+                    CommunicationType::getTableName() . '.name_' . $language->getCode() . ' AS communication_type',
+                    CommunicationType::getTableName() . '.code AS code'
                 ])
             )
             ->get()->all();

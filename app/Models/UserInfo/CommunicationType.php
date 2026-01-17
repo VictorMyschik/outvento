@@ -24,6 +24,7 @@ class CommunicationType extends ORM implements ReferenceBaseInterface
     protected $table = 'communication_types';
 
     protected array $allowedSorts = [
+        'code',
         'name_ru',
         'name_en',
         'name_pl',

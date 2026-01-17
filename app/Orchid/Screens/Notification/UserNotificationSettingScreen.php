@@ -22,7 +22,7 @@ final class UserNotificationSettingScreen extends Screen
         private readonly NotificationService $service,
     ) {}
 
-    public string $name = 'Настройки оповещения';
+    public string $name = 'User Notification Settings';
 
     public function query(): iterable
     {
@@ -66,8 +66,8 @@ final class UserNotificationSettingScreen extends Screen
         $input = Validator::make($request->all(), [
             'setting.active'           => 'nullable',
             'setting.user_id'          => 'required|integer',
-            'setting.notification_key' => 'required',
-            'setting.channel'          => 'required'
+            'setting.event_type'       => 'required',
+            'setting.communication_id' => 'required|integer'
         ])->validate()['setting'];
         $input['active'] = (bool)$input['active'] ?? false;
 

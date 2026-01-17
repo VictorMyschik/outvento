@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Notifications;
 
 use App\Models\Subscription\Subscription;
-use App\Services\Notifications\Enum\NotificationType;
+use App\Services\Notifications\Enum\EventType;
 
 interface SubscriptionRepositoryInterface
 {
@@ -21,5 +21,5 @@ interface SubscriptionRepositoryInterface
 
     public function deleteSubscriptionByEmail(string $email): void;
 
-    public function getListByType(NotificationType $type): array;
+    public function getListByType(EventType $type): array;
 }
