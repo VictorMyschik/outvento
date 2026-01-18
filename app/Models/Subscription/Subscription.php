@@ -61,7 +61,7 @@ class Subscription extends ORM implements NotificationRecipientInterface, HasLoc
 
     public function notificationChannelsFor(string $notificationClass): array
     {
-        return [NotificationChannelMapper::EMAIL];
+        return [NotificationChannelMapper::map(NotificationChannelMapper::EMAIL)];
     }
 
     public function routeNotificationForMail($notification = null): string

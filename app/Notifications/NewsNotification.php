@@ -56,7 +56,7 @@ class NewsNotification extends Notification
 
         foreach ($this->newsList as $news) {
             $newsTitle = TelegramMarkdown::escape($news->title);
-            $url = 'https://travel.allximik.com';
+            $url = config('app.url') . $news->getUrl();
 
             $lines[] = "• [{$newsTitle}]({$url})";
             $lines[] = '';

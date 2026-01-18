@@ -17,6 +17,11 @@ class SubscriptionApiController extends APIController
         path: "/api/v1/subscription/subscribe",
         operationId: "subscribe",
         summary: "Subscribe to news",
+        requestBody: new OA\RequestBody(
+            description: "Subscription payload",
+            required: true,
+            content: new OA\JsonContent(ref: "#/components/schemas/SubscriptionRequest")
+        ),
         tags: ["Subscription"],
         parameters: [
             new OA\Parameter(ref: "#/components/parameters/XRequestedWithHeader"),
