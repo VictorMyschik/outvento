@@ -103,6 +103,6 @@ class News extends ORM
 
     public function getUrl(): string
     {
-        return env('FRONT_HOST') . "/news/{$this->getGroup()->getCode()}/{$this->getCode()}";
+        return config('app.front_host') . "/news/{$this->getGroup()->getCode()}/{$this->getCode()}";
     }
 }

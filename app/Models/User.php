@@ -5,13 +5,16 @@ namespace App\Models;
 use App\Models\Notification\UserNotificationSetting;
 use App\Models\UserInfo\Communication;
 use App\Models\UserInfo\CommunicationType;
+use App\Services\Notifications\Enum\NotificationChannel;
 use App\Services\Notifications\NotificationChannelMapper;
 use App\Services\Notifications\NotificationRecipientInterface;
 use App\Services\System\Enum\Language;
 use App\Services\User\Enum\Gender;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
@@ -19,11 +22,10 @@ use Orchid\Filters\Filterable;
 use Orchid\Platform\Models\User as Authenticatable;
 use Orchid\Screen\AsSource;
 
-class User extends Authenticatable implements MustVerifyEmail, NotificationRecipientInterface
+class User extends Authenticatable implements MustVerifyEmail, NotificationRecipientInterface, HasLocalePreference
 {
     use AsSource;
     use Filterable;
-
     use Notifiable, HasApiTokens;
 
     public const string TYPE_VIEW = 'view';
@@ -77,6 +79,11 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
         'created_at',
         'updated_at',
     ];
+
+    public function preferredLocale(): string
+    {
+        return Language::from($this->language)->getCode() ?? config('app.locale');
+    }
 
     public static function getTableName(): string
     {
@@ -142,25 +149,52 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
             ->where('event_type', $key)
             ->where(UserNotificationSetting::getTableName() . '.active', true)
             ->pluck(CommunicationType::getTableName() . '.code')
-            ->map(fn ($code) => NotificationChannelMapper::map($code))
+            ->map(fn($code) => NotificationChannelMapper::map($code))
             ->unique()
             ->values()
             ->toArray();
     }
 
-    public function routeNotificationForTelegram(): ?string
+    protected function getCommunicationAddressFor(string $channel, string $eventKey): ?string
     {
-        return $this->telegram_chat_id;
+        return $this->notificationSettings()
+            ->join(
+                Communication::getTableName(),
+                UserNotificationSetting::getTableName() . '.communication_id',
+                '=',
+                Communication::getTableName() . '.id'
+            )
+            ->join(
+                CommunicationType::getTableName(),
+                CommunicationType::getTableName() . '.id',
+                '=',
+                Communication::getTableName() . '.type_id'
+            )
+            ->where(UserNotificationSetting::getTableName() . '.event_type', $eventKey)
+            ->where(UserNotificationSetting::getTableName() . '.active', true)
+            ->where(CommunicationType::getTableName() . '.code', $channel)
+            ->value(Communication::getTableName() . '.address');
+    }
+
+    public function routeNotificationForMail(Notification $notification): string|array|null
+    {
+        return $this->getCommunicationAddressFor(
+            channel: NotificationChannel::Email->value,
+            eventKey: $notification::KEY
+        );
+    }
+
+    public function routeNotificationForTelegram(Notification $notification): string|int|null
+    {
+        return $this->getCommunicationAddressFor(
+            channel: NotificationChannel::Telegram->value,
+            eventKey: $notification::KEY
+        );
     }
 
     public function getUnsubscribeToken(): string
     {
         return $this->subscription_token;
-    }
-
-    public function routeNotificationForMail($notification = null): string
-    {
-        return $this->email;
     }
 
     public function getLanguage(): Language

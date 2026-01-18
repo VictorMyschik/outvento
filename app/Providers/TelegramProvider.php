@@ -13,7 +13,7 @@ class TelegramProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(Client::class, function ($app) {
-            return new Client(token: $app->make(Repository::class)->get('services.telegram.bot_token'));
+            return new Client(token: $app->make(Repository::class)->get('services.telegram-bot-api.token'));
         });
     }
 }

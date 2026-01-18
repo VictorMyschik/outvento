@@ -7,12 +7,16 @@ namespace App\Models\Subscription;
 use App\Models\Lego\Fields\LanguageFieldTrait;
 use App\Models\ORM\ORM;
 use App\Services\Notifications\Enum\EventType;
+use App\Services\Notifications\NotificationChannelMapper;
 use App\Services\Notifications\NotificationRecipientInterface;
+use App\Services\System\Enum\Language;
+use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Notifications\Notification;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
 
-class Subscription extends ORM implements NotificationRecipientInterface
+class Subscription extends ORM implements NotificationRecipientInterface, HasLocalePreference
 {
     use AsSource;
     use Filterable;
@@ -50,13 +54,23 @@ class Subscription extends ORM implements NotificationRecipientInterface
         return $this->token;
     }
 
+    public function preferredLocale(): string
+    {
+        return Language::from($this->language)->getCode() ?? config('app.locale');
+    }
+
     public function notificationChannelsFor(string $notificationClass): array
     {
-        return ['mail'];
+        return [NotificationChannelMapper::EMAIL];
     }
 
     public function routeNotificationForMail($notification = null): string
     {
         return $this->getEmail();
+    }
+
+    public function routeNotificationForTelegram(Notification $notification): string|int|null
+    {
+        return null;
     }
 }
