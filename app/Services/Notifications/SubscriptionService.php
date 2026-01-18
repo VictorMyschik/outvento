@@ -6,6 +6,7 @@ namespace App\Services\Notifications;
 
 use App\Models\Subscription\Subscription;
 use App\Notifications\NewNewsSubscriptionNotification;
+use App\Repositories\User\UserRepository;
 use App\Services\Notifications\DTO\SubscriptionDto;
 use App\Services\Notifications\Enum\EventType;
 use App\Services\System\Enum\Language;
@@ -13,7 +14,8 @@ use App\Services\System\Enum\Language;
 final readonly class SubscriptionService
 {
     public function __construct(
-        private SubscriptionRepositoryInterface $repository
+        private SubscriptionRepositoryInterface $repository,
+        private UserRepository                  $userRepository,
     ) {}
 
     public function getSubscriptionById(int $id): ?Subscription
@@ -44,10 +46,10 @@ final readonly class SubscriptionService
         $this->repository->saveSubscription(0, $data);
     }
 
-    public function createNewsSubscription(string $email, Language $language): void
+    public function createSubscriptionWithNotify(string $email, Language $language): void
     {
-        $exists = $this->getSubscriptionByEmail($email);
-        if (!empty($exists)) {
+        $exists = $this->hasSubscriptionBy($email);
+        if ($exists) {
             return;
         }
 
@@ -65,6 +67,20 @@ final readonly class SubscriptionService
         $this->getSubscriptionById($id)->notify(
             new NewNewsSubscriptionNotification(NotificationService::getUnsubscribeUrl($token))
         );
+    }
+
+    public function hasSubscriptionBy(string $email): bool
+    {
+        $anonymous = $this->repository->getSubscriptionByEmail($email);
+        if (count($anonymous) > 0) {
+            return true;
+        }
+
+        if ($this->userRepository->hasCommunicationByAddress($email)) {
+            return true;
+        }
+
+        return false;
     }
 
     public function updateSubscription(int $id, array $data): void

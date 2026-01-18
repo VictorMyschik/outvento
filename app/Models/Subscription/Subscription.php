@@ -35,11 +35,6 @@ class Subscription extends ORM implements NotificationRecipientInterface
         'updated_at' => 'datetime',
     ];
 
-    public function getToken(): string
-    {
-        return $this->token;
-    }
-
     public function getType(): EventType
     {
         return EventType::from($this->type);
@@ -50,9 +45,9 @@ class Subscription extends ORM implements NotificationRecipientInterface
         return $this->email;
     }
 
-    public function getUnsubscribeToken(EventType $type): string
+    public function getUnsubscribeToken(): string
     {
-        return $this->getToken();
+        return $this->token;
     }
 
     public function notificationChannelsFor(string $notificationClass): array

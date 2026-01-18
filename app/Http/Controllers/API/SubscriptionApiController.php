@@ -28,7 +28,7 @@ class SubscriptionApiController extends APIController
     )]
     public function subscribe(SubscriptionRequest $request): JsonResponse
     {
-        $this->subscriptionService->createNewsSubscription($request->getEmail(), $this->getLanguage());
+        $this->subscriptionService->createSubscriptionWithNotify($request->getEmail(), $this->getLanguage());
 
         return $this->apiResponse(code: 204);
     }

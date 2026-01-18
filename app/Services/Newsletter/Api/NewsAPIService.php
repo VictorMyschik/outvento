@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Services\Newsletter;
+namespace App\Services\Newsletter\Api;
 
 use App\Enums\LanguageEnum;
 use App\Http\Controllers\Api\News\Request\NewsFilterRequest;
 use App\Http\Controllers\Api\News\Response\NewsResponse;
 use App\Http\Controllers\Api\Request\PaginationRequest;
+use App\Services\Newsletter\NewsAPIInterface;
 
 final readonly class NewsAPIService
 {

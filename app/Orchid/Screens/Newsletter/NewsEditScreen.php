@@ -83,7 +83,7 @@ class NewsEditScreen extends Screen
             Link::make('Назад')
                 ->icon('arrow-up')
                 ->class('mr-btn-primary')
-                ->href(request()->headers->get('referer') ?: route('newsletter.news.list')),
+                ->href(route('newsletter.news.list')),
         ];
     }
 

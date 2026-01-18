@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use App\Models\Notification\UserNotificationSetting;
-use App\Services\Notifications\Enum\EventType;
+use App\Models\UserInfo\Communication;
+use App\Models\UserInfo\CommunicationType;
+use App\Services\Notifications\NotificationChannelMapper;
 use App\Services\Notifications\NotificationRecipientInterface;
 use App\Services\System\Enum\Language;
 use App\Services\User\Enum\Gender;
@@ -135,9 +137,14 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
         $key = $notificationClass::KEY;
 
         return $this->notificationSettings()
-            ->where('notification_key', $key)
-            ->where('enabled', true)
-            ->pluck('channel')
+            ->join(Communication::getTableName(), UserNotificationSetting::getTableName() . '.communication_id', '=', Communication::getTableName() . '.id')
+            ->join(CommunicationType::getTableName(), CommunicationType::getTableName() . '.id', '=', Communication::getTableName() . '.type_id')
+            ->where('event_type', $key)
+            ->where(UserNotificationSetting::getTableName() . '.active', true)
+            ->pluck(CommunicationType::getTableName() . '.code')
+            ->map(fn ($code) => NotificationChannelMapper::map($code))
+            ->unique()
+            ->values()
             ->toArray();
     }
 
@@ -146,11 +153,9 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
         return $this->telegram_chat_id;
     }
 
-    public function getUnsubscribeToken(EventType $type): string
+    public function getUnsubscribeToken(): string
     {
-        return UserNotificationSetting::where('user_id', $this->id)
-            ->where('notification_key', $type->value)
-            ->value('token');
+        return $this->subscription_token;
     }
 
     public function routeNotificationForMail($notification = null): string
@@ -171,15 +176,15 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
     public function softDelete(): void
     {
         $this->fill([
-            'deleted_at'       => now(),
-            'name'             => 'deleted',
-            'email'            => (int)now()->timestamp . '@deleted.com',
-            'password'         => Hash::make(str()->random(32)),
-            'first_name'       => null,
-            'last_name'        => null,
-            'birthday'         => null,
-            'telegram_chat_id' => null,
-            'about'            => null,
+            'deleted_at'         => now(),
+            'name'               => 'deleted',
+            'email'              => (int)now()->timestamp . '@deleted.com',
+            'password'           => Hash::make(str()->random(32)),
+            'first_name'         => null,
+            'last_name'          => null,
+            'birthday'           => null,
+            'subscription_token' => null,
+            'about'              => null,
         ]);
 
         $this->save();

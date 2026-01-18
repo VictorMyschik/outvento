@@ -104,7 +104,7 @@ class SubscriptionScreen extends Screen
     public function deleteSubscription(int $subscription_id): void
     {
         $subscription = $this->service->getSubscriptionById($subscription_id);
-        $this->service->deleteSubscription($subscription->getToken());
+        $this->service->deleteSubscription($subscription->token);
     }
 
     #region Filter

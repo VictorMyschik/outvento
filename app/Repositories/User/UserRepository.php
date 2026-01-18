@@ -57,4 +57,9 @@ final readonly class UserRepository extends DatabaseRepository
     {
         $this->db->table(Communication::getTableName())->where('user_id', $userId)->where('id', $id)->delete();
     }
+
+    public function hasCommunicationByAddress(string $address): bool
+    {
+        return $this->db->table(Communication::getTableName())->where('address', $address)->exists();
+    }
 }

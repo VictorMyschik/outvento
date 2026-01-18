@@ -104,7 +104,7 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             if ($e instanceof BotMessageNotAllowed) {
-                return new JsonResponse(['status' => 'ok',], 200);
+                return new JsonResponse(['status' => 'ok'], 200);
             }
         });
     })->create();

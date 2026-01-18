@@ -68,10 +68,11 @@ final readonly class UserService
         $user = new User();
 
         $user->fill([
-            'name'     => $dto->name,
-            'email'    => $dto->email,
-            'password' => $dto->password,
-            'language' => $dto->language,
+            'name'               => $dto->name,
+            'email'              => $dto->email,
+            'password'           => $dto->password,
+            'language'           => $dto->language,
+            'subscription_token' => md5((string)Str::uuid()),
         ])->save();
 
         return $user;

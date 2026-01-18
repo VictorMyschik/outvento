@@ -38,7 +38,7 @@ final readonly class NotificationRepository extends DatabaseRepository implement
     public function getSubscriptionUsersList(EventType $type): array
     {
         return User::join(UserNotificationSetting::getTableName(), 'users.id', '=', UserNotificationSetting::getTableName() . '.user_id')
-            ->where(UserNotificationSetting::getTableName() . '.notification_key', $type->value)
+            ->where(UserNotificationSetting::getTableName() . '.event_type', $type->value)
             ->where(UserNotificationSetting::getTableName() . '.active', true)
             ->get()->all();
     }

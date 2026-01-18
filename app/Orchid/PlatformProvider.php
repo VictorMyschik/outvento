@@ -59,7 +59,7 @@ class PlatformProvider extends OrchidServiceProvider
             Menu::make('Language')->icon('language')->route('language.translate.list'),
 
             Menu::make('System')->icon('settings')->list([
-                Menu::make('Email log')->route('system.email.log'),
+                Menu::make('Logs')->href('/log-viewer')->target('_blank'),
                 Menu::make('Cron')->route('system.info.cron'),
                 Menu::make('Cache')->route('system.cache'),
                 Menu::make('Settings')->route('system.settings.list'),

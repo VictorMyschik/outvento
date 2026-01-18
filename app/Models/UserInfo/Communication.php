@@ -47,6 +47,6 @@ class Communication extends ORM
 
     public function getType(): CommunicationType
     {
-        return CommunicationType::loadByOrDie($this->type);
+        return CommunicationType::loadByOrDie($this->type_id);
     }
 }

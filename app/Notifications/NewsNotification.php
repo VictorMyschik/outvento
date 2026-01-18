@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Notifications;
 
+use App\Services\Notifications\Enum\EventType;
 use App\Services\Notifications\NotificationRecipientInterface;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -15,7 +16,7 @@ class NewsNotification extends Notification
     use Queueable;
 
     public array $data;
-    public const string KEY = 'new_comment';
+    public const string KEY = EventType::News->value;
 
     public function __construct(public array $newsList, public string $unsubscribeUrl) {}
 

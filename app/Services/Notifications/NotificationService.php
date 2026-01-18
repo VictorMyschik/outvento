@@ -6,9 +6,11 @@ namespace App\Services\Notifications;
 
 use App\Models\MessageLog\EmailLog;
 use App\Models\Notification\UserNotificationSetting;
+use App\Models\UserInfo\CommunicationType;
 use App\Notifications\NewsNotification;
 use App\Repositories\System\SettingsRepositoryInterface;
 use App\Services\Notifications\Enum\EventType;
+use App\Services\Notifications\Enum\NotificationChannel;
 use Illuminate\Mail\Mailable;
 use Illuminate\Support\Facades\Mail;
 
@@ -27,7 +29,15 @@ final readonly class NotificationService
 
     public function saveUserSetting(int $id, array $data): int
     {
-        return $this->repository->saveUserSetting($id, $data);
+        $id = $this->repository->saveUserSetting($id, $data);
+
+        // Email был переведён на пользователя - удаляем из анонимного управления (из таблицы subscriptions)
+        $userNotificationSetting = UserNotificationSetting::loadByOrDie($id);
+        if ($userNotificationSetting->getCommunicationType()->code === NotificationChannel::Email->value) {
+            $this->subscriptionRepository->deleteSubscriptionByEmail($userNotificationSetting->getCommunication()->address);
+        }
+
+        return $id;
     }
 
     public function getUserNotificationSettingById(int $id): ?UserNotificationSetting
@@ -55,9 +65,7 @@ final readonly class NotificationService
 
     public function sendNewsNotification(NotificationRecipientInterface $recipient, array $newsList): void
     {
-        $unsubscribeUrl = self::getUnsubscribeUrl(
-            $recipient->getUnsubscribeToken(EventType::News)
-        );
+        $unsubscribeUrl = self::getUnsubscribeUrl($recipient->getUnsubscribeToken());
 
         $recipient->notify(new NewsNotification($newsList, $unsubscribeUrl));
     }
