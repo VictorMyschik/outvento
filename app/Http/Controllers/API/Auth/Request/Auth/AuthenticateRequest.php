@@ -9,9 +9,9 @@ use OpenApi\Attributes as OA;
 
 #[OA\Schema(
     schema: "AuthenticateRequest",
-    required: ["email", "password"],
+    required: ["login", "password"],
     properties: [
-        new OA\Property(property: "email", type: "string", format: "email", maxLength: 255, example: "user@example.com"),
+        new OA\Property(property: "login", type: "string", maxLength: 255),
         new OA\Property(property: "password", type: "string", example: "password123"),
         new OA\Property(property: "remember", type: "boolean", example: true),
     ],
@@ -22,15 +22,15 @@ class AuthenticateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email'    => ['required', 'string', 'email', 'max:255'],
+            'login'    => ['sometimes', 'nullable', 'string', 'max:255'],
             'password' => ['required', 'string'],
             'remember' => ['sometimes', 'boolean'],
         ];
     }
 
-    public function getEmail(): string
+    public function getLogin(): ?string
     {
-        return $this->input('email');
+        return $this->input('login');
     }
 
     public function getPassword(): string

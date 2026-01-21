@@ -35,8 +35,13 @@ final readonly class UserService
         $this->language = Language::fromCode(app()->getLocale());
     }
 
-    public function authorize(string $email, string $password, bool $isRememberMe): ?string
+    public function authorize(string $loginOrEmail, string $password, bool $isRememberMe): ?string
     {
+        $email = $loginOrEmail;
+        if (filter_var($loginOrEmail, FILTER_VALIDATE_EMAIL) === false) {
+            $email = $this->repository->getEmailByName($loginOrEmail);
+        }
+
         $credentials = [
             'email'    => $email,
             'password' => $password,

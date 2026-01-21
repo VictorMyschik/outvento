@@ -12,6 +12,11 @@ use App\Services\System\Enum\Language;
 
 final readonly class UserRepository extends DatabaseRepository
 {
+    public function getEmailByName(string $name): ?string
+    {
+        return $this->db->table(User::getTableName())->where('name', $name)->value('email');
+    }
+
     public function getUserById(int $id): ?User
     {
         return User::find($id);

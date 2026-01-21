@@ -106,7 +106,7 @@ class AuthController extends APIController
     public function login(AuthenticateRequest $request): JsonResponse
     {
         return $this->apiResponse(
-            new LoginResponse($this->userService->authorize($request->getEmail(), $request->getPassword(), $request->getRemember())),
+            new LoginResponse($this->userService->authorize($request->getLogin(), $request->getPassword(), $request->getRemember())),
         );
     }
 

@@ -657,6 +657,17 @@
                         "$ref": "#/components/parameters/XRequestedWithHeader"
                     }
                 ],
+                "requestBody": {
+                    "description": "Subscription payload",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SubscriptionRequest"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "204": {
                         "description": "Successful",
@@ -1246,15 +1257,13 @@
         "schemas": {
             "AuthenticateRequest": {
                 "required": [
-                    "email",
+                    "login",
                     "password"
                 ],
                 "properties": {
-                    "email": {
+                    "login": {
                         "type": "string",
-                        "format": "email",
-                        "maxLength": 255,
-                        "example": "user@example.com"
+                        "maxLength": 255
                     },
                     "password": {
                         "type": "string",
@@ -1397,6 +1406,20 @@
                 },
                 "type": "object"
             },
+            "SubscriptionRequest": {
+                "required": [
+                    "email"
+                ],
+                "properties": {
+                    "email": {
+                        "description": "Subscriber email",
+                        "type": "string",
+                        "format": "email",
+                        "example": "user@example.com"
+                    }
+                },
+                "type": "object"
+            },
             "ContactsResponse": {
                 "description": "Response containing contact information",
                 "required": [
@@ -1418,6 +1441,11 @@
                         "description": "Contact Telegram handle",
                         "type": "string",
                         "example": "@test"
+                    },
+                    "telegramChannel": {
+                        "description": "Contact Telegram channel handle",
+                        "type": "string",
+                        "example": "@test_channel"
                     }
                 },
                 "type": "object"
