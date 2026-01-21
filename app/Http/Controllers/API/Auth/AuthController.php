@@ -235,7 +235,7 @@ class AuthController extends APIController
 
         $this->userService->sendVerifyNotification($request->user());
 
-        return $this->apiResponse();
+        return $this->apiResponse(code: 204);
     }
 
     #[OA\Post(

@@ -6,5 +6,5 @@ return [
     'throttle'                 => 'Too many login attempts. Please try again in :seconds seconds.',
     'forgot_your_password'     => 'Forgot Your Password?',
     'send_password_reset_link' => 'Send Password Reset Link',
-    'verification_not_found'   => 'We couldn’t find this information. Please double-check your details or request a new verification code to continue your journey.',
+    'verification_not_found'   => 'We couldn’t verify the code. Please check it or request a new verification code to continue your journey.',
 ];

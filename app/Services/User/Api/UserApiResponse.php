@@ -25,6 +25,7 @@ final readonly class UserApiResponse
             gender: '',
             birthday: '',
             about: '',
+            updatedAt: $user->updated_at?->toAtomString(),
         );
     }
 
@@ -43,6 +44,7 @@ final readonly class UserApiResponse
             gender: $user->getGender()?->getLabel(),
             birthday: $user->birthday?->format('Y-m-d') ?? '',
             about: $user->about,
+            updatedAt: $user->updated_at?->toAtomString(),
         );
     }
 

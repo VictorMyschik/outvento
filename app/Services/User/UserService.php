@@ -163,6 +163,7 @@ final readonly class UserService
         );
 
         $user->notify(new VerifyRegistrationCode($code, self::ACTION_VERIFY_REG_TIME_EXPIRY_MINUTES));
+        $user->touch('updated_at');
     }
 
     public function sendResetPassword(string $email): void
