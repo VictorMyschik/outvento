@@ -13,6 +13,8 @@ class VerifyRegistrationCode extends Notification implements ShouldQueue
 {
     use Queueable;
 
+    public const string KEY = 'verify_registration_code';
+
     public function __construct(private readonly string $code, private readonly int $expireMinutes) {}
 
     public function via(object $notifiable): array

@@ -11,6 +11,7 @@ use App\Orchid\Filters\User\UserInfoFilter;
 use App\Orchid\Layouts\User\NewUserLayout;
 use App\Orchid\Layouts\User\UserInfoListLayout;
 use App\Orchid\Layouts\User\UserProfileEditLayout;
+use App\Services\System\Enum\Language;
 use App\Services\User\DTO\UserProfileDTO;
 use App\Services\User\UserService;
 use Illuminate\Http\RedirectResponse;
@@ -71,7 +72,7 @@ class UserProfileListScreen extends Screen
             email: $request->getEmail(),
             name: $request->getName(),
             password: Hash::make($request->getPassword()),
-            language: $request->getLanguage()->value,
+            language: Language::fromCode(app()->getLocale())->value,
         );
 
         $this->service->create($dto);

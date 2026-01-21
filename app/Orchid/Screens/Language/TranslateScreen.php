@@ -39,7 +39,7 @@ class TranslateScreen extends Screen
     public function query(): iterable
     {
         return [
-            'list' => TranslateFilter::runQuery()->paginate(50, [Translate::getTableName() . '.*']),
+            'list' => TranslateFilter::runQuery()->orderBy('id', 'DESC')->paginate(50, [Translate::getTableName() . '.*']),
         ];
     }
 

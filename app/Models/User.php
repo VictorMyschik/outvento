@@ -56,10 +56,10 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
     ];
 
     protected $casts = [
-        'permissions'       => 'array',
+        'permissions' => 'array',
         'email_verified_at' => 'datetime',
-        'birthday'          => 'date',
-        'deleted_at'        => 'datetime',
+        'birthday' => 'date',
+        'deleted_at' => 'datetime',
     ];
 
 
@@ -178,18 +178,26 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
 
     public function routeNotificationForMail(Notification $notification): string|array|null
     {
-        return $this->getCommunicationAddressFor(
-            channel: NotificationChannel::Email->value,
-            eventKey: $notification::KEY
-        );
+        if (isset(NotificationChannel::getSelectList()[$notification::KEY])) {
+            return $this->getCommunicationAddressFor(
+                channel: NotificationChannel::Email->value,
+                eventKey: $notification::KEY
+            );
+        }
+
+        return $this->email;
     }
 
     public function routeNotificationForTelegram(Notification $notification): string|int|null
     {
-        return $this->getCommunicationAddressFor(
-            channel: NotificationChannel::Telegram->value,
-            eventKey: $notification::KEY
-        );
+        if (isset(NotificationChannel::getSelectList()[$notification::KEY])) {
+            return $this->getCommunicationAddressFor(
+                channel: NotificationChannel::Telegram->value,
+                eventKey: $notification::KEY
+            );
+        }
+
+        return null;
     }
 
     public function getUnsubscribeToken(): string
@@ -210,15 +218,15 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
     public function softDelete(): void
     {
         $this->fill([
-            'deleted_at'         => now(),
-            'name'               => 'deleted',
-            'email'              => (int)now()->timestamp . '@deleted.com',
-            'password'           => Hash::make(str()->random(32)),
-            'first_name'         => null,
-            'last_name'          => null,
-            'birthday'           => null,
+            'deleted_at' => now(),
+            'name' => 'deleted',
+            'email' => (int)now()->timestamp . '@deleted.com',
+            'password' => Hash::make(str()->random(32)),
+            'first_name' => null,
+            'last_name' => null,
+            'birthday' => null,
             'subscription_token' => null,
-            'about'              => null,
+            'about' => null,
         ]);
 
         $this->save();
