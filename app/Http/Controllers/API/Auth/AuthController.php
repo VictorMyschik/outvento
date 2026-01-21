@@ -210,7 +210,7 @@ class AuthController extends APIController
     {
         $this->userService->verifyEmailAddress((int)$request->validated('code'), $request->user());
 
-        return $this->apiResponse();
+        return $this->apiResponse(code: 204);
     }
 
     #[OA\Post(

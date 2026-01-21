@@ -27,7 +27,9 @@ class UserProfileListScreen extends Screen
     public function __construct(
         private readonly Request     $request,
         private readonly UserService $service,
-    ) {}
+    )
+    {
+    }
 
     public string $name = 'Пользователи';
 
@@ -103,6 +105,13 @@ class UserProfileListScreen extends Screen
     public function remove(int $id): void
     {
         $this->service->deleteUser(User::findOrFail($id));
+    }
+
+    public function sendVerifyEmail(): void
+    {
+        $this->service->sendVerifyNotification(User::findOrFail(request()->get('id')));
+
+        Toast::info('Email с кодом верификации успешно отправлен пользователю')->delay(1500);
     }
 
     public function runFiltering(Request $request): RedirectResponse

@@ -48,23 +48,31 @@ class UserInfoListLayout extends Table
             TD::make('#')
                 ->align(TD::ALIGN_CENTER)
                 ->width('100px')
-                ->render(fn($user) => DropDown::make()
-                    ->icon('bs.three-dots-vertical')
-                    ->list([
-                        Link::make(__('Profile'))
-                            ->icon('user')
-                            ->route('profiles.details', $user->id),
-                        ModalToggle::make('Edit')
-                            ->icon('pencil')
-                            ->modal('user_modal')
-                            ->modalTitle('User id ' . $user->id)
-                            ->method('saveUser')
-                            ->asyncParameters(['id' => $user->id]),
-                        Button::make(__('Delete'))
-                            ->icon('bs.trash3')
-                            ->confirm('Are you sure you want to delete the user?')
-                            ->method('remove', ['id' => $user->id]),
-                    ])),
+                ->render(function (User $user) {
+                    $btns[] = Link::make(__('Profile'))
+                        ->icon('user')
+                        ->route('profiles.details', $user->id);
+                    if (empty($user->email_verified_at)) {
+                        $btns[] = Button::make('Отправить код верификации')
+                            ->icon('send')
+                            ->confirm('Are you sure you want to send a verification email to the user?')
+                            ->method('sendVerifyEmail', ['id' => $user->id]);
+                    }
+                    $btns[] = ModalToggle::make('Edit')
+                        ->icon('pencil')
+                        ->modal('user_modal')
+                        ->modalTitle('User id ' . $user->id)
+                        ->method('saveUser')
+                        ->asyncParameters(['id' => $user->id]);
+                    $btns[] = Button::make(__('Delete'))
+                        ->icon('bs.trash3')
+                        ->confirm('Are you sure you want to delete the user?')
+                        ->method('remove', ['id' => $user->id]);
+
+                    return DropDown::make()
+                        ->icon('bs.three-dots-vertical')
+                        ->list($btns);
+                }),
         ];
     }
 

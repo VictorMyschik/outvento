@@ -127,13 +127,13 @@ final readonly class UserService
     public function verifyEmailAddress(int $code, User $user): void
     {
         $notification = NotificationCode::where([
-            'user_id' => $user->id(),
+            'user_id' => $user->id,
             'code'    => $code,
             'action'  => NotificationCode::ACTION_VERIFY_REG,
         ])->first();
 
         if (!$notification) {
-            throw new NotFoundHttpException('Информация не найдена, проверьте правильность ввода данных или запросите новый код подтверждения.');
+            throw new NotFoundHttpException(__('auth.verification_not_found'));
         }
 
         $user->markEmailAsVerified();
