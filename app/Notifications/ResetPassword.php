@@ -13,6 +13,8 @@ class ResetPassword extends Notification implements ShouldQueue
 {
     use Queueable;
 
+    public const string KEY = 'reset_password';
+
     public function __construct(
         public readonly string $url,
         public string          $userLocale,

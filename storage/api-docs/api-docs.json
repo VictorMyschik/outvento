@@ -1338,6 +1338,10 @@
                         "type": "string",
                         "format": "password",
                         "example": "password123"
+                    },
+                    "remember": {
+                        "type": "boolean",
+                        "example": true
                     }
                 },
                 "type": "object"
@@ -2157,6 +2161,12 @@
                     "about": {
                         "description": "Информация о пользователе",
                         "type": "string",
+                        "nullable": true
+                    },
+                    "updatedAt": {
+                        "description": "Дата и время последнего обновления профиля пользователя",
+                        "type": "string",
+                        "format": "date-time",
                         "nullable": true
                     }
                 },

@@ -283,7 +283,10 @@ class AuthController extends APIController
     {
         // только цифры и буквы
         $token = preg_replace("/[^a-zA-Z0-9]/", "", $token);
-        $token = substr($token, 0, UserService::TOKEN_LENGTH);
+        if (strlen($token) !== UserService::TOKEN_LENGTH) {
+            throw new AccessDeniedHttpException(__('mr-t.reset_password_token_invalid'));
+        }
+
         try {
             $this->userService->checkActualResetPasswordToken($token);
         } catch (\Exception $e) {

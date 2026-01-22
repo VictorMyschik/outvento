@@ -221,7 +221,7 @@ final readonly class UserService
 
         PasswordResetToken::updateOrCreate(['email' => $user->email], ['token' => $token]);
 
-        $url = config('app.url') . '/reset-password?token=' . $token;
+        $url = config('app.url') . '/forgot-password?token=' . $token;
 
         $user->notify(new ResetPassword($url, $this->language->getCode(), self::RESET_PASSWORD_TOKEN_EXPIRY_MINUTES));
     }

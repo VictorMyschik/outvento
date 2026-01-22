@@ -38,7 +38,7 @@ class EmailScreen extends Screen
     public function layout(): iterable
     {
         $fakeData['reset_password'] = [
-            'url'           => 'https://example.com/reset-password?token=abcdef',
+            'url'           => 'https://example.com/forgot-password?token=abcdef',
             'expireMinutes' => '20',
         ];
 
