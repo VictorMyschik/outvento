@@ -76,6 +76,8 @@ final readonly class TranslateService
 
             $this->repository->saveTranslate((int)($value['ID'] ?? $value['id'] ?? 0), $translateData, $groups);
         }
+
+        $this->repository->updateIndexes();
     }
 
     public function purge(): void

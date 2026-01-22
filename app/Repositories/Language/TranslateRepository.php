@@ -10,6 +10,7 @@ use App\Repositories\DatabaseRepository;
 use App\Services\Language\Enum\TranslateGroupEnum;
 use App\Services\Language\TranslateRepositoryInterface;
 use App\Services\System\Enum\Language;
+use Illuminate\Support\Facades\DB;
 
 readonly class TranslateRepository extends DatabaseRepository implements TranslateRepositoryInterface
 {
@@ -114,5 +115,10 @@ readonly class TranslateRepository extends DatabaseRepository implements Transla
         }
 
         return $out;
+    }
+
+    public function updateIndexes(): void
+    {
+        DB::statement("SELECT pg_catalog.setval(pg_get_serial_sequence('translates', 'id'), MAX(id)) FROM translates;");
     }
 }
