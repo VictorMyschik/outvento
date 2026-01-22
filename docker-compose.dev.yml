@@ -35,6 +35,8 @@ services:
     image: postgres:latest
     container_name: travel_postgres
     restart: unless-stopped
+    ports:
+      - '5441:5432'
     environment:
       POSTGRES_DB: travel
       POSTGRES_USER: travel
