@@ -1,4 +1,4 @@
-insert into public.translate_groups (id, translate_id, group, created_at)
+insert into public.translate_groups (id, translate_id, group_id, created_at)
 values  (1, 3, 1, '2026-01-18 19:03:34 +00:00'),
         (2, 6, 1, '2026-01-18 19:03:34 +00:00'),
         (3, 7, 1, '2026-01-18 19:03:34 +00:00'),

@@ -26,7 +26,7 @@ readonly class TranslateRepository extends DatabaseRepository implements Transla
 
         $this->db->table(TranslateGroup::getTableName())->where('translate_id', $id)->delete();
         $this->db->table(TranslateGroup::getTableName())->insert(
-            array_map(fn(int $group) => ['translate_id' => $id, 'group' => $group], $groups)
+            array_map(fn(int $group) => ['translate_id' => $id, 'group_id' => $group], $groups)
         );
 
         $this->db->commit();
@@ -38,7 +38,7 @@ readonly class TranslateRepository extends DatabaseRepository implements Transla
     {
         return $this->db->table(TranslateGroup::getTableName())
             ->where('translate_id', $translateId)
-            ->pluck('group')
+            ->pluck('group_id')
             ->all();
     }
 

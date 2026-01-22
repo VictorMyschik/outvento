@@ -10,7 +10,7 @@ return new class extends Migration {
         Schema::create('translate_groups', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('translate_id')->index();
-            $table->unsignedInteger('group')->index(); // Enum TranslateGroupEnum.php
+            $table->unsignedInteger('group_id')->index(); // Enum TranslateGroupEnum.php
 
             $table->foreign('translate_id')->references('id')->on('translates')->onDelete('cascade');
             $table->timestampTz('created_at')->useCurrent();

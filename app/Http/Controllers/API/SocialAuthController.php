@@ -15,11 +15,13 @@ class SocialAuthController extends APIController
 
     public function redirect(string $provider)
     {
-        abort_unless(in_array($provider, $this->providers), 404);
+        $driver = Socialite::driver($provider)->stateless();
 
-        return Socialite::driver($provider)
-            ->stateless()
-            ->redirect();
+        logger()->info('Google redirect_uri', [
+            'redirect' => config("services.$provider.redirect"),
+        ]);
+
+        return $driver->redirect();
     }
 
     public function callback(string $provider)
@@ -58,9 +60,6 @@ class SocialAuthController extends APIController
 
         $token = $user->createToken('social')->plainTextToken;
 
-        return redirect(
-            config('app.frontend_url') .
-            '/auth/success?token=' . $token
-        );
+        return redirect(config('app.frontend_url') . '/auth/success?token=' . $token);
     }
 }
