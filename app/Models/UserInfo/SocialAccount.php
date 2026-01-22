@@ -9,6 +9,8 @@ use App\Models\User;
 
 class SocialAccount extends ORM
 {
+    public const null UPDATED_AT = null;
+
     protected $fillable = [
         'provider',
         'provider_id',
