@@ -20,7 +20,7 @@ class TranslateGroup extends ORM
 
     protected $fillable = array(
         'translate_id',
-        'group',
+        'group_id',
     );
 
     protected array $allowedSorts = [

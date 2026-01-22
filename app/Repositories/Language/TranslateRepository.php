@@ -48,7 +48,7 @@ readonly class TranslateRepository extends DatabaseRepository implements Transla
         return $this->db->table(Translate::getTableName())
             ->join(TranslateGroup::getTableName(), function ($join) use ($group) {
                 $join->on(Translate::getTableName() . '.id', '=', TranslateGroup::getTableName() . '.translate_id')
-                    ->where(TranslateGroup::getTableName() . '.group', '=', $group->value);
+                    ->where(TranslateGroup::getTableName() . '.group_id', '=', $group->value);
             })
             ->select(Translate::getTableName() . '.code', Translate::getTableName() . '.' . $language->getCode())
             ->get()
@@ -82,7 +82,7 @@ readonly class TranslateRepository extends DatabaseRepository implements Transla
             })
             ->selectRaw(
                 Translate::getTableName() . '.*,
-                    string_agg(' . TranslateGroup::getTableName() . '."group"::text, \',\') AS groups'
+                    string_agg(' . TranslateGroup::getTableName() . '."group_id"::text, \',\') AS groups'
             )
             ->groupBy(Translate::getTableName() . '.id')
             ->orderBy('id', 'asc');
