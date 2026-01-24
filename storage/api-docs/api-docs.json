@@ -1259,9 +1259,6 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/XRequestedWithHeader"
-                    },
-                    {
-                        "$ref": "#/components/parameters/AcceptLanguageHeader"
                     }
                 ],
                 "responses": {

@@ -135,7 +135,7 @@ class CommonApiController extends APIController
             new FrontendSettingsResponse(
                 languages: new LanguagesResponse(...Language::getCodeWithLabel()),
                 contacts: new ContactsResponse(...$this->settingsService->getContacts()),
-                translations: $this->translateApiService->getTranslateFor([TranslateGroupEnum::Common], $this->getLanguage()),
+                translations: $this->translateApiService->getTranslateFor([TranslateGroupEnum::Common, TranslateGroupEnum::Passwords], $this->getLanguage()),
             ),
         );
     }

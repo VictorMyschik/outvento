@@ -32,7 +32,6 @@ class WelcomeController extends APIController
         tags: ["Pages"],
         parameters: [
             new OA\Parameter(ref: "#/components/parameters/XRequestedWithHeader"),
-            new OA\Parameter(ref: "#/components/parameters/AcceptLanguageHeader"),
         ],
         responses: [
             new OA\Response(

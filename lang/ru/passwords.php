@@ -15,5 +15,5 @@ return [
     "password_strength_weak"   => "Слабый пароль",
     "password_strength_medium" => "Средний пароль",
     "password_strength_strong" => "Надёжный пароль",
-    "password_requirements_ok" => "Пароль соответствует требованиям"
+    "password_requirements_ok" => "Пароль соответствует требованиям",
 ];
