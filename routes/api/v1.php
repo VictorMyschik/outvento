@@ -17,7 +17,7 @@ Route::get('/auth/social/{provider}/redirect', [SocialAuthController::class, 're
 Route::get('/auth/social/{provider}/callback', [SocialAuthController::class, 'callback']);
 
 Route::get('common/languages', [CommonApiController::class, 'getLanguages']);
-Route::get('translate/common', [CommonApiController::class, 'getCommonTranslate']);
+Route::get('translations', [CommonApiController::class, 'getTranslations']);
 Route::get('frontend/settings', [CommonApiController::class, 'getFrontendSettings']);
 
 Route::post('/subscription/subscribe', [SubscriptionApiController::class, 'subscribe']);

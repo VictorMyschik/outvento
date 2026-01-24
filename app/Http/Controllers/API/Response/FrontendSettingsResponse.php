@@ -24,6 +24,15 @@ use OpenApi\Attributes as OA;
             ref: "#/components/schemas/ContactsResponse",
             type: "object"
         ),
+        new OA\Property(
+            property: "translations",
+            description: "Translations key-value pairs",
+            type: "object",
+            additionalProperties: new OA\AdditionalProperties(
+                type: "string",
+                example: "Translated Text"
+            )
+        ),
     ],
     type: "object",
 )]
@@ -32,5 +41,6 @@ final readonly class FrontendSettingsResponse
     public function __construct(
         public LanguagesResponse $languages,
         public ContactsResponse  $contacts,
+        public array             $translations
     ) {}
 }

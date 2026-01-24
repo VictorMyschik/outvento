@@ -6,4 +6,14 @@ return [
     'throttled' => 'Пожалуйста, подождите, прежде чем повторить попытку.',
     'token'     => 'Этот токен сброса пароля недействителен.',
     'user'      => "Мы не можем найти пользователя с этим адресом электронной почты.",
+
+    "password_rule_length"     => "Минимум 8 символов",
+    "password_rule_upper"      => "Хотя бы одна заглавная буква",
+    "password_rule_lower"      => "Хотя бы одна строчная буква",
+    "password_rule_number"     => "Хотя бы одна цифра",
+    "password_rule_special"    => "Хотя бы один специальный символ",
+    "password_strength_weak"   => "Слабый пароль",
+    "password_strength_medium" => "Средний пароль",
+    "password_strength_strong" => "Надёжный пароль",
+    "password_requirements_ok" => "Пароль соответствует требованиям"
 ];

@@ -565,14 +565,33 @@
                 }
             }
         },
-        "/api/v1/translate/common": {
+        "/api/v1/translations": {
             "get": {
                 "tags": [
-                    "Common"
+                    "I18n"
                 ],
-                "summary": "Get common translations",
-                "operationId": "getCommonTranslate",
+                "summary": "Get translations",
+                "description": "Returns translations for specified groups in the requested language",
+                "operationId": "getTranslations",
                 "parameters": [
+                    {
+                        "name": "groups[]",
+                        "in": "query",
+                        "description": "Translation groups to load (multiple values allowed)",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "example": "auth"
+                            }
+                        },
+                        "example": [
+                            "auth",
+                            "passwords",
+                            "validation"
+                        ]
+                    },
                     {
                         "$ref": "#/components/parameters/XRequestedWithHeader"
                     }
@@ -593,12 +612,32 @@
                                             "example": "ok"
                                         },
                                         "content": {
-                                            "description": "Localization object (key => string)",
+                                            "description": "Key-value pairs of translations",
                                             "type": "object",
-                                            "example": "{'login': 'Вход'}"
+                                            "example": {
+                                                "failed": "Эти учетные данные не соответствуют нашим записям.",
+                                                "password": "Предоставленный пароль неверен.",
+                                                "throttle": "Слишком много попыток входа. Пожалуйста, попробуйте еще раз через :seconds секунд."
+                                            },
+                                            "additionalProperties": {
+                                                "type": "string"
+                                            }
                                         }
                                     },
                                     "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
                                 }
                             }
                         }
@@ -1424,6 +1463,27 @@
                 },
                 "type": "object"
             },
+            "TranslationRequest": {
+                "required": [
+                    "groups"
+                ],
+                "properties": {
+                    "groups": {
+                        "description": "Array of translation group codes",
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "maxLength": 50
+                        },
+                        "minItems": 1,
+                        "example": [
+                            "auth",
+                            "common"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
             "ContactsResponse": {
                 "description": "Response containing contact information",
                 "required": [
@@ -1497,6 +1557,14 @@
                     },
                     "contacts": {
                         "$ref": "#/components/schemas/ContactsResponse"
+                    },
+                    "translations": {
+                        "description": "Translations key-value pairs",
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string",
+                            "example": "Translated Text"
+                        }
                     }
                 },
                 "type": "object"
@@ -1525,7 +1593,7 @@
             "WelcomeResponse": {
                 "required": [
                     "countries",
-                    "translates",
+                    "translations",
                     "travelTypeList",
                     "travelExamples"
                 ],
@@ -1537,10 +1605,10 @@
                             "$ref": "#/components/schemas/CountryComponent"
                         }
                     },
-                    "translates": {
+                    "translations": {
                         "description": "Translation entries",
                         "type": "object",
-                        "example": "{'welcome_message': 'Welcome to our site!', 'login': 'Log In'}"
+                        "example": "{'page_welcome.slogan': 'Welcome to our site!'}"
                     },
                     "travelTypeList": {
                         "description": "List of travel types",
@@ -2209,6 +2277,17 @@
                     ]
                 }
             },
+            "XLocaleHeader": {
+                "name": "X-Locale",
+                "in": "header",
+                "description": "Предпочитаемый язык (ISO 639-1 или BCP 47). Пример: ru, en, pl.\n\nОтсутствие заголовка → 400.\nНеподдерживаемое значение → 422.",
+                "required": true,
+                "schema": {
+                    "type": "string",
+                    "example": "ru"
+                },
+                "example": "ru"
+            },
             "page": {
                 "name": "page",
                 "in": "query",
@@ -2253,6 +2332,10 @@
         {
             "name": "Common",
             "description": "Common"
+        },
+        {
+            "name": "I18n",
+            "description": "I18n"
         },
         {
             "name": "Subscription",

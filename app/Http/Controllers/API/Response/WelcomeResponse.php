@@ -8,10 +8,10 @@ use OpenApi\Attributes as OA;
 
 #[OA\Schema(
     schema: "WelcomeResponse",
-    required: ["countries", "translates", "travelTypeList", "travelExamples"],
+    required: ["countries", "translations", "travelTypeList", "travelExamples"],
     properties: [
         new OA\Property(property: "countries", description: "List of countries", type: "array", items: new OA\Items(ref: "#/components/schemas/CountryComponent")),
-        new OA\Property(property: "translates", description: "Translation entries", type: "object", example: "{'welcome_message': 'Welcome to our site!', 'login': 'Log In'}"),
+        new OA\Property(property: "translations", description: "Translation entries", type: "object", example: "{'page_welcome.slogan': 'Welcome to our site!'}"),
         new OA\Property(property: "travelTypeList", description: "List of travel types", type: "array", items: new OA\Items(ref: "#/components/schemas/TravelTypeComponent")),
         new OA\Property(property: "travelExamples", description: "List of travel examples", type: "array", items: new OA\Items(ref: "#/components/schemas/TravelListByTypeComponent")),
     ],
@@ -21,7 +21,7 @@ final readonly class WelcomeResponse
 {
     public function __construct(
         public array $countries,
-        public array $translates,
+        public array $translations,
         public array $travelTypeList,
         public array $travelExamples,
     ) {}

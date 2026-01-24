@@ -3,11 +3,6 @@
 namespace Tests\Feature;
 
 // use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Models\User;
-use App\Notifications\NewsNotification;
-use App\Repositories\Notifications\NotificationRepository;
-use App\Services\Newsletter\NewsletterDispatchService;
-use App\Services\Notifications\Enum\EventType;
 use Tests\TestCase;
 
 class ExampleTest extends TestCase
@@ -17,7 +12,42 @@ class ExampleTest extends TestCase
      */
     public function test_the_application_returns_a_successful_response(): void
     {
-        $service = app(NewsletterDispatchService::class);
-        $service->runDispatch();
+        $fromFile = trans('passwords', [], 'ru');
+        $string = [];
+
+        $namespace = 'passwords';
+        foreach ($fromFile as $key => $value) {
+            $currentNamespace = $namespace . '.' . $key;
+            $string = array_merge($string, $this->generateString($currentNamespace, $value));
+        }
+    }
+
+    private function generateString(string $namespace, array|string $fromFile): array
+    {
+        $out = [];
+
+        if (is_array($fromFile)) {
+            foreach ($fromFile as $key => $value) {
+
+                $currentNamespace = $namespace . '.' . $key;
+
+                if (is_string($value)) {
+                    $out[$currentNamespace] = $value;
+                    continue;
+                }
+
+                if (is_array($value)) {
+                    $out = array_merge($out, $this->generateString($currentNamespace, $value));
+                } else {
+                    return $value;
+                }
+            }
+        }
+
+        if (is_string($fromFile)) {
+            $out[$namespace] = $fromFile;
+        }
+
+        return $out;
     }
 }
