@@ -35,13 +35,15 @@ use App\Orchid\Screens\System\PhpInfoScreen;
 use App\Orchid\Screens\System\PurgeScreen;
 use App\Orchid\Screens\System\SettingsScreen;
 use App\Orchid\Screens\System\SupervisorScreen;
+use App\Orchid\Screens\TermsAndConditionsEditScreen;
+use App\Orchid\Screens\TermsAndConditionsScreen;
 use App\Orchid\Screens\Travel\TravelDetailsScreen;
 use App\Orchid\Screens\Travel\TravelListScreen;
 use App\Orchid\Screens\User\ProfileScreen;
 use App\Orchid\Screens\User\UserCommunicateScreen;
 use App\Orchid\Screens\User\UserEditScreen;
-use App\Orchid\Screens\User\UserProfileListScreen;
 use App\Orchid\Screens\User\UserListScreen;
+use App\Orchid\Screens\User\UserProfileListScreen;
 use App\Orchid\Screens\User\UserProfileScreen;
 use App\Orchid\Screens\Wishlist\WishlistScreen;
 use Illuminate\Support\Facades\Route;
@@ -169,3 +171,6 @@ Route::screen('/catalog/manufacturers/list', ManufacturerScreen::class)->name('m
 Route::screen('/catalog/types/list', CatalogGroupsScreen::class)->name('type.list');
 Route::screen('/catalog/groups/list', CatalogGroupsScreen::class)->name('catalog.groups.list');
 Route::screen('/catalog/group/{group_id}/attributes/list', CatalogAttributeScreen::class)->name('catalog.group.attributes');
+/// Other routes...
+Route::screen('/other/terms-and-conditions', TermsAndConditionsScreen::class)->name('other.terms.and.conditions');
+Route::screen('/other/terms-and-conditions/{id}/details', TermsAndConditionsEditScreen::class)->name('other.terms.and.conditions.edit');

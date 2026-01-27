@@ -6,10 +6,10 @@ namespace App\Models\News;
 
 use App\Models\Lego\Fields\ActiveFieldTrait;
 use App\Models\Lego\Fields\CodeFieldTrait;
+use App\Models\Lego\Fields\LanguageFieldTrait;
 use App\Models\Lego\Fields\TitleFieldTrait;
 use App\Models\ORM\ORM;
 use App\Services\Newsletter\ImageUploader\Enum\NewsMediaType;
-use App\Services\System\Enum\Language;
 use Carbon\Carbon;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
@@ -21,6 +21,7 @@ class News extends ORM
     use CodeFieldTrait;
     use TitleFieldTrait;
     use ActiveFieldTrait;
+    use LanguageFieldTrait;
 
     protected $table = 'news';
 
@@ -55,11 +56,6 @@ class News extends ORM
     public function getGroupId(): ?int
     {
         return $this->group_id;
-    }
-
-    public function getLanguage(): Language
-    {
-        return Language::from($this->language);
     }
 
     public function getPublishedAt(): ?Carbon

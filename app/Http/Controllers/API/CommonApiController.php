@@ -10,6 +10,7 @@ use App\Http\Controllers\API\Response\Common\LanguagesResponse;
 use App\Http\Controllers\API\Response\FrontendSettingsResponse;
 use App\Services\Language\API\TranslateApiService;
 use App\Services\Language\Enum\TranslateGroupEnum;
+use App\Services\Other\TermsAndConditionsApiService;
 use App\Services\System\Enum\Language;
 use App\Services\System\SettingsService;
 use Illuminate\Http\JsonResponse;
@@ -18,8 +19,9 @@ use OpenApi\Attributes as OA;
 class CommonApiController extends APIController
 {
     public function __construct(
-        private readonly TranslateApiService $translateApiService,
-        private readonly SettingsService     $settingsService,
+        private readonly TranslateApiService          $translateApiService,
+        private readonly SettingsService              $settingsService,
+        private readonly TermsAndConditionsApiService $termsAndConditionsApiService,
     ) {}
 
     #[OA\Get(
@@ -137,6 +139,13 @@ class CommonApiController extends APIController
                 contacts: new ContactsResponse(...$this->settingsService->getContacts()),
                 translations: $this->translateApiService->getTranslateFor([TranslateGroupEnum::Common, TranslateGroupEnum::Passwords], $this->getLanguage()),
             ),
+        );
+    }
+
+    public function termsAndConditions(): JsonResponse
+    {
+        return $this->apiResponse(
+            $this->termsAndConditionsApiService->getTermsAndConditions($this->getLanguage()),
         );
     }
 }

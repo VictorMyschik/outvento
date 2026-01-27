@@ -34,10 +34,6 @@ class PlatformProvider extends OrchidServiceProvider
                 Menu::make('Cities')->icon('bs.list')->route('reference.cities.list'),
                 Menu::make('Communication Type')->icon('bs.list')->route('reference.communication-type.list'),
             ]),
-            Menu::make('Articles')->icon('grid')->list([
-                Menu::make('Newsletter')->icon('bs.list')->route('newsletter.news.list'),
-                Menu::make('FAQ')->icon('bs.book')->route('faq.list'),
-            ]),
             Menu::make('Notification')->icon('grid')->list([
                 Menu::make('Email Subscriptions')->icon('bs.send')->route('subscriptions.list'),
                 Menu::make('User Settings')->icon('bs.list')->route('notification.user.settings.list'),
@@ -69,6 +65,12 @@ class PlatformProvider extends OrchidServiceProvider
                 Menu::make('PHP Info')->route('system.phpinfo'),
                 Menu::make('Supervisor')->route('system.config'),
                 Menu::make('API documentation')->target('_blank')->href('/api/docs'),
+            ])->divider(),
+
+            Menu::make('Other')->icon('list')->list([
+                Menu::make('Newsletter')->icon('bs.list')->route('newsletter.news.list'),
+                Menu::make('FAQ')->icon('bs.book')->route('faq.list'),
+                Menu::make('Terms & Conditions')->icon('bs.file-earmark-text')->route('other.terms.and.conditions'),
             ])->divider(),
 
             Menu::make('Access Controls')->icon('grid')->list([

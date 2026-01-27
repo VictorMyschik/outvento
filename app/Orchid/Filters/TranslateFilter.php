@@ -85,11 +85,4 @@ class TranslateFilter extends Filter
             ActionFilterPanel::getActionsButtons(),
         ]);
     }
-
-    private static function getCategoryList(): array
-    {
-        $category = array_unique(array_column(CategoryEquipment::all()->toArray(), 'name'));
-
-        return array_combine($category, $category);
-    }
 }

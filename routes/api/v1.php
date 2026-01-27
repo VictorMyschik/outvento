@@ -13,16 +13,6 @@ use App\Http\Controllers\Travel\Travel\TravelController;
 use App\Http\Controllers\Travel\Travel\TravelImageController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/auth/social/{provider}/redirect', [SocialAuthController::class, 'redirect']);
-Route::get('/auth/social/{provider}/callback', [SocialAuthController::class, 'callback']);
-
-Route::get('common/languages', [CommonApiController::class, 'getLanguages']);
-Route::get('translations', [CommonApiController::class, 'getTranslations']);
-Route::get('frontend/settings', [CommonApiController::class, 'getFrontendSettings']);
-
-Route::post('/subscription/subscribe', [SubscriptionApiController::class, 'subscribe']);
-Route::get('/subscription/unsubscribe/{token}', [SubscriptionApiController::class, 'unsubscribe']);
-
 Route::middleware('optional:sanctum')->group(function () {
     Route::prefix('pages')->group(static function () {
         Route::get('welcome', [WelcomeController::class, 'index']);
@@ -87,4 +77,15 @@ Route::group(['prefix' => 'travels'], function () {
     Route::post('image/update', [TravelImageController::class, 'updateImage'])->name('api.travel.image.update');
 });
 
+Route::get('/auth/social/{provider}/redirect', [SocialAuthController::class, 'redirect']);
+Route::get('/auth/social/{provider}/callback', [SocialAuthController::class, 'callback']);
+
+Route::get('common/languages', [CommonApiController::class, 'getLanguages']);
+Route::get('translations', [CommonApiController::class, 'getTranslations']);
+Route::get('frontend/settings', [CommonApiController::class, 'getFrontendSettings']);
+
+Route::post('/subscription/subscribe', [SubscriptionApiController::class, 'subscribe']);
+Route::get('/subscription/unsubscribe/{token}', [SubscriptionApiController::class, 'unsubscribe']);
+
 Route::get('/download', [DownloadFileController::class, 'download'])->name('download');
+Route::get('/terms-and-conditions', [CommonApiController::class, 'termsAndConditions'])->name('terms.and.conditions');
