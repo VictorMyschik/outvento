@@ -8,6 +8,7 @@ use App\Models\Lego\Fields\ActiveFieldTrait;
 use App\Models\Lego\Fields\LanguageFieldTrait;
 use App\Models\Lego\Fields\TitleFieldTrait;
 use App\Models\ORM\ORM;
+use App\Services\Other\Enum\LegalDocumentType;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
 
@@ -46,4 +47,9 @@ class LegalDocument extends ORM
         'updated_at'   => 'datetime',
         'published_at' => 'datetime',
     ];
+
+    public function getType(): LegalDocumentType
+    {
+        return LegalDocumentType::from($this->type);
+    }
 }

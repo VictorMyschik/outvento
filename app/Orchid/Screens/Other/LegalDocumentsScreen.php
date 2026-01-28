@@ -29,7 +29,7 @@ class LegalDocumentsScreen extends Screen
     public function query(): iterable
     {
         return [
-            'list' => LegalDocumentsFilter::runQuery()->paginate(10),
+            'list' => LegalDocumentsFilter::runQuery()->paginate(20),
         ];
     }
 

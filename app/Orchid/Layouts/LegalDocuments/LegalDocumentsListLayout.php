@@ -17,7 +17,7 @@ class LegalDocumentsListLayout extends Table
     {
         return [
             TD::make('id', 'ID')->render(fn(LegalDocument $term) => Link::make((string)$term->id())->route('legal.documents.edit', ['id' => $term->id])->stretched())->sort(),
-            TD::make('id', 'ID')->render(fn(LegalDocument $term) => Link::make((string)$term->id())),
+            TD::make('type', 'Тип документа')->render(fn(LegalDocument $term) => $term->getType()->getLabel())->sort(),
             TD::make('active', 'Активно')->active()->sort(),
             TD::make('language', 'Язык')->render(fn(LegalDocument $term) => $term->getLanguage()->getLabel())->sort(),
             TD::make('published_at', 'Дата публикации')->render(fn(LegalDocument $term) => $term->published_at?->format('d.m.Y'))->sort(),
