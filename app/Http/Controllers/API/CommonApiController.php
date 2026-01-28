@@ -142,6 +142,31 @@ class CommonApiController extends APIController
         );
     }
 
+    #[OA\Get(
+        path: "/api/v1/terms-and-conditions",
+        operationId: "getTermsAndConditions",
+        summary: "Get terms and conditions",
+        tags: ["Pages"],
+        parameters: [
+            new OA\Parameter(ref: "#/components/parameters/XRequestedWithHeader"),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Successful response",
+                content: new OA\JsonContent(
+                    required: ["status", "content"],
+                    properties: [
+                        new OA\Property(property: "status", type: "string", example: "ok"),
+                        new OA\Property(property: "content", ref: "#/components/schemas/TermsAndConditionsResponse", type: "object"),
+                    ],
+                    type: "object"
+                )
+            ),
+            new OA\Response(response: 404, description: "Not found"),
+            new OA\Response(response: 422, description: "Unprocessable Entity", content: new OA\JsonContent(ref: "#/components/schemas/ValidationError")),
+        ]
+    )]
     public function termsAndConditions(): JsonResponse
     {
         return $this->apiResponse(

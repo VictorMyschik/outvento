@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Other;
 
+use App\Http\Controllers\API\Response\Common\TermsAndConditionsResponse;
 use App\Repositories\Other\TermsAndConditionsRepository;
-use App\Services\Other\Response\TermsAndConditionResponse;
 use App\Services\System\Enum\Language;
 
 final readonly class TermsAndConditionsApiService
@@ -14,12 +14,12 @@ final readonly class TermsAndConditionsApiService
         private TermsAndConditionsRepository $repository,
     ) {}
 
-    public function getTermsAndConditions(Language $language): TermsAndConditionResponse
+    public function getTermsAndConditions(Language $language): TermsAndConditionsResponse
     {
         $terms = $this->repository->getByLanguage($language, now());
         $publishedAt = $terms->published_at ?: $terms->created_at;
 
-        return new TermsAndConditionResponse(
+        return new TermsAndConditionsResponse(
             text: $terms->text,
             publishedAt: $publishedAt,
         );

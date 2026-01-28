@@ -684,6 +684,58 @@
                 }
             }
         },
+        "/api/v1/terms-and-conditions": {
+            "get": {
+                "tags": [
+                    "Pages"
+                ],
+                "summary": "Get terms and conditions",
+                "operationId": "getTermsAndConditions",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/XRequestedWithHeader"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "status",
+                                        "content"
+                                    ],
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "ok"
+                                        },
+                                        "content": {
+                                            "$ref": "#/components/schemas/TermsAndConditionsResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/subscription/subscribe": {
             "post": {
                 "tags": [
@@ -1542,6 +1594,22 @@
                     "pl": "Polski"
                 }
             },
+            "TermsAndConditionsResponse": {
+                "properties": {
+                    "text": {
+                        "description": "Terms and Conditions text",
+                        "type": "string",
+                        "example": "These are the terms and conditions..."
+                    },
+                    "publishedAt": {
+                        "description": "Publication date of the Terms and Conditions",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T10:00:00Z"
+                    }
+                },
+                "type": "object"
+            },
             "FrontendSettingsResponse": {
                 "description": "Response containing frontend settings including languages and contacts",
                 "required": [
@@ -2335,16 +2403,16 @@
             "description": "I18n"
         },
         {
+            "name": "Pages",
+            "description": "Pages"
+        },
+        {
             "name": "Subscription",
             "description": "Subscription"
         },
         {
             "name": "User info",
             "description": "User info"
-        },
-        {
-            "name": "Pages",
-            "description": "Pages"
         }
     ]
 }
