@@ -88,4 +88,4 @@ Route::post('/subscription/subscribe', [SubscriptionApiController::class, 'subsc
 Route::get('/subscription/unsubscribe/{token}', [SubscriptionApiController::class, 'unsubscribe']);
 
 Route::get('/download', [DownloadFileController::class, 'download'])->name('download');
-Route::get('/terms-and-conditions', [CommonApiController::class, 'termsAndConditions'])->name('terms.and.conditions');
+Route::get('/legal/{type}', [CommonApiController::class, 'legal']);

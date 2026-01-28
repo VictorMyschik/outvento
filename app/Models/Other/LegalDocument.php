@@ -11,7 +11,7 @@ use App\Models\ORM\ORM;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
 
-class TermsAndCondition extends ORM
+class LegalDocument extends ORM
 {
     use AsSource;
     use Filterable;
@@ -19,9 +19,10 @@ class TermsAndCondition extends ORM
     use ActiveFieldTrait;
     use LanguageFieldTrait;
 
-    protected $table = 'terms_and_conditions';
+    protected $table = 'legal_documents';
     protected $fillable = [
         'active',
+        'type',
         'language',
         'title',
         'text',
@@ -30,6 +31,7 @@ class TermsAndCondition extends ORM
 
     protected array $allowedSorts = [
         'id',
+        'type',
         'active',
         'group_id',
         'title',

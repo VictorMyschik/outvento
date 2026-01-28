@@ -10,6 +10,7 @@ use App\Http\Controllers\API\Response\Common\LanguagesResponse;
 use App\Http\Controllers\API\Response\FrontendSettingsResponse;
 use App\Services\Language\API\TranslateApiService;
 use App\Services\Language\Enum\TranslateGroupEnum;
+use App\Services\Other\Enum\LegalDocumentType;
 use App\Services\Other\TermsAndConditionsApiService;
 use App\Services\System\Enum\Language;
 use App\Services\System\SettingsService;
@@ -143,11 +144,12 @@ class CommonApiController extends APIController
     }
 
     #[OA\Get(
-        path: "/api/v1/terms-and-conditions",
-        operationId: "getTermsAndConditions",
-        summary: "Get terms and conditions",
+        path: "/api/v1/legal/{type}",
+        operationId: "getLegalDocumentByType",
+        summary: "Get legal document by type",
         tags: ["Pages"],
         parameters: [
+            new OA\Parameter(name: "type", in: "path", required: true, schema: new OA\Schema(type: "string", example: "terms_and_conditions")),
             new OA\Parameter(ref: "#/components/parameters/XRequestedWithHeader"),
         ],
         responses: [
@@ -167,10 +169,10 @@ class CommonApiController extends APIController
             new OA\Response(response: 422, description: "Unprocessable Entity", content: new OA\JsonContent(ref: "#/components/schemas/ValidationError")),
         ]
     )]
-    public function termsAndConditions(): JsonResponse
+    public function legal(LegalDocumentType $type): JsonResponse
     {
         return $this->apiResponse(
-            $this->termsAndConditionsApiService->getTermsAndConditions($this->getLanguage()),
+            $this->termsAndConditionsApiService->getLegalDocumentByType($type, $this->getLanguage()),
         );
     }
 }

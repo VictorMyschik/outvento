@@ -7,4 +7,11 @@ return [
     'draft'        => 'draft',
     'active'       => 'active',
     'archived'     => 'archived',
+
+    'legal_documents' => [
+        'terms'   => 'Terms and Conditions',
+        'privacy' => 'Privacy Policy',
+        'cookies' => 'Cookies Policy',
+        'refund'  => 'Refund Policy',
+    ],
 ];

@@ -684,14 +684,23 @@
                 }
             }
         },
-        "/api/v1/terms-and-conditions": {
+        "/api/v1/legal/{type}": {
             "get": {
                 "tags": [
                     "Pages"
                 ],
-                "summary": "Get terms and conditions",
-                "operationId": "getTermsAndConditions",
+                "summary": "Get legal document by type",
+                "operationId": "getLegalDocumentByType",
                 "parameters": [
+                    {
+                        "name": "type",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "terms_and_conditions"
+                        }
+                    },
                     {
                         "$ref": "#/components/parameters/XRequestedWithHeader"
                     }

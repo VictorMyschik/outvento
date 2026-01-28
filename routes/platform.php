@@ -14,6 +14,8 @@ use App\Orchid\Screens\Newsletter\NewsletterScreen;
 use App\Orchid\Screens\Notification\MessageLogEmailScreen;
 use App\Orchid\Screens\Notification\MessageLogTelegramScreen;
 use App\Orchid\Screens\Notification\UserNotificationSettingScreen;
+use App\Orchid\Screens\Other\LegalDocumentEditScreen;
+use App\Orchid\Screens\Other\LegalDocumentsScreen;
 use App\Orchid\Screens\PlatformScreen;
 use App\Orchid\Screens\References\CategoryEquipmentScreen;
 use App\Orchid\Screens\References\CitiesScreen;
@@ -35,8 +37,6 @@ use App\Orchid\Screens\System\PhpInfoScreen;
 use App\Orchid\Screens\System\PurgeScreen;
 use App\Orchid\Screens\System\SettingsScreen;
 use App\Orchid\Screens\System\SupervisorScreen;
-use App\Orchid\Screens\TermsAndConditionsEditScreen;
-use App\Orchid\Screens\TermsAndConditionsScreen;
 use App\Orchid\Screens\Travel\TravelDetailsScreen;
 use App\Orchid\Screens\Travel\TravelListScreen;
 use App\Orchid\Screens\User\ProfileScreen;
@@ -172,5 +172,5 @@ Route::screen('/catalog/types/list', CatalogGroupsScreen::class)->name('type.lis
 Route::screen('/catalog/groups/list', CatalogGroupsScreen::class)->name('catalog.groups.list');
 Route::screen('/catalog/group/{group_id}/attributes/list', CatalogAttributeScreen::class)->name('catalog.group.attributes');
 /// Other routes...
-Route::screen('/other/terms-and-conditions', TermsAndConditionsScreen::class)->name('other.terms.and.conditions');
-Route::screen('/other/terms-and-conditions/{id}/details', TermsAndConditionsEditScreen::class)->name('other.terms.and.conditions.edit');
+Route::screen('/legal.documents/list', LegalDocumentsScreen::class)->name('legal.documents.list');
+Route::screen('/legal.documents/{id}/details', LegalDocumentEditScreen::class)->name('legal.documents.edit');

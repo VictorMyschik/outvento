@@ -7,9 +7,10 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('terms_and_conditions', function (Blueprint $table): void {
+        Schema::create('legal_documents', function (Blueprint $table): void {
             $table->id();
-            $table->boolean('active')->default(false);
+            $table->string('type', 32)->index();
+            $table->boolean('active')->default(false)->index();
             $table->tinyInteger('language')->index();
             $table->text('text')->nullable();
             $table->timestampTz('published_at')->nullable()->index();
@@ -21,6 +22,6 @@ return new class extends Migration {
 
     public function down(): void
     {
-        Schema::dropIfExists('terms_and_conditions');
+        Schema::dropIfExists('legal_documents');
     }
 };

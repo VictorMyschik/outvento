@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Orchid\Screens;
+namespace App\Orchid\Screens\Other;
 
-use App\Models\News\NewsGroup;
-use App\Models\Other\TermsAndCondition;
+use App\Models\Other\LegalDocument;
 use App\Orchid\Fields\CKEditor;
+use App\Services\Other\Enum\LegalDocumentType;
 use App\Services\Other\TermsAndConditionsService;
 use App\Services\System\Enum\Language;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Fields\DateTimer;
@@ -20,10 +20,10 @@ use Orchid\Screen\Fields\Switcher;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
 
-class TermsAndConditionsEditScreen extends Screen
+class LegalDocumentEditScreen extends Screen
 {
     protected string $name = 'Terms And Conditions';
-    private ?TermsAndCondition $term = null;
+    private ?LegalDocument $term = null;
 
     public function __construct(
         private readonly TermsAndConditionsService $service,
@@ -36,7 +36,7 @@ class TermsAndConditionsEditScreen extends Screen
 
     public function query(int $id): iterable
     {
-        $this->term = TermsAndCondition::loadBy($id);
+        $this->term = LegalDocument::loadBy($id);
 
         return ['term' => $this->term];
     }
@@ -52,7 +52,7 @@ class TermsAndConditionsEditScreen extends Screen
             Link::make('Назад')
                 ->icon('arrow-up')
                 ->class('mr-btn-primary')
-                ->href(route('other.terms.and.conditions')),
+                ->href(route('legal.documents.list')),
         ];
     }
 
@@ -62,6 +62,7 @@ class TermsAndConditionsEditScreen extends Screen
             Layout::rows([
                 Group::make([
                     Switcher::make('term.active')->sendTrueOrFalse()->title('Активен'),
+                    Select::make('term.type')->required()->options(LegalDocumentType::getSelectList())->title('Тип документа'),
                     Select::make('term.language')->required()->options(Language::getSelectList())->title('Язык'),
                     DateTimer::make('term.published_at')
                         ->title('Дата публикации. Оставьте пустым, что бы опубликовать сразу')
@@ -95,13 +96,14 @@ class TermsAndConditionsEditScreen extends Screen
         $input = $request->all()['term'];
 
         $data = [
+            'type' => $input['type'],
             'language' => $input['language'],
             'active' => $input['active'] ?? false,
             'published_at' => $input['published_at'] ?? null,
             'text' => $input['text'],
         ];
 
-        $this->service->saveTermsAndCondition($id, $data);
+        $this->service->saveLegalDocument($id, $data);
     }
 
     public function clone(int $id): RedirectResponse
@@ -113,7 +115,7 @@ class TermsAndConditionsEditScreen extends Screen
 
     public function remove(int $id): RedirectResponse
     {
-        $this->service->deleteTermsAndCondition($id);
+        $this->service->deleteLegalDocument($id);
 
         return redirect()->route('other.terms.and.conditions');
     }

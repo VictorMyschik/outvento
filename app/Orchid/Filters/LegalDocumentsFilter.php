@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Orchid\Filters;
 
-use App\Models\Other\TermsAndCondition;
+use App\Models\Other\LegalDocument;
 use App\Orchid\Layouts\Lego\ActionFilterPanel;
+use App\Services\Other\Enum\LegalDocumentType;
 use App\Services\System\Enum\Language;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -17,11 +18,12 @@ use Orchid\Screen\Fields\ViewField;
 use Orchid\Screen\Layouts\Rows;
 use Orchid\Support\Facades\Layout;
 
-class TermsAndConditionsFilter extends Filter
+class LegalDocumentsFilter extends Filter
 {
     public const array FIELDS = [
         'id',
         'active',
+        'type',
         'language',
         'text',
         'published_at',
@@ -31,7 +33,7 @@ class TermsAndConditionsFilter extends Filter
 
     public static function runQuery(): Builder
     {
-        return TermsAndCondition::filters([self::class]);
+        return LegalDocument::filters([self::class]);
     }
 
     public function run(Builder $builder): Builder
@@ -44,6 +46,10 @@ class TermsAndConditionsFilter extends Filter
 
         if (!is_null($input['active'])) {
             $builder->where('active', (bool)$input['active']);
+        }
+
+        if (!empty($input['type'])) {
+            $builder->where('type', $input['type']);
         }
 
         if (!empty($input['text'])) {
@@ -76,6 +82,11 @@ class TermsAndConditionsFilter extends Filter
         return Layout::rows([
             Group::make([
                 Input::make('id')->type('number')->value($input['id'])->title('ID'),
+                Select::make('type')
+                    ->options(LegalDocumentType::getSelectList())
+                    ->value($input['type'])
+                    ->empty('Все')
+                    ->title('Тип документа'),
                 Select::make('active')
                     ->options([null => 'Все', 1 => 'Активные', 0 => 'Не активные'])
                     ->value($input['active'])

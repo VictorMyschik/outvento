@@ -15,3 +15,6 @@ init-dev:
 
 supervisor-dev:
 	docker compose -f docker-compose.dev.yml down supervisor && docker compose -f docker-compose.dev.yml up -d --build supervisor
+
+swagger:
+	docker compose exec php php artisan l5-swagger:generate

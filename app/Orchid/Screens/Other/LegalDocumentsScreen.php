@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Orchid\Screens;
+namespace App\Orchid\Screens\Other;
 
-use App\Orchid\Filters\TermsAndConditionsFilter;
-use App\Orchid\Layouts\TermsAndConditions\TermsAndConditionsCreateLayout;
-use App\Orchid\Layouts\TermsAndConditions\TermsAndConditionsListLayout;
+use App\Orchid\Filters\LegalDocumentsFilter;
+use App\Orchid\Layouts\LegalDocuments\LegalDocumentCreateLayout;
+use App\Orchid\Layouts\LegalDocuments\LegalDocumentsListLayout;
+use App\Services\Other\Enum\LegalDocumentType;
 use App\Services\Other\TermsAndConditionsService;
 use App\Services\System\Enum\Language;
 use Illuminate\Http\RedirectResponse;
@@ -16,9 +17,9 @@ use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
 
-class TermsAndConditionsScreen extends Screen
+class LegalDocumentsScreen extends Screen
 {
-    protected string $name = 'Terms And Conditions';
+    protected string $name = 'Legal Documents';
 
     public function __construct(
         private readonly Request                   $request,
@@ -28,7 +29,7 @@ class TermsAndConditionsScreen extends Screen
     public function query(): iterable
     {
         return [
-            'list' => TermsAndConditionsFilter::runQuery()->paginate(10),
+            'list' => LegalDocumentsFilter::runQuery()->paginate(10),
         ];
     }
 
@@ -40,51 +41,52 @@ class TermsAndConditionsScreen extends Screen
                 ->icon('plus')
                 ->modal('terms_modal')
                 ->modalTitle('Создать новый')
-                ->method('saveTermsAndConditions', ['id' => 0])
+                ->method('saveLegalDocuments', ['id' => 0])
         ];
     }
 
     public function layout(): iterable
     {
         return [
-            TermsAndConditionsFilter::displayFilterCard($this->request),
-            TermsAndConditionsListLayout::class,
-            Layout::modal('terms_modal', TermsAndConditionsCreateLayout::class),
+            LegalDocumentsFilter::displayFilterCard($this->request),
+            LegalDocumentsListLayout::class,
+            Layout::modal('terms_modal', LegalDocumentCreateLayout::class),
         ];
     }
 
-    public function saveTermsAndConditions(Request $request, int $id): RedirectResponse
+    public function saveLegalDocuments(Request $request, int $id): RedirectResponse
     {
         $input = Validator::make($request->all(), [
             'language' => 'required|int',
+            'type'     => 'nullable|string',
         ])->validate();
 
-        $id = $this->service->createTermsAndCondition(Language::from((int)$input['language']));
+        $id = $this->service->createLegalDocument(LegalDocumentType::from((string)($input['type'])), Language::from((int)$input['language']));
 
-        return redirect()->route('other.terms.and.conditions.edit', ['id' => $id]);
+        return redirect()->route('legal.documents.edit', ['id' => $id]);
     }
 
     public function remove(int $id): void
     {
-        $this->service->deleteTermsAndCondition($id);
+        $this->service->deleteLegalDocument($id);
     }
 
     #region Filter
     public function runFiltering(Request $request): RedirectResponse
     {
         $list = [];
-        foreach (TermsAndConditionsFilter::FIELDS as $item) {
+        foreach (LegalDocumentsFilter::FIELDS as $item) {
             if (!is_null($request->get($item))) {
                 $list[$item] = $request->get($item);
             }
         }
 
-        return redirect()->route('other.terms.and.conditions', $list);
+        return redirect()->route('legal.documents.list', $list);
     }
 
     public function clearFilter(): RedirectResponse
     {
-        return redirect()->route('other.terms.and.conditions');
+        return redirect()->route('legal.documents.list');
     }
     #endregion
 }

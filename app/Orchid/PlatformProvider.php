@@ -70,7 +70,7 @@ class PlatformProvider extends OrchidServiceProvider
             Menu::make('Other')->icon('list')->list([
                 Menu::make('Newsletter')->icon('bs.list')->route('newsletter.news.list'),
                 Menu::make('FAQ')->icon('bs.book')->route('faq.list'),
-                Menu::make('Terms & Conditions')->icon('bs.file-earmark-text')->route('other.terms.and.conditions'),
+                Menu::make('Legal Documents')->icon('bs.file-earmark-text')->route('legal.documents.list'),
             ])->divider(),
 
             Menu::make('Access Controls')->icon('grid')->list([
