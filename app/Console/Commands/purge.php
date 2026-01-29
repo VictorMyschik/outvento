@@ -85,6 +85,7 @@ class purge extends Command
             'user_notification_settings',
             'travels',
             'uit',
+            'legal_documents',
         ];
 
         foreach ($tableList as $tableName) {
