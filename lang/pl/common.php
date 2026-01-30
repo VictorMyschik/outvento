@@ -15,4 +15,12 @@ return [
         'cookies' => 'Polityka plików cookies',
         'refund'  => 'Polityka zwrotów',
     ],
+
+    'legal_information' => 'Informacje prawne',
+
+    'faq_page'               => [
+        'faq_message_title' => 'Witamy! W czym możemy Ci pomóc?',
+        'no_answer_text' => 'Nie znalazłeś odpowiedzi? Wyślij formularz kontaktowy — skontaktujemy się z Tobą.',
+        'search_placeholder' => 'Szukaj odpowiedzi',
+    ],
 ];

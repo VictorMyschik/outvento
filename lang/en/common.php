@@ -15,4 +15,12 @@ return [
         'cookies' => 'Cookies Policy',
         'refund'  => 'Refund Policy',
     ],
+
+    'legal_information' => 'Legal Information',
+
+    'faq_page'               => [
+        'faq_message_title' => 'Hello, what can we help you find?',
+        'no_answer_text' => 'Can’t find an answer? Send us a message and we’ll get back to you.',
+        'search_placeholder' => 'Search for answers',
+    ],
 ];
