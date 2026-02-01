@@ -18,7 +18,7 @@ use Orchid\Support\Facades\Layout;
 class EmailScreen extends Screen
 {
     public string $name = 'Email Templates';
-    public string $description = 'Email Templates';
+    public string $description = 'Email templates preview';
 
     public function __construct(private readonly Request $request)
     {
@@ -79,6 +79,7 @@ class EmailScreen extends Screen
                 'New Subscription'   => $this->getTemplate('emails.new_news_subscription', $fakeData['new_news_subscription']),
                 'News Digest'        => $this->getTemplate('emails.news_digest', $fakeData['news_digest']),
                 'Email verification' => $this->getTemplate('emails.verify_email_code', $fakeData['verify_account']),
+                'Feedback'          => $this->getTemplate('emails.feedback', []),
             ]),
         ];
     }

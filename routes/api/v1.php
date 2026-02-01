@@ -5,6 +5,8 @@ declare(strict_types=1);
 use App\Http\Controllers\API\Auth\AuthController;
 use App\Http\Controllers\API\CommonApiController;
 use App\Http\Controllers\API\DownloadFileController;
+use App\Http\Controllers\API\FAQController;
+use App\Http\Controllers\API\FormsController;
 use App\Http\Controllers\API\SocialAuthController;
 use App\Http\Controllers\API\SubscriptionApiController;
 use App\Http\Controllers\API\User\UsersController;
@@ -14,6 +16,9 @@ use App\Http\Controllers\Travel\Travel\TravelImageController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('optional:sanctum')->group(function () {
+
+    Route::post('/form/feedback', [FormsController::class, 'feedback']);
+
     Route::prefix('pages')->group(static function () {
         Route::get('welcome', [WelcomeController::class, 'index']);
     });
@@ -22,9 +27,6 @@ Route::middleware('optional:sanctum')->group(function () {
 Route::middleware('guest')->group(static function () {
     Route::post('login', [AuthController::class, 'login'])->name('login');
     Route::post('register', [AuthController::class, 'register'])->name('register');
-
-    Route::get('login/yandex', [AuthController::class, 'yandex'])->name('yandex');
-    Route::get('login/yandex/redirect', [AuthController::class, 'yandexRedirect'])->name('yandexRedirect');
 
     Route::post('reset-password', [AuthController::class, 'resetPassword']);
     Route::post('reset-password/{token}/check', [AuthController::class, 'checkActualResetPasswordToken']);
@@ -89,3 +91,6 @@ Route::get('/subscription/unsubscribe/{token}', [SubscriptionApiController::clas
 
 Route::get('/download', [DownloadFileController::class, 'download'])->name('download');
 Route::get('/legal/{type}', [CommonApiController::class, 'legal']);
+Route::post('/faq/search', [FAQController::class, 'search']);
+Route::get('/faq/list', [FAQController::class, 'getBaseFaqList']);
+

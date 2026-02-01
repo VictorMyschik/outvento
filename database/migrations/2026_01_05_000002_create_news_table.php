@@ -11,7 +11,7 @@ return new class extends Migration {
             $table->id();
             $table->boolean('active')->default(false);
             $table->boolean('public')->default(true);
-            $table->tinyInteger('language')->index();
+            $table->smallInteger('language')->index();
             $table->unsignedBigInteger('group_id')->index();
             $table->string('code')->index();
             $table->string('title', 1000)->index();

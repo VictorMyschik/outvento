@@ -23,7 +23,7 @@ class AuthenticateRequest extends FormRequest
     {
         return [
             'login'    => ['sometimes', 'nullable', 'string', 'max:255'],
-            'password' => ['required', 'string', 'min:8', 'max:255', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/'],
+            'password' => ['required', 'string'],//, 'min:8', 'max:255', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/'],
             'remember' => ['sometimes', 'boolean'],
         ];
     }

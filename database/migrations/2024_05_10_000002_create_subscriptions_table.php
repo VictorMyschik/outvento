@@ -13,7 +13,7 @@ return new class extends Migration {
             $table->string('type')->index(); // NotificationType
             $table->string('email', 100)->index();
             $table->string('token', 32)->unique()->index();
-            $table->tinyInteger('language')->default(Language::RU->value)->index();
+            $table->smallInteger('language')->index();
 
             $table->unique(['email', 'type', 'language']);
             $table->index(['email', 'type', 'language']);

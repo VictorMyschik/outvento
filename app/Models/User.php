@@ -6,6 +6,7 @@ use App\Models\Notification\UserNotificationSetting;
 use App\Models\UserInfo\Communication;
 use App\Models\UserInfo\CommunicationType;
 use App\Models\UserInfo\SocialAccount;
+use App\Services\Notifications\Enum\EventType;
 use App\Services\Notifications\Enum\NotificationChannel;
 use App\Services\Notifications\NotificationRecipientInterface;
 use App\Services\System\Enum\Language;
@@ -147,6 +148,10 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
         return $this->hasMany(UserNotificationSetting::class);
     }
 
+    /**
+     * Суть метода - вернуть каналы уведомлений ['email', 'telegram'], которые пользователь
+     * выбрал для получения конкретного типа уведомлений
+     */
     public function notificationChannelsFor(string $notificationClass): array
     {
         return [NotificationChannel::Email->value, NotificationChannel::Telegram->value];
@@ -157,7 +162,7 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
         return $this->notificationSettings()
             ->join(Communication::getTableName(), UserNotificationSetting::getTableName() . '.communication_id', '=', Communication::getTableName() . '.id')
             ->join(CommunicationType::getTableName(), CommunicationType::getTableName() . '.id', '=', Communication::getTableName() . '.type_id')
-            ->where('event_type', $key)
+            ->where('event_type', $notificationClass::KEY)
             ->where(UserNotificationSetting::getTableName() . '.active', true)
             ->pluck(CommunicationType::getTableName() . '.code')
             ->map(fn($code) => NotificationChannelMapper::map($code))
@@ -189,7 +194,7 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
 
     public function routeNotificationForMail(Notification $notification): string|array|null
     {
-        if (isset(NotificationChannel::getSelectList()[$notification::KEY])) {
+        if (isset(EventType::getSelectList()[$notification::KEY])) {
             return $this->getCommunicationAddressFor(
                 channel: NotificationChannel::Email->value,
                 eventKey: $notification::KEY
@@ -201,7 +206,7 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
 
     public function routeNotificationForTelegram(Notification $notification): string|int|null
     {
-        if (isset(NotificationChannel::getSelectList()[$notification::KEY])) {
+        if (isset(EventType::getSelectList()[$notification::KEY])) {
             return $this->getCommunicationAddressFor(
                 channel: NotificationChannel::Telegram->value,
                 eventKey: $notification::KEY

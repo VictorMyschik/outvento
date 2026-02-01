@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Notifications;
 
 use App\Models\Notification\UserNotificationSetting;
+use App\Models\User;
 use App\Services\Notifications\Enum\EventType;
 
 interface NotificationRepositoryInterface
@@ -16,7 +17,7 @@ interface NotificationRepositoryInterface
     public function getUserNotificationSettingById(int $id): ?UserNotificationSetting;
 
     /**
-     * @return UserNotificationSetting[]
+     * @return User[]
      */
     public function getSubscriptionUsersList(EventType $type): array;
 }

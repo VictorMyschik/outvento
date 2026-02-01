@@ -8,7 +8,7 @@ use App\Models\Lego\Fields\ActiveFieldTrait;
 use App\Models\Lego\Fields\LanguageFieldTrait;
 use App\Models\Lego\Fields\TitleFieldTrait;
 use App\Models\ORM\ORM;
-use App\Services\Other\Enum\LegalDocumentType;
+use App\Services\Other\LegalDocuments\Enum\LegalDocumentType;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
 

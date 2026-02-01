@@ -6,8 +6,8 @@ namespace App\Orchid\Screens\Other;
 
 use App\Models\Other\LegalDocument;
 use App\Orchid\Fields\CKEditor;
-use App\Services\Other\Enum\LegalDocumentType;
-use App\Services\Other\TermsAndConditionsService;
+use App\Services\Other\LegalDocuments\Enum\LegalDocumentType;
+use App\Services\Other\LegalDocuments\LegalDocumentsService;
 use App\Services\System\Enum\Language;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,7 +26,7 @@ class LegalDocumentEditScreen extends Screen
     private ?LegalDocument $term = null;
 
     public function __construct(
-        private readonly TermsAndConditionsService $service,
+        private readonly LegalDocumentsService $service,
     ) {}
 
     public function description(): ?string

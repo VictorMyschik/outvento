@@ -11,9 +11,11 @@ return new class extends Migration {
             $table->id();
             $table->boolean('active')->default(false);// reed/unreed
             $table->unsignedSmallInteger('type')->index();
-            $table->tinyInteger('language')->default(0)->index();
-            $table->jsonb('sl')->index()->nullable();
+            $table->smallInteger('language')->index();
+            $table->jsonb('sl');
             $table->unsignedBigInteger('user_id')->nullable()->index();
+            $table->string('contact')->nullable()->index();
+            $table->text('description')->nullable()->index();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
 

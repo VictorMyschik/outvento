@@ -8,6 +8,7 @@ use App\Orchid\Screens\Catalog\CatalogGoodsScreen;
 use App\Orchid\Screens\Catalog\CatalogGroupsScreen;
 use App\Orchid\Screens\Catalog\ManufacturerScreen;
 use App\Orchid\Screens\FAQScreen;
+use App\Orchid\Screens\Forms\FormsScreen;
 use App\Orchid\Screens\Language\TranslateScreen;
 use App\Orchid\Screens\Newsletter\NewsEditScreen;
 use App\Orchid\Screens\Newsletter\NewsletterScreen;
@@ -156,10 +157,13 @@ Route::screen('/reference/communication-type/list', CommunicateTypeScreen::class
 //// Subscriptions
 Route::screen('/subscriptions/list', SubscriptionScreen::class)->name('subscriptions.list');
 
+// Forms
+Route::screen('/forms/list', FormsScreen::class)->name('forms.list');
+
 /// Message Log
 Route::screen('/notification/user/settings/list', UserNotificationSettingScreen::class)->name('notification.user.settings.list');
-Route::screen('/notification/log/email/list', MessageLogEmailScreen::class)->name('notification.log.email.list');
-Route::screen('/notification/log/telegram/list', MessageLogTelegramScreen::class)->name('notification.log.telegram.list');
+//Route::screen('/notification/log/email/list', MessageLogEmailScreen::class)->name('notification.log.email.list');
+//Route::screen('/notification/log/telegram/list', MessageLogTelegramScreen::class)->name('notification.log.telegram.list');
 
 // Wish List
 Route::screen('/wishlist/list', WishlistScreen::class)->name('wishlist.list');

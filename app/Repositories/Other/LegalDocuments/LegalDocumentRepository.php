@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Repositories\Other;
+namespace App\Repositories\Other\LegalDocuments;
 
 use App\Models\Other\LegalDocument;
 use App\Repositories\DatabaseRepository;
-use App\Services\Other\Enum\LegalDocumentType;
+use App\Services\Other\LegalDocuments\Enum\LegalDocumentType;
 use App\Services\System\Enum\Language;
 use Carbon\Carbon;
 

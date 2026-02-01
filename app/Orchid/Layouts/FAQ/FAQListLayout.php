@@ -18,6 +18,7 @@ class FAQListLayout extends Table
     public function columns(): array
     {
         return [
+            TD::make('id', 'ID')->sort(),
             TD::make('active', 'Active')->active()->sort(),
             TD::make('language_id', 'Language')->render(fn(Faq $faq) => $faq->getLanguage()->getLabel())->sort(),
             TD::make('title', 'Title')->sort(),

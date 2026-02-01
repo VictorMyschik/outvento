@@ -50,6 +50,11 @@ final readonly class NotificationService
         $this->repository->deleteUserSetting($id);
     }
 
+    public function getAuthSubscribersList(EventType $type): array
+    {
+        return $this->repository->getSubscriptionUsersList($type);
+    }
+
     public function getSubscribersList(EventType $type): array
     {
         return array_merge(

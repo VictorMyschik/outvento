@@ -4,47 +4,37 @@ declare(strict_types=1);
 
 namespace App\Services\Forms\DTO;
 
+use App\Services\Forms\Enum\FormType;
 use App\Services\Forms\FormInterface;
-use App\Services\Notifications\Enum\EventType;
 use App\Services\System\Enum\Language;
 
 final class FormFeedbackDTO implements FormInterface
 {
-    private int $id;
-
     public function __construct(
         public Language $language,
         public string   $name,
         public string   $email,
         public string   $message,
+        public ?int     $userId,
     ) {}
 
-    public function getLanguage(): Language
+    public function getType(): FormType
     {
-        return $this->language;
+        return FormType::Feedback;
     }
 
-    public function id(): int
+    public function jsonSerialize(): array
     {
-        return $this->id;
-    }
-
-    public function setID(int $id): void
-    {
-        $this->id = $id;
-    }
-
-    public function getType(): EventType
-    {
-        return EventType::Feedback;
-    }
-
-    public function getJson(): string
-    {
-        return json_encode([
-            'name'    => $this->name,
-            'email'   => $this->email,
-            'message' => $this->message,
-        ]);
+        return [
+            'language' => $this->language->value,
+            'type'     => $this->getType()->value,
+            'sl'       => json_encode([
+                'name'    => $this->name,
+                'email'   => $this->email,
+                'message' => $this->message,
+            ]),
+            'user_id'  => $this->userId,
+            'contact'  => $this->email,
+        ];
     }
 }

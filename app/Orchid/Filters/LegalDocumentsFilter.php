@@ -6,7 +6,7 @@ namespace App\Orchid\Filters;
 
 use App\Models\Other\LegalDocument;
 use App\Orchid\Layouts\Lego\ActionFilterPanel;
-use App\Services\Other\Enum\LegalDocumentType;
+use App\Services\Other\LegalDocuments\Enum\LegalDocumentType;
 use App\Services\System\Enum\Language;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;

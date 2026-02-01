@@ -1,11 +1,8 @@
 <?php
 
-use App\Forms\Account\Travel\TravelForm;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Admin\AdminTravelController;
-use App\Http\Controllers\API\SubscriptionApiController;
-use App\Http\Controllers\FAQController;
-use App\Http\Controllers\Forms\FormsController;
+use App\Http\Controllers\API\FormsController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\Travel\Travel\TravelController;
 use App\Http\Controllers\Travel\Travel\TravelInviteController;
@@ -41,8 +38,7 @@ Route::get('locale/{locale}', function ($locale) {
 //Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 Route::get('/travels/search', [WelcomeController::class, 'searchTravelPage'])->name('travels.search.page');
 
-Route::get('/faq', [FAQController::class, 'faqPage'])->name('faq.page');
-Route::match(['get', 'post'], '/feedback', [FormsController::class, 'feedback'])->name('feedback');
+
 Route::match(['get', 'post'], '/test', [TestController::class, 'index'])->name('test.page');
 Route::match(['get', 'post'], '/travel/{token}', [TravelController::class, 'index'])->name('travel.public.link');
 Route::match(['get', 'post'], '/travel/email-invite/{token}/{status}', [TravelInviteController::class, 'index'])->name('travel.email.invite.link');

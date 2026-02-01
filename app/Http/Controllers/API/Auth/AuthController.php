@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\API\Auth;
 
-use App\Actions\User\YandexRegisterAction;
 use App\Http\Controllers\API\APIController;
 use App\Http\Controllers\API\Auth\Request\Auth\AuthenticateRequest;
 use App\Http\Controllers\API\Auth\Request\Auth\ChangePasswordRequest;
@@ -15,11 +14,9 @@ use App\Http\Controllers\API\Auth\Response\LoginResponse;
 use App\Services\User\DTO\UserProfileDTO;
 use App\Services\User\UserService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Laravel\Socialite\Facades\Socialite;
 use LogicException;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -150,38 +147,6 @@ class AuthController extends APIController
     public function logoutAllSessions(): JsonResponse
     {
         Auth::user()?->tokens()->delete();
-
-        return $this->apiResponse();
-    }
-
-    #[OA\Get(
-        path: "/api/v1/auth/yandex",
-        operationId: 'yandexAuth',
-        description: "Будет произведён редирект на страницу авторизации Яндекс. После успешной авторизации, пользователь будет перенаправлен на указанный в настройках приложения URL.",
-        summary: "Yandex авторизация",
-        tags: ["Auth"],
-        responses: [
-            new OA\Response(
-                response: 302,
-                description: "Redirect to Yandex",
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: "status", type: "string", example: "redirect"),
-                        new OA\Property(property: "url", type: "string", example: "https://oauth.yandex.ru/authorize")
-                    ],
-                    type: "object"
-                )
-            )
-        ]
-    )]
-    public function yandex(): RedirectResponse
-    {
-        return Socialite::driver('yandex')->redirect();
-    }
-
-    public function yandexRedirect(YandexRegisterAction $action): JsonResponse
-    {
-        $action->execute();
 
         return $this->apiResponse();
     }

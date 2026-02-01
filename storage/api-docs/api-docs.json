@@ -745,6 +745,109 @@
                 }
             }
         },
+        "/api/v1/faq/search": {
+            "post": {
+                "tags": [
+                    "FAQ"
+                ],
+                "summary": "Search FAQs",
+                "operationId": "searchFaqs",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/XRequestedWithHeader"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "status",
+                                        "content"
+                                    ],
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "ok"
+                                        },
+                                        "content": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/FaqComponent"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/faq/list": {
+            "get": {
+                "tags": [
+                    "FAQ"
+                ],
+                "summary": "Get base FAQs",
+                "operationId": "getBaseFaqList",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/XRequestedWithHeader"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "status",
+                                        "content"
+                                    ],
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "ok"
+                                        },
+                                        "content": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/FaqComponent"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
         "/api/v1/subscription/subscribe": {
             "post": {
                 "tags": [
@@ -1619,6 +1722,25 @@
                 },
                 "type": "object"
             },
+            "FaqComponent": {
+                "title": "FAQ Component",
+                "description": "FAQ item with title and text",
+                "required": [
+                    "title",
+                    "text"
+                ],
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "example": "How to use the API?"
+                    },
+                    "text": {
+                        "type": "string",
+                        "example": "Use the /api endpoint with a token."
+                    }
+                },
+                "type": "object"
+            },
             "FrontendSettingsResponse": {
                 "description": "Response containing frontend settings including languages and contacts",
                 "required": [
@@ -2414,6 +2536,10 @@
         {
             "name": "Pages",
             "description": "Pages"
+        },
+        {
+            "name": "FAQ",
+            "description": "FAQ"
         },
         {
             "name": "Subscription",

@@ -7,8 +7,8 @@ namespace App\Orchid\Screens\Other;
 use App\Orchid\Filters\LegalDocumentsFilter;
 use App\Orchid\Layouts\LegalDocuments\LegalDocumentCreateLayout;
 use App\Orchid\Layouts\LegalDocuments\LegalDocumentsListLayout;
-use App\Services\Other\Enum\LegalDocumentType;
-use App\Services\Other\TermsAndConditionsService;
+use App\Services\Other\LegalDocuments\Enum\LegalDocumentType;
+use App\Services\Other\LegalDocuments\LegalDocumentsService;
 use App\Services\System\Enum\Language;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -22,8 +22,8 @@ class LegalDocumentsScreen extends Screen
     protected string $name = 'Legal Documents';
 
     public function __construct(
-        private readonly Request                   $request,
-        private readonly TermsAndConditionsService $service,
+        private readonly Request               $request,
+        private readonly LegalDocumentsService $service,
     ) {}
 
     public function query(): iterable

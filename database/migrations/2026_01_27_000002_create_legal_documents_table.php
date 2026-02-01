@@ -11,7 +11,7 @@ return new class extends Migration {
             $table->id();
             $table->string('type', 32)->index();
             $table->boolean('active')->default(false)->index();
-            $table->tinyInteger('language')->index();
+            $table->smallInteger('language')->index();
             $table->text('text')->nullable();
             $table->timestampTz('published_at')->nullable()->index();
 

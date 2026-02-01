@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Services\Other;
+namespace App\Services\Other\LegalDocuments;
 
-use App\Repositories\Other\LegalDocumentRepository;
-use App\Services\Other\Enum\LegalDocumentType;
+use App\Repositories\Other\LegalDocuments\LegalDocumentRepository;
+use App\Services\Other\LegalDocuments\Enum\LegalDocumentType;
 use App\Services\System\Enum\Language;
 
-final readonly class TermsAndConditionsService
+final readonly class LegalDocumentsService
 {
     public function __construct(
         private LegalDocumentRepository $repository,

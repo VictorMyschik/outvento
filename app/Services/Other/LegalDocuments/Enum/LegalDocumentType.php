@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Services\Other\Enum;
+namespace App\Services\Other\LegalDocuments\Enum;
 
 enum LegalDocumentType: string
 {

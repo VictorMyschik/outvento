@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services\Forms;
 
-use App\Services\Notifications\Enum\EventType;
-use App\Services\System\Enum\Language;
+use App\Services\Forms\Enum\FormType;
 
 interface FormInterface
 {
-    public function getLanguage(): Language;
+    public function getType(): FormType;
 
-    public function getType(): EventType;
-
-    public function getJson(): string;
+    public function jsonSerialize(): array;
 }
