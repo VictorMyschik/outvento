@@ -6,7 +6,6 @@ namespace App\Repositories\Subscription;
 
 use App\Models\Subscription\Subscription;
 use App\Repositories\DatabaseRepository;
-use App\Services\Email\Enum\EmailTypeEnum;
 use App\Services\Notifications\Enum\EventType;
 use App\Services\Notifications\SubscriptionRepositoryInterface;
 

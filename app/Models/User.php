@@ -7,7 +7,6 @@ use App\Models\UserInfo\Communication;
 use App\Models\UserInfo\CommunicationType;
 use App\Models\UserInfo\SocialAccount;
 use App\Services\Notifications\Enum\NotificationChannel;
-use App\Services\Notifications\NotificationChannelMapper;
 use App\Services\Notifications\NotificationRecipientInterface;
 use App\Services\System\Enum\Language;
 use App\Services\User\Enum\Gender;
@@ -150,7 +149,10 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
 
     public function notificationChannelsFor(string $notificationClass): array
     {
-        $key = $notificationClass::KEY;
+        return [NotificationChannel::Email->value, NotificationChannel::Telegram->value];
+
+        // Вернёт список каналов, которые есть в используются
+        /*$key = $notificationClass::KEY;
 
         return $this->notificationSettings()
             ->join(Communication::getTableName(), UserNotificationSetting::getTableName() . '.communication_id', '=', Communication::getTableName() . '.id')
@@ -161,7 +163,7 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
             ->map(fn($code) => NotificationChannelMapper::map($code))
             ->unique()
             ->values()
-            ->toArray();
+            ->toArray();*/
     }
 
     protected function getCommunicationAddressFor(string $channel, string $eventKey): ?string

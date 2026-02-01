@@ -7,7 +7,7 @@ namespace App\Models\Subscription;
 use App\Models\Lego\Fields\LanguageFieldTrait;
 use App\Models\ORM\ORM;
 use App\Services\Notifications\Enum\EventType;
-use App\Services\Notifications\NotificationChannelMapper;
+use App\Services\Notifications\Enum\NotificationChannel;
 use App\Services\Notifications\NotificationRecipientInterface;
 use App\Services\System\Enum\Language;
 use Illuminate\Contracts\Translation\HasLocalePreference;
@@ -61,7 +61,7 @@ class Subscription extends ORM implements NotificationRecipientInterface, HasLoc
 
     public function notificationChannelsFor(string $notificationClass): array
     {
-        return [NotificationChannelMapper::map(NotificationChannelMapper::EMAIL)];
+        return [NotificationChannel::Email->value];
     }
 
     public function routeNotificationForMail($notification = null): string

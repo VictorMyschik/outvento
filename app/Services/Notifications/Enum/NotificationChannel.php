@@ -6,7 +6,7 @@ namespace App\Services\Notifications\Enum;
 
 enum NotificationChannel: string
 {
-    case Email = 'email';
+    case Email = 'mail';
     case Telegram = 'telegram';
 
     public function getLabel(): string
