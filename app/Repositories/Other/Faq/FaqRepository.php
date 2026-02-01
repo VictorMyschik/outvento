@@ -31,7 +31,7 @@ final readonly class FaqRepository extends DatabaseRepository implements FaqRepo
                 }
             });
 
-        return $query->select(['title', 'text'])->get()->all();
+        return $query->select(['id', 'title', 'text'])->get()->all();
     }
 
     public function saveFaq(int $id, array $data): int
@@ -50,7 +50,8 @@ final readonly class FaqRepository extends DatabaseRepository implements FaqRepo
         return $this->db->table(Faq::getTableName())
             ->where('active', true)
             ->where('language', $language->value)
-            ->select(['title', 'text'])
+            ->select(['id', 'title', 'text'])
+            ->orderBy('title')
             ->get()
             ->all();
     }

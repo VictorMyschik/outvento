@@ -17,6 +17,7 @@ final readonly class FaqApiService
         $response = [];
         foreach ($this->repository->searchFaqs($q, $language) as $stdClass) {
             $response[] = new FaqComponent(
+                id: $stdClass->id,
                 title: $stdClass->title,
                 text: $stdClass->text
             );
@@ -30,6 +31,7 @@ final readonly class FaqApiService
         $response = [];
         foreach ($this->repository->getBaseFaqs($language) as $stdClass) {
             $response[] = new FaqComponent(
+                id: $stdClass->id,
                 title: $stdClass->title,
                 text: $stdClass->text
             );

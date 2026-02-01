@@ -19,7 +19,7 @@ class FAQController extends APIController
         path: "/api/v1/faq/search",
         operationId: "searchFaqs",
         summary: "Search FAQs",
-        tags: ["FAQ"],
+        tags: ["Pages"],
         parameters: [
             new OA\Parameter(ref: "#/components/parameters/XRequestedWithHeader"),
         ],
@@ -51,7 +51,7 @@ class FAQController extends APIController
         path: "/api/v1/faq/list",
         operationId: "getBaseFaqList",
         summary: "Get base FAQs",
-        tags: ["FAQ"],
+        tags: ["Pages"],
         parameters: [
             new OA\Parameter(ref: "#/components/parameters/XRequestedWithHeader"),
         ],

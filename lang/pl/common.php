@@ -18,9 +18,16 @@ return [
 
     'legal_information' => 'Informacje prawne',
 
-    'faq_page'               => [
-        'faq_message_title' => 'Witamy! W czym możemy Ci pomóc?',
-        'no_answer_text' => 'Nie znalazłeś odpowiedzi? Wyślij formularz kontaktowy — skontaktujemy się z Tobą.',
+    'faq_page' => [
+        'faq_message_title'  => 'Witamy! W czym możemy Ci pomóc?',
+        'no_answer_text'     => 'Nie znalazłeś odpowiedzi? Wyślij formularz kontaktowy — skontaktujemy się z Tobą.',
         'search_placeholder' => 'Szukaj odpowiedzi',
+        'base_list_title' => 'Często zadawane pytania',
+    ],
+
+    'search' => [
+        'button'     => 'Szukaj',
+        'title'      => 'Wyniki wyszukiwania',
+        'no_results' => 'Brak wyników dla Twojego zapytania.',
     ],
 ];
