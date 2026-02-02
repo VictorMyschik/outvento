@@ -19,6 +19,7 @@ class FAQController extends APIController
         path: "/api/v1/faq/search",
         operationId: "searchFaqs",
         summary: "Search FAQs",
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(ref: "#/components/schemas/FAQSearchRequest")),
         tags: ["Pages"],
         parameters: [
             new OA\Parameter(ref: "#/components/parameters/XRequestedWithHeader"),

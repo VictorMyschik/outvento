@@ -230,38 +230,6 @@
                 ]
             }
         },
-        "/api/v1/auth/yandex": {
-            "get": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Yandex авторизация",
-                "description": "Будет произведён редирект на страницу авторизации Яндекс. После успешной авторизации, пользователь будет перенаправлен на указанный в настройках приложения URL.",
-                "operationId": "yandexAuth",
-                "responses": {
-                    "302": {
-                        "description": "Redirect to Yandex",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "redirect"
-                                        },
-                                        "url": {
-                                            "type": "string",
-                                            "example": "https://oauth.yandex.ru/authorize"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/user/verify": {
             "post": {
                 "tags": [
@@ -748,7 +716,7 @@
         "/api/v1/faq/search": {
             "post": {
                 "tags": [
-                    "FAQ"
+                    "Pages"
                 ],
                 "summary": "Search FAQs",
                 "operationId": "searchFaqs",
@@ -757,6 +725,16 @@
                         "$ref": "#/components/parameters/XRequestedWithHeader"
                     }
                 ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/FAQSearchRequest"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "Successful response",
@@ -803,7 +781,7 @@
         "/api/v1/faq/list": {
             "get": {
                 "tags": [
-                    "FAQ"
+                    "Pages"
                 ],
                 "summary": "Get base FAQs",
                 "operationId": "getBaseFaqList",
@@ -1610,6 +1588,18 @@
                 },
                 "type": "object"
             },
+            "FAQSearchRequest": {
+                "description": "Request schema for searching FAQs",
+                "properties": {
+                    "q": {
+                        "description": "Search query. Trimmed and sanitized; must be at least 2 characters after processing.",
+                        "type": "string",
+                        "maxLength": 100,
+                        "example": "password reset"
+                    }
+                },
+                "type": "object"
+            },
             "SubscriptionRequest": {
                 "required": [
                     "email"
@@ -1726,10 +1716,15 @@
                 "title": "FAQ Component",
                 "description": "FAQ item with title and text",
                 "required": [
+                    "id",
                     "title",
                     "text"
                 ],
                 "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
                     "title": {
                         "type": "string",
                         "example": "How to use the API?"
@@ -2536,10 +2531,6 @@
         {
             "name": "Pages",
             "description": "Pages"
-        },
-        {
-            "name": "FAQ",
-            "description": "FAQ"
         },
         {
             "name": "Subscription",
