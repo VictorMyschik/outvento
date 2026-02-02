@@ -8,7 +8,17 @@ use App\Services\Forms\DTO\FormFeedbackDTO;
 use App\Services\Forms\FormInterface;
 use App\Services\System\Enum\Language;
 use Illuminate\Foundation\Http\FormRequest;
+use OpenApi\Attributes as OA;
 
+#[OA\Schema(
+    schema: "FeedbackRequest",
+    required: ["name", "email", "message"],
+    properties: [
+        new OA\Property(property: "name", description: "Sender name", type: "string", example: "John Doe"),
+        new OA\Property(property: "email", description: "Sender email", type: "string", format: "email", example: "john@example.com"),
+        new OA\Property(property: "message", description: "Message content", type: "string", maxLength: 5000)
+    ]
+)]
 class FeedbackRequest extends FormRequest implements FormRequestInterface
 {
     public function rules(): array

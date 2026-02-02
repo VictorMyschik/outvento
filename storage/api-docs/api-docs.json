@@ -826,6 +826,48 @@
                 }
             }
         },
+        "/api/v1/form/feedback": {
+            "post": {
+                "tags": [
+                    "Forms"
+                ],
+                "summary": "Submit feedback",
+                "description": "Submit feedback form",
+                "operationId": "submitFeedback",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/FeedbackRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SuccessfulEmptyResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/subscription/subscribe": {
             "post": {
                 "tags": [
@@ -1596,6 +1638,32 @@
                         "type": "string",
                         "maxLength": 100,
                         "example": "password reset"
+                    }
+                },
+                "type": "object"
+            },
+            "FeedbackRequest": {
+                "required": [
+                    "name",
+                    "email",
+                    "message"
+                ],
+                "properties": {
+                    "name": {
+                        "description": "Sender name",
+                        "type": "string",
+                        "example": "John Doe"
+                    },
+                    "email": {
+                        "description": "Sender email",
+                        "type": "string",
+                        "format": "email",
+                        "example": "john@example.com"
+                    },
+                    "message": {
+                        "description": "Message content",
+                        "type": "string",
+                        "maxLength": 5000
                     }
                 },
                 "type": "object"
@@ -2531,6 +2599,10 @@
         {
             "name": "Pages",
             "description": "Pages"
+        },
+        {
+            "name": "Forms",
+            "description": "Forms"
         },
         {
             "name": "Subscription",

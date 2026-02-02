@@ -22,7 +22,7 @@ return [
         'faq_message_title'  => 'Witamy! W czym możemy Ci pomóc?',
         'no_answer_text'     => 'Nie znalazłeś odpowiedzi? Wyślij formularz kontaktowy — skontaktujemy się z Tobą.',
         'search_placeholder' => 'Szukaj odpowiedzi',
-        'base_list_title' => 'Często zadawane pytania',
+        'base_list_title'    => 'Często zadawane pytania',
     ],
 
     'search' => [
@@ -30,4 +30,16 @@ return [
         'title'      => 'Wyniki wyszukiwania',
         'no_results' => 'Brak wyników dla Twojego zapytania.',
     ],
+
+    'feedback' => [
+        'title'    => 'Skontaktuj się z nami',
+        'subtitle' => 'Nie znalazłeś odpowiedzi? Wyślij nam wiadomość — skontaktujemy się z Tobą.',
+        'name'     => 'Twoje imię',
+        'email'    => 'Adres e-mail',
+        'message'  => 'Wiadomość',
+        'submit'   => 'Wyślij',
+        'success'  => 'Dziękujemy! Twoja wiadomość została wysłana.'
+    ],
+
+    'loading_translations' => 'Tłumaczenie...',
 ];
