@@ -6,6 +6,8 @@ namespace App\Orchid\Layouts\User;
 
 use App\Services\System\Enum\Language;
 use App\Services\User\Enum\Gender;
+use App\Services\User\Enum\RelationshipStatus;
+use App\Services\User\Enum\Visibility;
 use Orchid\Screen\Fields\DateTimer;
 use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
@@ -18,6 +20,14 @@ class UserProfileEditLayout extends Rows
     public function fields(): array
     {
         return [
+            Select::make('visibility')
+                ->title('Profile Visibility')
+                ->options(Visibility::getSelectList()),
+
+            Select::make('relationship_status')
+                ->title('Relationship status')
+                ->options(RelationshipStatus::getSelectList()),
+
             Group::make([
                 Input::make('name')->type('text')->max(255)->required()->title('Name (login)'),
                 Input::make('email')->type('email')->required()->title('Email'),

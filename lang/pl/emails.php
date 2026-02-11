@@ -4,22 +4,23 @@ return [
     "reset_password_subject"     => "Reset hasła",
     "reset_password_requested"   => "Poproszono o reset hasła dla Twojego konta.",
     "reset_password_instruction" => "Aby ustawić nowe hasło, kliknij poniższy link:",
-    "reset_password_expire"      => "Link jest ważny przez",
+    "link_expire"                => "Link jest ważny przez",
     "reset_password_ignore"      => "Jeśli nie prosiłeś o reset hasła, zignoruj tę wiadomość. Ze względów bezpieczeństwa nie udostępniaj tego linku osobom trzecim.",
     "minutes"                    => "minut",
     "regards"                    => "Z poważaniem",
-    // Для Email рассылок
-    "new_news_subscription"      => "Nowa subskrypcja wiadomości",
-    'greeting'                   => 'Witaj!',
-    'intro'                      => 'Pomyślnie zapisano się do naszego newslettera.',
-    'benefits_title'             => 'Od teraz jako pierwszy dowiesz się o:',
-    'benefits'                   => [
-        'nowych podróżach i kierunkach',
-        'ofertach specjalnych',
-        'aktualizacjach serwisu',
+
+    'new_news_subscription' => [
+        'subscription_request'  => 'Wysłano prośbę o subskrypcję newslettera.',
+        'greeting'              => 'Witaj!',
+        'confirm_subscription'  => 'Potwierdź subskrypcję',
+        'new_news_subscription' => 'Potwierdzenie subskrypcji newslettera',
+        'intro'                 => 'Potwierdź swoją subskrypcję naszego newslettera, aby otrzymywać najnowsze wiadomości i aktualizacje.',
+        'ignore'                => 'Jeśli nie zapisywałeś się na subskrypcję, zignoruj tę wiadomość.',
+        'consent'               => 'Klikając przycisk, zgadzasz się na otrzymywanie wiadomości e-mail z wiadomościami. Więcej informacji w ',
+        'privacy_policy'        => 'Polityce prywatności',
     ],
-    'ignore'                     => 'Jeśli nie zapisywałeś się na newsletter, zignoruj tę wiadomość.',
-    'unsubscribe'                => 'Wypisz się z newslettera',
+
+    'unsubscribe'           => 'Wypisz się z newslettera',
 
     'news_digest' => [
         'subject'     => 'Nowe artykuły na stronie',

@@ -11,11 +11,12 @@ return new class extends Migration {
             $table->id();
             $table->boolean('active')->default(false)->index();
             $table->unsignedBigInteger('user_id')->index();
-            $table->string('event_type')->index();
+            $table->unsignedBigInteger('event_type_id')->index();
             $table->unsignedBigInteger('communication_id')->index();
 
-            $table->unique(['user_id', 'event_type', 'communication_id']);
+            $table->unique(['user_id', 'event_type_id', 'communication_id']);
 
+            $table->foreign('event_type_id')->references('id')->on('notification_event_types')->cascadeOnDelete();
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
             $table->foreign('communication_id')->references('id')->on('communications')->cascadeOnDelete();
 

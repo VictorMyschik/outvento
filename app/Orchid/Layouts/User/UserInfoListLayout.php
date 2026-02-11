@@ -19,7 +19,7 @@ class UserInfoListLayout extends Table
     public function columns(): array
     {
         return [
-            TD::make('id', 'ID')->sort(),
+            TD::make('id', 'ID')->render(fn(User $user) => Link::make((string)$user->id)->route('profiles.details', $user->id)->stretched())->sort(),
             TD::make('name', 'Login')->sort(),
             TD::make('email', 'Email')->sort(),
             TD::make('email_verified_at', 'Email Verified At')->render(fn(User $user) => $user->email_verified_at)->active()->sort(),
@@ -44,35 +44,6 @@ class UserInfoListLayout extends Table
                 ->render(fn(User $user) => $user->deleted_at?->format('d.m.Y H:i:s'))
                 ->sort()
                 ->defaultHidden(),
-
-            TD::make('#')
-                ->align(TD::ALIGN_CENTER)
-                ->width('100px')
-                ->render(function (User $user) {
-                    $btns[] = Link::make(__('Profile'))
-                        ->icon('user')
-                        ->route('profiles.details', $user->id);
-                    if (empty($user->email_verified_at)) {
-                        $btns[] = Button::make('Отправить код верификации')
-                            ->icon('send')
-                            ->confirm('Are you sure you want to send a verification email to the user?')
-                            ->method('sendVerifyEmail', ['id' => $user->id]);
-                    }
-                    $btns[] = ModalToggle::make('Edit')
-                        ->icon('pencil')
-                        ->modal('user_modal')
-                        ->modalTitle('User id ' . $user->id)
-                        ->method('saveUser')
-                        ->asyncParameters(['id' => $user->id]);
-                    $btns[] = Button::make(__('Delete'))
-                        ->icon('bs.trash3')
-                        ->confirm('Are you sure you want to delete the user?')
-                        ->method('remove', ['id' => $user->id]);
-
-                    return DropDown::make()
-                        ->icon('bs.three-dots-vertical')
-                        ->list($btns);
-                }),
         ];
     }
 

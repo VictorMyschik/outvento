@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Repositories\References;
 
+use App\Models\ModelRole;
+use App\Models\ORM\ORM;
 use App\Models\Reference\City;
 use App\Models\Reference\Country;
 use App\Models\Travel\Travel;
@@ -96,5 +98,66 @@ readonly class ReferenceRepository extends DatabaseRepository implements Referen
         }
 
         return $this->db->table(CommunicationType::getTableName())->insertGetId($data);
+    }
+
+    /**
+     * @param class-string<ORM> $class
+     */
+    public function save(int $id, string $class, array $data): int
+    {
+        if ($id > 0) {
+            if (isset($data['roles'])) {
+                $this->db->table(ModelRole::getTableName())->where([
+                    'table_name' => $class,
+                    'model_id'   => $id,
+                ])->delete();
+
+                $modelRoleData = [];
+                foreach ($data['roles'] as $roleId) {
+                    $modelRoleData[] = [
+                        'table_name' => $class,
+                        'model_id'   => $id,
+                        'role_id'    => $roleId,
+                    ];
+                }
+
+                $this->db->table(ModelRole::getTableName())->insert($modelRoleData);
+            }
+
+            unset($data['roles']);
+
+            $this->db->table($class::getTableName())->where('id', $id)->update($data);
+
+            return $id;
+        }
+
+        $id = $this->db->table($class::getTableName())->insertGetId($data);
+
+        if (isset($data['roles'])) {
+            $modelRoleData = [];
+
+            foreach ($data['roles'] as $roleId) {
+                $modelRoleData[] = [
+                    'table_name' => $class,
+                    'model_id'   => $id,
+                    'role_id'    => $roleId,
+                ];
+            }
+            unset($data['roles']);
+            $this->db->table(ModelRole::getTableName())->insert($modelRoleData);
+        }
+
+        $this->db->table($class::getTableName())->where('id', $id)->update($data);
+
+        return $id;
+    }
+
+    public function getRolesByModel(ORM $class): array
+    {
+        return $this->db->table(ModelRole::getTableName())
+            ->join('roles', ModelRole::getTableName() . '.role_id', '=', 'roles.id')
+            ->where(ModelRole::getTableName() . '.table_name', $class::class)
+            ->where(ModelRole::getTableName() . '.model_id', $class->id)
+            ->pluck('name', 'roles.id')->all();
     }
 }

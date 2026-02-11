@@ -9,11 +9,11 @@ use App\Services\System\Enum\Language;
 use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-final readonly class ReferenceService
+abstract readonly class AbstractReferenceService
 {
     public function __construct(
         private ImageRepositoryInterface     $imageRepository,
-        private ReferenceRepositoryInterface $repository,
+        protected ReferenceRepositoryInterface $repository,
     ) {}
 
     public function getCountrySelectList(Language $language): array
@@ -36,30 +36,14 @@ final readonly class ReferenceService
         return $this->repository->getTravelTypeSelectList($language);
     }
 
-    public function saveTravelType(int $id, array $data, ?UploadedFile $file): int
-    {
-        if ($file) {
-            $data['image_path'] = $this->saveImage(ImageTypeEnum::TravelType, $file);
-        }
 
-        return $this->repository->saveTravelType($id, $data);
-    }
-
-    public function saveCommunicationType(int $id, array $data, ?UploadedFile $file): int
-    {
-        if ($file) {
-            $data['image_path'] = $this->saveImage(ImageTypeEnum::CommunicationType, $file);
-        }
-
-        return $this->repository->saveCommunicationType($id, $data);
-    }
 
     public function saveCity(int $id, array $data): int
     {
         return $this->repository->saveCity($id, $data);
     }
 
-    private function saveImage(ImageTypeEnum $type, UploadedFile $file): string
+    protected function saveImage(ImageTypeEnum $type, UploadedFile $file): string
     {
         return $this->imageRepository->saveImage($type, $file);
     }

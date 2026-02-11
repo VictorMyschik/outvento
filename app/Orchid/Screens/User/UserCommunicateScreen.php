@@ -80,14 +80,14 @@ class UserCommunicateScreen extends Screen
         $data = $request->getUpdateData();
         $data['user_id'] = $request->get('user_id');
 
-        $this->service->saveCommunicate($id, $data);
+        $this->service->saveCommunication($id, $data);
 
         Toast::info('Контакт сохранен');
     }
 
     public function removeCommunication(int $userId, int $id): void
     {
-        $this->service->deleteCommunication(User::findOrFail($userId), $id);
+        $this->service->deleteCommunication(User::findOrFail($userId)->id, $id);
     }
 
     public function remove(int $id): void

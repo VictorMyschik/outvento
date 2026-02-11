@@ -6,6 +6,8 @@ namespace App\Http\Controllers\API\User\Request;
 
 use App\Services\System\Enum\Language;
 use App\Services\User\Enum\Gender;
+use App\Services\User\Enum\RelationshipStatus;
+use App\Services\User\Enum\Visibility;
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -25,6 +27,8 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: "gender", description: "Gender ID", type: "integer", example: 0, nullable: true),
         new OA\Property(property: "birthday", type: "string", format: "date", example: "1990-01-01", nullable: true),
         new OA\Property(property: "about", type: "string", maxLength: 8000, example: "This is a sample about me section.", nullable: true),
+        new OA\Property(property: "visibility", description: "Visibility ID", type: "integer", example: 1, nullable: true),
+        new OA\Property(property: "relationship_status", description: "Relationship status ID", type: "integer", example: 2, nullable: true),
     ],
     type: "object"
 )]
@@ -33,15 +37,17 @@ class UpdateProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'       => ['sometimes', 'string', 'max:255', Rule::unique('users')->ignore((int)$this->get('id', Auth::id()))],
-            'email'      => ['sometimes', 'string', 'email', 'max:255', Rule::unique('users')->ignore((int)$this->get('id', Auth::id()))],
-            'telegram'   => ['sometimes', 'nullable', 'string', 'max:255'],
-            'language'   => ['sometimes', 'nullable', 'integer', Rule::enum(Language::class)],
-            'first_name' => ['sometimes', 'nullable', 'string', 'max:100'],
-            'last_name'  => ['sometimes', 'nullable', 'string', 'max:100'],
-            'gender'     => ['sometimes', 'nullable', 'integer', Rule::enum(Gender::class)],
-            'birthday'   => ['sometimes', 'nullable', 'date', 'before_or_equal:' . Carbon::now()->toDateString()],
-            'about'      => ['sometimes', 'nullable', 'string', 'max:8000', 'not_regex:/<[^>]+>/',]
+            'name'                => ['sometimes', 'string', 'max:255', Rule::unique('users')->ignore((int)$this->get('id', Auth::id()))],
+            'email'               => ['sometimes', 'string', 'email', 'max:255', Rule::unique('users')->ignore((int)$this->get('id', Auth::id()))],
+            'telegram'            => ['sometimes', 'nullable', 'string', 'max:255'],
+            'language'            => ['sometimes', 'nullable', 'integer', Rule::enum(Language::class)],
+            'first_name'          => ['sometimes', 'nullable', 'string', 'max:100'],
+            'last_name'           => ['sometimes', 'nullable', 'string', 'max:100'],
+            'gender'              => ['sometimes', 'nullable', 'integer', Rule::enum(Gender::class)],
+            'birthday'            => ['sometimes', 'nullable', 'date', 'before_or_equal:' . Carbon::now()->toDateString()],
+            'about'               => ['sometimes', 'nullable', 'string', 'max:8000', 'not_regex:/<[^>]+>/'],
+            'visibility'          => ['sometimes', 'integer', Rule::enum(Visibility::class)],
+            'relationship_status' => ['sometimes', 'integer', Rule::enum(RelationshipStatus::class)],
         ];
     }
 
@@ -98,6 +104,14 @@ class UpdateProfileRequest extends FormRequest
 
         if ($this->has('about')) {
             $out['about'] = $this->input('about');
+        }
+
+        if ($this->has('visibility')) {
+            $out['visibility'] = (int)$this->input('visibility');
+        }
+
+        if ($this->has('relationship_status')) {
+            $out['relationship_status'] = (int)$this->input('relationship_status');
         }
 
         return $out;

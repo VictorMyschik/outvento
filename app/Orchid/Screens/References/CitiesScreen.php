@@ -7,7 +7,7 @@ namespace App\Orchid\Screens\References;
 use App\Models\Reference\City;
 use App\Orchid\Layouts\References\CityEditLayout;
 use App\Orchid\Layouts\References\CityListLayout;
-use App\Services\References\ReferenceService;
+use App\Services\References\AbstractReferenceService;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Screen;
@@ -18,7 +18,7 @@ class CitiesScreen extends Screen
 {
     public string $name = 'Справочник городов';
 
-    public function __construct(private ReferenceService $service) {}
+    public function __construct(private AbstractReferenceService $service) {}
 
     public function query(): iterable
     {

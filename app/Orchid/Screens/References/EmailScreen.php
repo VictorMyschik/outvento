@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\References;
 
+use App\Services\Forms\DTO\FormFeedbackDTO;
 use App\Services\System\Enum\Language;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -43,7 +44,9 @@ class EmailScreen extends Screen
         ];
 
         $fakeData['new_news_subscription'] = [
-            'unsubscribeUrl' => '#',
+            'unsubscribeUrl'  => '#',
+            'expireMinutes'   => 20,
+            'confirmationUrl' => 'https://example.com/news/confirm?token=abcdef',
         ];
 
         $fakeData['news_digest'] = [
@@ -65,6 +68,9 @@ class EmailScreen extends Screen
             'expireMinutes' => 20,
         ];
 
+        $fakeData['feedback'] = [
+            'dto' => new FormFeedbackDTO(language: Language::EN, name: 'Viktor', email: 'email@example.com', message: 'Hi', userId: 1,)];
+
         App::setlocale(Language::from((int)$this->request->get('locale', Language::RU->value))->getCode());
 
         return [
@@ -79,7 +85,7 @@ class EmailScreen extends Screen
                 'New Subscription'   => $this->getTemplate('emails.new_news_subscription', $fakeData['new_news_subscription']),
                 'News Digest'        => $this->getTemplate('emails.news_digest', $fakeData['news_digest']),
                 'Email verification' => $this->getTemplate('emails.verify_email_code', $fakeData['verify_account']),
-                'Feedback'          => $this->getTemplate('emails.feedback', []),
+                'Feedback'           => $this->getTemplate('emails.feedback', $fakeData['feedback']),
             ]),
         ];
     }

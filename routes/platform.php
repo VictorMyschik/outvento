@@ -13,7 +13,6 @@ use App\Orchid\Screens\Language\TranslateScreen;
 use App\Orchid\Screens\Newsletter\NewsEditScreen;
 use App\Orchid\Screens\Newsletter\NewsletterScreen;
 use App\Orchid\Screens\Notification\MessageLogEmailScreen;
-use App\Orchid\Screens\Notification\MessageLogTelegramScreen;
 use App\Orchid\Screens\Notification\UserNotificationSettingScreen;
 use App\Orchid\Screens\Other\LegalDocumentEditScreen;
 use App\Orchid\Screens\Other\LegalDocumentsScreen;
@@ -24,16 +23,17 @@ use App\Orchid\Screens\References\CommunicateTypeScreen;
 use App\Orchid\Screens\References\CountryScreen;
 use App\Orchid\Screens\References\EmailScreen;
 use App\Orchid\Screens\References\EquipmentScreen;
+use App\Orchid\Screens\References\NotificationEventTypeScreen;
 use App\Orchid\Screens\References\TravelTypeListScreen;
 use App\Orchid\Screens\Role\RoleEditScreen;
 use App\Orchid\Screens\Role\RoleListScreen;
-use App\Orchid\Screens\Subscription\SubscriptionScreen;
 use App\Orchid\Screens\System\CacheScreen;
 use App\Orchid\Screens\System\CronScreen;
 use App\Orchid\Screens\System\DatabaseScreen;
 use App\Orchid\Screens\System\DatabaseTableScreen;
 use App\Orchid\Screens\System\FailedJobsScreen;
 use App\Orchid\Screens\System\JobsScreen;
+use App\Orchid\Screens\System\NotificationTokensScreen;
 use App\Orchid\Screens\System\PhpInfoScreen;
 use App\Orchid\Screens\System\PurgeScreen;
 use App\Orchid\Screens\System\SettingsScreen;
@@ -126,6 +126,7 @@ Route::screen('system/database', DatabaseScreen::class)->name('system.database')
 Route::screen('system/database/table/{table}', DatabaseTableScreen::class)->name('system.database.table');
 Route::screen('system/config', SupervisorScreen::class)->name('system.config');
 Route::screen('system/phpinfo', PhpInfoScreen::class)->name('system.phpinfo');
+Route::screen('system/notification-tokens', NotificationTokensScreen::class)->name('system.notification.tokens');
 
 // Language
 Route::screen('language/translate', TranslateScreen::class)->name('language.translate.list');
@@ -153,9 +154,7 @@ Route::screen('/reference/cities/list', CitiesScreen::class)->name('reference.ci
 Route::screen('/reference/countries/list', CountryScreen::class)->name('reference.countries.list');
 Route::screen('/reference/emails', EmailScreen::class)->name('reference.email.list');
 Route::screen('/reference/communication-type/list', CommunicateTypeScreen::class)->name('reference.communication-type.list');
-
-//// Subscriptions
-Route::screen('/subscriptions/list', SubscriptionScreen::class)->name('subscriptions.list');
+Route::screen('/reference/notification-event-type/list', NotificationEventTypeScreen::class)->name('reference.notification-event-type.list');
 
 // Forms
 Route::screen('/forms/list', FormsScreen::class)->name('forms.list');

@@ -8,7 +8,7 @@ use App\Models\UserInfo\CommunicationType;
 use App\Orchid\Layouts\References\BaseReferenceListLayout;
 use App\Orchid\Layouts\References\ReferenceBaseTypeEditLayout;
 use App\Orchid\Rebuild\AttachmentHelper;
-use App\Services\References\ReferenceService;
+use App\Services\References\CommunicateTypeService;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Screen;
@@ -20,7 +20,7 @@ class CommunicateTypeScreen extends Screen
     public string $name = 'Тип коммуникации';
     public string $description = 'Справочник типов коммуникации пользователей';
 
-    public function __construct(private readonly ReferenceService $service) {}
+    public function __construct(private readonly CommunicateTypeService $service) {}
 
     public function query(): iterable
     {

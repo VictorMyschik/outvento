@@ -20,7 +20,7 @@ class UserNotificationSettingsListLayout extends Table
         return [
             TD::make('id', 'ID')->sort(),
             TD::make('active', 'Active')->active()->sort(),
-            TD::make('event_type', 'Тип')->render(fn(UserNotificationSetting $setting) => $setting->getEventType()->getLabel())->sort(),
+            TD::make('event_type', 'Тип')->render(fn(UserNotificationSetting $setting) => $setting->getEventType()->getTitle())->sort(),
             TD::make('communication_type', 'Канал')->sort(),
             TD::make('communication_address', 'Address')->sort(),
             TD::make('user_id', 'User ID')->sort(),

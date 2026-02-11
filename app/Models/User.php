@@ -11,6 +11,7 @@ use App\Services\Notifications\Enum\NotificationChannel;
 use App\Services\Notifications\NotificationRecipientInterface;
 use App\Services\System\Enum\Language;
 use App\Services\User\Enum\Gender;
+use App\Services\User\Enum\RelationshipStatus;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -49,6 +50,7 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
         'subscription_token',
         'about',
         'email_verified_at',
+        'relationship_status',
     ];
 
     protected $hidden = [
@@ -83,6 +85,13 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
         'created_at',
         'updated_at',
     ];
+
+    public function getRolesDisplay(): string
+    {
+        $roles = $this->getRoles()->pluck('name')->all();
+
+        return  'Roles: ' . implode(', ', $roles);
+    }
 
     public function socialAccounts()
     {
@@ -128,6 +137,11 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
         return $user->hasAccess($objectCheckName . '.' . self::TYPE_DELETE);
     }
 
+    public function getRelationshipStatus(): RelationshipStatus
+    {
+        return RelationshipStatus::from((int)$this->relationship_status);
+    }
+
     public function isSuperAdmin(): bool
     {
         return !is_null($this->permissions);
@@ -135,7 +149,7 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
 
     public function getAvatar(): ?string
     {
-        return $this->avatar ? asset('storage' . $this->avatar) : null;
+        return $this->avatar ? route('api.v1.admin.user.avatar', ['user' => $this->id]) : null;
     }
 
     public function getFullName(): string
@@ -154,21 +168,18 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
      */
     public function notificationChannelsFor(string $notificationClass): array
     {
-        return [NotificationChannel::Email->value, NotificationChannel::Telegram->value];
+        // return [NotificationChannel::Email->value, NotificationChannel::Telegram->value];
 
         // Вернёт список каналов, которые есть в используются
-        /*$key = $notificationClass::KEY;
-
         return $this->notificationSettings()
             ->join(Communication::getTableName(), UserNotificationSetting::getTableName() . '.communication_id', '=', Communication::getTableName() . '.id')
             ->join(CommunicationType::getTableName(), CommunicationType::getTableName() . '.id', '=', Communication::getTableName() . '.type_id')
             ->where('event_type', $notificationClass::KEY)
             ->where(UserNotificationSetting::getTableName() . '.active', true)
             ->pluck(CommunicationType::getTableName() . '.code')
-            ->map(fn($code) => NotificationChannelMapper::map($code))
             ->unique()
             ->values()
-            ->toArray();*/
+            ->toArray();
     }
 
     protected function getCommunicationAddressFor(string $channel, string $eventKey): ?string
@@ -243,6 +254,8 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
             'birthday'           => null,
             'subscription_token' => null,
             'about'              => null,
+            'gender'             => null,
+            'visibility'         => 0,
         ]);
 
         $this->save();

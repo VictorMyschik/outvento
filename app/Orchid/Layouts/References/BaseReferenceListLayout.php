@@ -35,14 +35,14 @@ class BaseReferenceListLayout extends Table
                         ModalToggle::make('Edit')
                             ->icon('pencil')
                             ->modal('reference')
-                            ->modalTitle('Edit type id ' . $communicationType->id)
+                            ->modalTitle('Edit type id ' . $communicationType->id())
                             ->method('saveReferenceType')
-                            ->asyncParameters(['id' => $communicationType->id]),
+                            ->asyncParameters(['id' => $communicationType->id()]),
 
                         Button::make(__('Delete'))
                             ->icon('bs.trash3')
                             ->confirm(__('Are you sure you want to delete the communication type?'))
-                            ->method('remove', ['id' => $communicationType->id]),
+                            ->method('remove', ['id' => $communicationType->id()]),
                     ])),
         ];
     }

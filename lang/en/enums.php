@@ -17,4 +17,19 @@ return [
         'GeoCoordinate' => 'Geo coordinates',
         'Other'         => 'Other',
     ],
+
+    'users_visibility' => [
+        'Private'         => 'private',
+        'Public'          => 'public',
+        'FriendsOnly'     => 'friends only',
+        'RegisteredUsers' => 'registered users',
+    ],
+
+    'relationship_status' => [
+        'NotSpecified'   => 'Not specified',
+        'Single'         => 'Single',
+        'InRelationship' => 'In a relationship',
+        'Married'        => 'Married',
+        'Looking'        => 'Looking for a relationship',
+    ],
 ];

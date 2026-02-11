@@ -74,6 +74,8 @@ class purge extends Command
 
         $tableList = [
             'settings',
+            'roles',
+            'model_roles',
             'translates',
             'faq',
             'translate_groups',
@@ -83,6 +85,7 @@ class purge extends Command
             'travel_types',
             'communication_types',
             'communications',
+            'notification_event_types',
             'user_notification_settings',
             'travels',
             'uit',

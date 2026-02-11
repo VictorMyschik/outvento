@@ -3,6 +3,12 @@
 namespace Tests\Feature;
 
 // use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\Notification\NotificationEventType;
+use App\Models\Notification\UserNotificationSetting;
+use App\Models\UserInfo\Communication;
+use App\Models\UserInfo\CommunicationType;
+use Illuminate\Database\Query\JoinClause;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class ExampleTest extends TestCase
@@ -12,14 +18,11 @@ class ExampleTest extends TestCase
      */
     public function test_the_application_returns_a_successful_response(): void
     {
-        $fromFile = trans('passwords', [], 'ru');
-        $string = [];
-
-        $namespace = 'passwords';
-        foreach ($fromFile as $key => $value) {
-            $currentNamespace = $namespace . '.' . $key;
-            $string = array_merge($string, $this->generateString($currentNamespace, $value));
-        }
+        $r = DB::table(NotificationEventType::getTableName())->join('model_roles', 'model_roles.model_id', '=', NotificationEventType::getTableName() . '.id')
+            ->where('model_roles.table_name', NotificationEventType::class)
+            ->whereIn('model_roles.role_id', [1, 2])
+            ->groupBy(NotificationEventType::getTableName() . '.id')
+            ->get(NotificationEventType::getTableName() . '.title')->toArray();
     }
 
     private function generateString(string $namespace, array|string $fromFile): array

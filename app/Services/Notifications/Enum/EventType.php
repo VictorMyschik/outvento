@@ -6,8 +6,8 @@ namespace App\Services\Notifications\Enum;
 
 enum EventType: string
 {
-    case Invite = 'invite';
     case Feedback = 'feedback';
+    case Invite = 'invite';
     case News = 'news';
     case NewNewsSubscription = 'new_news_subscription';
 
@@ -29,14 +29,14 @@ enum EventType: string
         );
     }
 
-    public static function getSelectListForGuest(): array
+    public static function getGeneralList(): array
     {
         return [
             self::News->value => self::News->getLabel(),
         ];
     }
 
-    public static function getAllowedForUser(): array
+    public static function getPromotionsAndOffersList(): array
     {
         return [
             self::Invite,

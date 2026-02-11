@@ -19,6 +19,8 @@ services:
   php:
     build: ./docker/php
     container_name: php_travel
+    mem_limit: 1g
+    cpus: "2.0"
     networks:
       - backend
     environment:
@@ -33,6 +35,8 @@ services:
     image: postgres:latest
     networks:
       backend:
+    mem_limit: 512m
+    cpus: "1.0"
     ports:
       - '5441:5432'
     environment:
@@ -47,6 +51,7 @@ services:
     image: bitnami/redis:latest
     networks:
       - backend
+    mem_limit: 256m
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
 

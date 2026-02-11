@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\Notifications\Enum;
 
+/**
+ * Код канала уведомлений совпадает с кодом канала в БД, который используется в таблице communication_types
+ * */
 enum NotificationChannel: string
 {
     case Email = 'mail';

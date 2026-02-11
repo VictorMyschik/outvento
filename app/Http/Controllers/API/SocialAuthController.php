@@ -17,10 +17,6 @@ class SocialAuthController extends APIController
     {
         $driver = Socialite::driver($provider)->stateless();
 
-        logger()->info('Google redirect_uri', [
-            'redirect' => config("services.$provider.redirect"),
-        ]);
-
         return $driver->redirect();
     }
 
@@ -45,10 +41,11 @@ class SocialAuthController extends APIController
 
             if (!$user) {
                 $user = User::create([
-                    'name'              => $socialUser->getName() ?? 'User',
-                    'email'             => $socialUser->getEmail(),
-                    'password'          => bcrypt(Str::random(32)),
-                    'email_verified_at' => now(),
+                    'name'               => $socialUser->getName() ?? 'User',
+                    'email'              => $socialUser->getEmail(),
+                    'password'           => bcrypt(Str::random(32)),
+                    'email_verified_at'  => now(),
+                    'subscription_token' => md5((string)Str::uuid()),
                 ]);
             }
 

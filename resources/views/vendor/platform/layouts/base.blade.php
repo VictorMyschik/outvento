@@ -1,7 +1,10 @@
 @extends('platform::dashboard')
 
-@section('title', (string) __($name))
-@section('description', (string) __($description))
+@section('title', (string) $name)
+@section('description')
+    {!! $description !!}
+@endsection
+
 @section('controller', 'base')
 
 @section('navbar')

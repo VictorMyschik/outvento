@@ -19,11 +19,16 @@ return new class extends Migration {
             $table->string('password');
             $table->string('subscription_token', 32)->nullable()->unique();
             $table->smallInteger('language')->default(Language::EN->value);
+            $table->string('avatar')->nullable();
             $table->string('first_name', 100)->nullable();
             $table->string('last_name', 100)->nullable();
+            $table->string('location', 255)->nullable();
             $table->tinyInteger('gender')->nullable();
             $table->date('birthday')->nullable();
             $table->string('about', 8000)->nullable();
+            $table->tinyInteger('relationship_status')->default(0)->index();
+            $table->smallInteger('visibility')->default(0)->index();
+
             $table->jsonb('permissions')->nullable();
             $table->timestampTz('deleted_at')->nullable();
             $table->rememberToken();

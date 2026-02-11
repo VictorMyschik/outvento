@@ -8,7 +8,6 @@ use App\Http\Controllers\API\DownloadFileController;
 use App\Http\Controllers\API\FAQController;
 use App\Http\Controllers\API\FormsController;
 use App\Http\Controllers\API\SocialAuthController;
-use App\Http\Controllers\API\SubscriptionApiController;
 use App\Http\Controllers\API\User\UsersController;
 use App\Http\Controllers\API\WelcomeController;
 use App\Http\Controllers\Travel\Travel\TravelController;
@@ -16,12 +15,15 @@ use App\Http\Controllers\Travel\Travel\TravelImageController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('optional:sanctum')->group(function () {
-
     Route::post('/form/feedback', [FormsController::class, 'feedback']);
+    Route::get('/confirm/{token}', [CommonApiController::class, 'confirmNotificationToken']);
 
     Route::prefix('pages')->group(static function () {
         Route::get('welcome', [WelcomeController::class, 'index']);
     });
+
+    /// Users profile
+    Route::get('/user/{user}/avatar', [UsersController::class, 'getUserAvatar'])->name('admin.user.avatar');
 });
 
 Route::middleware('guest')->group(static function () {
@@ -42,7 +44,7 @@ Route::middleware('auth:sanctum')->group(static function () {
         Route::get('full', [UsersController::class, 'profileFull']);
         // Установить локаль пользователя по умолчанию в Личном кабинете
         Route::post('profile/edit', [UsersController::class, 'updateProfile']);
-        Route::post('password', [UsersController::class, 'changePassword']);
+        Route::post('password', [AuthController::class, 'changePassword']);
         Route::post('verify', [AuthController::class, 'verifyRegistration']);
         Route::post('verify/resend', [AuthController::class, 'verifyResend']);
         Route::delete('avatar', [UsersController::class, 'removeAvatar']);
@@ -86,11 +88,9 @@ Route::get('common/languages', [CommonApiController::class, 'getLanguages']);
 Route::get('translations', [CommonApiController::class, 'getTranslations']);
 Route::get('frontend/settings', [CommonApiController::class, 'getFrontendSettings']);
 
-Route::post('/subscription/subscribe', [SubscriptionApiController::class, 'subscribe']);
-Route::get('/subscription/unsubscribe/{token}', [SubscriptionApiController::class, 'unsubscribe']);
-
 Route::get('/download', [DownloadFileController::class, 'download'])->name('download');
 Route::get('/legal/{type}', [CommonApiController::class, 'legal']);
 Route::post('/faq/search', [FAQController::class, 'search']);
 Route::get('/faq/list', [FAQController::class, 'getBaseFaqList']);
+
 

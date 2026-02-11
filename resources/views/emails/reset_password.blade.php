@@ -1,10 +1,9 @@
 @extends('emails.layouts.base')
 
-@section('email_title', __('emails.news_digest.subject'))
-@section('email_header', __('emails.news_digest.subject'))
+@section('email_title', __('emails.reset_password_subject'))
+@section('email_header', __('emails.reset_password_requested'))
 
 @section('email_content')
-
     <p>
         {{ __('emails.reset_password_requested') }}
     </p>
@@ -20,7 +19,7 @@
     </p>
 
     <p>
-        {{ __('emails.reset_password_expire') }}
+        {{ __('emails.link_expire') }}
         <strong>{{ $expireMinutes }}</strong>
         {{ __('emails.minutes') }}.
     </p>

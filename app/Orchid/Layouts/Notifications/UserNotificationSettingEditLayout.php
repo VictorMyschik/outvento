@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Orchid\Layouts\Notifications;
 
+use App\Models\Notification\NotificationEventType;
 use App\Models\User;
+use App\Models\UserInfo\CommunicationType;
 use App\Services\Notifications\Enum\EventType;
 use App\Services\Notifications\Enum\NotificationChannel;
 use App\Services\System\Enum\Language;
@@ -28,7 +30,7 @@ class UserNotificationSettingEditLayout extends Listener
     protected $targets = [
         'setting.user_id',
         'setting.communication_id',
-        'setting.event_type',
+        'setting.event_type_id',
         'setting.active',
     ];
 
@@ -56,8 +58,8 @@ class UserNotificationSettingEditLayout extends Listener
 
                     ViewField::make('')->view('space'),
 
-                    Select::make('setting.event_type')
-                        ->options(EventType::getSelectList())
+                    Select::make('setting.event_type_id')
+                        ->fromModel(NotificationEventType::class, 'title', 'id')
                         ->required()
                         ->title('Тип оповещения'),
 
@@ -73,7 +75,7 @@ class UserNotificationSettingEditLayout extends Listener
     public function handle(Repository $repository, Request $request): Repository
     {
         return $repository->set('setting.user_id', $request->input('setting.user_id'))
-            ->set('setting.event_type', $request->input('setting.event_type'))
+            ->set('setting.event_type_id', $request->input('setting.event_type_id'))
             ->set('setting.communication_id', $request->input('setting.communication_id'))
             ->set('setting.active', $request->input('setting.active'));
     }

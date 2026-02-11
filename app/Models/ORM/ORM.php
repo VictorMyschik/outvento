@@ -7,7 +7,7 @@ namespace App\Models\ORM;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class ORM extends Model
+abstract class ORM extends Model
 {
     public function id(): ?int
     {

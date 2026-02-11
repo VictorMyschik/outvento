@@ -8,7 +8,8 @@ use App\Models\Travel\TravelType;
 use App\Orchid\Layouts\References\BaseReferenceListLayout;
 use App\Orchid\Layouts\References\ReferenceBaseTypeEditLayout;
 use App\Orchid\Rebuild\AttachmentHelper;
-use App\Services\References\ReferenceService;
+use App\Services\References\AbstractReferenceService;
+use App\Services\References\TravelTypeService;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Screen;
@@ -20,7 +21,7 @@ class TravelTypeListScreen extends Screen
     public string $name = 'Типы походов';
     public string $description = 'Справочник типов походов';
 
-    public function __construct(private readonly ReferenceService $service) {}
+    public function __construct(private readonly TravelTypeService $service) {}
 
     public function query(): iterable
     {

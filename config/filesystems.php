@@ -60,6 +60,13 @@ return [
             'report' => false,
         ],
 
+        'users' => [
+            'driver' => 'local',
+            'root' => storage_path('app/users'),
+            'serve' => false,
+            'throw' => false,
+            'report' => false,
+        ],
     ],
 
     /*

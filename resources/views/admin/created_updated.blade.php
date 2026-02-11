@@ -4,6 +4,6 @@
     | обновлено: {{$value?->updated_at?->format('d/m/Y H:i:s')}}
 @endif
 
-@if($value?->user_id)
-    | {{$value?->getUser()?->name}}
+@if($value?->deleted_at)
+    | удалено: {{$value?->deleted_at?->format('d/m/Y H:i:s')}}
 @endif

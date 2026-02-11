@@ -1,8 +1,10 @@
 <?php
 
 return [
+    // disk => [paths]
     'users'       => [
-        'avatar' => '/users/%s',
+        'disk'   => 'users',
+        'avatar' => '',
     ],
     'news_logo'   => 'news_logo',
     'constructor' => [

@@ -11,5 +11,6 @@ final readonly class UserProfileDTO
         public ?string $name,
         public ?string $password = null,
         public int     $language,
+        public array   $roles,
     ) {}
 }

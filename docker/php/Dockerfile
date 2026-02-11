@@ -24,6 +24,11 @@ RUN docker-php-ext-install \
     sockets \
     mbstring
 
+# Node.js + npm (for Vite / Laravel Mix)
+RUN apk add --no-cache \
+    nodejs \
+    npm
+
 RUN apk add --no-cache \
     freetype-dev \
     libjpeg-turbo-dev \

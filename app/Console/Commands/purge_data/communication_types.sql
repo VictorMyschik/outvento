@@ -1,5 +1,5 @@
 insert into public.communication_types (id, code, name_ru, name_en, name_pl, image_path) values (1, 'phone',  'Телефон', 'Phone', 'Telefon', null);
-insert into public.communication_types (id, code, name_ru, name_en, name_pl, image_path) values (2, 'email',  'Email', 'Email', 'Email', null);
+insert into public.communication_types (id, code, name_ru, name_en, name_pl, image_path) values (2, 'mail',  'Email', 'Email', 'Email', null);
 insert into public.communication_types (id, code, name_ru, name_en, name_pl, image_path) values (3, 'address',  'Адрес', 'Address', 'Adres', null);
 insert into public.communication_types (id, code, name_ru, name_en, name_pl, image_path) values (4, 'whatsapp',  'WhatsApp', 'WhatsApp', 'WhatsApp', null);
 insert into public.communication_types (id, code, name_ru, name_en, name_pl, image_path) values (5, 'telegram',  'Telegram', 'Telegram', 'Telegram', null);

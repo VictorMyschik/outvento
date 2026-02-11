@@ -9,7 +9,6 @@ use App\Models\ORM\ORM;
 use App\Models\User;
 use App\Models\UserInfo\Communication;
 use App\Models\UserInfo\CommunicationType;
-use App\Services\Notifications\Enum\EventType;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
 
@@ -24,22 +23,22 @@ class UserNotificationSetting extends ORM
     public array $allowedSorts = [
         'active',
         'user_id',
-        'event_type',
-        'communication_type', // For orchid list only
-        'communication_address', // For orchid list only
+        'event_type_id',
+        'communication_type', // For orchid display list only
+        'communication_address', // For orchid display list only
         'created_at',
         'updated_at',
     ];
 
     public $casts = [
-        'event_type' => 'string',
-        'active'     => 'boolean',
-        'created_at' => 'datetime',
+        'event_type_id' => 'int',
+        'active'        => 'boolean',
+        'created_at'    => 'datetime',
     ];
 
-    public function getEventType(): EventType
+    public function getEventType(): NotificationEventType
     {
-        return EventType::from($this->event_type);
+        return NotificationEventType::loadByOrDie((int)$this->event_type_id);
     }
 
     public function getUser(): ?User

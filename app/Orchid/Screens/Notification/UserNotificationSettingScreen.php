@@ -66,7 +66,7 @@ final class UserNotificationSettingScreen extends Screen
         $input = Validator::make($request->all(), [
             'setting.active'           => 'nullable',
             'setting.user_id'          => 'required|integer',
-            'setting.event_type'       => 'required',
+            'setting.event_type_id'    => 'required',
             'setting.communication_id' => 'required|integer'
         ])->validate()['setting'];
         $input['active'] = (bool)$input['active'] ?? false;

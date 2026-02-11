@@ -23,16 +23,13 @@ class CronListLayout extends Table
             TD::make('description', 'Описание')->width('50%')->defaultHidden()->sort(),
             TD::make('last_work', 'Last Work')
                 ->render(fn(Cron $cron) => $cron->getLastWork())
-                ->sort()
-                ->defaultHidden(),
+                ->sort(),
             TD::make('created_at', 'Created')
                 ->render(fn(Cron $cron) => $cron->created_at->format('d.m.Y H:i:s'))
-                ->sort()
-                ->defaultHidden(),
+                ->sort(),
             TD::make('updated_at', 'Updated')
                 ->render(fn(Cron $cron) => $cron->updated_at->format('d.m.Y H:i:s'))
-                ->sort()
-                ->defaultHidden(),
+                ->sort(),
         ];
 
         $rows[] = TD::make('#', 'Действия')

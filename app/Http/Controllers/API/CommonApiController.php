@@ -10,11 +10,13 @@ use App\Http\Controllers\API\Response\Common\LanguagesResponse;
 use App\Http\Controllers\API\Response\FrontendSettingsResponse;
 use App\Services\Language\API\TranslateApiService;
 use App\Services\Language\Enum\TranslateGroupEnum;
+use App\Services\Notifications\NotificationService;
 use App\Services\Other\LegalDocuments\Enum\LegalDocumentType;
 use App\Services\Other\LegalDocuments\LegalDocumentsApiService;
 use App\Services\System\Enum\Language;
 use App\Services\System\SettingsService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 
 class CommonApiController extends APIController
@@ -23,6 +25,7 @@ class CommonApiController extends APIController
         private readonly TranslateApiService      $translateApiService,
         private readonly SettingsService          $settingsService,
         private readonly LegalDocumentsApiService $termsAndConditionsApiService,
+        private readonly NotificationService      $notificationService,
     ) {}
 
     #[OA\Get(
@@ -138,7 +141,7 @@ class CommonApiController extends APIController
             new FrontendSettingsResponse(
                 languages: new LanguagesResponse(...Language::getCodeWithLabel()),
                 contacts: new ContactsResponse(...$this->settingsService->getContacts()),
-                translations: $this->translateApiService->getTranslateFor([TranslateGroupEnum::Common, TranslateGroupEnum::Passwords], $this->getLanguage()),
+                translations: $this->translateApiService->getTranslateFor([TranslateGroupEnum::Common, TranslateGroupEnum::Passwords, TranslateGroupEnum::Emails], $this->getLanguage()),
             ),
         );
     }
@@ -174,5 +177,19 @@ class CommonApiController extends APIController
         return $this->apiResponse(
             $this->termsAndConditionsApiService->getLegalDocumentByType($type, $this->getLanguage()),
         );
+    }
+
+    public function confirmNotificationToken(Request $request, string $token): JsonResponse
+    {
+        $this->notificationService->confirmNotificationToken(
+            token: $token,
+            info: [
+                'ip'         => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'referer'    => $request->header('referer', ''),
+            ]
+        );
+
+        return $this->apiResponse(code: 204);
     }
 }

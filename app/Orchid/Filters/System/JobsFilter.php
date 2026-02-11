@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Orchid\Filters\System;
 
 use App\Jobs\Enum\QueueJob;
@@ -19,11 +21,6 @@ class JobsFilter extends Filter
         'payload',
         'queue',
     ];
-
-    public function name(): string
-    {
-        return 'Setup';
-    }
 
     public static function runQuery()
     {

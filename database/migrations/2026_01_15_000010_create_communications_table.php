@@ -13,6 +13,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('type_id')->index(); // Тип: телефон, email, url...
             $table->string('address')->index();
             $table->string('description')->nullable();
+            $table->smallInteger('visibility')->default(0)->index();
 
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
             $table->foreign('type_id')->references('id')->on('communication_types')->restrictOnDelete();

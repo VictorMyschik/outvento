@@ -8,6 +8,7 @@ use App\Models\Lego\Fields\DescriptionNullableFieldTrait;
 use App\Models\Lego\Fields\NameByLanguageFieldTrait;
 use App\Models\Lego\Fields\UserFieldTrait;
 use App\Models\ORM\ORM;
+use App\Services\User\Enum\Visibility;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
 
@@ -23,7 +24,7 @@ class Communication extends ORM
     protected $table = 'communications';
     protected $fillable = [
         'user_id',
-        'type',// тип: телефон, email, факс...
+        'type_id',// тип: телефон, email, факс...
         'address',
         'description',
     ];
@@ -37,7 +38,7 @@ class Communication extends ORM
         'user_id',
         'full_name',
         'address',
-        'type',
+        'type_id',
         'email',
         'name',
         'description',
@@ -48,5 +49,10 @@ class Communication extends ORM
     public function getType(): CommunicationType
     {
         return CommunicationType::loadByOrDie($this->type_id);
+    }
+
+    public function getVisibility(): Visibility
+    {
+        return Visibility::from($this->visibility);
     }
 }

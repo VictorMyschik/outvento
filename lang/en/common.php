@@ -9,6 +9,8 @@ return [
     'archived'            => 'archived',
     'reset_password_page' => 'Reset Password Page',
 
+    'something_went_wrong' => 'Something went wrong. Please try again.',
+
     'legal_documents' => [
         'terms'   => 'Terms and Conditions',
         'privacy' => 'Privacy Policy',

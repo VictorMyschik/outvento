@@ -7,7 +7,6 @@ namespace App\Services\Language\Enum;
 enum TranslateGroupEnum: int
 {
     case Common = 1;
-    case Email = 2;
     case Auth = 3;
     case Emails = 4;
     case Enums = 5;
@@ -24,7 +23,6 @@ enum TranslateGroupEnum: int
     {
         return match ($code) {
             'common' => self::Common,
-            'email' => self::Email,
             'auth' => self::Auth,
             'emails' => self::Emails,
             'enums' => self::Enums,
@@ -43,7 +41,6 @@ enum TranslateGroupEnum: int
     {
         return match ($this) {
             self::Common => 'common',
-            self::Email => 'email',
             self::Auth => 'auth',
             self::Emails => 'emails',
             self::Enums => 'enums',
@@ -61,7 +58,6 @@ enum TranslateGroupEnum: int
     {
         return match ($this) {
             self::Common => 'Common',
-            self::Email => 'Email',
             self::PageWelcome => 'Welcome Page',
             self::PageAbout => 'About Us',
             self::PageProfile => 'User Profile',

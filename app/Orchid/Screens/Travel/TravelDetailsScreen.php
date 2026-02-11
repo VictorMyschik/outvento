@@ -16,7 +16,6 @@ use App\Orchid\Layouts\Travel\InviteByEmailEditLayout;
 use App\Orchid\Layouts\Travel\InviteListLayout;
 use App\Orchid\Layouts\Travel\TravelEditLayout;
 use App\Orchid\Layouts\Travel\TravelImageUploadLayout;
-use App\Services\Email\EmailService;
 use App\Services\Travel\Enum\ImageType;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\TravelVisibleType;

@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'gender'          => [
+    'gender' => [
         'MALE'   => 'Mężczyzna',
         'FEMALE' => 'Kobieta',
     ],
@@ -16,5 +16,20 @@ return [
         'Link'          => 'Link',
         'GeoCoordinate' => 'Współrzędne geograficzne',
         'Other'         => 'Inne',
+    ],
+
+    'users_visibility' => [
+        'Private'         => 'Prywatny',
+        'Public'          => 'Publiczny',
+        'FriendsOnly'     => 'Tylko dla znajomych',
+        'RegisteredUsers' => 'Tylko dla zarejestrowanych użytkowników',
+    ],
+
+    'relationship_status' => [
+        'NotSpecified'   => 'Nie określono',
+        'Single'         => 'Singiel',
+        'InRelationship' => 'W związku',
+        'Married'        => 'Żonaty / Zamężna',
+        'Looking'        => 'W aktywnym poszukiwaniu',
     ],
 ];

@@ -9,6 +9,8 @@ return [
     'archived'            => 'zarchiwizowany',
     'reset_password_page' => 'Strona resetowania hasła',
 
+    'something_went_wrong' => 'Coś poszło nie tak. Proszę spróbuj ponownie.',
+
     'legal_documents' => [
         'terms'   => 'Regulamin',
         'privacy' => 'Polityka prywatności',

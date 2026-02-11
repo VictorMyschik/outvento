@@ -9,14 +9,15 @@ use App\Http\Controllers\API\Auth\Request\Auth\AuthenticateRequest;
 use App\Http\Controllers\API\Auth\Request\Auth\ChangePasswordRequest;
 use App\Http\Controllers\API\Auth\Request\Auth\RegisterRequest;
 use App\Http\Controllers\API\Auth\Request\Auth\ResetPasswordRequest;
+use App\Http\Controllers\API\Auth\Request\Auth\UpdatePasswordRequest;
 use App\Http\Controllers\API\Auth\Request\Auth\VerifyRegistrationRequest;
 use App\Http\Controllers\API\Auth\Response\LoginResponse;
+use App\Services\User\AuthService;
 use App\Services\User\DTO\UserProfileDTO;
-use App\Services\User\UserService;
+use App\Services\User\Enum\UserRole;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use LogicException;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -24,7 +25,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 class AuthController extends APIController
 {
     public function __construct(
-        private readonly UserService $userService,
+        private readonly AuthService $authService,
     ) {}
 
     #[OA\Post(
@@ -62,11 +63,12 @@ class AuthController extends APIController
         $dto = new UserProfileDTO(
             email: $request->getEmail(),
             name: $request->getName(),
-            password: Hash::make($request->getPassword()),
+            password: $request->getPassword(),
             language: $this->getLanguage()->value,
+            roles: [UserRole::User],
         );
 
-        return $this->apiResponse(['token' => $this->userService->createWithAuth($dto)]);
+        return $this->apiResponse(['token' => $this->authService->createWithAuth($dto)]);
     }
 
     #[OA\Post(
@@ -103,7 +105,7 @@ class AuthController extends APIController
     public function login(AuthenticateRequest $request): JsonResponse
     {
         return $this->apiResponse(
-            new LoginResponse($this->userService->authorize($request->getLogin(), $request->getPassword(), $request->getRemember())),
+            new LoginResponse($this->authService->authorize($request->getLogin(), $request->getPassword(), $request->getRemember())),
         );
     }
 
@@ -173,7 +175,7 @@ class AuthController extends APIController
     )]
     public function verifyRegistration(VerifyRegistrationRequest $request): JsonResponse
     {
-        $this->userService->verifyEmailAddress((int)$request->validated('code'), $request->user());
+        $this->authService->verifyEmailAddress((int)$request->validated('code'), $request->user());
 
         return $this->apiResponse(code: 204);
     }
@@ -198,7 +200,7 @@ class AuthController extends APIController
             throw new LogicException('Текущий аккаунт уже подтвержден');
         }
 
-        $this->userService->sendVerifyNotification($request->user());
+        $this->authService->sendVerifyNotification($request->user());
 
         return $this->apiResponse(code: 204);
     }
@@ -224,7 +226,7 @@ class AuthController extends APIController
     )]
     public function resetPassword(ResetPasswordRequest $request): JsonResponse
     {
-        $this->userService->sendResetPassword($request->validated('email'));
+        $this->authService->sendResetPassword($request->validated('email'), $this->getLanguage());
 
         return $this->apiResponse();
     }
@@ -248,12 +250,12 @@ class AuthController extends APIController
     {
         // только цифры и буквы
         $token = preg_replace("/[^a-zA-Z0-9]/", "", $token);
-        if (strlen($token) !== UserService::TOKEN_LENGTH) {
+        if (strlen($token) !== AuthService::TOKEN_LENGTH) {
             throw new AccessDeniedHttpException(__('mr-t.reset_password_token_invalid'));
         }
 
         try {
-            $this->userService->checkActualResetPasswordToken($token);
+            $this->authService->checkActualResetPasswordToken($token);
         } catch (\Exception $e) {
             throw new AccessDeniedHttpException(__('mr-t.reset_password_token_invalid'));
         }
@@ -282,8 +284,34 @@ class AuthController extends APIController
     )]
     public function resetPasswordConfirm(ChangePasswordRequest $request): JsonResponse
     {
-        $this->userService->setPasswordByCode($request->validated('token'), $request->validated('password'));
+        $this->authService->setPasswordByCode($request->validated('token'), $request->validated('password'));
 
         return $this->apiResponse();
+    }
+
+    #[OA\Post(
+        path: "/api/v1/user/password",
+        operationId: "changePassword",
+        summary: "Изменить пароль пользователя",
+        security: [["bearerAuth" => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: "#/components/schemas/UpdatePasswordRequest")
+        ),
+        tags: ["Auth"],
+        parameters: [
+            new OA\Parameter(ref: "#/components/parameters/XRequestedWithHeader"),
+        ],
+        responses: [
+            new OA\Response(response: 204, description: "Successful", content: new OA\JsonContent(ref: "#/components/schemas/SuccessfulEmptyResponse")),
+            new OA\Response(response: 422, description: "Unprocessable Entity", content: new OA\JsonContent(ref: "#/components/schemas/ValidationError")),
+            new OA\Response(response: 401, description: "Unauthorized", content: new OA\JsonContent(ref: "#/components/schemas/AuthError")),
+        ]
+    )]
+    public function changePassword(UpdatePasswordRequest $request): JsonResponse
+    {
+        $this->authService->changePassword($request->user(), $request->getPassword());
+
+        return $this->apiResponse(code: 204);
     }
 }

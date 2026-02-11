@@ -57,6 +57,7 @@ final readonly class UserApiResponse
                 type: $communication->communication_type,
                 address: $communication->address,
                 description: $communication->description,
+                visibility: $communication->visibility,
             );
         }
 

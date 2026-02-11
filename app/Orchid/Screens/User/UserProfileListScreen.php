@@ -12,11 +12,11 @@ use App\Orchid\Layouts\User\NewUserLayout;
 use App\Orchid\Layouts\User\UserInfoListLayout;
 use App\Orchid\Layouts\User\UserProfileEditLayout;
 use App\Services\System\Enum\Language;
+use App\Services\User\AuthService;
 use App\Services\User\DTO\UserProfileDTO;
 use App\Services\User\UserService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
@@ -27,9 +27,8 @@ class UserProfileListScreen extends Screen
     public function __construct(
         private readonly Request     $request,
         private readonly UserService $service,
-    )
-    {
-    }
+        private readonly AuthService $authService,
+    ) {}
 
     public string $name = 'Пользователи';
 
@@ -73,11 +72,11 @@ class UserProfileListScreen extends Screen
         $dto = new UserProfileDTO(
             email: $request->getEmail(),
             name: $request->getName(),
-            password: Hash::make($request->getPassword()),
+            password: $request->getPassword(),
             language: Language::fromCode(app()->getLocale())->value,
         );
 
-        $this->service->create($dto);
+        $this->authService->create($dto);
     }
 
     public function saveUser(UpdateProfileRequest $request, int $id): void

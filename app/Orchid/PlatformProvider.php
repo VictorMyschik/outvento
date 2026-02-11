@@ -32,7 +32,8 @@ class PlatformProvider extends OrchidServiceProvider
                 Menu::make('Equipments')->icon('bs.list')->route('reference.equipments.list'),
                 Menu::make('Countries')->icon('bs.list')->route('reference.countries.list'),
                 Menu::make('Cities')->icon('bs.list')->route('reference.cities.list'),
-                Menu::make('Communication Type')->icon('bs.list')->route('reference.communication-type.list'),
+                Menu::make('Communication Types')->icon('bs.list')->route('reference.communication-type.list'),
+                Menu::make('Notification Event Types')->icon('bs.list')->route('reference.notification-event-type.list'),
             ])->divider(),
 
 
@@ -53,6 +54,7 @@ class PlatformProvider extends OrchidServiceProvider
                 Menu::make('Cache')->route('system.cache'),
                 Menu::make('Settings')->route('system.settings.list'),
                 // Menu::make('Jobs')->route('system.jobs'),
+                Menu::make('Notification tokens')->route('system.notification.tokens'),
                 Menu::make('Failed jobs')->route('system.failed.jobs'),
                 Menu::make('Database')->route('system.database'),
                 Menu::make('PHP Info')->route('system.phpinfo'),
@@ -69,7 +71,6 @@ class PlatformProvider extends OrchidServiceProvider
 
             Menu::make('User List')->icon('grid')->list([
                 Menu::make('Users list')->icon('bs.people')->route('profiles.list'),
-                Menu::make('Email Subscriptions')->icon('bs.send')->route('subscriptions.list'),
                 Menu::make('User Settings')->icon('bs.list')->route('notification.user.settings.list'),
                 Menu::make('Communication')->icon('bs.person-lines-fill')->route('profiles.communication.list'),
             ])->divider(),
