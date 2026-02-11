@@ -17,11 +17,15 @@ use App\Orchid\Layouts\User\UserRolesEditLayout;
 use App\Orchid\Rebuild\MrTabs;
 use App\Services\Notifications\Enum\NotificationChannel;
 use App\Services\System\Enum\Language;
+use App\Services\User\AuthService;
+use App\Services\User\Enum\CommunicationTypeCode;
+use App\Services\User\Enum\VerificationStatus;
 use App\Services\User\Enum\Visibility;
 use App\Services\User\UserService;
 use Illuminate\Http\Request;
 use Orchid\Platform\Models\Role;
 use Orchid\Screen\Actions\Button;
+use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Fields\Group;
@@ -40,6 +44,7 @@ class ProfileScreen extends Screen
 
     public function __construct(
         private readonly UserService $service,
+        private readonly AuthService $authService,
     ) {}
 
     public function name(): string
@@ -160,7 +165,7 @@ class ProfileScreen extends Screen
                 ->title('Email verification')
                 ->hidden((bool)$this->user->email_verified_at)
                 ->confirm('Are you sure you want to send a verification email to the user?')
-                ->method('sendVerifyEmail', ['id' => $this->user->id]);
+                ->method('sendVerifyUserEmail', ['id' => $this->user->id]);
         }
 
         return Layout::rows([
@@ -208,7 +213,7 @@ class ProfileScreen extends Screen
 
     private function getCommunicationLayout(): array
     {
-        $communications = $this->service->getCommunications($this->user->id, Language::RU);
+        $communications = $this->service->getCommunications($this->user->id);
 
         $btns[] = ModalToggle::make('добавить')
             ->class('mr-btn-success')
@@ -226,25 +231,32 @@ class ProfileScreen extends Screen
         $rows['header'] = ['Type', 'Visibility', 'Address', 'Description', 'Created', '#'];
 
         foreach ($communications as $communication) {
+            $rowBtns = [];
+            if ($communication->code === CommunicationTypeCode::Mail->value && !VerificationStatus::from($communication->verification_status)->isVerified()) {
+                $rowBtns[] = Button::make('Отправить подтверждение')
+                    ->icon('envelope')
+                    ->confirm('Are you sure you want to send a verification email to the user?')
+                    ->method('sendVerifyCommunicationEmail', ['communicationId' => $communication->id]);
+            }
+
+            $rowBtns[] = ModalToggle::make('изменить')
+                ->icon('pencil')
+                ->modal('communicate_modal')
+                ->modalTitle('Add communication')
+                ->method('saveCommunication', ['id' => $communication->id]);
+
+            $rowBtns[] = Button::make('удалить')
+                ->icon('trash')
+                ->confirm('Are you sure you want to delete the communication?')
+                ->method('deleteCommunication', ['id' => $communication->id]);
+
             $rows['body'][] = [
-                'Type'        => $communication->communication_type,
+                'Type'        => $communication->title,
                 'Visibility'  => Visibility::from($communication->visibility)->getLabel(),
                 'Address'     => $communication->address,
                 'Description' => $communication->description ?: '-',
                 'Created'     => $communication->created_at,
-                '#'           => Group::make([
-                    ModalToggle::make('')
-                        ->class('mr-btn-primary')
-                        ->icon('pencil')
-                        ->modal('communicate_modal')
-                        ->modalTitle('Add communication')
-                        ->method('saveCommunication', ['id' => $communication->id]),
-                    Button::make('')
-                        ->class('mr-btn-danger')
-                        ->icon('trash')
-                        ->confirm('Are you sure you want to delete the communication?')
-                        ->method('deleteCommunication', ['id' => $communication->id]),
-                ])->autoWidth(),
+                '#'           => DropDown::make()->icon('bs.three-dots-vertical')->list($rowBtns),
             ];
         }
 
@@ -315,6 +327,11 @@ class ProfileScreen extends Screen
             ])->alignCenter(),
             ViewField::make('')->view('hr'),
             ViewField::make('')->view('admin.table')->value($rows),
+            ViewField::make('')->view('hr'),
+
+            Group::make([
+                Label::make('Subscription token')->title('User subscription token')->value($this->user->subscription_token),
+            ])->autoWidth(),
         ];
     }
 
@@ -327,6 +344,7 @@ class ProfileScreen extends Screen
     {
         $input = $request->getUpdateData();
         $input['user_id'] = $this->user->id;
+        $input['verification_status'] = $request->get('verification_status', 0);
 
         $this->service->saveCommunication($id, $input);
 
@@ -418,6 +436,16 @@ class ProfileScreen extends Screen
         $this->service->updateUserNotificationSetting($this->user->id, $eventTypeId, $data);
 
         Toast::info('Настройки уведомлений успешно сохранены')->delay(1500);
+    }
+
+    public function sendVerifyUserEmail(): void
+    {
+        $this->authService->sendVerifyNotification($this->user);
+    }
+
+    public function sendVerifyCommunicationEmail(int $communicationId): void
+    {
+        $this->service->sendCommunicationVerifyEmail(Communication::loadByOrDie($communicationId));
     }
 
     public function saveUserAvatar(Request $request): void

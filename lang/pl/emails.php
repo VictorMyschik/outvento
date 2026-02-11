@@ -20,7 +20,7 @@ return [
         'privacy_policy'        => 'Polityce prywatności',
     ],
 
-    'unsubscribe'           => 'Wypisz się z newslettera',
+    'unsubscribe' => 'Wypisz się z newslettera',
 
     'news_digest' => [
         'subject'     => 'Nowe artykuły na stronie',
@@ -30,7 +30,7 @@ return [
         'footer_text' => 'Kliknij linki, aby dowiedzieć się więcej.',
     ],
 
-    'verify_email' => [
+    'verify_registration_email' => [
         'subject'     => 'Potwierdzenie adresu e-mail',
         'greeting'    => 'Dziękujemy za rejestrację!',
         'instruction' => 'Użyj poniższego kodu, aby potwierdzić swój adres e-mail:',
@@ -38,5 +38,14 @@ return [
         'ignore'      => 'Jeśli nie zakładałeś konta, zignoruj tę wiadomość.',
         "minutes"     => "minut",
         "regards"     => "Z poważaniem",
+    ],
+
+    'verify_communication_email' => [
+        'title'         => 'Potwierdzenie adresu e-mail',
+        'header'        => 'Potwierdź swój adres e-mail',
+        'greeting'      => 'Witaj!',
+        'intro'         => 'Otrzymałeś tę wiadomość, ponieważ ktoś (prawdopodobnie Ty) wskazał ten adres e-mail jako sposób komunikacji.',
+        'confirm_email' => 'Potwierdź adres e-mail',
+        'ignore'        => 'Jeśli nie wskazywałeś tego adresu e-mail, zignoruj tę wiadomość. Ze względów bezpieczeństwa nie udostępniaj tego linku osobom trzecim.',
     ],
 ];

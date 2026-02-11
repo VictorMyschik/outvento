@@ -1,15 +1,15 @@
 @extends('emails.layouts.base')
 
-@section('email_title', __('emails.verify_email.subject'))
-@section('email_header', __('emails.verify_email.subject'))
+@section('email_title', __('emails.verify_registration_email.subject'))
+@section('email_header', __('emails.verify_registration_email.subject'))
 
 @section('email_content')
     <p style="font-size:15px;color:#333;margin-top:0;">
-        {{ __('emails.verify_email.greeting') }}
+        {{ __('emails.verify_registration_email.greeting') }}
     </p>
 
     <p style="font-size:15px;color:#333;">
-        {{ __('emails.verify_email.instruction') }}
+        {{ __('emails.verify_registration_email.instruction') }}
     </p>
 
     <div style="text-align:center;margin:20px 0;">
@@ -29,12 +29,12 @@
     </div>
 
     <p style="font-size:14px;color:#555;">
-        {{ __('emails.verify_email.expire') }}
+        {{ __('emails.verify_registration_email.expire') }}
         <strong>{{ $expireMinutes }}</strong>
         {{ __('emails.minutes') }}.
     </p>
 
     <p style="font-size:14px;color:#555;">
-        {{ __('emails.verify_email.ignore') }}
+        {{ __('emails.verify_registration_email.ignore') }}
     </p>
 @endsection

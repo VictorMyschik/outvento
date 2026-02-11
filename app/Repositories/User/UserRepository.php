@@ -74,7 +74,7 @@ final readonly class UserRepository extends DatabaseRepository
         return $this->db->table(Communication::getTableName())->insertGetId($data);
     }
 
-    public function getCommunications(int $userId, Language $language): array
+    public function getCommunications(int $userId): array
     {
         return $this->db->table(Communication::getTableName())
             ->join(CommunicationType::getTableName(), CommunicationType::getTableName() . '.id', '=', Communication::getTableName() . '.type_id')
@@ -82,16 +82,17 @@ final readonly class UserRepository extends DatabaseRepository
             ->selectRaw(
                 implode(',', [
                     Communication::getTableName() . '.*',
-                    CommunicationType::getTableName() . '.name_' . $language->getCode() . ' AS communication_type',
-                    CommunicationType::getTableName() . '.code AS code'
+                    CommunicationType::getTableName() . '.title',
+                    CommunicationType::getTableName() . '.code AS code',
+                    Communication::getTableName() . '.verification_status AS verification_status',
                 ])
             )
             ->get()->all();
     }
 
-    public function getCommunicationById(int $id, int $userId): ?Communication
+    public function getCommunicationById(int $id, int $userId): Communication
     {
-        return Communication::where('id', $id)->where('user_id', $userId)->first();
+        return Communication::where('id', $id)->where('user_id', $userId)->firstOrFail();
     }
 
     public function deleteCommunications(int $userId): void

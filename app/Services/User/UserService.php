@@ -5,10 +5,14 @@ declare(strict_types=1);
 namespace App\Services\User;
 
 use App\Models\User;
+use App\Models\UserInfo\Communication;
+use App\Models\UserInfo\CommunicationType;
 use App\Repositories\User\UserRepository;
+use App\Services\Notifications\Enum\EventType;
 use App\Services\Notifications\Enum\NotificationChannel;
 use App\Services\Notifications\NotificationService;
-use App\Services\System\Enum\Language;
+use App\Services\User\Enum\CommunicationTypeCode;
+use App\Services\User\Enum\VerificationStatus;
 use Illuminate\Http\UploadedFile;
 
 final readonly class UserService
@@ -72,17 +76,62 @@ final readonly class UserService
 
     public function saveCommunication(int $id, array $data): int
     {
+        if (CommunicationType::loadByOrDie($data['type_id'])->getCode() === CommunicationTypeCode::Mail) {
+            if (!filter_var($data['address'], FILTER_VALIDATE_EMAIL)) {
+                throw new \InvalidArgumentException('Invalid email address');
+            }
+
+            // From admin only
+            $status = VerificationStatus::from((int)($data['verification_status'] ?? VerificationStatus::NotVerified->value));
+
+            if ($status->isVerified()) {
+                return $this->repository->saveCommunication($id, $data);
+            }
+
+            $this->verificationEmail($id, $data);
+        }
+
         return $this->repository->saveCommunication($id, $data);
     }
 
-    public function getCommunicationById(int $id, int $userId): ?object
+    public function sendCommunicationVerifyEmail(Communication $communication): void
     {
-        return $this->repository->getCommunicationById($id, $userId);
+        $this->notificationService->addAndSendRequest(
+            channel: NotificationChannel::Email,
+            address: $communication->address,
+            eventType: EventType::VerifyCommunicationEmail,
+            data: $communication->toArray(),
+        );
     }
 
-    public function getCommunications(int $userId, Language $language): array
+    private function verificationEmail(int $id, array $data): void
     {
-        return $this->repository->getCommunications($userId, $language);
+        if (!$id) {
+            $this->notificationService->addAndSendRequest(
+                channel: NotificationChannel::Email,
+                address: $data['address'],
+                eventType: EventType::VerifyCommunicationEmail,
+                data: $data,
+            );
+
+            return;
+        }
+
+        $current = $this->repository->getCommunicationById($id, (int)$data['user_id']);
+
+        if ($current->address !== $data['address']) {
+            $this->notificationService->addAndSendRequest(
+                channel: NotificationChannel::Email,
+                address: $data['address'],
+                eventType: EventType::VerifyCommunicationEmail,
+                data: $data,
+            );
+        }
+    }
+
+    public function getCommunications(int $userId): array
+    {
+        return $this->repository->getCommunications($userId);
     }
 
     public function deleteCommunication(int $userId, int $id): void
@@ -163,7 +212,5 @@ final readonly class UserService
     {
         return $this->notificationService->getNotificationTypesForUser($user);
     }
-
-
     #endregion
 }

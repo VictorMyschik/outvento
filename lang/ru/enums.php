@@ -2,13 +2,13 @@
 
 return [
     'gender' => [
-        'MALE'   => 'Мужской',
-        'FEMALE' => 'Женский',
+        'Male'   => 'Мужской',
+        'Female' => 'Женский',
     ],
 
-    'communicateType' => [
+    'communicate_type' => [
         'Phone'         => 'Телефон',
-        'Email'         => 'Email',
+        'Mail'          => 'Email',
         'Address'       => 'Адрес',
         'WhatsApp'      => 'WhatsApp',
         'Telegram'      => 'Telegram',
@@ -31,5 +31,10 @@ return [
         'InRelationship' => 'В отношениях',
         'Married'        => 'Женат / замужем',
         'Looking'        => 'В активном поиске',
+    ],
+
+    'verification_status' => [
+        'NotVerified' => 'Не подтвержден',
+        'Verified'    => 'Подтвержден',
     ],
 ];

@@ -15,6 +15,10 @@ return new class extends Migration {
             $table->string('description')->nullable();
             $table->smallInteger('visibility')->default(0)->index();
 
+            $table->timestamp('verified_at')->nullable();
+            $table->tinyInteger('verification_status')->default('0');
+            $table->string('verification_token')->nullable();
+
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
             $table->foreign('type_id')->references('id')->on('communication_types')->restrictOnDelete();
 

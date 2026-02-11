@@ -8,6 +8,7 @@ use App\Models\Lego\Fields\NameByLanguageFieldTrait;
 use App\Models\Lego\Fields\ReferenceImageFieldTrait;
 use App\Models\ORM\ORM;
 use App\Models\Reference\ReferenceBaseInterface;
+use App\Services\User\Enum\CommunicationTypeCode;
 use Illuminate\Support\Facades\Storage;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
@@ -25,13 +26,16 @@ class CommunicationType extends ORM implements ReferenceBaseInterface
 
     protected array $allowedSorts = [
         'code',
-        'name_ru',
-        'name_en',
-        'name_pl',
+        'title',
     ];
 
     public function afterDelete(): void
     {
         $this->getImagePath() && Storage::delete($this->getImagePath());
+    }
+
+    public function getCode(): CommunicationTypeCode
+    {
+        return CommunicationTypeCode::from($this->code);
     }
 }

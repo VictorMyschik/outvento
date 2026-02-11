@@ -154,7 +154,7 @@ class UsersController extends APIController
     {
         return $this->apiResponse(
             $this->response->getCommunicationsList(
-                $this->userService->getCommunications($request->user()->id, $this->getLanguage()),
+                $this->userService->getCommunications($request->user()->id),
             ),
         );
     }

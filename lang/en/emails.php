@@ -30,7 +30,7 @@ return [
         'footer_text' => 'Click the links to read more.',
     ],
 
-    'verify_email' => [
+    'verify_registration_email' => [
         'subject'     => 'Verify your email address',
         'greeting'    => 'Thank you for registering!',
         'instruction' => 'Use the following code to verify your email address:',
@@ -38,5 +38,14 @@ return [
         'ignore'      => 'If you did not create an account, no further action is required.',
         "minutes"     => "minutes",
         "regards"     => "Best regards",
+    ],
+
+    'verify_communication_email' => [
+        'title'         => 'Email Confirmation',
+        'header'        => 'Confirm Your Email Address',
+        'greeting'      => 'Hello!',
+        'intro'         => 'You received this email because someone (probably you) indicated this email address as a communication method.',
+        'confirm_email' => 'Confirm Email',
+        'ignore'        => 'If you did not indicate this email address, please ignore this email. For security reasons, do not share this link with anyone.',
     ],
 ];

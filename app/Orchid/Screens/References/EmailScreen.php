@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Orchid\Screens\References;
 
 use App\Services\Forms\DTO\FormFeedbackDTO;
+use App\Services\Notifications\NotificationService;
 use App\Services\System\Enum\Language;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -45,7 +46,7 @@ class EmailScreen extends Screen
 
         $fakeData['new_news_subscription'] = [
             'unsubscribeUrl'  => '#',
-            'expireMinutes'   => 20,
+            'expireMinutes'   => NotificationService::EXPIRE_MINUTES,
             'confirmationUrl' => 'https://example.com/news/confirm?token=abcdef',
         ];
 
@@ -65,11 +66,17 @@ class EmailScreen extends Screen
 
         $fakeData['verify_account'] = [
             'code'          => '123456',
-            'expireMinutes' => 20,
+            'expireMinutes' => NotificationService::EXPIRE_MINUTES,
         ];
 
         $fakeData['feedback'] = [
-            'dto' => new FormFeedbackDTO(language: Language::EN, name: 'Viktor', email: 'email@example.com', message: 'Hi', userId: 1,)];
+            'dto' => new FormFeedbackDTO(language: Language::EN, name: 'Viktor', email: 'email@example.com', message: 'Hi', userId: 1,)
+        ];
+
+        $fakeData['verify_communication_email'] = [
+            'confirmationUrl' => 'https://example.com/confirm?token=abcdef',
+            'expireMinutes'   => NotificationService::EXPIRE_MINUTES,
+        ];
 
         App::setlocale(Language::from((int)$this->request->get('locale', Language::RU->value))->getCode());
 
@@ -81,11 +88,12 @@ class EmailScreen extends Screen
             ]),
 
             Layout::tabs([
-                'Reset Password'     => $this->getTemplate('emails.reset_password', $fakeData['reset_password']),
-                'New Subscription'   => $this->getTemplate('emails.new_news_subscription', $fakeData['new_news_subscription']),
-                'News Digest'        => $this->getTemplate('emails.news_digest', $fakeData['news_digest']),
-                'Email verification' => $this->getTemplate('emails.verify_email_code', $fakeData['verify_account']),
-                'Feedback'           => $this->getTemplate('emails.feedback', $fakeData['feedback']),
+                'Reset Password'             => $this->getTemplate('emails.reset_password', $fakeData['reset_password']),
+                'New Subscription'           => $this->getTemplate('emails.new_news_subscription', $fakeData['new_news_subscription']),
+                'News Digest'                => $this->getTemplate('emails.news_digest', $fakeData['news_digest']),
+                'Email verification'         => $this->getTemplate('emails.verify_email_code', $fakeData['verify_account']),
+                'Feedback'                   => $this->getTemplate('emails.feedback', $fakeData['feedback']),
+                'Verify Communication Email' => $this->getTemplate('emails.verify_communication_email', $fakeData['verify_communication_email']),
             ]),
         ];
     }

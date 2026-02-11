@@ -166,8 +166,16 @@ final readonly class NotificationService
                 'confirmationUrl' => self::getConfirmUrl($notificationToken->token),
                 'expireMinutes'   => NotificationService::EXPIRE_MINUTES,
             ]),
+            EventType::VerifyCommunicationEmail => View('emails.verify_communication_email')->with([
+                'confirmationUrl' => self::getConfirmUrl($notificationToken->token),
+                'expireMinutes'   => NotificationService::EXPIRE_MINUTES,
+            ]),
+            default => throw new \Exception('Unsupported notification type: ' . $notificationToken->getType()->getLabel()),
         };
     }
 
-    public function confirmNotificationToken(string $token, array $info): void {}
+    public function confirmNotificationToken(string $token, array $info): void
+    {
+        // TODO: обработка подтверждения токена, активация подписки и т.д.
+    }
 }

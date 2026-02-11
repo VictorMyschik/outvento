@@ -8,6 +8,7 @@ use App\Models\Lego\Fields\DescriptionNullableFieldTrait;
 use App\Models\Lego\Fields\NameByLanguageFieldTrait;
 use App\Models\Lego\Fields\UserFieldTrait;
 use App\Models\ORM\ORM;
+use App\Services\User\Enum\VerificationStatus;
 use App\Services\User\Enum\Visibility;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
@@ -32,6 +33,7 @@ class Communication extends ORM
     public $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'verified_at' => 'datetime',
     ];
 
     protected array $allowedSorts = [
@@ -42,6 +44,9 @@ class Communication extends ORM
         'email',
         'name',
         'description',
+        'verified_at',
+        'verification_status',
+        'verification_token',
         'created_at',
         'updated_at',
     ];
@@ -54,5 +59,10 @@ class Communication extends ORM
     public function getVisibility(): Visibility
     {
         return Visibility::from($this->visibility);
+    }
+
+    public function getVerificationStatus(): VerificationStatus
+    {
+        return VerificationStatus::from($this->verification_status);
     }
 }
