@@ -47,6 +47,8 @@ final readonly class UserService
     public function updateUserRoles(int $userId, array $roleIds): void
     {
         $this->repository->updateUserRoles($userId, $roleIds);
+
+        // TODO: удалить нотификацию для админов при "только пользователь"
     }
 
     public function removeAvatar(User $user): void
@@ -65,13 +67,21 @@ final readonly class UserService
 
     public function deleteUser(User $user): void
     {
+        $user->tokens()->delete();
         $this->repository->deleteCommunications($user->id);
         $this->removeAvatar($user);
-        $user->tokens()->delete();
         $user->softDelete();
 
         // TODO: сделать проверку на возможность полного удаления
-        //$user->delete();
+        if (!$this->getUndeletedModels($user)) {
+            $user->delete();
+        }
+    }
+
+    public function getUndeletedModels(): bool
+    {
+        // TODO: сделать проверку на наличие комментариев и т.п.
+        return false;
     }
 
     public function saveCommunication(int $id, array $data): int
