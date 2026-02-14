@@ -17,7 +17,7 @@ interface NotificationRepositoryInterface
 
     public function deleteUserSetting(int $id): void;
 
-    public function getUserNotificationSettingsList(int $userId, ?int $eventTypeId = null): array;
+    public function getServiceUserNotificationList(int $userId, ?int $eventTypeId = null): array;
 
     /**
      * @return User[]
@@ -34,5 +34,7 @@ interface NotificationRepositoryInterface
 
     public function unmuteUserNotification(int $userId, ServiceEvent $event): void;
 
-    public function deleteUserSettingByEventAndChannel(int $userId, ServiceEvent $event, NotificationChannel $channe): void;
+    public function deleteServiceNotificationsByEventAndChannel(int $userId, ServiceEvent $event, NotificationChannel $channel): void;
+
+    public function deleteServiceNotifications(int $id): void;
 }

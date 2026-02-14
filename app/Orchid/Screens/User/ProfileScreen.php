@@ -141,7 +141,7 @@ class ProfileScreen extends Screen
     {
         $input = $request->get('roles', []);
 
-        $this->service->updateUserRoles($this->user->id, $input);
+        $this->service->updateUserRoles($this->user, $input);
 
         Toast::message('User roles saved successfully');
     }
@@ -274,7 +274,7 @@ class ProfileScreen extends Screen
 
     public function getServiceNotificationLayout(): array
     {
-        $userNotificationSettingsList = $this->service->getServiceUserNotificationList($this->user->id);
+        $serviceNotifications = $this->service->getServiceUserNotificationList($this->user->id);
 
         $header = ['Active', 'Event Type'];
 
@@ -287,7 +287,7 @@ class ProfileScreen extends Screen
             ];
             $row = array_merge($row, array_fill_keys(NotificationChannel::getSelectList(), null));
 
-            foreach ($userNotificationSettingsList as $userSettings) {
+            foreach ($serviceNotifications as $userSettings) {
                 if ($userSettings->event === $key) {
                     $channel = $userSettings->getChannel();
 

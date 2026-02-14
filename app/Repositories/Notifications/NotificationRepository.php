@@ -62,7 +62,7 @@ final readonly class NotificationRepository extends DatabaseRepository implement
         $this->db->table(ServiceNotification::getTableName())->where('user_id', $userId)->delete();
     }
 
-    public function getUserNotificationSettingsList(int $userId, ?int $eventTypeId = null): array
+    public function getServiceUserNotificationList(int $userId, ?int $eventTypeId = null): array
     {
         return ServiceNotification::where('user_id', $userId)
             ->when($eventTypeId !== null, function ($q) use ($userId, $eventTypeId) {
@@ -94,12 +94,17 @@ final readonly class NotificationRepository extends DatabaseRepository implement
             ->delete();
     }
 
-    public function deleteUserSettingByEventAndChannel(int $userId, ServiceEvent $event, NotificationChannel $channel): void
+    public function deleteServiceNotificationsByEventAndChannel(int $userId, ServiceEvent $event, NotificationChannel $channel): void
     {
         $this->db->table(ServiceNotification::getTableName())
             ->where('user_id', $userId)
             ->where('event', $event->value)
             ->where('channel', $channel->value)
             ->delete();
+    }
+
+    public function deleteServiceNotifications(int $id): void
+    {
+        $this->db->table(ServiceNotification::getTableName())->where('id', $id)->delete();
     }
 }

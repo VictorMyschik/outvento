@@ -23,4 +23,15 @@ final class NotificationAudienceResolver
             ->values()
             ->all();
     }
+
+    public static function getAudiencesByRoleIds(array $roleIds): array
+    {
+        return User::query()
+            ->whereHas('roles', fn($q) => $q->whereIn('id', $roleIds))
+            ->get()
+            ->flatMap(fn(User $user) => self::fromUser($user))
+            ->unique()
+            ->values()
+            ->all();
+    }
 }

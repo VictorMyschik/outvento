@@ -45,11 +45,11 @@ final readonly class UserService
         return $this->repository->getUserById($user->id);
     }
 
-    public function updateUserRoles(int $userId, array $roleIds): void
+    public function updateUserRoles(User $user, array $roleIds): void
     {
-        $this->repository->updateUserRoles($userId, $roleIds);
+        $this->repository->updateUserRoles($user->id, $roleIds);
 
-        // TODO: удалить нотификацию для админов при "только пользователь"
+        $this->serviceNotificationService->deleteUnavailableServiceNotification($user);
     }
 
     public function removeAvatar(User $user): void
