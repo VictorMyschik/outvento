@@ -11,6 +11,8 @@ use App\Services\Notifications\Enum\ServiceEvent;
 
 interface NotificationRepositoryInterface
 {
+    public function setEmailLog(array $data): void;
+
     public function purgeServiceUserNotifications(int $userId): void;
 
     public function saveServiceUserNotification(int $id, array $data): int;

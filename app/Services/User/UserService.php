@@ -30,15 +30,18 @@ final readonly class UserService
 
     public function updateUser(User $user, array $data): User
     {
-        $data['email_verified_at'] = $user->email_verified_at;
+        $needSendVerifyEmail = false;
+
         if (!empty($data['email']) && $data['email'] !== $user->email) {
             $data['email_verified_at'] = null;
+            $needSendVerifyEmail = true;
         }
 
-        $this->repository->updateUser($user->id, $data);
-        $user->refresh();
+        if (count($data)) {
+            $this->repository->updateUser($user->id, $data);
+        }
 
-        if ($data['email_verified_at'] === null) {
+        if ($needSendVerifyEmail) {
             $this->authService->sendVerifyNotification($user);
         }
 

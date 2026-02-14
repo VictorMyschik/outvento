@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Models\MessageLog;
+namespace App\Models\Email;
 
 use App\Models\ORM\ORM;
-use Illuminate\Support\Facades\Blade;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
 
@@ -13,6 +12,8 @@ class EmailLog extends ORM
 {
     use AsSource;
     use Filterable;
+
+    public const null UPDATED_AT = null;
 
     protected $table = 'email_logs';
 
@@ -25,14 +26,11 @@ class EmailLog extends ORM
         'created_at'
     ];
 
-    public const null UPDATED_AT = null;
+    protected $updated_at = false;
 
     protected $casts = [
-        'sl' => 'json'
+        'sl'         => 'json',
+        'created_at' => 'datetime',
     ];
 
-    public function getStatusDisplay(): string
-    {
-        return Blade::render($this->status ? '<x-orchid-icon class="text-success" path="check" />' : '<x-orchid-icon class="text-danger" path="ban" />');
-    }
 }

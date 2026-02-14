@@ -35,6 +35,7 @@ use Orchid\Screen\Fields\ViewField;
 use Orchid\Screen\Layouts\Modal;
 use Orchid\Screen\Layouts\Rows;
 use Orchid\Screen\Layouts\Tabs;
+use Orchid\Screen\Repository;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
@@ -87,6 +88,25 @@ class ProfileScreen extends Screen
         $out[] = Layout::modal('user_role_modal', UserRolesEditLayout::class)->async('asyncGetUserRoles');
 
         return $out;
+    }
+
+    public function view(array|Repository $httpQueryArguments = [])
+    {
+        $repository = is_a($httpQueryArguments, Repository::class)
+            ? $httpQueryArguments
+            : $this->buildQueryRepository($httpQueryArguments);
+
+        return view($this->screenBaseView(), [
+            'name'                    => $this->name(),
+            'description'             => $this->description(),
+            'commandBar'              => $this->buildCommandBar($repository),
+            'layouts'                 => $this->build($repository),
+            'formValidateMessage'     => $this->formValidateMessage(),
+            'needPreventsAbandonment' => $this->needPreventsAbandonment(),
+            'state'                   => $this->serializableState(),
+            'controller'              => $this->frontendController(),
+            'avatar'                  => $this->user->getAvatarExt(),
+        ]);
     }
 
     public function asyncGetServiceUserNotificationSettings(int $event): array
@@ -348,9 +368,7 @@ class ProfileScreen extends Screen
 
     public function generateSubscriptionToken(): void
     {
-        $token = $this->authService->generateSubscriptionToken();
-
-        $this->service->updateUser($this->user, ['subscription_token' => $token]);
+        $this->service->updateUser($this->user, ['subscription_token' => $this->authService->generateSubscriptionToken()]);
     }
 
     public function deleteAllNotifications(): void
@@ -409,8 +427,6 @@ class ProfileScreen extends Screen
         $input = $request->getUpdateData();
 
         $input['email_verified_at'] = $request->get('email_verified_at') ? now() : null;
-        $input['subscription_token'] = $request->get('subscription_token') ?? null;
-        unset($input['telegram']);
 
         if ($input['birthday']) {
             $input['birthday'] = date('Y-m-d', strtotime($input['birthday']));

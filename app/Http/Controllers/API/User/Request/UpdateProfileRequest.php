@@ -20,7 +20,6 @@ use OpenApi\Attributes as OA;
     properties: [
         new OA\Property(property: "name", type: "string", maxLength: 255, example: "John", nullable: true),
         new OA\Property(property: "email", type: "string", format: "email", maxLength: 255, example: "user@example.com", nullable: true),
-        new OA\Property(property: "telegram", type: "string", maxLength: 255, example: "123456789", nullable: true),
         new OA\Property(property: "language", description: "Language ID", type: "integer", example: 1, nullable: true),
         new OA\Property(property: "first_name", type: "string", maxLength: 100, example: "John", nullable: true),
         new OA\Property(property: "last_name", type: "string", maxLength: 100, example: "Doe", nullable: true),
@@ -39,7 +38,6 @@ class UpdateProfileRequest extends FormRequest
         return [
             'name'                => ['sometimes', 'string', 'max:255', Rule::unique('users')->ignore((int)$this->get('id', Auth::id()))],
             'email'               => ['sometimes', 'string', 'email', 'max:255', Rule::unique('users')->ignore((int)$this->get('id', Auth::id()))],
-            'telegram'            => ['sometimes', 'nullable', 'string', 'max:255'],
             'language'            => ['sometimes', 'nullable', 'integer', Rule::enum(Language::class)],
             'first_name'          => ['sometimes', 'nullable', 'string', 'max:100'],
             'last_name'           => ['sometimes', 'nullable', 'string', 'max:100'],
@@ -61,11 +59,6 @@ class UpdateProfileRequest extends FormRequest
         return $this->input('email');
     }
 
-    public function getTelegram(): ?string
-    {
-        return $this->input('telegram');
-    }
-
     public function getUpdateData(): array
     {
         $out = [];
@@ -76,10 +69,6 @@ class UpdateProfileRequest extends FormRequest
 
         if ($this->has('email')) {
             $out['email'] = $this->getEmail();
-        }
-
-        if ($this->has('telegram')) {
-            $out['telegram_chat_id'] = $this->getTelegram();
         }
 
         if ($this->has('language')) {

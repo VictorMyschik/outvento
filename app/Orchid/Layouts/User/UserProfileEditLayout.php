@@ -20,17 +20,19 @@ class UserProfileEditLayout extends Rows
     public function fields(): array
     {
         return [
-            Select::make('visibility')
-                ->title('Profile Visibility')
-                ->options(Visibility::getSelectList()),
-
-            Select::make('relationship_status')
-                ->title('Relationship status')
-                ->options(RelationshipStatus::getSelectList()),
-
             Group::make([
                 Input::make('name')->type('text')->max(255)->required()->title('Name (login)'),
                 Input::make('email')->type('email')->required()->title('Email'),
+            ]),
+
+            Group::make([
+                Select::make('visibility')
+                    ->title('Profile Visibility')
+                    ->options(Visibility::getSelectList()),
+
+                Select::make('relationship_status')
+                    ->title('Relationship status')
+                    ->options(RelationshipStatus::getSelectList()),
             ]),
 
             Group::make([
@@ -49,9 +51,6 @@ class UserProfileEditLayout extends Rows
                     1 => 'Verified',
                     0 => 'Not verified',
                 ]),
-
-            Input::make('subscription_token')
-                ->title('Subscription token'),
 
             Group::make([
                 Select::make('gender')

@@ -38,7 +38,7 @@ class UserInfoFilter extends Filter
 
     public static function runQuery(): Builder
     {
-        return User::filters([self::class]);
+        return User::filters([self::class])->orderBy('id', 'desc');
     }
 
     public function run(Builder $builder): Builder

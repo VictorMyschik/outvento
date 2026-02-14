@@ -24,3 +24,6 @@ bash:
 
 purge:
 	docker compose exec php php artisan purge
+
+migrate:
+	docker compose exec php php artisan migrate

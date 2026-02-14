@@ -12,7 +12,7 @@ final class RawLogViewLayout extends Rows
     public function fields(): array
     {
         return [
-            ViewField::make('body')->view('mail.log'),
+            ViewField::make('body')->view('emails.log'),
         ];
     }
 }

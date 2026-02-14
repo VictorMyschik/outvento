@@ -19,7 +19,7 @@ use Orchid\Support\Facades\Layout;
 class UserCommunicateEditLayout extends Listener
 {
     protected $targets = [
-        'type_id',
+        'type',
     ];
 
     protected function layouts(): iterable
@@ -36,7 +36,7 @@ class UserCommunicateEditLayout extends Listener
 
         $out[] = Select::make('type')
             ->options(CommunicationType::getSelectList())
-            ->value(request()->get('type_id'))
+            ->value(request()->get('type'))
             ->title('Type');
 
         if (request()->get('type') || $this->query->get('type')) {
@@ -64,6 +64,6 @@ class UserCommunicateEditLayout extends Listener
     public function handle(Repository $repository, Request $request): Repository
     {
         return $repository
-            ->set('type_id', $request->input('type_id'));
+            ->set('type', $request->input('type'));
     }
 }

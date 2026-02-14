@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories\Notifications;
 
+use App\Models\Email\EmailLog;
 use App\Models\Notification\NotificationMute;
 use App\Models\Notification\ServiceNotification;
 use App\Models\NotificationToken;
@@ -105,5 +106,10 @@ final readonly class NotificationRepository extends DatabaseRepository implement
     public function deleteServiceNotifications(int $id): void
     {
         $this->db->table(ServiceNotification::getTableName())->where('id', $id)->delete();
+    }
+
+    public function setEmailLog(array $data): void
+    {
+        $this->db->table(EmailLog::getTableName())->insert($data);
     }
 }

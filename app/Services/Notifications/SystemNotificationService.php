@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Services\Notifications;
 
 use App\Models\NotificationToken;
-use App\Services\Notifications\Enum\SystemEvent;
 use App\Services\Notifications\Enum\NotificationChannel;
+use App\Services\Notifications\Enum\SystemEvent;
 use Illuminate\Mail\Mailable;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -46,6 +46,9 @@ final readonly class SystemNotificationService extends AbstractNotificationServi
 
             $mail = new Mailable()->html($view->render())->to($notificationToken->address)
                 ->subject($notificationToken->getType()->getLabel())
+                ->withSymfonyMessage(function ($message) use ($notificationToken) {
+                    $message->getHeaders()->addTextHeader('X-Notification-Key', $notificationToken->getType()->value);
+                })
                 ->from(config('mail.from.address'), config('mail.from.name'));
 
             try {

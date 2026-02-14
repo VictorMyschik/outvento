@@ -9,7 +9,7 @@ use App\Models\MessageLog\EmailLog;
 use App\Orchid\Filters\MessageLog\MessageLogEmailFilter;
 use App\Orchid\Layouts\Lego\RawLogViewLayout;
 use App\Orchid\Layouts\Notifications\EmailLogListLayout;
-use App\Services\Notifications\AbstractNotificationService;
+use App\Services\Notifications\ResendNotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
@@ -20,8 +20,8 @@ use Orchid\Support\Facades\Layout;
 final class MessageLogEmailScreen extends Screen
 {
     public function __construct(
-        private readonly Request                     $request,
-        private readonly AbstractNotificationService $notificationService,
+        private readonly Request                   $request,
+        private readonly ResendNotificationService $service,
     ) {}
 
     public string $name = 'Лог отправленных писем';
@@ -61,7 +61,7 @@ final class MessageLogEmailScreen extends Screen
         return [
             'email'   => $emailLog->email,
             'subject' => $emailLog->subject,
-            'body'    => $emailLog->getBody(),
+            'body'    => $emailLog->sl,
         ];
     }
 
@@ -79,10 +79,10 @@ final class MessageLogEmailScreen extends Screen
     {
         $log = EmailLog::loadByOrDie($id);
 
-        $this->notificationService->customEmailNotify(
-            to: $log->getEmail(),
-            email: new RawEmail($log->getSubject(), $log->getBody()),
-            type: $log->getType(),
+        $this->service->customEmailNotify(
+            to: $log->email,
+            email: new RawEmail($log->subject, $log->sl),
+            type: $log->type,
         );
     }
 
@@ -98,12 +98,12 @@ final class MessageLogEmailScreen extends Screen
             }
         }
 
-        return redirect()->route('message.log.email.list', $list);
+        return redirect()->route('system.email.log', $list);
     }
 
     public function clearFilter(): RedirectResponse
     {
-        return redirect()->route('message.log.email.list');
+        return redirect()->route('system.email.log');
     }
     #endregion
 }

@@ -1,5 +1,13 @@
 @extends('platform::dashboard')
 
+@if(isset($avatar))
+    @section('avatar')
+        <img src="{{$avatar}}"
+             class="rounded-circle border"
+             style="width:58px;height:58px;object-fit:cover"
+        >
+    @endsection
+@endif
 @section('title', (string) $name)
 @section('description')
     {!! $description !!}
