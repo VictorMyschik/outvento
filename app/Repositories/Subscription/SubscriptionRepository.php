@@ -6,7 +6,7 @@ namespace App\Repositories\Subscription;
 
 use App\Models\Subscription\Subscription;
 use App\Repositories\DatabaseRepository;
-use App\Services\Notifications\Enum\EventType;
+use App\Services\Notifications\Enum\ServiceEvent;
 use App\Services\Notifications\SubscriptionRepositoryInterface;
 
 final readonly class SubscriptionRepository extends DatabaseRepository implements SubscriptionRepositoryInterface
@@ -37,7 +37,7 @@ final readonly class SubscriptionRepository extends DatabaseRepository implement
         $this->db->table(Subscription::getTableName())->where('token', $token)->delete();
     }
 
-    public function getListByType(EventType $type): array
+    public function getListByType(ServiceEvent $type): array
     {
         return Subscription::where('type', $type->value)->get()->all();
     }
@@ -52,7 +52,7 @@ final readonly class SubscriptionRepository extends DatabaseRepository implement
         $this->db->table(Subscription::getTableName())->where('email', $email)->delete();
     }
 
-    public function deleteSubscriptionByEmailAndType(EventType $type, string $email): void
+    public function deleteSubscriptionByEmailAndType(ServiceEvent $type, string $email): void
     {
         $this->db->table(Subscription::getTableName())->where('email', $email)->where('type', $type->value)->delete();
     }

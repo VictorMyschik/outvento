@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Repositories\User;
 
+use App\Models\Notification\ServiceNotification;
 use App\Models\User;
 use App\Models\UserInfo\Communication;
-use App\Models\UserInfo\CommunicationType;
 use App\Repositories\DatabaseRepository;
-use App\Services\System\Enum\Language;
+use App\Services\Notifications\Enum\ServiceEvent;
+use App\Services\Notifications\Resolvers\CommunicationChannelSupportResolver;
 
 final readonly class UserRepository extends DatabaseRepository
 {
@@ -76,18 +77,7 @@ final readonly class UserRepository extends DatabaseRepository
 
     public function getCommunications(int $userId): array
     {
-        return $this->db->table(Communication::getTableName())
-            ->join(CommunicationType::getTableName(), CommunicationType::getTableName() . '.id', '=', Communication::getTableName() . '.type_id')
-            ->where('user_id', $userId)
-            ->selectRaw(
-                implode(',', [
-                    Communication::getTableName() . '.*',
-                    CommunicationType::getTableName() . '.title',
-                    CommunicationType::getTableName() . '.code AS code',
-                    Communication::getTableName() . '.verification_status AS verification_status',
-                ])
-            )
-            ->get()->all();
+        return Communication::where('user_id', $userId)->get()->all();
     }
 
     public function getCommunicationById(int $id, int $userId): Communication
@@ -120,25 +110,12 @@ final readonly class UserRepository extends DatabaseRepository
         return User::where('email', $email)->first();
     }
 
-    public function getCommunicationsByTypeCodes(int $userId, array $types): array
+    /**
+     * Вернёт список коммуникаций пользователя, которые доступны для настройки уведомлений о событии $eventType
+     */
+    public function getCommunicationsForServiceNotificationAvailable(int $userId): array
     {
-        $typeTableName = CommunicationType::getTableName();
-        $communicationTableName = Communication::getTableName();
-
-        return $this->db->table($communicationTableName)
-            ->join($typeTableName, $typeTableName . '.id', '=', $communicationTableName . '.type_id')
-            ->where('user_id', $userId)
-            ->whereIn($typeTableName . '.code', $types)
-            ->selectRaw(implode(',', [
-                $communicationTableName . '.id as id',
-                $communicationTableName . '.address as address',
-                $typeTableName . '.code AS code'
-            ]))
+        return Communication::where(Communication::getTableName() . '.user_id', $userId)
             ->get()->all();
-    }
-
-    public function getCommunicationChannelTypes(array $channels): array
-    {
-        return CommunicationType::whereIn('code', $channels)->get()->all();
     }
 }

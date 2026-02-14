@@ -27,7 +27,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('user_id')->nullable();
             $table->string('recipient');
             $table->string('channel');
-            $table->string('event_type');
+            $table->string('event');
             $table->string('status');
 
             $table->timestampTz('created_at')->useCurrent();

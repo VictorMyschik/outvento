@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\Notification;
 
-use App\Orchid\Filters\MessageLog\UserNotificationSettingFilter;
+use App\Models\Notification\ServiceNotification;
+use App\Orchid\Filters\MessageLog\UserServiceNotificationFilter;
 use App\Orchid\Layouts\Notifications\UserNotificationSettingEditLayout;
 use App\Orchid\Layouts\Notifications\UserNotificationSettingsListLayout;
-use App\Services\Notifications\NotificationService;
+use App\Services\Notifications\ServiceNotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -15,19 +16,19 @@ use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
 
-final class UserNotificationSettingScreen extends Screen
+final class UserServiceNotificationScreen extends Screen
 {
     public function __construct(
-        private readonly Request             $request,
-        private readonly NotificationService $service,
+        private readonly Request                    $request,
+        private readonly ServiceNotificationService $service,
     ) {}
 
-    public string $name = 'User Notification Settings';
+    public string $name = 'User Service Notification';
 
     public function query(): iterable
     {
         return [
-            'list' => UserNotificationSettingFilter::runQuery()->paginate(20),
+            'list' => UserServiceNotificationFilter::runQuery()->paginate(10),
         ];
     }
 
@@ -38,7 +39,7 @@ final class UserNotificationSettingScreen extends Screen
                 ->class('mr-btn-success')
                 ->icon('plus')
                 ->modal('user_notification_modal')
-                ->modalTitle('Create New User Setting')
+                ->modalTitle('Create user service notification')
                 ->method('saveUserSetting')
                 ->asyncParameters(['id' => 0]),
         ];
@@ -47,7 +48,7 @@ final class UserNotificationSettingScreen extends Screen
     public function layout(): iterable
     {
         return [
-            UserNotificationSettingFilter::displayFilterCard($this->request),
+            UserServiceNotificationFilter::displayFilterCard($this->request),
             UserNotificationSettingsListLayout::class,
 
             Layout::modal('user_notification_modal', UserNotificationSettingEditLayout::class)->async('asyncGetUserSetting'),
@@ -57,19 +58,17 @@ final class UserNotificationSettingScreen extends Screen
     public function asyncGetUserSetting(int $id): array
     {
         return [
-            'setting' => $this->service->getUserNotificationSettingById($id),
+            'setting' => ServiceNotification::loadBy($id),
         ];
     }
 
     public function saveUserSetting(Request $request, int $id): void
     {
         $input = Validator::make($request->all(), [
-            'setting.active'           => 'nullable',
             'setting.user_id'          => 'required|integer',
-            'setting.event_type_id'    => 'required',
+            'setting.event'            => 'required|integer',
             'setting.communication_id' => 'required|integer'
         ])->validate()['setting'];
-        $input['active'] = (bool)$input['active'] ?? false;
 
         $this->service->saveUserSetting($id, $input);
     }
@@ -82,21 +81,21 @@ final class UserNotificationSettingScreen extends Screen
     #region Filter
     public function runFiltering(Request $request): RedirectResponse
     {
-        $input = $request->all(UserNotificationSettingFilter::FIELDS);
+        $input = $request->all(UserServiceNotificationFilter::FIELDS);
 
         $list = [];
-        foreach (UserNotificationSettingFilter::FIELDS as $item) {
+        foreach (UserServiceNotificationFilter::FIELDS as $item) {
             if (!is_null($input[$item])) {
                 $list[$item] = $input[$item];
             }
         }
 
-        return redirect()->route('notification.user.settings.list', $list);
+        return redirect()->route('user.service.notification.list', $list);
     }
 
     public function clearFilter(): RedirectResponse
     {
-        return redirect()->route('notification.user.settings.list');
+        return redirect()->route('user.service.notification.list');
     }
 
     #endregion

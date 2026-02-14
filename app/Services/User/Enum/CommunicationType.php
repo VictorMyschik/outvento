@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace App\Services\User\Enum;
 
-enum CommunicationTypeCode: string
+enum CommunicationType: int
 {
-    case Phone = 'phone';
-    case Mail = 'mail';
-    case Address = 'address';
-    case Whatsapp = 'whatsapp';
-    case Telegram = 'telegram';
-    case Viber = 'viber';
-    case Link = 'link';
-    case Geocoordinates = 'geocoordinates';
-    case Other = 'other';
+    case Phone = 1;
+    case Email = 2;
+    case Address = 3;
+    case Whatsapp = 4;
+    case Telegram = 5;
+    case Viber = 6;
+    case Link = 7;
+    case Geocoordinates = 8;
+    case Other = 9;
 
     public function getLabel(): string
     {
-        return __('enums.communicate_type.' . $this->name);
+        return __('enums.communication_types.' . $this->name);
     }
 
     public static function getSelectList(): array

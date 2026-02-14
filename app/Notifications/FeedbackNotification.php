@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Notifications;
 
 use App\Services\Forms\DTO\FormFeedbackDTO;
-use App\Services\Notifications\Enum\EventType;
+use App\Services\Notifications\Enum\ServiceEvent;
 use App\Services\Notifications\NotificationRecipientInterface;
 use App\Services\Telegram\TelegramMarkdown;
 use Illuminate\Bus\Queueable;
@@ -18,7 +18,7 @@ class FeedbackNotification extends Notification
     use Queueable;
 
     public array $data;
-    public const string KEY = EventType::Feedback->value;
+    public const string KEY = ServiceEvent::Feedback->value;
 
     public function __construct(public FormFeedbackDTO $dto) {}
 

@@ -6,16 +6,16 @@ return [
         'Female' => 'Kobieta',
     ],
 
-    'communicate_type' => [
-        'Phone'         => 'Telefon',
-        'Mail'          => 'Email',
-        'Address'       => 'Adres',
-        'WhatsApp'      => 'WhatsApp',
-        'Telegram'      => 'Telegram',
-        'Viber'         => 'Viber',
-        'Link'          => 'Link',
-        'GeoCoordinate' => 'Współrzędne geograficzne',
-        'Other'         => 'Inne',
+    'communication_typess' => [
+        'Phone'          => 'Telefon',
+        'Email'           => 'Email',
+        'Address'        => 'Adres',
+        'Whatsapp'       => 'WhatsApp',
+        'Telegram'       => 'Telegram',
+        'Viber'          => 'Viber',
+        'Link'           => 'Link',
+        'Geocoordinates' => 'Współrzędne geograficzne',
+        'Other'          => 'Inne',
     ],
 
     'users_visibility' => [

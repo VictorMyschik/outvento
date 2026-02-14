@@ -6,7 +6,7 @@ namespace App\Orchid\Filters\System;
 
 use App\Models\NotificationToken;
 use App\Orchid\Layouts\Lego\ActionFilterPanel;
-use App\Services\Notifications\Enum\EventType;
+use App\Services\Notifications\Enum\ServiceEvent;
 use App\Services\Notifications\Enum\NotificationChannel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -84,7 +84,7 @@ class NotificationTokenFilter extends Filter
                 Select::make('type')
                     ->title('Type')
                     ->value($input['type'])
-                    ->options(EventType::getSelectList())
+                    ->options(ServiceEvent::getSelectList())
                     ->empty('[Select Type]'),
 
                 Input::make('token')

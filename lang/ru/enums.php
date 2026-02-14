@@ -6,16 +6,16 @@ return [
         'Female' => 'Женский',
     ],
 
-    'communicate_type' => [
-        'Phone'         => 'Телефон',
-        'Mail'          => 'Email',
-        'Address'       => 'Адрес',
-        'WhatsApp'      => 'WhatsApp',
-        'Telegram'      => 'Telegram',
-        'Viber'         => 'Viber',
-        'Link'          => 'Ссылка',
-        'GeoCoordinate' => 'Геокоординаты',
-        'Other'         => 'Другое',
+    'communication_types'      => [
+        'Phone'          => 'Телефон',
+        'Email'           => 'Email',
+        'Address'        => 'Адрес',
+        'Whatsapp'       => 'WhatsApp',
+        'Telegram'       => 'Telegram',
+        'Viber'          => 'Viber',
+        'Link'           => 'Ссылка',
+        'Geocoordinates' => 'Геокоординаты',
+        'Other'          => 'Другое',
     ],
 
     'users_visibility' => [

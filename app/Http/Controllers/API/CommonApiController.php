@@ -10,7 +10,7 @@ use App\Http\Controllers\API\Response\Common\LanguagesResponse;
 use App\Http\Controllers\API\Response\FrontendSettingsResponse;
 use App\Services\Language\API\TranslateApiService;
 use App\Services\Language\Enum\TranslateGroupEnum;
-use App\Services\Notifications\NotificationService;
+use App\Services\Notifications\AbstractNotificationService;
 use App\Services\Other\LegalDocuments\Enum\LegalDocumentType;
 use App\Services\Other\LegalDocuments\LegalDocumentsApiService;
 use App\Services\System\Enum\Language;
@@ -22,10 +22,10 @@ use OpenApi\Attributes as OA;
 class CommonApiController extends APIController
 {
     public function __construct(
-        private readonly TranslateApiService      $translateApiService,
-        private readonly SettingsService          $settingsService,
-        private readonly LegalDocumentsApiService $termsAndConditionsApiService,
-        private readonly NotificationService      $notificationService,
+        private readonly TranslateApiService         $translateApiService,
+        private readonly SettingsService             $settingsService,
+        private readonly LegalDocumentsApiService    $termsAndConditionsApiService,
+        private readonly AbstractNotificationService $notificationService,
     ) {}
 
     #[OA\Get(

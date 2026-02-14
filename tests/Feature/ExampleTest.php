@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 // use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\Notification\NotificationEventType;
-use App\Models\Notification\UserNotificationSetting;
+use App\Models\Notification\ServiceNotification;
 use App\Models\UserInfo\Communication;
 use App\Models\UserInfo\CommunicationType;
 use Illuminate\Database\Query\JoinClause;

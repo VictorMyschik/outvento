@@ -8,17 +8,17 @@ use App\Events\FormRequestEvent;
 use App\Models\User;
 use App\Notifications\FeedbackNotification;
 use App\Services\Forms\Enum\FormType;
-use App\Services\Notifications\Enum\EventType;
-use App\Services\Notifications\NotificationService;
+use App\Services\Notifications\Enum\ServiceEvent;
+use App\Services\Notifications\AbstractNotificationService;
 
 final readonly class FormListener
 {
-    public function __construct(public NotificationService $service) {}
+    public function __construct(public AbstractNotificationService $service) {}
 
     public function handle(FormRequestEvent $event): void
     {
         $eventType = match ($event->form->getType()) {
-            FormType::Feedback => EventType::Feedback,
+            FormType::Feedback => ServiceEvent::Feedback,
         };
 
         if ($eventType === null) {

@@ -112,12 +112,17 @@ final readonly class AuthService
             'email'              => $dto->email,
             'password'           => Hash::make($dto->password),
             'language'           => $dto->language,
-            'subscription_token' => Str::random(32),
+            'subscription_token' => $this->generateSubscriptionToken(),
         ]);
 
         $this->repository->updateUserRoles($id, $this->repository->getIdsForRoles($dto->roles));
 
         return $this->repository->getUserById($id);
+    }
+
+    public function generateSubscriptionToken(): string
+    {
+        return Str::random(32);
     }
 
     public function checkActualResetPasswordToken(string $token): void

@@ -9,7 +9,7 @@ use App\Models\MessageLog\EmailLog;
 use App\Orchid\Filters\MessageLog\MessageLogEmailFilter;
 use App\Orchid\Layouts\Lego\RawLogViewLayout;
 use App\Orchid\Layouts\Notifications\EmailLogListLayout;
-use App\Services\Notifications\NotificationService;
+use App\Services\Notifications\AbstractNotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
@@ -20,8 +20,8 @@ use Orchid\Support\Facades\Layout;
 final class MessageLogEmailScreen extends Screen
 {
     public function __construct(
-        private readonly Request             $request,
-        private readonly NotificationService $notificationService,
+        private readonly Request                     $request,
+        private readonly AbstractNotificationService $notificationService,
     ) {}
 
     public string $name = 'Лог отправленных писем';

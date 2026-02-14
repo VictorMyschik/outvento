@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\API\User\Request;
 
+use App\Services\User\Enum\CommunicationType;
 use App\Services\User\Enum\Visibility;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -25,7 +26,7 @@ class CommunicationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type_id'     => ['required', 'integer', Rule::exists('communication_types', 'id')],
+            'type'        => ['required', 'integer', Rule::in(array_keys(CommunicationType::getSelectList()))],
             'address'     => ['required', 'string', 'max:255', 'not_regex:/<[^>]+>/'],
             'description' => ['sometimes', 'nullable', 'string', 'max:8000', 'not_regex:/<[^>]+>/'],
             'visibility'  => ['sometimes', 'integer', Rule::in(array_keys(Visibility::getSelectList()))],

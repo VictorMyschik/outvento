@@ -13,17 +13,15 @@ use App\Orchid\Screens\Language\TranslateScreen;
 use App\Orchid\Screens\Newsletter\NewsEditScreen;
 use App\Orchid\Screens\Newsletter\NewsletterScreen;
 use App\Orchid\Screens\Notification\MessageLogEmailScreen;
-use App\Orchid\Screens\Notification\UserNotificationSettingScreen;
+use App\Orchid\Screens\Notification\UserServiceNotificationScreen;
 use App\Orchid\Screens\Other\LegalDocumentEditScreen;
 use App\Orchid\Screens\Other\LegalDocumentsScreen;
 use App\Orchid\Screens\PlatformScreen;
 use App\Orchid\Screens\References\CategoryEquipmentScreen;
 use App\Orchid\Screens\References\CitiesScreen;
-use App\Orchid\Screens\References\CommunicateTypeScreen;
 use App\Orchid\Screens\References\CountryScreen;
 use App\Orchid\Screens\References\EmailScreen;
 use App\Orchid\Screens\References\EquipmentScreen;
-use App\Orchid\Screens\References\NotificationEventTypeScreen;
 use App\Orchid\Screens\References\TravelTypeListScreen;
 use App\Orchid\Screens\Role\RoleEditScreen;
 use App\Orchid\Screens\Role\RoleListScreen;
@@ -153,14 +151,12 @@ Route::screen('/reference/equipments/list', EquipmentScreen::class)->name('refer
 Route::screen('/reference/cities/list', CitiesScreen::class)->name('reference.cities.list');
 Route::screen('/reference/countries/list', CountryScreen::class)->name('reference.countries.list');
 Route::screen('/reference/emails', EmailScreen::class)->name('reference.email.list');
-Route::screen('/reference/communication-type/list', CommunicateTypeScreen::class)->name('reference.communication-type.list');
-Route::screen('/reference/notification-event-type/list', NotificationEventTypeScreen::class)->name('reference.notification-event-type.list');
 
 // Forms
 Route::screen('/forms/list', FormsScreen::class)->name('forms.list');
 
 /// Message Log
-Route::screen('/notification/user/settings/list', UserNotificationSettingScreen::class)->name('notification.user.settings.list');
+Route::screen('/user/service/notification', UserServiceNotificationScreen::class)->name('user.service.notification.list');
 //Route::screen('/notification/log/email/list', MessageLogEmailScreen::class)->name('notification.log.email.list');
 //Route::screen('/notification/log/telegram/list', MessageLogTelegramScreen::class)->name('notification.log.telegram.list');
 

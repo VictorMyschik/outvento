@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Models\ORM\ORM;
-use App\Services\Notifications\Enum\EventType;
+use App\Services\Notifications\Enum\ServiceEvent;
 use App\Services\Notifications\Enum\NotificationChannel;
+use App\Services\Notifications\Enum\SystemEvent;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
 
@@ -30,9 +31,9 @@ class NotificationToken extends ORM
         'created_at' => 'datetime',
     ];
 
-    public function getType(): EventType
+    public function getType(): SystemEvent
     {
-        return EventType::from($this->type);
+        return SystemEvent::from($this->type);
     }
 
     public function getChannel(): NotificationChannel

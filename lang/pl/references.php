@@ -1,19 +1,7 @@
 <?php
 
 return [
-    'notification_event_types' => [
+    'notification_events' => [
         'feedback' => 'Feedback',
-    ],
-
-    'communication_types' => [
-        'phone'          => 'Telefon',
-        'mail'           => 'Email',
-        'address'        => 'Adres',
-        'whatsapp'       => 'WhatsApp',
-        'telegram'       => 'Telegram',
-        'viber'          => 'Viber',
-        'link'           => 'Link',
-        'geocoordinates' => 'Współrzędne geograficzne',
-        'other'          => 'Inne',
     ],
 ];

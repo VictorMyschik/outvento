@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid\Layouts\User;
 
-use App\Models\UserInfo\CommunicationType;
-use App\Services\User\Enum\CommunicationTypeCode;
+use App\Services\User\Enum\CommunicationType;
 use App\Services\User\Enum\VerificationStatus;
 use App\Services\User\Enum\Visibility;
 use Illuminate\Http\Request;
@@ -34,15 +33,15 @@ class UserCommunicateEditLayout extends Listener
             ->value(request()->get('visibility'))
             ->title('Visibility');
 
-        $out[] = Relation::make('type_id')
-            ->fromModel(CommunicationType::class, 'title', 'id')
+        $out[] = Select::make('type')
+            ->options(CommunicationType::getSelectList())
             ->value(request()->get('type_id'))
             ->title('Type');
 
         if (request()->get('type_id') || $this->query->get('type_id')) {
-            $type = CommunicationType::loadByOrDie((int)request()->get('type_id') ?: $this->query->get('type_id'));
+            $type = CommunicationType::from((int)request()->get('type_id') ?: $this->query->get('type_id'));
 
-            if ($type->getCode() === CommunicationTypeCode::Mail) {
+            if ($type === CommunicationType::Email) {
                 $out[] = Select::make('verification_status')
                     ->value((bool)request()->get('verification_status'))
                     ->options(VerificationStatus::getSelectList())

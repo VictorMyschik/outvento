@@ -8,6 +8,9 @@ use App\Models\Lego\Fields\DescriptionNullableFieldTrait;
 use App\Models\Lego\Fields\NameByLanguageFieldTrait;
 use App\Models\Lego\Fields\UserFieldTrait;
 use App\Models\ORM\ORM;
+use App\Services\Notifications\Enum\NotificationChannel;
+use App\Services\Notifications\Resolvers\CommunicationChannelSupportResolver;
+use App\Services\User\Enum\CommunicationType;
 use App\Services\User\Enum\VerificationStatus;
 use App\Services\User\Enum\Visibility;
 use Orchid\Filters\Filterable;
@@ -25,7 +28,7 @@ class Communication extends ORM
     protected $table = 'communications';
     protected $fillable = [
         'user_id',
-        'type_id',// тип: телефон, email, факс...
+        'type',// тип: телефон, email, факс...
         'address',
         'description',
     ];
@@ -40,7 +43,7 @@ class Communication extends ORM
         'user_id',
         'full_name',
         'address',
-        'type_id',
+        'type',
         'email',
         'name',
         'description',
@@ -53,7 +56,7 @@ class Communication extends ORM
 
     public function getType(): CommunicationType
     {
-        return CommunicationType::loadByOrDie($this->type_id);
+        return CommunicationType::from($this->type);
     }
 
     public function getVisibility(): Visibility
@@ -64,5 +67,10 @@ class Communication extends ORM
     public function getVerificationStatus(): VerificationStatus
     {
         return VerificationStatus::from($this->verification_status);
+    }
+
+    public function getChannel(): ?NotificationChannel
+    {
+        return CommunicationChannelSupportResolver::fromCommunicationType($this->getType());
     }
 }

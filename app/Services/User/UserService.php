@@ -4,41 +4,42 @@ declare(strict_types=1);
 
 namespace App\Services\User;
 
+use App\Models\Notification\ServiceNotification;
 use App\Models\User;
 use App\Models\UserInfo\Communication;
-use App\Models\UserInfo\CommunicationType;
 use App\Repositories\User\UserRepository;
-use App\Services\Notifications\Enum\EventType;
 use App\Services\Notifications\Enum\NotificationChannel;
-use App\Services\Notifications\NotificationService;
-use App\Services\User\Enum\CommunicationTypeCode;
+use App\Services\Notifications\Enum\ServiceEvent;
+use App\Services\Notifications\Enum\SystemEvent;
+use App\Services\Notifications\ServiceNotificationDto;
+use App\Services\Notifications\ServiceNotificationService;
+use App\Services\Notifications\SystemNotificationService;
+use App\Services\User\Enum\CommunicationType;
 use App\Services\User\Enum\VerificationStatus;
 use Illuminate\Http\UploadedFile;
 
 final readonly class UserService
 {
     public function __construct(
-        private UserUploadService   $uploadService,
-        private UserRepository      $repository,
-        private AuthService         $authService,
-        private NotificationService $notificationService,
+        private UserUploadService          $uploadService,
+        private UserRepository             $repository,
+        private AuthService                $authService,
+        private SystemNotificationService  $notificationService,
+        private ServiceNotificationService $serviceNotificationService,
     ) {}
 
     public function updateUser(User $user, array $data): User
     {
-        if (count($data)) {
-            $this->repository->updateUser($user->id, $data);
-            $user->refresh();
-        }
-
+        $data['email_verified_at'] = $user->email_verified_at;
         if (!empty($data['email']) && $data['email'] !== $user->email) {
             $data['email_verified_at'] = null;
-
-            $this->authService->sendVerifyNotification($user);
         }
 
-        if (count($data)) {
-            $this->repository->updateUser($user->id, $data);
+        $this->repository->updateUser($user->id, $data);
+        $user->refresh();
+
+        if ($data['email_verified_at'] === null) {
+            $this->authService->sendVerifyNotification($user);
         }
 
         return $this->repository->getUserById($user->id);
@@ -86,7 +87,7 @@ final readonly class UserService
 
     public function saveCommunication(int $id, array $data): int
     {
-        if (CommunicationType::loadByOrDie($data['type_id'])->getCode() === CommunicationTypeCode::Mail) {
+        if (CommunicationType::from($data['type']) === CommunicationType::Email) {
             if (!filter_var($data['address'], FILTER_VALIDATE_EMAIL)) {
                 throw new \InvalidArgumentException('Invalid email address');
             }
@@ -109,7 +110,7 @@ final readonly class UserService
         $this->notificationService->addAndSendRequest(
             channel: NotificationChannel::Email,
             address: $communication->address,
-            eventType: EventType::VerifyCommunicationEmail,
+            eventType: SystemEvent::VerifyCommunicationEmail,
             data: $communication->toArray(),
         );
     }
@@ -120,7 +121,7 @@ final readonly class UserService
             $this->notificationService->addAndSendRequest(
                 channel: NotificationChannel::Email,
                 address: $data['address'],
-                eventType: EventType::VerifyCommunicationEmail,
+                eventType: SystemEvent::VerifyCommunicationEmail,
                 data: $data,
             );
 
@@ -133,7 +134,7 @@ final readonly class UserService
             $this->notificationService->addAndSendRequest(
                 channel: NotificationChannel::Email,
                 address: $data['address'],
-                eventType: EventType::VerifyCommunicationEmail,
+                eventType: SystemEvent::VerifyCommunicationEmail,
                 data: $data,
             );
         }
@@ -155,72 +156,38 @@ final readonly class UserService
     }
 
     #region Notifications
-    public function getCommunicationChannelTypes(): array
+    public function getCommunicationsForNotification(int $userId, ?ServiceEvent $eventType): array
     {
-        return $this->repository->getCommunicationChannelTypes(array_keys(NotificationChannel::getSelectList()));
+        return $this->repository->getCommunicationsForServiceNotificationAvailable($userId, $eventType);
     }
 
-    public function getCommunicationsForNotification(int $userId): array
+    public function isUserNotificationActive(int $userId, ServiceEvent $event): bool
     {
-        return $this->repository->getCommunicationsByTypeCodes($userId, array_keys(NotificationChannel::getSelectList()));
+        return $this->serviceNotificationService->isUserNotificationActive($userId, $event);
     }
 
-    public function getUserNotificationSettingsList(int $userId): array
+    /**
+     * @return ServiceNotification[]
+     */
+    public function getServiceUserNotificationList(int $userId): array
     {
-        return $this->notificationService->getUserNotificationSettingsList($userId);
+        return $this->serviceNotificationService->getServiceNotificationList($userId);
     }
 
     public function resetToDefaultUserNotifications(int $userId): void
     {
-        $this->notificationService->resetToDefault($userId);
+        $this->serviceNotificationService->resetToDefault($userId);
     }
 
-    public function updateUserNotificationSetting(int $userId, int $eventTypeId, array $data): void
+    public function updateUserServiceNotification(int $userId, ServiceEvent $event, ServiceNotificationDto $dto): void
     {
-        if (!$eventTypeId) {
-            $this->notificationService->updateFullUserNotificationSetting($userId, $data);
-
-            return;
-        }
-
-        $list = $this->notificationService->getUserNotificationSettingsList($userId, $eventTypeId);
-
-        foreach ($list as $item) {
-            $communicationId = $data[$item->event_type_id][$item->getCommunicationType()->code]['communication_id'] ?? null;
-            $active = $data[$item->event_type_id][$item->getCommunicationType()->code]['active'] ?? false;
-
-            if ($communicationId !== null) {
-                $this->notificationService->saveUserSetting($item->id, [
-                    'active'           => $active,
-                    'user_id'          => $userId,
-                    'event_type_id'    => $item->event_type_id,
-                    'communication_id' => (int)$communicationId,
-                ]);
-                unset($data[$item->event_type_id][$item->getCommunicationType()->code]);
-            } else {
-                $this->notificationService->deleteUserSetting($item->id);
-            }
-        }
-
-        foreach ($data as $eventTypeId => $channels) {
-            foreach ($channels as $item) {
-                if (empty($item['communication_id'])) {
-                    continue;
-                }
-
-                $this->notificationService->saveUserSetting(0, [
-                    'active'           => $item['active'] ?? false,
-                    'user_id'          => $userId,
-                    'event_type_id'    => $eventTypeId,
-                    'communication_id' => (int)$item['communication_id'],
-                ]);
-            }
-        }
+        $this->serviceNotificationService->updateUserServiceNotification($userId, $event, $dto);
     }
 
-    public function getNotificationTypesForUser(User $user): array
+    public function updateNotificationMute(int $userId, ServiceEvent $event, bool $active): void
     {
-        return $this->notificationService->getNotificationTypesForUser($user);
+        $this->serviceNotificationService->updateNotificationMute($userId, $event, $active);
     }
+
     #endregion
 }

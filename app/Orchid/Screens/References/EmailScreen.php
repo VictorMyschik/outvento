@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Orchid\Screens\References;
 
 use App\Services\Forms\DTO\FormFeedbackDTO;
-use App\Services\Notifications\NotificationService;
+use App\Services\Notifications\AbstractNotificationService;
 use App\Services\System\Enum\Language;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -46,7 +46,7 @@ class EmailScreen extends Screen
 
         $fakeData['new_news_subscription'] = [
             'unsubscribeUrl'  => '#',
-            'expireMinutes'   => NotificationService::EXPIRE_MINUTES,
+            'expireMinutes'   => AbstractNotificationService::EXPIRE_MINUTES,
             'confirmationUrl' => 'https://example.com/news/confirm?token=abcdef',
         ];
 
@@ -66,7 +66,7 @@ class EmailScreen extends Screen
 
         $fakeData['verify_account'] = [
             'code'          => '123456',
-            'expireMinutes' => NotificationService::EXPIRE_MINUTES,
+            'expireMinutes' => AbstractNotificationService::EXPIRE_MINUTES,
         ];
 
         $fakeData['feedback'] = [
@@ -75,7 +75,7 @@ class EmailScreen extends Screen
 
         $fakeData['verify_communication_email'] = [
             'confirmationUrl' => 'https://example.com/confirm?token=abcdef',
-            'expireMinutes'   => NotificationService::EXPIRE_MINUTES,
+            'expireMinutes'   => AbstractNotificationService::EXPIRE_MINUTES,
         ];
 
         App::setlocale(Language::from((int)$this->request->get('locale', Language::RU->value))->getCode());

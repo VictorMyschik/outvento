@@ -8,5 +8,5 @@ enum ImageTypeEnum: string
 {
     case TravelType = 'travel_type';
     case CommunicationType = 'communication_type';
-    case NotificationEventType = 'notification_event_type';
+    case NotificationEventType = 'notification_event';
 }

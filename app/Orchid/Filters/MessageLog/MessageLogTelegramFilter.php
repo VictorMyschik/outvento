@@ -8,7 +8,7 @@ use App\Models\MessageLog\TelegramLog;
 use App\Models\User;
 use App\Orchid\Layouts\Lego\ActionFilterPanel;
 use App\Services\Email\Enum\EmailTypeEnum;
-use App\Services\Notifications\Enum\EventType;
+use App\Services\Notifications\Enum\ServiceEvent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Orchid\Filters\Filter;
@@ -72,7 +72,7 @@ final class MessageLogTelegramFilter extends Filter
 
         $group = Group::make([
             Select::make('type')
-                ->options(EventType::getSelectList())
+                ->options(ServiceEvent::getSelectList())
                 ->value($input['type'])
                 ->empty()
                 ->title('Тип письма'),

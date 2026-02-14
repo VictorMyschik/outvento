@@ -4,43 +4,28 @@ declare(strict_types=1);
 
 namespace App\Services\Notifications;
 
-use App\Models\Notification\UserNotificationSetting;
 use App\Models\NotificationToken;
 use App\Models\User;
+use App\Models\UserInfo\Communication;
 use App\Notifications\NewsNotification;
 use App\Repositories\System\SettingsRepositoryInterface;
-use App\Services\Notifications\Enum\EventType;
 use App\Services\Notifications\Enum\NotificationChannel;
-use App\Services\System\Enum\Language;
+use App\Services\Notifications\Enum\ServiceEvent;
+use App\Services\Notifications\Enum\SystemEvent;
+use App\Services\Notifications\Resolvers\CommunicationChannelSupportResolver;
 use Illuminate\Mail\Mailable;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
-final readonly class NotificationService
+abstract readonly class AbstractNotificationService
 {
     public const int EXPIRE_MINUTES = 20;
 
     public function __construct(
-        private NotificationRepositoryInterface $repository,
-        private SettingsRepositoryInterface     $settingsRepository,
+        protected NotificationRepositoryInterface $repository,
+        protected SettingsRepositoryInterface     $settingsRepository,
     ) {}
-
-    public function resetToDefault(int $userId): void
-    {
-        $this->repository->deleteAllUserSettings($userId);
-    }
-
-    public function updateFullUserNotificationSetting(int $userId, array $data): void
-    {
-        $this->repository->deleteAllUserSettings($userId);
-        $this->repository->insertUserSettings($data);
-    }
-
-    public function getUserNotificationSettingsList(int $userId, ?int $eventTypeId = null): array
-    {
-        return $this->repository->getUserNotificationSettingsList($userId, $eventTypeId);
-    }
 
     public static function getUnsubscribeUrl(string $token): string
     {
@@ -54,12 +39,10 @@ final readonly class NotificationService
 
     public function saveUserSetting(int $id, array $data): int
     {
-        return $this->repository->saveUserSetting($id, $data);
-    }
+        $communication = Communication::loadByOrDie((int)$data['communication_id']);
+        $data['channel'] = CommunicationChannelSupportResolver::fromCommunicationType($communication->getType())->value;
 
-    public function getUserNotificationSettingById(int $id): ?UserNotificationSetting
-    {
-        return $this->repository->getUserNotificationSettingById($id);
+        return $this->repository->saveServiceUserNotification($id, $data);
     }
 
     public function deleteUserSetting(int $id): void
@@ -67,17 +50,12 @@ final readonly class NotificationService
         $this->repository->deleteUserSetting($id);
     }
 
-    public function getNotificationTypesForUser(User $user): array
-    {
-        return $this->repository->getNotificationTypesForUser($user);
-    }
-
-    public function getAuthSubscribersList(EventType $type): array
+    public function getAuthSubscribersList(ServiceEvent $type): array
     {
         return $this->repository->getSubscriptionUsersList($type);
     }
 
-    public function getSubscribersList(EventType $type): array
+    public function getSubscribersList(ServiceEvent $type): array
     {
         return $this->repository->getSubscriptionUsersList($type);
     }
@@ -97,7 +75,7 @@ final readonly class NotificationService
     /**
      * Пока не используется
      */
-    public function customEmailNotify(string $to, Mailable $email, EventType $type): void
+    public function customEmailNotify(string $to, Mailable $email, ServiceEvent $type): void
     {
         try {
             Mail::to($to)->send($email->from(config('mail.from.address'), config('mail.from.name')));
@@ -111,7 +89,7 @@ final readonly class NotificationService
         Log::info('Custom email sent to ' . $to . ' with type ' . $type->getLabel());
     }
 
-    public function addAndSendRequest(NotificationChannel $channel, string $address, EventType $eventType, mixed $data): void
+    public function addAndSendRequest(NotificationChannel $channel, string $address, SystemEvent $eventType, mixed $data): void
     {
         $token = md5(uniqid());
 
@@ -162,13 +140,13 @@ final readonly class NotificationService
     public function buildView(NotificationToken $notificationToken): View
     {
         return match ($notificationToken->getType()) {
-            EventType::NewNewsSubscription => View('emails.new_news_subscription')->with([
+            SystemEvent::NewNewsSubscription => View('emails.new_news_subscription')->with([
                 'confirmationUrl' => self::getConfirmUrl($notificationToken->token),
-                'expireMinutes'   => NotificationService::EXPIRE_MINUTES,
+                'expireMinutes'   => AbstractNotificationService::EXPIRE_MINUTES,
             ]),
-            EventType::VerifyCommunicationEmail => View('emails.verify_communication_email')->with([
+            SystemEvent::VerifyCommunicationEmail => View('emails.verify_communication_email')->with([
                 'confirmationUrl' => self::getConfirmUrl($notificationToken->token),
-                'expireMinutes'   => NotificationService::EXPIRE_MINUTES,
+                'expireMinutes'   => AbstractNotificationService::EXPIRE_MINUTES,
             ]),
             default => throw new \Exception('Unsupported notification type: ' . $notificationToken->getType()->getLabel()),
         };

@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use App\Models\Notification\UserNotificationSetting;
+use App\Models\Notification\ServiceNotification;
 use App\Models\UserInfo\Communication;
 use App\Models\UserInfo\CommunicationType;
 use App\Models\UserInfo\SocialAccount;
-use App\Services\Notifications\Enum\EventType;
+use App\Services\Notifications\Enum\ServiceEvent;
 use App\Services\Notifications\Enum\NotificationChannel;
 use App\Services\Notifications\NotificationRecipientInterface;
 use App\Services\System\Enum\Language;
@@ -159,7 +159,7 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
 
     public function notificationSettings(): HasMany
     {
-        return $this->hasMany(UserNotificationSetting::class);
+        return $this->hasMany(ServiceNotification::class);
     }
 
     /**
@@ -172,10 +172,10 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
 
         // Вернёт список каналов, которые есть в используются
         return $this->notificationSettings()
-            ->join(Communication::getTableName(), UserNotificationSetting::getTableName() . '.communication_id', '=', Communication::getTableName() . '.id')
+            ->join(Communication::getTableName(), ServiceNotification::getTableName() . '.communication_id', '=', Communication::getTableName() . '.id')
             ->join(CommunicationType::getTableName(), CommunicationType::getTableName() . '.id', '=', Communication::getTableName() . '.type_id')
-            ->where('event_type', $notificationClass::KEY)
-            ->where(UserNotificationSetting::getTableName() . '.active', true)
+            ->where('event', $notificationClass::KEY)
+            ->where(ServiceNotification::getTableName() . '.active', true)
             ->pluck(CommunicationType::getTableName() . '.code')
             ->unique()
             ->values()
@@ -187,7 +187,7 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
         return $this->notificationSettings()
             ->join(
                 Communication::getTableName(),
-                UserNotificationSetting::getTableName() . '.communication_id',
+                ServiceNotification::getTableName() . '.communication_id',
                 '=',
                 Communication::getTableName() . '.id'
             )
@@ -197,15 +197,15 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
                 '=',
                 Communication::getTableName() . '.type_id'
             )
-            ->where(UserNotificationSetting::getTableName() . '.event_type', $eventKey)
-            ->where(UserNotificationSetting::getTableName() . '.active', true)
+            ->where(ServiceNotification::getTableName() . '.event', $eventKey)
+            ->where(ServiceNotification::getTableName() . '.active', true)
             ->where(CommunicationType::getTableName() . '.code', $channel)
             ->value(Communication::getTableName() . '.address');
     }
 
     public function routeNotificationForMail(Notification $notification): string|array|null
     {
-        if (isset(EventType::getSelectList()[$notification::KEY])) {
+        if (isset(ServiceEvent::getSelectList()[$notification::KEY])) {
             return $this->getCommunicationAddressFor(
                 channel: NotificationChannel::Email->value,
                 eventKey: $notification::KEY
@@ -217,7 +217,7 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
 
     public function routeNotificationForTelegram(Notification $notification): string|int|null
     {
-        if (isset(EventType::getSelectList()[$notification::KEY])) {
+        if (isset(ServiceEvent::getSelectList()[$notification::KEY])) {
             return $this->getCommunicationAddressFor(
                 channel: NotificationChannel::Telegram->value,
                 eventKey: $notification::KEY

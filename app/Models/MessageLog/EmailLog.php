@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Models\MessageLog;
 
 use App\Models\ORM\ORM;
-use App\Services\Notifications\Enum\EventType;
+use App\Services\Notifications\Enum\ServiceEvent;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
 
@@ -24,12 +24,12 @@ class EmailLog extends ORM
         'sl' => 'json'
     ];
 
-    public function getType(): EventType
+    public function getType(): ServiceEvent
     {
-        return EventType::from((string)$this->type);
+        return ServiceEvent::from((int)$this->type);
     }
 
-    public function setType(EventType $value): void
+    public function setType(ServiceEvent $value): void
     {
         $this->type = $value->value;
     }

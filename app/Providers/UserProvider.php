@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Repositories\User\UserRepository;
-use App\Services\Notifications\NotificationRepositoryInterface;
-use App\Services\Notifications\NotificationService;
+use App\Services\Notifications\ServiceNotificationService;
+use App\Services\Notifications\SystemNotificationService;
 use App\Services\User\AuthService;
 use App\Services\User\UserService;
 use App\Services\User\UserUploadService;
@@ -28,7 +28,8 @@ class UserProvider extends ServiceProvider
                 ),
                 repository: $app->make(UserRepository::class),
                 authService: $app->make(AuthService::class),
-                notificationService: $app->make(NotificationService::class),
+                notificationService: $app->make(SystemNotificationService::class),
+                serviceNotificationService: $app->make(ServiceNotificationService::class),
             );
         });
     }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid\Layouts\Notifications;
 
-use App\Models\Notification\UserNotificationSetting;
+use App\Models\Notification\ServiceNotification;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\ModalToggle;
@@ -19,18 +19,15 @@ class UserNotificationSettingsListLayout extends Table
     {
         return [
             TD::make('id', 'ID')->sort(),
-            TD::make('active', 'Active')->active()->sort(),
-            TD::make('event_type', 'Тип')->render(fn(UserNotificationSetting $setting) => $setting->getEventType()->getTitle())->sort(),
-            TD::make('communication_type', 'Канал')->sort(),
+            TD::make('event', 'Тип')->render(fn(ServiceNotification $setting) => $setting->getEventType()->getLabel())->sort(),
+            TD::make('channel', 'Канал')->render(fn(ServiceNotification $setting) => $setting->getChannel()->getLabel())->sort(),
             TD::make('communication_address', 'Address')->sort(),
             TD::make('user_id', 'User ID')->sort(),
-            TD::make('user_id', 'User')->render(fn(UserNotificationSetting $setting) => $setting->getUser()?->name ?? '—')->sort(),
+            TD::make('user_id', 'User')->render(fn(ServiceNotification $setting) => $setting->getUser()?->name ?? '—')->sort(),
             TD::make('email', 'User email')->sort(),
-            TD::make('token', 'Token')->sort(),
             TD::make('created_at', 'Дата создания')->render(fn($setting) => $setting->created_at->format('d/m/Y H:i:s'))->sort(),
-            TD::make('updated_at', 'Дата обновления')->render(fn($setting) => $setting->updated_at?->format('d/m/Y H:i:s'))->sort(),
 
-            TD::make('#', 'Действия')->render(function (UserNotificationSetting $setting) {
+            TD::make('#', 'Действия')->render(function (ServiceNotification $setting) {
                 return DropDown::make()->icon('options-vertical')->list([
                     ModalToggle::make('изменить')
                         ->icon('pencil')

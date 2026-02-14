@@ -4,45 +4,41 @@ declare(strict_types=1);
 
 namespace App\Repositories\Notifications;
 
-use App\Models\Notification\NotificationEventType;
-use App\Models\Notification\UserNotificationSetting;
+use App\Models\Notification\NotificationMute;
+use App\Models\Notification\ServiceNotification;
 use App\Models\NotificationToken;
 use App\Models\User;
 use App\Repositories\DatabaseRepository;
-use App\Services\Notifications\Enum\EventType;
+use App\Services\Notifications\Enum\NotificationChannel;
+use App\Services\Notifications\Enum\ServiceEvent;
 use App\Services\Notifications\NotificationRepositoryInterface;
 
 final readonly class NotificationRepository extends DatabaseRepository implements NotificationRepositoryInterface
 {
     public function deleteUserSetting(int $id): void
     {
-        $this->db->table(UserNotificationSetting::getTableName())->where('id', $id)->delete();
+        $this->db->table(ServiceNotification::getTableName())->where('id', $id)->delete();
     }
 
-    public function getUserNotificationSettingById(int $id): ?UserNotificationSetting
-    {
-        return UserNotificationSetting::loadBy($id);
-    }
-
-    public function saveUserSetting(int $id, array $data): int
+    public function saveServiceUserNotification(int $id, array $data): int
     {
         if ($id > 0) {
-            $this->db->table(UserNotificationSetting::getTableName())->where('id', $id)->update($data);
+            $this->db->table(ServiceNotification::getTableName())->where('id', $id)->update($data);
             return $id;
         }
 
-        return $this->db->table(UserNotificationSetting::getTableName())->insertGetId($data);
+        return $this->db->table(ServiceNotification::getTableName())->insertGetId($data);
     }
 
     /**
      * @return User[]
      */
-    public function getSubscriptionUsersList(EventType $type): array
+    public function getSubscriptionUsersList(ServiceEvent $event): array
     {
-        return User::join(UserNotificationSetting::getTableName(), 'users.id', '=', UserNotificationSetting::getTableName() . '.user_id')
-            ->where(UserNotificationSetting::getTableName() . '.event_type', $type->value)
-            ->where(UserNotificationSetting::getTableName() . '.active', true)
-            ->groupBy(UserNotificationSetting::getTableName() . '.user_id', 'users.id')
+        return User::join(ServiceNotification::getTableName(), 'users.id', '=', ServiceNotification::getTableName() . '.user_id')
+            ->where(ServiceNotification::getTableName() . '.event', $event->value)
+            ->where(ServiceNotification::getTableName() . '.active', true)
+            ->groupBy(ServiceNotification::getTableName() . '.user_id', 'users.id')
             ->get(User::getTableName() . '.*')->all();
     }
 
@@ -61,30 +57,49 @@ final readonly class NotificationRepository extends DatabaseRepository implement
         return NotificationToken::loadByOrDie($id);
     }
 
-    public function deleteAllUserSettings(int $userId): void
+    public function purgeServiceUserNotifications(int $userId): void
     {
-        $this->db->table(UserNotificationSetting::getTableName())->where('user_id', $userId)->delete();
-    }
-
-    public function insertUserSettings(array $data): void
-    {
-        $this->db->table(UserNotificationSetting::getTableName())->insert($data);
+        $this->db->table(ServiceNotification::getTableName())->where('user_id', $userId)->delete();
     }
 
     public function getUserNotificationSettingsList(int $userId, ?int $eventTypeId = null): array
     {
-        return UserNotificationSetting::where('user_id', $userId)
+        return ServiceNotification::where('user_id', $userId)
             ->when($eventTypeId !== null, function ($q) use ($userId, $eventTypeId) {
-                $q->where('event_type_id', $eventTypeId);
+                $q->where('event', $eventTypeId);
             })->get()->all();
     }
 
-    public function getNotificationTypesForUser(User $user): array
+    public function isUserNotificationActive(int $userId, ServiceEvent $event): bool
     {
-        return NotificationEventType::join('model_roles', 'model_roles.model_id', '=', NotificationEventType::getTableName() . '.id')
-            ->where('model_roles.table_name', NotificationEventType::class)
-            ->whereIn('model_roles.role_id', $user->getRoles()->pluck('id')->toArray())
-            ->groupBy(NotificationEventType::getTableName() . '.id')
-            ->get(NotificationEventType::getTableName() . '.*')->all();
+        return !$this->db->table(NotificationMute::getTableName())
+            ->where('user_id', $userId)
+            ->where('event', $event->value)
+            ->exists();
+    }
+
+    public function muteUserNotification(int $userId, ServiceEvent $event): void
+    {
+        $this->db->table(NotificationMute::getTableName())->insertOrIgnore([
+            'user_id' => $userId,
+            'event'   => $event->value,
+        ]);
+    }
+
+    public function unmuteUserNotification(int $userId, ServiceEvent $event): void
+    {
+        $this->db->table(NotificationMute::getTableName())
+            ->where('user_id', $userId)
+            ->where('event', $event->value)
+            ->delete();
+    }
+
+    public function deleteUserSettingByEventAndChannel(int $userId, ServiceEvent $event, NotificationChannel $channel): void
+    {
+        $this->db->table(ServiceNotification::getTableName())
+            ->where('user_id', $userId)
+            ->where('event', $event->value)
+            ->where('channel', $channel->value)
+            ->delete();
     }
 }

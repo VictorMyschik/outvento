@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Services\Newsletter;
 
-use App\Services\Notifications\Enum\EventType;
-use App\Services\Notifications\NotificationService;
+use App\Services\Notifications\Enum\ServiceEvent;
+use App\Services\Notifications\AbstractNotificationService;
 
 final readonly class NewsletterDispatchService
 {
     public function __construct(
-        private NewsRepositoryInterface $repository,
-        private NotificationService     $notificationService,
+        private NewsRepositoryInterface     $repository,
+        private AbstractNotificationService $notificationService,
     ) {}
 
     public function runDispatch(): void
@@ -20,7 +20,7 @@ final readonly class NewsletterDispatchService
             return;
         }
 
-        $recipients = $this->notificationService->getSubscribersList(EventType::News);
+        $recipients = $this->notificationService->getSubscribersList(ServiceEvent::News);
 
         $newsList = $this->repository->getTodayNewsList();
 

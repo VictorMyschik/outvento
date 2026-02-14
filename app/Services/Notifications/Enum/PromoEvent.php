@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace App\Services\Notifications\Enum;
 
-enum NotificationChannel: string
+enum PromoEvent: string
 {
-    case Email = 'mail';
-    case Telegram = 'telegram';
+    case News = 'news';
 
     public function getLabel(): string
     {
         return match ($this) {
-            self::Email => 'Email',
-            self::Telegram => 'Telegram',
+            self::News => 'News',
         };
     }
 

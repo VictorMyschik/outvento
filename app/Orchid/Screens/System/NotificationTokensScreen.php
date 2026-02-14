@@ -8,7 +8,7 @@ use App\Models\NotificationToken;
 use App\Orchid\Filters\System\NotificationTokenFilter;
 use App\Orchid\Layouts\Lego\InfoRawModalLayout;
 use App\Orchid\Layouts\System\NotificationTokenListLayout;
-use App\Services\Notifications\NotificationService;
+use App\Services\Notifications\AbstractNotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
@@ -23,8 +23,8 @@ class NotificationTokensScreen extends Screen
     protected ?string $description = 'Manage notification tokens used for sending notifications to users';
 
     public function __construct(
-        private readonly Request             $request,
-        private readonly NotificationService $service,
+        private readonly Request                     $request,
+        private readonly AbstractNotificationService $service,
     ) {}
 
     public function query(): iterable

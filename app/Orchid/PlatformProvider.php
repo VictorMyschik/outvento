@@ -32,12 +32,7 @@ class PlatformProvider extends OrchidServiceProvider
                 Menu::make('Equipments')->icon('bs.list')->route('reference.equipments.list'),
                 Menu::make('Countries')->icon('bs.list')->route('reference.countries.list'),
                 Menu::make('Cities')->icon('bs.list')->route('reference.cities.list'),
-                Menu::make('Communication Types')->icon('bs.list')->route('reference.communication-type.list'),
-                Menu::make('Notification Event Types')->icon('bs.list')->route('reference.notification-event-type.list'),
             ])->divider(),
-
-
-            // Menu::make('Wishlists')->icon('bs.list')->route('wishlist.list')->divider(),
 
             // Catalog
             Menu::make('Catalog')->icon('grid')->list([
@@ -46,12 +41,11 @@ class PlatformProvider extends OrchidServiceProvider
                 Menu::make('Производители')->icon('list')->route('manufacturer.list')->divider(),
             ]),
 
-            Menu::make('Language')->icon('language')->route('language.translate.list'),
-
             Menu::make('System')->icon('settings')->list([
                 Menu::make('Logs')->href('/log-viewer')->target('_blank'),
                 Menu::make('Cron')->route('system.info.cron'),
                 Menu::make('Cache')->route('system.cache'),
+                Menu::make('Translate')->route('language.translate.list'),
                 Menu::make('Settings')->route('system.settings.list'),
                 // Menu::make('Jobs')->route('system.jobs'),
                 Menu::make('Notification tokens')->route('system.notification.tokens'),
@@ -71,7 +65,7 @@ class PlatformProvider extends OrchidServiceProvider
 
             Menu::make('User List')->icon('grid')->list([
                 Menu::make('Users list')->icon('bs.people')->route('profiles.list'),
-                Menu::make('User Settings')->icon('bs.list')->route('notification.user.settings.list'),
+                Menu::make('Service Notification')->icon('bs.list')->route('user.service.notification.list'),
                 Menu::make('Communication')->icon('bs.person-lines-fill')->route('profiles.communication.list'),
             ])->divider(),
 
