@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid\Layouts\User;
 
+use App\Models\User;
 use App\Services\User\Enum\CommunicationType;
 use App\Services\User\Enum\VerificationStatus;
 use App\Services\User\Enum\Visibility;
@@ -24,7 +25,7 @@ class UserCommunicateEditLayout extends Listener
     protected function layouts(): iterable
     {
         $out[] = Relation::make('user_id')
-            ->fromModel(\App\Models\User::class, 'name', 'id')
+            ->fromModel(User::class, 'name', 'id')
             ->value(request()->get('user_id'))
             ->title('User');
 
@@ -38,8 +39,8 @@ class UserCommunicateEditLayout extends Listener
             ->value(request()->get('type_id'))
             ->title('Type');
 
-        if (request()->get('type_id') || $this->query->get('type_id')) {
-            $type = CommunicationType::from((int)request()->get('type_id') ?: $this->query->get('type_id'));
+        if (request()->get('type') || $this->query->get('type')) {
+            $type = CommunicationType::from((int)request()->get('type') ?: $this->query->get('type'));
 
             if ($type === CommunicationType::Email) {
                 $out[] = Select::make('verification_status')

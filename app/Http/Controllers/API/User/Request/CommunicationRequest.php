@@ -36,7 +36,7 @@ class CommunicationRequest extends FormRequest
     public function getUpdateData(): array
     {
         $out = [
-            'type_id'    => (int)$this->input('type_id'),
+            'type'       => (int)$this->input('type'),
             'address'    => $this->input('address'),
             'visibility' => $this->input('visibility', Visibility::Private->value),
         ];

@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Orchid\Filters;
 
 use App\Models\User;
 use App\Models\UserInfo\Communication;
-use App\Models\UserInfo\CommunicationType;
 use App\Orchid\Layouts\Lego\ActionFilterPanel;
-use App\Services\User\Enum\Gender;
+use App\Services\User\Enum\CommunicationType;
+use App\Services\User\Enum\Visibility;
 use Illuminate\Database\Eloquent\Builder;
 use Orchid\Filters\Filter;
 use Orchid\Screen\Fields\Group;
@@ -17,7 +19,7 @@ use Orchid\Screen\Fields\ViewField;
 use Orchid\Screen\Layouts\Rows;
 use Orchid\Support\Facades\Layout;
 
-class UserCommunicateFilter extends Filter
+class UserCommunicationFilter extends Filter
 {
     public const array FIELDS = [
         'id',
@@ -29,14 +31,14 @@ class UserCommunicateFilter extends Filter
         'address',
         'telegram_chat_id',
         'description',
+        'visibility',
         'createdAt',
         'updatedAt',
     ];
 
-    public static function runQuery()
+    public static function runQuery(): Builder
     {
         $query = Communication::filters([self::class])
-            ->join(CommunicationType::getTableName(), Communication::getTableName() . '.type_id', '=', CommunicationType::getTableName() . '.id')
             ->join(User::getTableName(), Communication::getTableName() . '.user_id', '=', 'users.id');
 
         $query->selectRaw(implode(', ', [
@@ -45,7 +47,7 @@ class UserCommunicateFilter extends Filter
                 'users.name as name',
                 'users.email as email',
                 'CONCAT(users.first_name, \' \', users.last_name) as full_name',
-                'name_ru as type',
+                'type as type',
                 'address',
                 'description',
                 'communications.created_at as created_at',
@@ -58,7 +60,6 @@ class UserCommunicateFilter extends Filter
 
     public function run(Builder $builder): Builder
     {
-
         $input = $this->request->only($this->parameters());
 
         if (!empty($input['id'])) {
@@ -87,7 +88,11 @@ class UserCommunicateFilter extends Filter
         }
 
         if (!empty($input['type'])) {
-            $builder->where('type_id', (int)$input['type']);
+            $builder->where('type', (int)$input['type']);
+        }
+
+        if (isset($input['visibility'])) {
+            $builder->where(Communication::getTableName() . '.visibility', (int)$input['visibility']);
         }
 
         if (isset($input['address']) && !empty($input['address'])) {
@@ -128,10 +133,17 @@ class UserCommunicateFilter extends Filter
             ->value(request()->get('full_name'))
             ->title('Full name');
 
-        $outLine2[] = Relation::make('type')
-            ->fromModel(CommunicationType::class, 'name_ru')
+        $outLine2[] = Select::make('type')
+            ->options(CommunicationType::getSelectList())
             ->value(request()->get('type'))
+            ->empty('Все')
             ->title('Type');
+
+        $outLine2[] = Select::make('visibility')
+            ->options(Visibility::getSelectList())
+            ->empty('Все')
+            ->value(request()->get('visibility'))
+            ->title('Visibility');
 
         $outLine2[] = Input::make('address')
             ->value(request()->get('address'))

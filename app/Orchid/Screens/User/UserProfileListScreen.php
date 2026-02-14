@@ -14,6 +14,7 @@ use App\Orchid\Layouts\User\UserProfileEditLayout;
 use App\Services\System\Enum\Language;
 use App\Services\User\AuthService;
 use App\Services\User\DTO\UserProfileDTO;
+use App\Services\User\Enum\UserRole;
 use App\Services\User\UserService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -45,7 +46,7 @@ class UserProfileListScreen extends Screen
             ModalToggle::make('Создать пользователя')
                 ->class('mr-btn-success')
                 ->modal('create_user_modal')
-                ->method('createNewUser')
+                ->method('createUser')
                 ->modalTitle('Добавить нового пользователя')
                 ->novalidate()
                 ->icon('plus'),
@@ -57,23 +58,18 @@ class UserProfileListScreen extends Screen
         return [
             UserInfoFilter::displayFilterCard($this->request),
             UserInfoListLayout::class,
-            Layout::modal('user_modal', UserProfileEditLayout::class)->async('asyncGetUserProfile'),
             Layout::modal('create_user_modal', NewUserLayout::class),
         ];
     }
 
-    public function asyncGetUserProfile(int $id): array
-    {
-        return User::find($id)->getAttributes();
-    }
-
-    public function createNewUser(RegisterRequest $request): void
+    public function createUser(RegisterRequest $request): void
     {
         $dto = new UserProfileDTO(
             email: $request->getEmail(),
             name: $request->getName(),
             password: $request->getPassword(),
             language: Language::fromCode(app()->getLocale())->value,
+            roles: [UserRole::User]
         );
 
         $this->authService->create($dto);
@@ -94,23 +90,6 @@ class UserProfileListScreen extends Screen
         $this->service->updateUser(User::find($id), $input);
 
         Toast::info('Информация о пользователе успешно сохранена');
-    }
-
-    public function asyncGetUserInfo(int $id = 0): array
-    {
-        return ['info' => User::loadBy($id)];
-    }
-
-    public function remove(int $id): void
-    {
-        $this->service->deleteUser(User::findOrFail($id));
-    }
-
-    public function sendVerifyEmail(): void
-    {
-        $this->service->sendVerifyNotification(User::findOrFail(request()->get('id')));
-
-        Toast::info('Email с кодом верификации успешно отправлен пользователю')->delay(1500);
     }
 
     public function runFiltering(Request $request): RedirectResponse

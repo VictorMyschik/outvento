@@ -7,7 +7,7 @@ namespace App\Orchid\Screens\User;
 use App\Http\Controllers\API\User\Request\CommunicationRequest;
 use App\Models\User;
 use App\Models\UserInfo\Communication;
-use App\Orchid\Filters\UserCommunicateFilter;
+use App\Orchid\Filters\UserCommunicationFilter;
 use App\Orchid\Layouts\User\UserCommunicateEditLayout;
 use App\Orchid\Layouts\User\UserCommunicateListLayout;
 use App\Services\User\UserService;
@@ -27,7 +27,7 @@ class UserCommunicateScreen extends Screen
     public function query(): iterable
     {
         return [
-            'list' => UserCommunicateFilter::runQuery()->paginate(20),
+            'list' => UserCommunicationFilter::runQuery()->paginate(20),
         ];
     }
 
@@ -47,7 +47,7 @@ class UserCommunicateScreen extends Screen
     public function layout(): iterable
     {
         return [
-            UserCommunicateFilter::displayFilterCard(),
+            UserCommunicationFilter::displayFilterCard(),
             UserCommunicateListLayout::class,
             Layout::modal('communicate_modal', UserCommunicateEditLayout::class)->async('asyncGetCommunicate'),
         ];
@@ -56,7 +56,7 @@ class UserCommunicateScreen extends Screen
     public function runFiltering(Request $request): RedirectResponse
     {
         $list = [];
-        foreach (UserCommunicateFilter::FIELDS as $item) {
+        foreach (UserCommunicationFilter::FIELDS as $item) {
             if (!is_null($request->get($item))) {
                 $list[$item] = $request->get($item);
             }

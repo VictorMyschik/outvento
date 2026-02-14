@@ -237,7 +237,7 @@ class ProfileScreen extends Screen
         /** @var Communication $communication */
         foreach ($communications as $communication) {
             $rowBtns = [];
-            if ($communication->getType() === CommunicationType::Email->value && !VerificationStatus::from($communication->verification_status)->isVerified()) {
+            if ($communication->getType() === CommunicationType::Email && !VerificationStatus::from($communication->verification_status)->isVerified()) {
                 $rowBtns[] = Button::make('Отправить подтверждение')
                     ->icon('envelope')
                     ->confirm('Are you sure you want to send a verification email to the user?')
@@ -258,7 +258,7 @@ class ProfileScreen extends Screen
             $rows['body'][] = [
                 'Type'        => $communication->getType()->getLabel(),
                 'Visibility'  => Visibility::from($communication->visibility)->getLabel(),
-                'Address'     => $communication->address,
+                'Address'     => $this->getAddressDisplay($communication),
                 'Description' => $communication->description ?: '-',
                 'Created'     => $communication->created_at,
                 '#'           => DropDown::make()->icon('bs.three-dots-vertical')->list($rowBtns),
@@ -270,6 +270,19 @@ class ProfileScreen extends Screen
             ViewField::make('')->view('hr'),
             ViewField::make('')->view('admin.table')->value($rows),
         ];
+    }
+
+    private function getAddressDisplay(Communication $communication): string
+    {
+        if ($communication->getType() === CommunicationType::Email) {
+            if (VerificationStatus::from($communication->verification_status)->isVerified()) {
+                return $communication->address . ' <i class="fa fa-check" style="color: green" title="Verified"></i>';
+            } else {
+                return $communication->address . ' <i class="fa fa-times" style="color: red" title="Not verified"></i>';
+            }
+        } else {
+            return $communication->address;
+        }
     }
 
     public function getServiceNotificationLayout(): array

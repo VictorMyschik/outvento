@@ -41,6 +41,19 @@ class PlatformProvider extends OrchidServiceProvider
                 Menu::make('Производители')->icon('list')->route('manufacturer.list')->divider(),
             ]),
 
+            Menu::make('Other')->icon('list')->list([
+                Menu::make('Newsletter')->icon('bs.list')->route('newsletter.news.list'),
+                Menu::make('FAQ')->icon('bs.book')->route('faq.list'),
+                Menu::make('Legal Documents')->icon('bs.file-earmark-text')->route('legal.documents.list'),
+                Menu::make('Form request')->icon('bs.book')->route('forms.list'),
+            ])->divider(),
+
+            Menu::make('User List')->icon('grid')->list([
+                Menu::make('Users list')->icon('bs.people')->route('profiles.list'),
+                Menu::make('Service Notification')->icon('bs.list')->route('user.service.notification.list'),
+                Menu::make('Communication')->icon('bs.person-lines-fill')->route('profiles.communication.list'),
+            ])->divider(),
+
             Menu::make('System')->icon('settings')->list([
                 Menu::make('Logs')->href('/log-viewer')->target('_blank'),
                 Menu::make('Cron')->route('system.info.cron'),
@@ -54,19 +67,6 @@ class PlatformProvider extends OrchidServiceProvider
                 Menu::make('PHP Info')->route('system.phpinfo'),
                 Menu::make('Supervisor')->route('system.config'),
                 Menu::make('API documentation')->target('_blank')->href('/api/docs'),
-            ])->divider(),
-
-            Menu::make('Other')->icon('list')->list([
-                Menu::make('Newsletter')->icon('bs.list')->route('newsletter.news.list'),
-                Menu::make('FAQ')->icon('bs.book')->route('faq.list'),
-                Menu::make('Legal Documents')->icon('bs.file-earmark-text')->route('legal.documents.list'),
-                Menu::make('Form request')->icon('bs.book')->route('forms.list'),
-            ])->divider(),
-
-            Menu::make('User List')->icon('grid')->list([
-                Menu::make('Users list')->icon('bs.people')->route('profiles.list'),
-                Menu::make('Service Notification')->icon('bs.list')->route('user.service.notification.list'),
-                Menu::make('Communication')->icon('bs.person-lines-fill')->route('profiles.communication.list'),
             ])->divider(),
 
             Menu::make('Access Controls')->icon('grid')->list([
