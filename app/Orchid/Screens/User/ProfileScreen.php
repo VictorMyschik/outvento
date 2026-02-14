@@ -282,7 +282,7 @@ class ProfileScreen extends Screen
 
         foreach (ServiceEvent::selectListForAudiences(NotificationAudienceResolver::fromUser($this->user)) as $key => $serviceNotificationType) {
             $row = [
-                'Active'     => $this->service->isUserNotificationActive($this->user->id, ServiceEvent::from($key)) ? '<i class="fa fa-check" style="color: green"></i>' : '<i class="fa fa-times"></i>',
+                'Active'     => $this->service->isUserNotificationActive($this->user->id, ServiceEvent::from($key)) ? '<i class="fa fa-check" style="color: green"></i>' : '<i class="fa fa-times" style="color: red"></i>',
                 'Event Type' => $serviceNotificationType,
             ];
             $row = array_merge($row, array_fill_keys(NotificationChannel::getSelectList(), null));
@@ -307,8 +307,12 @@ class ProfileScreen extends Screen
         $rows['header'] = $header;
 
         return [
+
             Group::make([
-                ViewField::make('Subscription token')->view('admin.h5')->value('Users service notifications'),
+                ViewField::make('Subscription token')->view('admin.tab_title')->value([
+                    'title'       => 'Users service notifications',
+                    'description' => $this->user->getRolesDisplay()
+                ]),
                 Button::make('удалить все')
                     ->class('mr-btn-danger pull-right')
                     ->confirm('Are you sure you want to delete the notifications?')
