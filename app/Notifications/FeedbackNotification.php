@@ -18,7 +18,7 @@ class FeedbackNotification extends Notification
     use Queueable;
 
     public array $data;
-    public const string KEY = ServiceEvent::Feedback->value;
+    public const int KEY = ServiceEvent::Feedback->value;
 
     public function __construct(public FormFeedbackDTO $dto) {}
 

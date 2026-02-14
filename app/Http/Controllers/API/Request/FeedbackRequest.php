@@ -34,9 +34,9 @@ class FeedbackRequest extends FormRequest implements FormRequestInterface
     {
         return new FormFeedbackDTO(
             language: $language,
-            name: $this->get('name'),
-            email: $this->get('email'),
-            message: $this->get('message'),
+            name: $this->input('name'),
+            email: $this->input('email'),
+            message: $this->input('message'),
             userId: $this->user()?->id,
         );
     }

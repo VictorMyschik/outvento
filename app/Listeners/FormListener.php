@@ -9,11 +9,11 @@ use App\Models\User;
 use App\Notifications\FeedbackNotification;
 use App\Services\Forms\Enum\FormType;
 use App\Services\Notifications\Enum\ServiceEvent;
-use App\Services\Notifications\AbstractNotificationService;
+use App\Services\Notifications\ServiceNotificationService;
 
 final readonly class FormListener
 {
-    public function __construct(public AbstractNotificationService $service) {}
+    public function __construct(public ServiceNotificationService $service) {}
 
     public function handle(FormRequestEvent $event): void
     {

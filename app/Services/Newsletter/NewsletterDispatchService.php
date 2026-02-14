@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Newsletter;
 
-use App\Services\Notifications\Enum\ServiceEvent;
 use App\Services\Notifications\AbstractNotificationService;
+use App\Services\Notifications\Enum\PromoEvent;
 
 final readonly class NewsletterDispatchService
 {
@@ -16,11 +16,12 @@ final readonly class NewsletterDispatchService
 
     public function runDispatch(): void
     {
-        if (!$this->notificationService->isNotificationEnabled()) {
+        // TODO: убрать notification service - это отдельный домен
+       /* if (!$this->notificationService->isNotificationEnabled()) {
             return;
         }
 
-        $recipients = $this->notificationService->getSubscribersList(ServiceEvent::News);
+        $recipients = $this->notificationService->getSubscribersList(PromoEvent::News);
 
         $newsList = $this->repository->getTodayNewsList();
 
@@ -30,6 +31,6 @@ final readonly class NewsletterDispatchService
 
         foreach ($recipients as $recipient) {
             $this->notificationService->sendNewsNotification($recipient, $newsList);
-        }
+        }*/
     }
 }

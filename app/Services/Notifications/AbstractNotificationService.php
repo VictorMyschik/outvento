@@ -55,11 +55,6 @@ abstract readonly class AbstractNotificationService
         return $this->repository->getSubscriptionUsersList($type);
     }
 
-    public function getSubscribersList(ServiceEvent $type): array
-    {
-        return $this->repository->getSubscriptionUsersList($type);
-    }
-
     public function isNotificationEnabled(): bool
     {
         return $this->settingsRepository->notificationEnabled();

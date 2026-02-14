@@ -47,7 +47,7 @@ final readonly class ServiceNotificationService extends AbstractNotificationServ
         $list = $this->getServiceNotificationList($userId, $event->value);
 
         foreach ($list as $item) {
-            if ($item->channel !== $dto->channel->value || $item->event !== $event->value) {
+            if ($item->channel === $dto->channel->value && $item->event === $event->value) {
                 if ((int)$item->communication_id === $dto->communicationId) {
                     return;
                 }

@@ -37,7 +37,6 @@ final readonly class NotificationRepository extends DatabaseRepository implement
     {
         return User::join(ServiceNotification::getTableName(), 'users.id', '=', ServiceNotification::getTableName() . '.user_id')
             ->where(ServiceNotification::getTableName() . '.event', $event->value)
-            ->where(ServiceNotification::getTableName() . '.active', true)
             ->groupBy(ServiceNotification::getTableName() . '.user_id', 'users.id')
             ->get(User::getTableName() . '.*')->all();
     }
