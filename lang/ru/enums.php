@@ -6,9 +6,9 @@ return [
         'Female' => 'Женский',
     ],
 
-    'communication_types'      => [
+    'communication_types' => [
         'Phone'          => 'Телефон',
-        'Email'           => 'Email',
+        'Email'          => 'Email',
         'Address'        => 'Адрес',
         'Whatsapp'       => 'WhatsApp',
         'Telegram'       => 'Telegram',

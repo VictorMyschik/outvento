@@ -8,7 +8,7 @@ return [
 
     'communication_types' => [
         'Phone'          => 'Phone',
-        'Email'           => 'Email',
+        'Email'          => 'Email',
         'Address'        => 'Address',
         'Whatsapp'       => 'WhatsApp',
         'Telegram'       => 'Telegram',
