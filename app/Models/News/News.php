@@ -102,6 +102,11 @@ class News extends ORM
         return NewsGroup::loadByOrDie($this->getGroupId());
     }
 
+    public function getUrl(): string
+    {
+        return $this->getUriList()[0];
+    }
+
     public function getUriList(): array
     {
         $groupCode = $this->getGroup()->code;
