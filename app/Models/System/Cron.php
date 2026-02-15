@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\System;
 
 use App\Models\Lego\Fields\ActiveFieldTrait;
@@ -7,6 +9,7 @@ use App\Models\Lego\Fields\DescriptionNullableFieldTrait;
 use App\Models\ORM\ORM;
 use App\Services\System\Enum\CronKeyEnum;
 use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
 
@@ -60,7 +63,7 @@ class Cron extends ORM
         return $this->last_work;
     }
 
-    public function setLastWork(Carbon $value): void
+    public function setLastWork(CarbonInterface $value): void
     {
         $this->last_work = $value;
     }

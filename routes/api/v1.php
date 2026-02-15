@@ -8,6 +8,7 @@ use App\Http\Controllers\API\DownloadFileController;
 use App\Http\Controllers\API\FAQController;
 use App\Http\Controllers\API\FormsController;
 use App\Http\Controllers\API\SocialAuthController;
+use App\Http\Controllers\API\SubscriptionController;
 use App\Http\Controllers\API\User\UsersController;
 use App\Http\Controllers\API\WelcomeController;
 use App\Http\Controllers\Travel\Travel\TravelController;
@@ -84,13 +85,16 @@ Route::group(['prefix' => 'travels'], function () {
 Route::get('/auth/social/{provider}/redirect', [SocialAuthController::class, 'redirect']);
 Route::get('/auth/social/{provider}/callback', [SocialAuthController::class, 'callback']);
 
-Route::get('common/languages', [CommonApiController::class, 'getLanguages']);
-Route::get('translations', [CommonApiController::class, 'getTranslations']);
-Route::get('frontend/settings', [CommonApiController::class, 'getFrontendSettings']);
+Route::get('/common/languages', [CommonApiController::class, 'getLanguages']);
+Route::get('/translations', [CommonApiController::class, 'getTranslations']);
+Route::get('/frontend/settings', [CommonApiController::class, 'getFrontendSettings']);
 
 Route::get('/download', [DownloadFileController::class, 'download'])->name('download');
 Route::get('/legal/{type}', [CommonApiController::class, 'legal']);
 Route::post('/faq/search', [FAQController::class, 'search']);
 Route::get('/faq/list', [FAQController::class, 'getBaseFaqList']);
 
+// Subscriptions
+Route::post('/subscription/subscribe', [SubscriptionController::class, 'subscribe']);
+Route::get('/subscription/confirm/{token}', [SubscriptionController::class, 'confirm']);
 

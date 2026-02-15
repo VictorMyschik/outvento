@@ -37,6 +37,10 @@ class CronListLayout extends Table
             ->width('100px')
             ->render(function (Cron $cron) {
                 return DropDown::make()->icon('options-vertical')->list([
+                    Button::make('Run')
+                        ->icon('refresh')
+                        ->confirm('Run this cron job')
+                        ->method('run', ['id' => $cron->id()]),
                     ModalToggle::make('Edit')
                         ->icon('pencil')
                         ->modal('cron_modal')
@@ -48,11 +52,6 @@ class CronListLayout extends Table
                         ->icon('trash')
                         ->confirm('This Cron will be removed permanently.')
                         ->method('remove', ['id' => $cron->id()]),
-
-                    Button::make('Run')
-                        ->icon('refresh')
-                        ->confirm('Run this cron job')
-                        ->method('run', ['id' => $cron->id()]),
                 ]);
             });
 

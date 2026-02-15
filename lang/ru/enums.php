@@ -37,4 +37,10 @@ return [
         'NotVerified' => 'Не подтвержден',
         'Verified'    => 'Подтвержден',
     ],
+
+    'promo_status' => [
+        'Pending'   => 'Ожидает подтверждения',
+        'Confirmed' => 'Подтверждено',
+        'Revoked'   => 'Отозвано',
+    ]
 ];

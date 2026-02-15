@@ -37,4 +37,10 @@ return [
         'NotVerified' => 'Not verified',
         'Verified'    => 'Verified',
     ],
+
+    'promo_status' => [
+        'Pending'   => 'Pending confirmation',
+        'Confirmed' => 'Confirmed',
+        'Revoked'   => 'Revoked',
+    ]
 ];

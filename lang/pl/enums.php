@@ -37,4 +37,10 @@ return [
         'NotVerified' => 'Nie zweryfikowany',
         'Verified'    => 'Zweryfikowany',
     ],
+
+    'promo_status' => [
+        'Pending'   => 'Oczekuje na potwierdzenie',
+        'Confirmed' => 'Potwierdzony',
+        'Revoked'   => 'Wycofany',
+    ]
 ];

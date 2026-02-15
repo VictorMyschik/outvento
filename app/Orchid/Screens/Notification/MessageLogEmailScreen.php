@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\Notification;
 
-use App\Mail\RawEmail;
 use App\Models\MessageLog\EmailLog;
 use App\Orchid\Filters\MessageLog\MessageLogEmailFilter;
 use App\Orchid\Layouts\Lego\RawLogViewLayout;
 use App\Orchid\Layouts\Notifications\EmailLogListLayout;
-use App\Services\Notifications\ResendNotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
@@ -21,7 +19,6 @@ final class MessageLogEmailScreen extends Screen
 {
     public function __construct(
         private readonly Request                   $request,
-        private readonly ResendNotificationService $service,
     ) {}
 
     public string $name = 'Лог отправленных писем';
@@ -73,17 +70,6 @@ final class MessageLogEmailScreen extends Screen
     public function deleteRow(int $id): void
     {
         EmailLog::where('id', $id)->delete();
-    }
-
-    public function resendEmail(int $id): void
-    {
-        $log = EmailLog::loadByOrDie($id);
-
-        $this->service->customEmailNotify(
-            to: $log->email,
-            email: new RawEmail($log->subject, $log->sl),
-            type: $log->type,
-        );
     }
 
     #region Filter

@@ -42,10 +42,14 @@ class PlatformProvider extends OrchidServiceProvider
             ]),
 
             Menu::make('Other')->icon('list')->list([
-                Menu::make('Newsletter')->icon('bs.list')->route('newsletter.news.list'),
                 Menu::make('FAQ')->icon('bs.book')->route('faq.list'),
                 Menu::make('Legal Documents')->icon('bs.file-earmark-text')->route('legal.documents.list'),
                 Menu::make('Form request')->icon('bs.book')->route('forms.list'),
+            ])->divider(),
+
+            Menu::make('Promotions')->icon('list')->list([
+                Menu::make('Newsletter')->icon('bs.list')->route('newsletter.news.list'),
+                Menu::make('Subscriptions')->icon('bs.people')->route('promo.subscriptions.list'),
             ])->divider(),
 
             Menu::make('User List')->icon('grid')->list([

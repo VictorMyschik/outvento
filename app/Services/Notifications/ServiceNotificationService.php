@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Notifications;
 
 use App\Models\User;
+use App\Services\Notifications\DTO\ServiceNotificationDto;
 use App\Services\Notifications\Enum\NotificationChannel;
 use App\Services\Notifications\Enum\ServiceEvent;
 use App\Services\Notifications\Resolvers\NotificationAudienceResolver;

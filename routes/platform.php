@@ -17,6 +17,7 @@ use App\Orchid\Screens\Notification\UserServiceNotificationScreen;
 use App\Orchid\Screens\Other\LegalDocumentEditScreen;
 use App\Orchid\Screens\Other\LegalDocumentsScreen;
 use App\Orchid\Screens\PlatformScreen;
+use App\Orchid\Screens\Promo\SubscriptionScreen;
 use App\Orchid\Screens\References\CategoryEquipmentScreen;
 use App\Orchid\Screens\References\CitiesScreen;
 use App\Orchid\Screens\References\CountryScreen;
@@ -134,6 +135,9 @@ Route::screen('/faq/list', FAQScreen::class)->name('faq.list');
 //// News
 Route::screen('newsletter/list', NewsletterScreen::class)->name('newsletter.news.list');
 Route::screen('newsletter/{news_id}/edit', NewsEditScreen::class)->name('newsletter.news.edit');
+
+/// Promo
+Route::screen('promo/subscriptions/list', SubscriptionScreen::class)->name('promo.subscriptions.list');
 
 // Users
 Route::screen('/profiles/list', UserProfileListScreen::class)->name('profiles.list');

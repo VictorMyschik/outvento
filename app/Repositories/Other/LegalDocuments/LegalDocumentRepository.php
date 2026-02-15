@@ -38,6 +38,23 @@ final readonly class LegalDocumentRepository extends DatabaseRepository
         return $this->db->table(LegalDocument::getTableName())->insertGetId($data);
     }
 
+    public function getActualLegalDocumentsIdsByLanguage(Language $language): array
+    {
+        $date = Carbon::now();
+
+        $query = $this->db->table(LegalDocument::getTableName())
+            ->where('active', true)
+            ->where('language', $language->value);
+
+        $query->where(function ($q) use ($date) {
+            $q->where('published_at', '<=', $date)
+                ->orWhereNull('published_at')
+                ->where('created_at', '<=', $date);
+        });
+
+        return $query->orderByDesc('published_at')->pluck('id')->all();
+    }
+
     public function getByType(LegalDocumentType $type, Language $language, Carbon $date): \stdClass
     {
         $query = $this->db->table(LegalDocument::getTableName())

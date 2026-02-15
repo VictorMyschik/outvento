@@ -42,9 +42,9 @@ class NewsletterScreen extends Screen
             })->get(),
 
             'subgroup-list' => NewsSubgroup::join(NewsGroup::getTableName(), NewsSubgroup::getTableName() . '.group_id', '=', NewsGroup::getTableName() . '.id')
-                ->when($this->request->get('group_id'), fn($query) => $query->where('group_id', $this->request->get('group_id')))
-                ->when(!empty($this->request->get('language')), function ($query) {
-                    $query->where('language', (int)$this->request->get('language'));
+                ->when($this->request->input('group_id'), fn($query) => $query->where('group_id', $this->request->input('group_id')))
+                ->when(!empty($this->request->input('language')), function ($query) {
+                    $query->where('language', (int)$this->request->input('language'));
                 })
                 ->get(NewsSubgroup::getTableName() . '.*'),
 
@@ -191,7 +191,7 @@ class NewsletterScreen extends Screen
     {
         $list = [];
         foreach (NewsFilter::FIELDS as $item) {
-            if (!is_null($request->get($item))) {
+            if (!is_null($request->input($item))) {
                 $list[$item] = $request->get($item);
             }
         }

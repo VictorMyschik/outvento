@@ -33,4 +33,9 @@ final readonly class LegalDocumentsService
     {
         return $this->repository->clone($id);
     }
+
+    public function getLegalDocumentsByLanguage(Language $language): array
+    {
+        return $this->repository->getActualLegalDocumentsIdsByLanguage($language);
+    }
 }

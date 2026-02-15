@@ -63,17 +63,22 @@ class News extends ORM
         return $this->published_at;
     }
 
-    public function getTextVisible(string $link): string
+    public function getTextVisible(array $uriList): string
     {
+        $links = [];
+        foreach ($uriList as $linkItem) {
+            $links[] = '<a href="' . config('services.front.host') . $linkItem . '" target="_blank"><b>ссылке</b></a>';
+        }
+
         if ($this->isActive() && $this->isPublic()) {
-            return 'Новость участвует в поиске и доступна по прямой ссылке ' . $link;
+            return 'Новость участвует в поиске и доступна по прямой ссылке ' . implode(', ', $links);
         }
 
         if (!$this->isActive() && $this->isPublic()) {
-            return 'Новость доступна только по прямой ссылке ' . $link;
+            return 'Новость доступна только по прямой ссылке ' .implode(', ', $links);
         }
 
-        return 'Новость не участвует в поиске и не доступна по прямой ссылке ' . $link;
+        return 'Новость не участвует в поиске и не доступна по прямой ссылке ' .implode(', ', $links);
     }
 
     /**
@@ -83,7 +88,7 @@ class News extends ORM
     {
         return NewsSubgroup::join(NewsInSubgroup::getTableName(), NewsSubgroup::getTableName() . '.id', '=', NewsInSubgroup::getTableName() . '.subgroup_id')
             ->where(NewsInSubgroup::getTableName() . '.news_id', $this->id())
-            ->get()
+            ->get(NewsSubgroup::getTableName() . '.*')
             ->all();
     }
 
@@ -97,8 +102,20 @@ class News extends ORM
         return NewsGroup::loadByOrDie($this->getGroupId());
     }
 
-    public function getUrl(): string
+    public function getUriList(): array
     {
-        return config('app.front_host') . "/news/{$this->getGroup()->getCode()}/{$this->getCode()}";
+        $groupCode = $this->getGroup()->code;
+        $subgroups = $this->getSubgroupList();
+        $out = [];
+
+        if (count($subgroups) > 0) {
+            foreach ($subgroups as $subgroup) {
+                $out[] = '/' . $groupCode . '/' . $subgroup->code . '/news/' . $this->code;
+            }
+        } else {
+            $out[] = '/' . $groupCode . '/news/' . $this->code;
+        }
+
+        return $out;
     }
 }

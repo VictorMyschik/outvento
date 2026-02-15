@@ -4,19 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services\Notifications;
 
-use App\Models\NotificationToken;
-use App\Models\User;
 use App\Models\UserInfo\Communication;
 use App\Notifications\NewsNotification;
 use App\Repositories\System\SettingsRepositoryInterface;
-use App\Services\Notifications\Enum\NotificationChannel;
 use App\Services\Notifications\Enum\ServiceEvent;
-use App\Services\Notifications\Enum\SystemEvent;
 use App\Services\Notifications\Resolvers\CommunicationChannelSupportResolver;
-use Illuminate\Mail\Mailable;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\View\View;
 
 abstract readonly class AbstractNotificationService
 {
@@ -58,34 +50,5 @@ abstract readonly class AbstractNotificationService
     public function isNotificationEnabled(): bool
     {
         return $this->settingsRepository->notificationEnabled();
-    }
-
-    public function sendNewsNotification(NotificationRecipientInterface $recipient, array $newsList): void
-    {
-        $unsubscribeUrl = self::getUnsubscribeUrl($recipient->getUnsubscribeToken());
-
-        $recipient->notify(new NewsNotification($newsList, $unsubscribeUrl));
-    }
-
-    /**
-     * Пока не используется
-     */
-    public function customEmailNotify(string $to, Mailable $email, string $type): void
-    {
-        try {
-            Mail::to($to)->send($email->from(config('mail.from.address'), config('mail.from.name')));
-        } catch (\Exception $e) {
-            $error = $e->getMessage();
-            Log::error('Failed to send custom email to ' . $to . ' with type ' . $type . '. Error: ' . $error);
-
-            return;
-        }
-
-        Log::info('Custom email sent to ' . $to . ' with type ' . $type);
-    }
-
-    public function confirmNotificationToken(string $token, array $info): void
-    {
-        // TODO: обработка подтверждения токена, активация подписки и т.д.
     }
 }

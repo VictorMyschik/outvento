@@ -42,24 +42,15 @@ class NewsListLayout extends Table
                 return '';
             })->sort(),
             TD::make('title', 'Наименование')->render(function (News $news) {
-                return Link::make($news->getTitle())->route('newsletter.news.edit', ['news_id' => $news->id()]);
+                return Link::make($news->getTitle())->stretched()->route('newsletter.news.edit', ['news_id' => $news->id()]);
             })->sort(),
             TD::make('created_at', 'Создано')->render(fn(News $news) => $news->created_at->format('d.m.Y'))->sort(),
             TD::make('updated_at', 'Обновлено')->render(fn(News $news) => $news->updated_at?->format('d.m.Y h:i'))->sort(),
-
-            TD::make('#', 'Действия')
-                ->align(TD::ALIGN_CENTER)
-                ->width('100px')
-                ->render(function (News $news) {
-                    return DropDown::make()->icon('options-vertical')->list([
-                        Button::make('Удалить')
-                            ->icon('trash')
-                            ->confirm('Удалить новость?')
-                            ->method('deleteNews', [
-                                'news_id' => $news->id(),
-                            ]),
-                    ]);
-                }),
         ];
+    }
+
+    public function hoverable(): true
+    {
+        return true;
     }
 }

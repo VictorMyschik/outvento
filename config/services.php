@@ -54,4 +54,7 @@ return [
         'redirect'      => env('FACEBOOK_REDIRECT_URI'),
     ],
 
+    'front' => [
+        'host' => env('FRONT_HOST'),
+    ],
 ];

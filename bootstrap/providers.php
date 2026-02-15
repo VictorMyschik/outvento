@@ -7,6 +7,7 @@ use App\Providers\FaqProvider;
 use App\Providers\NewsletterProvider;
 use App\Providers\NotificationProvider;
 use App\Providers\ReferenceProvider;
+use App\Providers\SubscriptionProvider;
 use App\Providers\SupervisorProvider;
 use App\Providers\SystemProvider;
 use App\Providers\TelegramProvider;
@@ -25,6 +26,7 @@ return [
     CatalogServiceProvider::class,
     SupervisorProvider::class,
     NotificationProvider::class,
+    SubscriptionProvider::class,
     NewsletterProvider::class,
     ConstructorProvider::class,
     TelegramProvider::class,

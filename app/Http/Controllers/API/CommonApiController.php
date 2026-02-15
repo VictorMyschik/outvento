@@ -178,18 +178,4 @@ class CommonApiController extends APIController
             $this->termsAndConditionsApiService->getLegalDocumentByType($type, $this->getLanguage()),
         );
     }
-
-    public function confirmNotificationToken(Request $request, string $token): JsonResponse
-    {
-        $this->notificationService->confirmNotificationToken(
-            token: $token,
-            info: [
-                'ip'         => $request->ip(),
-                'user_agent' => $request->userAgent(),
-                'referer'    => $request->header('referer', ''),
-            ]
-        );
-
-        return $this->apiResponse(code: 204);
-    }
 }

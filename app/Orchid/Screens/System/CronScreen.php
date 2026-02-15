@@ -17,7 +17,6 @@ use Orchid\Support\Facades\Layout;
 class CronScreen extends Screen
 {
     private const int ALL_ACTIVE = -1;
-
     private const int ALL_ACTIVE_NOW = -2;
 
     protected ?string $name = 'Cron';

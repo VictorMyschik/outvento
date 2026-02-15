@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Notifications;
 
+use App\Services\Notifications\Enum\PromoEvent;
 use App\Services\Notifications\Enum\ServiceEvent;
 use App\Services\Notifications\NotificationRecipientInterface;
 use App\Services\Telegram\TelegramMarkdown;
@@ -17,7 +18,7 @@ class NewsNotification extends Notification
     use Queueable;
 
     public array $data;
-    public const string KEY = ServiceEvent::News->value;
+    public const string KEY = PromoEvent::News->value;
 
     public function __construct(public array $newsList, public string $unsubscribeUrl) {}
 

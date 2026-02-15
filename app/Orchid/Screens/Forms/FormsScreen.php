@@ -116,7 +116,7 @@ class FormsScreen extends Screen
     {
         $list = [];
         foreach (FromFilter::FIELDS as $item) {
-            if (!is_null($request->get($item))) {
+            if (!is_null($request->input($item))) {
                 $list[$item] = $request->get($item);
             }
         }
