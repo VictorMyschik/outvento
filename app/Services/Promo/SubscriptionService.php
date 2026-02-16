@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Promo;
 
 use App\Models\Promo\Subscription;
+use App\Models\User;
 use App\Services\Notifications\Enum\NotificationChannel;
 use App\Services\Notifications\Enum\PromoEvent;
 use App\Services\Notifications\NotificationRecipientInterface;
@@ -32,13 +33,19 @@ final readonly class SubscriptionService
         return $this->repository->getSubscriptionByToken($token);
     }
 
+    public function getUserSubscriptionByEvent(User $user, PromoEvent $event): ?Subscription
+    {
+        return $this->repository->getSubscriptionByEmailAndEvent($user->email, $event);
+    }
+
     public function createSubscriptionWithNotify(SubscriptionDto $dto): void
     {
         $exists = $this->repository->getSubscriptionByEmailAndEvent($dto->email, $dto->event);
+
         if ($exists) {
             if ($exists->getStatus() === Status::Pending) {
                 $this->repository->deleteSubscription($exists->token);
-            } else {
+            } elseif ($exists->getStatus() !== Status::Revoked) {
                 return;
             }
         }
@@ -80,6 +87,11 @@ final readonly class SubscriptionService
     public function deleteSubscription(string $token): void
     {
         $this->repository->deleteSubscription($token);
+    }
+
+    public function revokeSubscription(string $token): void
+    {
+        $this->repository->revokeSubscription($token);
     }
 
     /**

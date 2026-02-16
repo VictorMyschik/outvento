@@ -16,8 +16,14 @@ use App\Orchid\Layouts\User\UserRolesEditLayout;
 use App\Orchid\Rebuild\MrTabs;
 use App\Services\Notifications\DTO\ServiceNotificationDto;
 use App\Services\Notifications\Enum\NotificationChannel;
+use App\Services\Notifications\Enum\PromoEvent;
 use App\Services\Notifications\Enum\ServiceEvent;
 use App\Services\Notifications\Resolvers\NotificationAudienceResolver;
+use App\Services\Promo\DTO\SubscriptionDto;
+use App\Services\Promo\Enum\PromoSource;
+use App\Services\Promo\Enum\Status;
+use App\Services\Promo\SubscriptionService;
+use App\Services\System\Enum\Language;
 use App\Services\User\AuthService;
 use App\Services\User\Enum\CommunicationType;
 use App\Services\User\Enum\VerificationStatus;
@@ -45,8 +51,9 @@ class ProfileScreen extends Screen
     public ?User $user = null;
 
     public function __construct(
-        private readonly UserService $service,
-        private readonly AuthService $authService,
+        private readonly UserService         $service,
+        private readonly AuthService         $authService,
+        private readonly SubscriptionService $subscriptionService,
     ) {}
 
     public function name(): string
@@ -232,7 +239,79 @@ class ProfileScreen extends Screen
 
     private function getPromoNotificationLayout(): array
     {
-        return [];
+        $btns = [];
+        $rows = [];
+        $rows['header'] = ['Event', 'Status', 'Created', '#'];
+
+        foreach (PromoEvent::cases() as $event) {
+            $rowBtns = [];
+            $subscription = $this->subscriptionService->getUserSubscriptionByEvent($this->user, $event);
+
+            if ($subscription) {
+                if ($subscription->getStatus() === Status::Revoked) {
+                    $rowBtns[] = Button::make('add again')
+                        ->icon('plus')
+                        ->method('addSubscription', ['event' => $event->value]);
+                }
+                if ($subscription->getStatus() === Status::Pending) {
+                    $rowBtns[] = Button::make('confirm')
+                        ->icon('check')
+                        ->method('confirmSubscription', ['id' => $subscription->id()]);
+                }
+                $rowBtns[] = Button::make('revoke')
+                    ->icon('xmark')
+                    ->confirm('Will unsubscribe the user from the notifications, but keep the subscription history. Are you sure?')
+                    ->method('revokeSubscription', ['token' => $subscription?->getUnsubscribeToken()]);
+                $rowBtns[] = Button::make('remove')
+                    ->icon('trash')
+                    ->confirm('Are you sure you want to delete the subscription permanently?')
+                    ->method('deleteSubscription', ['token' => $subscription?->getUnsubscribeToken()]);
+            } else {
+                $rowBtns[] = Button::make('add')
+                    ->icon('plus')
+                    ->method('addSubscription', ['event' => $event->value]);
+            }
+
+            $rows['body'][] = [
+                'Event'   => $event->getLabel(),
+                'Status'  => $subscription?->getStatus()->getLabel() ?: '-',
+                'Created' => $subscription?->optin_at?->format('H:i d/m/Y T') ?? '-',
+                '#'       => DropDown::make()->icon('bs.three-dots-vertical')->list($rowBtns),
+            ];
+        }
+
+        return [
+            Group::make($btns)->autoWidth(),
+            ViewField::make('')->view('hr'),
+            ViewField::make('')->view('admin.table')->value($rows),
+        ];
+    }
+
+    public function confirmSubscription(int $id): void
+    {
+        $this->subscriptionService->confirmSubscription($this->subscriptionService->getSubscriptionById($id));
+    }
+
+    public function revokeSubscription(string $token): void
+    {
+        $this->subscriptionService->revokeSubscription($token);
+    }
+
+    public function deleteSubscription(string $token): void
+    {
+        $this->subscriptionService->deleteSubscription($token);
+    }
+
+    public function addSubscription(string $event): void
+    {
+        $this->subscriptionService->createSubscriptionWithNotify(new SubscriptionDto(
+            email: $this->user->email,
+            language: Language::from($this->user->language),
+            event: PromoEvent::from($event),
+            source: PromoSource::Admin,
+        ));
+
+        Toast::info('User subscribed to promo notifications successfully');
     }
 
     private function getCommunicationLayout(): array

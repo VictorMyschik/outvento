@@ -39,11 +39,19 @@ final readonly class SubscriptionRepository extends DatabaseRepository implement
         $this->db->table(Subscription::getTableName())->where('token', $token)->delete();
     }
 
+    public function revokeSubscription(string $token): void
+    {
+        $this->db->table(Subscription::getTableName())->where('token', $token)->update([
+            'status'     => Status::Revoked->value,
+            'revoked_at' => now(),
+        ]);
+    }
+
     public function getSubscriptionByEmailAndEvent(string $email, PromoEvent $promoEvent): ?Subscription
     {
         return Subscription::where('email', $email)
             ->where('event', $promoEvent->value)
-            ->first();
+            ->latest()->first();
     }
 
     public function createSubscriptionLegalInfo(int $subscriptionId, array $legalDocuments): void
