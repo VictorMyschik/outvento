@@ -194,6 +194,8 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
 
     protected function getCommunicationAddressFor(string $channel, int $event): ?string
     {
+        $value = $channel === NotificationChannel::Telegram->value ? Communication::getTableName() . '.address_ext' : Communication::getTableName() . '.address';
+
         return $this->notificationSettings()
             ->leftJoin(NotificationMute::getTableName(), function ($join) use ($event) {
                 $join->on(ServiceNotification::getTableName() . '.user_id', '=', NotificationMute::getTableName() . '.user_id')
@@ -208,7 +210,7 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
             ->where(ServiceNotification::getTableName() . '.event', $event)
             ->where(NotificationMute::getTableName() . '.user_id', null) // Not muted
             ->where(ServiceNotification::getTableName() . '.channel', $channel)
-            ->value(Communication::getTableName() . '.address');
+            ->value($value);
     }
 
     public function routeNotificationForMail(Notification $notification): string|array|null

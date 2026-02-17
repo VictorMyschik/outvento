@@ -67,6 +67,7 @@ class PlatformProvider extends OrchidServiceProvider
                 Menu::make('Settings')->route('system.settings.list'),
                 // Menu::make('Jobs')->route('system.jobs'),
                 Menu::make('Notification tokens')->route('system.notification.tokens'),
+                Menu::make('Notification codes')->route('system.notification.codes'),
                 Menu::make('Failed jobs')->route('system.failed.jobs'),
                 Menu::make('Database')->route('system.database'),
                 Menu::make('PHP Info')->route('system.phpinfo'),

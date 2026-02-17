@@ -32,6 +32,7 @@ use App\Orchid\Screens\System\DatabaseScreen;
 use App\Orchid\Screens\System\DatabaseTableScreen;
 use App\Orchid\Screens\System\FailedJobsScreen;
 use App\Orchid\Screens\System\JobsScreen;
+use App\Orchid\Screens\System\NotificationCodesScreen;
 use App\Orchid\Screens\System\NotificationTokensScreen;
 use App\Orchid\Screens\System\PhpInfoScreen;
 use App\Orchid\Screens\System\PurgeScreen;
@@ -126,6 +127,7 @@ Route::screen('system/database/table/{table}', DatabaseTableScreen::class)->name
 Route::screen('system/config', SupervisorScreen::class)->name('system.config');
 Route::screen('system/phpinfo', PhpInfoScreen::class)->name('system.phpinfo');
 Route::screen('system/notification-tokens', NotificationTokensScreen::class)->name('system.notification.tokens');
+Route::screen('system/notification-codes', NotificationCodesScreen::class)->name('system.notification.codes');
 
 // Language
 Route::screen('language/translate', TranslateScreen::class)->name('language.translate.list');

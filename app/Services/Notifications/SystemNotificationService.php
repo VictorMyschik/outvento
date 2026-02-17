@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\Notifications;
 
+use App\Models\NotificationCode;
 use App\Models\NotificationToken;
+use App\Notifications\System\VerifyRegistrationCode;
 use App\Services\Notifications\Enum\NotificationChannel;
 use App\Services\Notifications\Enum\SystemEvent;
 use Illuminate\Mail\Mailable;
@@ -14,11 +16,24 @@ use Illuminate\View\View;
 
 final readonly class SystemNotificationService extends AbstractNotificationService
 {
+    public function verifyRegistrationCode(NotificationCode $notificationCode, int $minutes): void
+    {
+        $user = $notificationCode->getUser();
+
+        $user->notify(new VerifyRegistrationCode($notificationCode->code, $minutes));
+        $user->touch('updated_at');
+    }
+
+    public function deleteNotificationCode(int $userId, SystemEvent $event): void
+    {
+        $this->repository->deleteNotificationCode($userId, $event);
+    }
+
     public function addAndSendRequest(NotificationChannel $channel, string $address, SystemEvent $eventType, mixed $data): void
     {
         $token = md5(uniqid());
 
-        $id = $this->repository->createNewsSubscriptionNotification([
+        $id = $this->repository->createSubscriptionNotification([
             'address' => $address,
             'channel' => $channel->value,
             'type'    => $eventType->value,
@@ -31,7 +46,7 @@ final readonly class SystemNotificationService extends AbstractNotificationServi
         $this->send($notificationToken);
     }
 
-    public function send(NotificationToken $notificationToken): void
+    public function send(NotificationToken|NotificationCode $notificationToken): void
     {
         match ($notificationToken->getChannel()) {
             NotificationChannel::Email => $this->sendEmailConfirmation($notificationToken),
@@ -39,7 +54,7 @@ final readonly class SystemNotificationService extends AbstractNotificationServi
         };
     }
 
-    private function sendEmailConfirmation(NotificationToken $notificationToken): void
+    private function sendEmailConfirmation(NotificationToken|NotificationCode $notificationToken): void
     {
         if ($notificationToken->getChannel() === NotificationChannel::Email) {
             $view = $this->buildView($notificationToken);
@@ -65,7 +80,7 @@ final readonly class SystemNotificationService extends AbstractNotificationServi
         throw new \Exception('Unsupported channel confirmation: ' . $notificationToken->getChannel()->getLabel());
     }
 
-    public function buildView(NotificationToken $notificationToken): View
+    public function buildView(NotificationToken|NotificationCode $notificationToken): View
     {
         return match ($notificationToken->getType()) {
             SystemEvent::NewNewsSubscription => View('emails.new_news_subscription')->with([
@@ -78,10 +93,5 @@ final readonly class SystemNotificationService extends AbstractNotificationServi
             ]),
             default => throw new \Exception('Unsupported notification type: ' . $notificationToken->getType()->getLabel()),
         };
-    }
-
-    public function confirmNotificationToken(string $token, array $info): void
-    {
-        // TODO: обработка подтверждения токена, активация подписки и т.д.
     }
 }

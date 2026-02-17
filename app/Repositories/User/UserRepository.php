@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace App\Repositories\User;
 
-use App\Models\Notification\ServiceNotification;
 use App\Models\User;
 use App\Models\UserInfo\Communication;
 use App\Repositories\DatabaseRepository;
-use App\Services\Notifications\Enum\ServiceEvent;
-use App\Services\Notifications\Resolvers\CommunicationChannelSupportResolver;
+use App\Services\User\Enum\VerificationStatus;
 
 final readonly class UserRepository extends DatabaseRepository
 {
@@ -44,7 +42,7 @@ final readonly class UserRepository extends DatabaseRepository
      */
     public function getIdsForRoles(array $roles): array
     {
-        return $this->db->table('role')
+        return $this->db->table('roles')
             ->whereIn('slug', array_map(static fn($role) => $role->value, $roles))
             ->pluck('id')->all();
     }
@@ -116,6 +114,12 @@ final readonly class UserRepository extends DatabaseRepository
     public function getCommunicationsForServiceNotificationAvailable(int $userId): array
     {
         return Communication::where(Communication::getTableName() . '.user_id', $userId)
+            ->where('verification_status', VerificationStatus::Verified->value)
             ->get()->all();
+    }
+
+    public function getCommunicationByToken(string $token): ?Communication
+    {
+        return Communication::where('address_ext', $token)->first();
     }
 }

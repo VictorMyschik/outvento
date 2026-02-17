@@ -7,11 +7,13 @@ namespace App\Repositories\Notifications;
 use App\Models\Email\EmailLog;
 use App\Models\Notification\NotificationMute;
 use App\Models\Notification\ServiceNotification;
+use App\Models\NotificationCode;
 use App\Models\NotificationToken;
 use App\Models\User;
 use App\Repositories\DatabaseRepository;
 use App\Services\Notifications\Enum\NotificationChannel;
 use App\Services\Notifications\Enum\ServiceEvent;
+use App\Services\Notifications\Enum\SystemEvent;
 use App\Services\Notifications\NotificationRepositoryInterface;
 
 final readonly class NotificationRepository extends DatabaseRepository implements NotificationRepositoryInterface
@@ -42,7 +44,7 @@ final readonly class NotificationRepository extends DatabaseRepository implement
             ->get(User::getTableName() . '.*')->all();
     }
 
-    public function createNewsSubscriptionNotification(array $dto): int
+    public function createSubscriptionNotification(array $dto): int
     {
         $this->db->table(NotificationToken::getTableName())->where([
             'address' => $dto['address'],
@@ -111,5 +113,13 @@ final readonly class NotificationRepository extends DatabaseRepository implement
     public function setEmailLog(array $data): void
     {
         $this->db->table(EmailLog::getTableName())->insert($data);
+    }
+
+    public function deleteNotificationCode(int $userId, SystemEvent $event): void
+    {
+        $this->db->table(NotificationCode::getTableName())->where([
+            'user_id' => $userId,
+            'type'    => $event->value,
+        ])->delete();
     }
 }

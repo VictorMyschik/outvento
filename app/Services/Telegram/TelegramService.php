@@ -6,19 +6,24 @@ namespace App\Services\Telegram;
 
 use App\Services\Telegram\DTO\TelegramUpdate;
 use App\Services\Telegram\Enum\CommandType;
+use App\Services\User\Enum\VerificationStatus;
+use App\Services\User\UserService;
 
 final readonly class TelegramService
 {
     public function __construct(
-        private Client $client,
+        private Client      $client,
+        private UserService $userService,
     ) {}
 
-    public function handle(TelegramUpdate $update): void
+    public function handle(TelegramUpdate $data): void
     {
-        if ($update->isCommand(CommandType::Start)) {
-            $token = str_replace('/start connect_', '', $update->getText());
-            $this->applyNewUser($token);
-        }
+        $messageType = CommandType::tryFromCode($data->message->text);
+
+        match ($messageType) {
+            CommandType::Start => $this->applyNewUser($data),
+            default => null,
+        };
     }
 
     public function sendRawMessage(int $user, string $message): void
@@ -26,38 +31,18 @@ final readonly class TelegramService
         $this->client->sendMessage($user, $message);
     }
 
-    private function applyNewUser(string $token): void
+    private function applyNewUser(TelegramUpdate $data): void
     {
-        //  $user =
-    }
+        $token = str_replace('/start connect_', '', $data->getText());
+        $communication = $this->userService->getCommunicationByToken($token);
 
-    public function manageBot(int $user, string $message): void
-    {
-        $messageType = CommandType::tryFromCode($message);
+        if (!$communication) {
+            return;
+        }
 
-        match ($messageType) {
-            CommandType::Start => $this->client->sendMessage($user, 'Hello! I am a bot! Send me a link of OLX site to the offer.'),
-            CommandType::HELP => $this->client->sendMessage($user, 'Commands: '),
-            default => null,
-        };
-    }
-
-    private function buildMessage(string $jsonData)//: string
-    {
-        /* $rows['Title:'] = $extractor->getTitle();
-         $rows['Price:'] = $extractor->getPrice();
-
-         foreach ($this->getParameters($type) as $param) {
-             $rows[$param->getLabel()] = $extractor->getParameter($param->value);
-         }
-
-         $rows['URL:'] = $extractor->getLink();
-
-         $out = '';
-         foreach ($rows as $key => $item) {
-             $out .= $key . ': ' . $item . "\n";
-         }
-
-         return $out;*/
+        $this->userService->saveCommunicationManually($communication->id, [
+            'address_ext'         => $data->getUserId(),
+            'verification_status' => VerificationStatus::Verified->value,
+        ]);
     }
 }

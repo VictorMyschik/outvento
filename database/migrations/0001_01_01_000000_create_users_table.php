@@ -32,7 +32,8 @@ return new class extends Migration {
             $table->jsonb('permissions')->nullable();
             $table->timestampTz('deleted_at')->nullable();
             $table->rememberToken();
-            $table->timestamps();
+            $table->timestampTz('created_at')->useCurrent();
+            $table->timestampTz('updated_at')->nullable()->useCurrentOnUpdate();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

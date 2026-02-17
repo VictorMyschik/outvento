@@ -8,12 +8,14 @@ enum SystemEvent: string
 {
     case NewNewsSubscription = 'new_news_subscription';
     case VerifyCommunicationEmail = 'verify_communication_email';
+    case RegistrationConfirmation = 'registration_confirmation';
 
     public function getLabel(): string
     {
         return match ($this) {
             self::NewNewsSubscription => 'New News Subscription',
             self::VerifyCommunicationEmail => 'Verify Communication Email',
+            self::RegistrationConfirmation => 'Registration Confirmation',
         };
     }
 

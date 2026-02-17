@@ -40,7 +40,10 @@ return [
         'redirect'      => env('YANDEX_REDIRECT_URI')
     ],
     'telegram-bot-api' => [
-        'token' => env('TELEGRAM_TOKEN', 'YOUR BOT TOKEN HERE')
+        'token'     => env('TELEGRAM_TOKEN'),
+        'chat_id'   => env('TELEGRAM_CHATID'),
+        'bot_token' => env('TELEGRAM_BOT_TOKEN'),
+        'bot_username' => env('TELEGRAM_BOT_USERNAME'),
     ],
     'google'           => [
         'client_id'     => env('GOOGLE_CLIENT_ID'),

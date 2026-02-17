@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\UserInfo\Communication;
 use App\Orchid\Layouts\User\Profile\AvatarUploadLayout;
 use App\Orchid\Layouts\User\Profile\UserNotificationSettingsEditLayout;
+use App\Orchid\Layouts\User\TelegramDeeplinkLayout;
 use App\Orchid\Layouts\User\UserCommunicateEditLayout;
 use App\Orchid\Layouts\User\UserProfileEditLayout;
 use App\Orchid\Layouts\User\UserRolesEditLayout;
@@ -93,6 +94,7 @@ class ProfileScreen extends Screen
         $out[] = Layout::modal('user_modal', UserProfileEditLayout::class)->async('asyncGetUserProfile');
         $out[] = Layout::modal('user_notification_settings_modal', UserNotificationSettingsEditLayout::class)->async('asyncGetServiceUserNotificationSettings')->size(Modal::SIZE_LG);
         $out[] = Layout::modal('user_role_modal', UserRolesEditLayout::class)->async('asyncGetUserRoles');
+        $out[] = Layout::modal('telegram_deep_link_modal', TelegramDeeplinkLayout::class)->async('asyncGetTelegramDeepLink')->size(Modal::SIZE_LG);
 
         return $out;
     }
@@ -343,21 +345,34 @@ class ProfileScreen extends Screen
         /** @var Communication $communication */
         foreach ($communications as $communication) {
             $rowBtns = [];
-            if ($communication->getType() === CommunicationType::Email && !$communication->getVerificationStatus()->isVerified()) {
-                $rowBtns[] = Button::make('Отправить подтверждение')
-                    ->icon('envelope')
-                    ->confirm('Are you sure you want to send a verification email to the user?')
-                    ->method('sendVerifyCommunicationEmail', ['communicationId' => $communication->id]);
-                $rowBtns[] = Button::make('Подтвердить вручную')
-                    ->icon('check-circle')
-                    ->method('confirmVerifyCommunicationEmail', ['communicationId' => $communication->id]);
+
+            if ($communication->getType() === CommunicationType::Email) {
+                if ($communication->getVerificationStatus()->isVerified()) {
+                    $rowBtns[] = Button::make('Отозвать верификацию')
+                        ->icon('xmark')
+                        ->confirm('Are you sure you want to revoke the verification?')
+                        ->method('revokeVerifyCommunicationEmail', ['communicationId' => $communication->id]);
+                } else {
+                    $rowBtns[] = Button::make('Отправить подтверждение')
+                        ->icon('envelope')
+                        ->confirm('Are you sure you want to send a verification email to the user?')
+                        ->method('sendVerifyCommunicationEmail', ['communicationId' => $communication->id]);
+                    $rowBtns[] = Button::make('Подтвердить вручную')
+                        ->icon('check-circle')
+                        ->method('confirmVerifyCommunicationEmail', ['communicationId' => $communication->id]);
+                }
             }
 
-            if ($communication->getType() === CommunicationType::Email && $communication->getVerificationStatus()->isVerified()) {
-                $rowBtns[] = Button::make('Отозвать верификацию')
-                    ->icon('xmark')
-                    ->confirm('Are you sure you want to revoke the verification?')
-                    ->method('revokeVerifyCommunicationEmail', ['communicationId' => $communication->id]);
+            if ($communication->getType() === CommunicationType::Telegram) {
+                $rowBtns[] = Link::make('Open in Telegram')
+                    ->icon('telegram')
+                    ->href($communication->getTelegramLink())
+                    ->target('_blank');
+                $rowBtns[] = ModalToggle::make('Add boot by deeplink')
+                    ->icon('link')
+                    ->modalTitle('Open Telegram Deep Link')
+                    ->modal('telegram_deep_link_modal')
+                    ->asyncParameters(['communicationId' => $communication->id]);
             }
 
             $rowBtns[] = ModalToggle::make('изменить')
@@ -388,9 +403,16 @@ class ProfileScreen extends Screen
         ];
     }
 
+    public function asyncGetTelegramDeepLink(int $communicationId): array
+    {
+        return [
+            'link' => Communication::loadByOrDie($communicationId)->getTelegramDeepLink()
+        ];
+    }
+
     private function getAddressDisplay(Communication $communication): string
     {
-        if ($communication->getType() === CommunicationType::Email) {
+        if ($communication->getType() === CommunicationType::Email || $communication->getType() === CommunicationType::Telegram) {
             if (VerificationStatus::from($communication->verification_status)->isVerified()) {
                 return $communication->address . ' <i class="fa fa-check" style="color: green" title="Verified"></i>';
             } else {

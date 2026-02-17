@@ -9,6 +9,7 @@ enum TypeEnum: int
     case Notification = 1;
     case Alert = 2;
     case Reminder = 3;
+    case AddBotConnection = 4;
 
     public function getLabel(): string
     {
@@ -16,6 +17,7 @@ enum TypeEnum: int
             TypeEnum::Notification => 'Уведомление',
             TypeEnum::Alert => 'Оповещение',
             TypeEnum::Reminder => 'Напоминание',
+            TypeEnum::AddBotConnection => 'Подключение бота к контакту',
         };
     }
 

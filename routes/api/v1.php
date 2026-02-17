@@ -9,6 +9,7 @@ use App\Http\Controllers\API\FAQController;
 use App\Http\Controllers\API\FormsController;
 use App\Http\Controllers\API\SocialAuthController;
 use App\Http\Controllers\API\SubscriptionController;
+use App\Http\Controllers\API\TelegramApiController;
 use App\Http\Controllers\API\User\UsersController;
 use App\Http\Controllers\API\WelcomeController;
 use App\Http\Controllers\Travel\Travel\TravelController;
@@ -17,7 +18,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('optional:sanctum')->group(function () {
     Route::post('/form/feedback', [FormsController::class, 'feedback']);
-    Route::get('/confirm/{token}', [CommonApiController::class, 'confirmNotificationToken']);
 
     Route::prefix('pages')->group(static function () {
         Route::get('welcome', [WelcomeController::class, 'index']);
@@ -98,3 +98,5 @@ Route::get('/faq/list', [FAQController::class, 'getBaseFaqList']);
 Route::post('/subscription/subscribe', [SubscriptionController::class, 'subscribe']);
 Route::get('/subscription/confirm/{token}', [SubscriptionController::class, 'confirm']);
 
+// Telegram Webhook
+Route::post('/telegram', [TelegramApiController::class, 'index']);

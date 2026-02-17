@@ -8,6 +8,7 @@ use App\Models\NotificationToken;
 use App\Models\User;
 use App\Services\Notifications\Enum\NotificationChannel;
 use App\Services\Notifications\Enum\ServiceEvent;
+use App\Services\Notifications\Enum\SystemEvent;
 
 interface NotificationRepositoryInterface
 {
@@ -26,7 +27,7 @@ interface NotificationRepositoryInterface
      */
     public function getSubscriptionUsersList(ServiceEvent $event): array;
 
-    public function createNewsSubscriptionNotification(array $dto): int;
+    public function createSubscriptionNotification(array $dto): int;
 
     public function getNotificationTokenById(int $id): NotificationToken;
 
@@ -39,4 +40,6 @@ interface NotificationRepositoryInterface
     public function deleteServiceNotificationsByEventAndChannel(int $userId, ServiceEvent $event, NotificationChannel $channel): void;
 
     public function deleteServiceNotifications(int $id): void;
+
+    public function deleteNotificationCode(int $userId, SystemEvent $event);
 }

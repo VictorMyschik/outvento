@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Notifications;
+namespace App\Notifications\System;
 
 use App\Services\Notifications\Enum\NotificationChannel;
 use Illuminate\Bus\Queueable;

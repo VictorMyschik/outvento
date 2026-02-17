@@ -12,7 +12,9 @@ enum CommandType: string
 
     public static function tryFromCode(string $message): ?self
     {
-        return match ($message) {
+        $command = explode(' ', $message)[0];
+
+        return match ($command) {
             self::Start->value => self::Start,
             self::HELP->value => self::HELP,
             self::CLEAR->value => self::CLEAR,

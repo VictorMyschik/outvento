@@ -34,8 +34,8 @@ class Communication extends ORM
     ];
 
     public $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+        'created_at'  => 'datetime',
+        'updated_at'  => 'datetime',
         'verified_at' => 'datetime',
     ];
 
@@ -72,5 +72,31 @@ class Communication extends ORM
     public function getChannel(): ?NotificationChannel
     {
         return CommunicationChannelSupportResolver::fromCommunicationType($this->getType());
+    }
+
+    public function getTelegramLink(): ?string
+    {
+        if ($this->getType() == CommunicationType::Telegram) {
+            if (str_starts_with($this->address, '@')) {
+                return 'https://t.me/' . substr($this->address, 1);
+            }
+
+            return 'https://t.me/' . $this->address;
+        }
+
+        return null;
+    }
+
+    public function getTelegramDeepLink(): ?string
+    {
+        if ($this->getType() !== CommunicationType::Telegram) {
+            return null;
+        }
+
+        $botUsername = config('services.telegram-bot-api.bot_username');
+
+        $payload = 'connect_' . $this->address_ext;
+
+        return sprintf('https://t.me/%s?start=%s', $botUsername, $payload);
     }
 }

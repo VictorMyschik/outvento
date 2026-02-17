@@ -7,9 +7,11 @@ namespace App\Services\User;
 use App\Models\NotificationCode;
 use App\Models\PasswordResetToken;
 use App\Models\User;
-use App\Notifications\ResetPassword;
-use App\Notifications\VerifyRegistrationCode;
+use App\Notifications\System\ResetPassword;
 use App\Repositories\User\UserRepository;
+use App\Services\Notifications\Enum\NotificationChannel;
+use App\Services\Notifications\Enum\SystemEvent;
+use App\Services\Notifications\SystemNotificationService;
 use App\Services\System\Enum\Language;
 use App\Services\User\DTO\UserProfileDTO;
 use Illuminate\Auth\AuthenticationException;
@@ -22,10 +24,11 @@ final readonly class AuthService
 {
     public const int TOKEN_LENGTH = 60;
     private const int RESET_PASSWORD_TOKEN_EXPIRY_MINUTES = 20;
-    private const int ACTION_VERIFY_REG_TIME_EXPIRY_MINUTES = 20;
+    public const int ACTION_VERIFY_REG_TIME_EXPIRY_MINUTES = 20;
 
     public function __construct(
-        private UserRepository $repository,
+        private UserRepository            $repository,
+        private SystemNotificationService $systemNotificationService,
     ) {}
 
     public function authorize(string $loginOrEmail, string $password, bool $isRememberMe): ?string
@@ -80,18 +83,19 @@ final readonly class AuthService
     {
         $code = (string)random_int(100000, 999999);
 
-        NotificationCode::updateOrCreate(
+        $notificationCode = NotificationCode::updateOrCreate(
             [
                 'user_id' => $user->id,
-                'action'  => NotificationCode::ACTION_VERIFY_REG,
+                'type'    => SystemEvent::RegistrationConfirmation->value,
+                'address' => $user->email,
+                'channel' => NotificationChannel::Email->value,
             ],
             [
                 'code' => $code,
             ]
         );
 
-        $user->notify(new VerifyRegistrationCode($code, self::ACTION_VERIFY_REG_TIME_EXPIRY_MINUTES));
-        $user->touch('updated_at');
+        $this->systemNotificationService->verifyRegistrationCode($notificationCode, self::ACTION_VERIFY_REG_TIME_EXPIRY_MINUTES);
     }
 
     private function sendResetPasswordNotification(User $user, Language $language): void

@@ -17,6 +17,7 @@ use App\Services\Notifications\SystemNotificationService;
 use App\Services\User\Enum\CommunicationType;
 use App\Services\User\Enum\VerificationStatus;
 use Illuminate\Http\UploadedFile;
+use Nette\Utils\Random;
 
 final readonly class UserService
 {
@@ -45,7 +46,16 @@ final readonly class UserService
             $this->authService->sendVerifyNotification($user);
         }
 
+        if (!empty($data['email_verified_at'])) {
+            $this->notificationService->deleteNotificationCode($user->id, SystemEvent::RegistrationConfirmation);
+        }
+
         return $this->repository->getUserById($user->id);
+    }
+
+    public function getCommunicationByToken(string $token): ?Communication
+    {
+        return $this->repository->getCommunicationByToken($token);
     }
 
     public function updateUserRoles(User $user, array $roleIds): void
@@ -103,6 +113,12 @@ final readonly class UserService
             }
 
             $this->verificationEmail($id, $data);
+        }
+
+        if (CommunicationType::from($data['type']) === CommunicationType::Telegram) {
+            if (!$id) {
+                $data['address_ext'] = md5(Random::generate());
+            }
         }
 
         return $this->repository->saveCommunication($id, $data);
@@ -164,9 +180,9 @@ final readonly class UserService
     }
 
     #region Notifications
-    public function getCommunicationsForNotification(int $userId, ?ServiceEvent $eventType): array
+    public function getCommunicationsForNotification(int $userId): array
     {
-        return $this->repository->getCommunicationsForServiceNotificationAvailable($userId, $eventType);
+        return $this->repository->getCommunicationsForServiceNotificationAvailable($userId);
     }
 
     public function isUserNotificationActive(int $userId, ServiceEvent $event): bool

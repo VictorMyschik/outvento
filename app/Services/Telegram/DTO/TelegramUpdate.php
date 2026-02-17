@@ -37,5 +37,10 @@ final readonly class TelegramUpdate
     {
         return $this->getText() !== null && str_starts_with($this->getText(), $command->value);
     }
+
+    public function getCommand(): CommandType
+    {
+        return CommandType::tryFromCode($this->getText() ?? '') ?? CommandType::Unknown;
+    }
 }
 

@@ -12,7 +12,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('code', 8);
-            $table->string('action');
+            $table->string('address');
+            $table->string('type');
+            $table->string('channel');
             $table->json('data')->nullable()->default(null);
             $table->timestampTz('created_at')->useCurrent();
             $table->timestampTz('updated_at')->nullable()->useCurrentOnUpdate();
