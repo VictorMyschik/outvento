@@ -67,7 +67,7 @@ final readonly class UserRepository extends DatabaseRepository
     public function saveCommunication(int $id, array $data): int
     {
         if ($id > 0) {
-            $this->db->table(Communication::getTableName())->where('id', $id)->where('user_id', $data['user_id'])->update($data);
+            $this->db->table(Communication::getTableName())->where('id', $id)->update($data);
 
             return $id;
         }

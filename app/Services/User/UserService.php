@@ -108,6 +108,11 @@ final readonly class UserService
         return $this->repository->saveCommunication($id, $data);
     }
 
+    public function saveCommunicationManually(int $id, array $data): int
+    {
+        return $this->repository->saveCommunication($id, $data);
+    }
+
     public function sendCommunicationVerifyEmail(Communication $communication): void
     {
         $this->notificationService->addAndSendRequest(

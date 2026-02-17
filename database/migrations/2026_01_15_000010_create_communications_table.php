@@ -12,12 +12,11 @@ return new class extends Migration {
             $table->unsignedBigInteger('user_id')->index();
             $table->smallInteger('type')->index(); // Тип: телефон, email, url...
             $table->string('address')->index();
+            $table->string('address_ext')->nullable(); // Дополнительные данные для адреса, например, telegram id
             $table->string('description')->nullable();
             $table->smallInteger('visibility')->default(0)->index();
 
-            $table->timestamp('verified_at')->nullable();
-            $table->tinyInteger('verification_status')->default('0');
-            $table->string('verification_token')->nullable();
+            $table->tinyInteger('verification_status')->default(0);
 
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
 

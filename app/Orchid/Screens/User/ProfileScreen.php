@@ -251,17 +251,24 @@ class ProfileScreen extends Screen
                 if ($subscription->getStatus() === Status::Revoked) {
                     $rowBtns[] = Button::make('add again')
                         ->icon('plus')
+                        ->confirm('Will add the user subscription to the notifications again. Are you sure?')
                         ->method('addSubscription', ['event' => $event->value]);
                 }
+
                 if ($subscription->getStatus() === Status::Pending) {
                     $rowBtns[] = Button::make('confirm')
                         ->icon('check')
+                        ->confirm('Are you sure you want to confirm the subscription?')
                         ->method('confirmSubscription', ['id' => $subscription->id()]);
                 }
-                $rowBtns[] = Button::make('revoke')
-                    ->icon('xmark')
-                    ->confirm('Will unsubscribe the user from the notifications, but keep the subscription history. Are you sure?')
-                    ->method('revokeSubscription', ['token' => $subscription?->getUnsubscribeToken()]);
+
+                if ($subscription->getStatus() === Status::Confirmed) {
+                    $rowBtns[] = Button::make('revoke')
+                        ->icon('xmark')
+                        ->confirm('Will unsubscribe the user from the notifications, but keep the subscription history. Are you sure?')
+                        ->method('revokeSubscription', ['token' => $subscription?->getUnsubscribeToken()]);
+                }
+
                 $rowBtns[] = Button::make('remove')
                     ->icon('trash')
                     ->confirm('Are you sure you want to delete the subscription permanently?')
@@ -336,11 +343,21 @@ class ProfileScreen extends Screen
         /** @var Communication $communication */
         foreach ($communications as $communication) {
             $rowBtns = [];
-            if ($communication->getType() === CommunicationType::Email && !VerificationStatus::from($communication->verification_status)->isVerified()) {
+            if ($communication->getType() === CommunicationType::Email && !$communication->getVerificationStatus()->isVerified()) {
                 $rowBtns[] = Button::make('Отправить подтверждение')
                     ->icon('envelope')
                     ->confirm('Are you sure you want to send a verification email to the user?')
                     ->method('sendVerifyCommunicationEmail', ['communicationId' => $communication->id]);
+                $rowBtns[] = Button::make('Подтвердить вручную')
+                    ->icon('check-circle')
+                    ->method('confirmVerifyCommunicationEmail', ['communicationId' => $communication->id]);
+            }
+
+            if ($communication->getType() === CommunicationType::Email && $communication->getVerificationStatus()->isVerified()) {
+                $rowBtns[] = Button::make('Отозвать верификацию')
+                    ->icon('xmark')
+                    ->confirm('Are you sure you want to revoke the verification?')
+                    ->method('revokeVerifyCommunicationEmail', ['communicationId' => $communication->id]);
             }
 
             $rowBtns[] = ModalToggle::make('изменить')
@@ -403,7 +420,12 @@ class ProfileScreen extends Screen
                 if ($userSettings->event === $key) {
                     $channel = $userSettings->getChannel();
 
-                    $row[$channel->getLabel()] = $userSettings->getCommunication()->address ?? '-';
+                    $verificationStatus = ' <i class="fa fa-times" style="color: red" title="Not verified"></i>';
+                    if ($userSettings->getCommunication()->getVerificationStatus()->isVerified()) {
+                        $verificationStatus = ' <i class="fa fa-check" style="color: green" title="Verified"></i>';
+                    }
+
+                    $row[$channel->getLabel()] = $userSettings->getCommunication()->address . $verificationStatus;
                 }
             }
 
@@ -419,7 +441,6 @@ class ProfileScreen extends Screen
         $rows['header'] = $header;
 
         return [
-
             Group::make([
                 ViewField::make('Subscription token')->view('admin.tab_title')->value([
                     'title'       => 'Users service notifications',
@@ -443,6 +464,16 @@ class ProfileScreen extends Screen
                 Button::make('')->class('mr-btn-primary')->icon('refresh')->method('generateSubscriptionToken'),
             ])->autoWidth(),
         ];
+    }
+
+    public function confirmVerifyCommunicationEmail(int $communicationId): void
+    {
+        $this->service->saveCommunicationManually($communicationId, ['verification_status' => VerificationStatus::Verified->value]);
+    }
+
+    public function revokeVerifyCommunicationEmail(int $communicationId): void
+    {
+        $this->service->saveCommunicationManually($communicationId, ['verification_status' => VerificationStatus::NotVerified->value]);
     }
 
     public function generateSubscriptionToken(): void
