@@ -40,7 +40,7 @@ class TravelListScreen extends Screen
                 ->class('mr-btn-success')
                 ->icon('plus')
                 ->modal('travel_modal')
-                ->modalTitle('Create New Travel')
+                ->modalTitle('Create Travel')
                 ->method('saveTravel')
                 ->asyncParameters(['id' => 0])
         ];

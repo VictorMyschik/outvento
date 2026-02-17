@@ -9,6 +9,7 @@ return new class extends Migration {
     {
         Schema::create('travels', function (Blueprint $table) {
             $table->id();
+            //$table->smallInteger('language')->index();
             $table->string('title')->index();
             $table->string('preview', 350)->nullable()->index();
             $table->text('description')->nullable();

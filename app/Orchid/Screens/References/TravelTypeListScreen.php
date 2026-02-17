@@ -37,7 +37,7 @@ class TravelTypeListScreen extends Screen
                 ->class('mr-btn-success')
                 ->icon('plus')
                 ->modal('reference')
-                ->modalTitle('Create New Travel Type')
+                ->modalTitle('Create Travel Type')
                 ->method('saveReferenceType')
                 ->asyncParameters(['id' => 0])
         ];
