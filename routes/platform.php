@@ -24,6 +24,7 @@ use App\Orchid\Screens\References\CountryScreen;
 use App\Orchid\Screens\References\EmailScreen;
 use App\Orchid\Screens\References\EquipmentScreen;
 use App\Orchid\Screens\References\TravelTypeListScreen;
+use App\Orchid\Screens\References\UserLocationScreen;
 use App\Orchid\Screens\Role\RoleEditScreen;
 use App\Orchid\Screens\Role\RoleListScreen;
 use App\Orchid\Screens\System\CacheScreen;
@@ -155,6 +156,7 @@ Route::screen('/reference/travel-type/list', TravelTypeListScreen::class)->name(
 Route::screen('/reference/category-equipments/list', CategoryEquipmentScreen::class)->name('reference.category.equipments.list');
 Route::screen('/reference/equipments/list', EquipmentScreen::class)->name('reference.equipments.list');
 Route::screen('/reference/cities/list', CitiesScreen::class)->name('reference.cities.list');
+Route::screen('/reference/user/location', UserLocationScreen::class)->name('reference.user.location');
 Route::screen('/reference/countries/list', CountryScreen::class)->name('reference.countries.list');
 Route::screen('/reference/emails', EmailScreen::class)->name('reference.email.list');
 

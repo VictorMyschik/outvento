@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 // use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Services\User\GoogleApiInterface;
 use Tests\TestCase;
 
 class ExampleTest extends TestCase
@@ -12,8 +13,11 @@ class ExampleTest extends TestCase
      */
     public function test_the_application_returns_a_successful_response(): void
     {
-        $client = $this->app->make(\App\Services\Telegram\Client::class);
-        $client->sendMessage(488545536, 'Hello! I am a bot! Send me a link of OLX site to the offer.');
+        $client = $this->app->make(GoogleApiInterface::class);
+        $r = $client->getTimezoneByCoordinates(
+            lat: 40.7128,
+            lng: -74.0060
+        );
     }
 
 }

@@ -9,10 +9,14 @@ return new class extends Migration {
     {
         Schema::create('cities', function (Blueprint $table) {
             $table->id();
+
             $table->unsignedBigInteger('country_id')->index();
-            $table->string('name_ru')->nullable()->index();
-            $table->string('name_en')->nullable()->index();
-            $table->string('name_pl')->nullable()->index();
+            $table->string('name', 128);
+            $table->string('timezone', 64)->nullable();
+            $table->decimal('lat', 10, 7);
+            $table->decimal('lng', 10, 7);
+            $table->string('place_id')->unique();
+            $table->index(['country_id', 'name']);
 
             $table->timestampTz('created_at')->useCurrent();
             $table->timestampTz('updated_at')->nullable()->useCurrentOnUpdate();

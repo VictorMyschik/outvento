@@ -5,18 +5,19 @@ declare(strict_types=1);
 namespace App\Orchid\Screens\References;
 
 use App\Models\Reference\City;
-use App\Orchid\Layouts\References\CityListLayout;
+use App\Models\Reference\UserLocation;
+use App\Orchid\Layouts\References\UserLocationLocation;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Toast;
 
-class CitiesScreen extends Screen
+class UserLocationScreen extends Screen
 {
-    public string $name = 'Справочник городов';
+    public string $name = 'Справочник локаций пользователей';
 
     public function query(): iterable
     {
         return [
-            'list' => City::filters([])->paginate(50)
+            'list' => UserLocation::filters([])->paginate(50)
         ];
     }
 
@@ -28,7 +29,7 @@ class CitiesScreen extends Screen
     public function layout(): iterable
     {
         return [
-            CityListLayout::class,
+            UserLocationLocation::class,
         ];
     }
 

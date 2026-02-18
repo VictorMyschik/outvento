@@ -13,6 +13,7 @@ use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Fields\TextArea;
+use Orchid\Screen\Fields\ViewField;
 use Orchid\Screen\Layouts\Rows;
 
 class UserProfileEditLayout extends Rows
@@ -39,6 +40,8 @@ class UserProfileEditLayout extends Rows
                 Input::make('first_name')->max(100)->title('First name'),
                 Input::make('last_name')->max(100)->title('Last name'),
             ]),
+
+            ViewField::make('')->view('admin.google-places'),
 
             Select::make('language')
                 ->title('Language')

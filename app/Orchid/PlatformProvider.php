@@ -32,6 +32,7 @@ class PlatformProvider extends OrchidServiceProvider
                 Menu::make('Equipments')->icon('bs.list')->route('reference.equipments.list'),
                 Menu::make('Countries')->icon('bs.list')->route('reference.countries.list'),
                 Menu::make('Cities')->icon('bs.list')->route('reference.cities.list'),
+                Menu::make('User Locations')->icon('bs.list')->route('reference.user.location'),
             ])->divider(),
 
             // Catalog

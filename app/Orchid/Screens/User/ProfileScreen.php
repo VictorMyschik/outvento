@@ -6,9 +6,11 @@ namespace App\Orchid\Screens\User;
 
 use App\Http\Controllers\API\User\Request\CommunicationRequest;
 use App\Http\Controllers\API\User\Request\UpdateProfileRequest;
+use App\Http\Controllers\API\User\Request\UserLocationRequest;
 use App\Models\User;
 use App\Models\UserInfo\Communication;
 use App\Orchid\Layouts\User\Profile\AvatarUploadLayout;
+use App\Orchid\Layouts\User\Profile\UserLocationLayout;
 use App\Orchid\Layouts\User\Profile\UserNotificationSettingsEditLayout;
 use App\Orchid\Layouts\User\TelegramDeeplinkLayout;
 use App\Orchid\Layouts\User\UserCommunicateEditLayout;
@@ -29,6 +31,8 @@ use App\Services\User\AuthService;
 use App\Services\User\Enum\CommunicationType;
 use App\Services\User\Enum\VerificationStatus;
 use App\Services\User\Enum\Visibility;
+use App\Services\User\Google\DTO\UserLocationDto;
+use App\Services\User\UserLocationService;
 use App\Services\User\UserService;
 use Illuminate\Http\Request;
 use Orchid\Platform\Models\Role;
@@ -55,6 +59,7 @@ class ProfileScreen extends Screen
         private readonly UserService         $service,
         private readonly AuthService         $authService,
         private readonly SubscriptionService $subscriptionService,
+        private readonly UserLocationService $userLocationService,
     ) {}
 
     public function name(): string
@@ -95,8 +100,14 @@ class ProfileScreen extends Screen
         $out[] = Layout::modal('user_notification_settings_modal', UserNotificationSettingsEditLayout::class)->async('asyncGetServiceUserNotificationSettings')->size(Modal::SIZE_LG);
         $out[] = Layout::modal('user_role_modal', UserRolesEditLayout::class)->async('asyncGetUserRoles');
         $out[] = Layout::modal('telegram_deep_link_modal', TelegramDeeplinkLayout::class)->async('asyncGetTelegramDeepLink')->size(Modal::SIZE_LG);
+        $out[] = Layout::modal('user_location', UserLocationLayout::class)->async('asyncGetUserLocation');
 
         return $out;
+    }
+
+    public function asyncGetUserLocation(): array
+    {
+        return [];
     }
 
     public function view(array|Repository $httpQueryArguments = [])
@@ -206,9 +217,17 @@ class ProfileScreen extends Screen
             Group::make([
                 Label::make('first_name')->title('First name')->value($this->user->first_name ?: '-'),
                 Label::make('last_name')->title('Last name')->value($this->user->last_name ?: '-'),
-                Label::make('language')->title('Language')->value($this->user->getLanguage()->getLabel() ?? '-')
+                Label::make('language')->title('Language')->value($this->user->getLanguage()->getLabel() ?? '-'),
             ]),
-
+            ViewField::make('')->view('hr'),
+            Group::make([
+                Label::make('location')->title('Location')->value($this->user->getUserLocation()?->getCity()->name ?? '-'),
+                ModalToggle::make('изменить')
+                    ->class('mr-btn-primary')
+                    ->modal('user_location')
+                    ->modalTitle('User id ' . $this->user->email)
+                    ->method('saveUserLocation'),
+            ])->autoWidth(),
             ViewField::make('')->view('hr'),
             Group::make([
                 Label::make('birthday')->title('Дата рождения')->value(
@@ -594,6 +613,20 @@ class ProfileScreen extends Screen
         }
 
         Toast::info('Сервисные уведомления успешно сохранены')->delay(1500);
+    }
+
+    public function saveUserLocation(UserLocationRequest $request): void
+    {
+        $this->userLocationService->saveUserLocation(
+            userId: $this->user->id,
+            dto: new UserLocationDto(
+                placeId: $request->getPlaceId(),
+                lat: $request->getLat(),
+                lng: $request->getLng(),
+                countryCode: $request->getCountryCode(),
+                cityName: $request->getCityName(),
+            ),
+        );
     }
 
     public function sendVerifyUserEmail(): void

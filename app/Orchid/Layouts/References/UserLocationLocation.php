@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Orchid\Layouts\References;
 
 use App\Models\Reference\City;
-use App\Services\System\Enum\Language;
+use App\Models\Reference\UserLocation;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
 
-class CityListLayout extends Table
+class UserLocationLocation extends Table
 {
     public $target = 'list';
 
@@ -19,13 +19,12 @@ class CityListLayout extends Table
     {
         return [
             TD::make('id', __('ID'))->sort(),
-            TD::make('country_id', 'Country')->render(fn(City $city) => $city->getCountry()->getName(Language::RU))->sort(),
-            TD::make('name', 'Name')->sort(),
-            TD::make('timezone', 'Timezone')->sort(),
-            TD::make('lat', 'Lat')->sort(),
-            TD::make('lng', 'Lng')->sort(),
-            TD::make('place_id', 'Place_id')->sort(),
-
+            TD::make('user_id', 'User')->render(fn(UserLocation $userLocation) => $userLocation->getUser()->email)->sort(),
+            TD::make('city_id', 'City')->render(fn(UserLocation $userLocation) => $userLocation->getCity()->name)->sort(),
+            TD::make('lat', 'Latitude')->sort(),
+            TD::make('lng', 'Longitude')->sort(),
+            TD::make('radius_km', 'Radius (km)')->sort(),
+            TD::make('is_visible', 'Visible')->render(fn(UserLocation $userLocation) => $userLocation->is_visible ? 'Yes' : 'No')->sort(),
 
             TD::make(__('Actions'))
                 ->align(TD::ALIGN_CENTER)

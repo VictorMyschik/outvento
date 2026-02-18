@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Models\Notification\NotificationMute;
 use App\Models\Notification\ServiceNotification;
+use App\Models\Reference\UserLocation;
 use App\Models\UserInfo\Communication;
 use App\Models\UserInfo\SocialAccount;
 use App\Services\Notifications\Enum\NotificationChannel;
@@ -245,6 +246,11 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
     public function getLanguage(): Language
     {
         return Language::from($this->language);
+    }
+
+    public function getUserLocation(): ?UserLocation
+    {
+        return UserLocation::where('user_id', $this->id)->first();
     }
 
     public function getGender(): ?Gender
