@@ -42,5 +42,13 @@ return [
         'Pending'   => 'Pending confirmation',
         'Confirmed' => 'Confirmed',
         'Revoked'   => 'Revoked',
-    ]
+    ],
+
+    'travel_type' => [
+        'cycling'          => 'Cycling',
+        'MountainCampaign' => 'Mountain campaign',
+        'Hiking'           => 'Hiking',
+        'Kayaks'           => 'Kayaks',
+        'MountainClimbing' => 'Mountain climbing',
+    ],
 ];

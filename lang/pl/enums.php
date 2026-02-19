@@ -42,5 +42,13 @@ return [
         'Pending'   => 'Oczekuje na potwierdzenie',
         'Confirmed' => 'Potwierdzony',
         'Revoked'   => 'Wycofany',
-    ]
+    ],
+
+    'travel_type' => [
+        'cycling'          => 'Rowerowy',
+        'MountainCampaign' => 'Górska kampania',
+        'Hiking'           => 'Pieszy',
+        'Kayaks'           => 'Kajaki',
+        'MountainClimbing' => 'Alpinizm',
+    ],
 ];

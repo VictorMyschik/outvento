@@ -91,6 +91,8 @@ class purge extends Command
             'travels',
             'uit',
             'legal_documents',
+            'languages',
+            'language_names',
         ];
 
         foreach ($tableList as $tableName) {

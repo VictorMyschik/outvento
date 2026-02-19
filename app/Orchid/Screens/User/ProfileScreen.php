@@ -222,12 +222,27 @@ class ProfileScreen extends Screen
             ViewField::make('')->view('hr'),
             Group::make([
                 Label::make('location')->title('Location')->value($this->user->getUserLocation()?->getCity()->name ?? '-'),
-                ModalToggle::make('изменить')
+                ModalToggle::make('')
+                    ->icon('pencil')
                     ->class('mr-btn-primary')
                     ->modal('user_location')
                     ->modalTitle('User id ' . $this->user->email)
                     ->method('saveUserLocation'),
+                Button::make('')
+                    ->icon('trash')
+                    ->class('mr-btn-danger')
+                    ->confirm('Are you sure you want to delete user location?')
+                    ->method('deleteUserLocation'),
             ])->autoWidth(),
+            Group::make([
+                Label::make('languages')->title('Location')->value($this->user->getUserLocation()?->getCity()->name ?? '-'),
+                ModalToggle::make('')
+                    ->icon('pencil')
+                    ->class('mr-btn-primary')
+                    ->modal('user_location')
+                    ->modalTitle('User id ' . $this->user->email)
+                    ->method('saveUserLocation'),
+            ]),
             ViewField::make('')->view('hr'),
             Group::make([
                 Label::make('birthday')->title('Дата рождения')->value(
@@ -627,6 +642,11 @@ class ProfileScreen extends Screen
                 cityName: $request->getCityName(),
             ),
         );
+    }
+
+    public function deleteUserLocation(): void
+    {
+        $this->userLocationService->deleteUserLocation($this->user->id);
     }
 
     public function sendVerifyUserEmail(): void

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Orchid\Screens\Travel;
 
 use App\Models\Travel\Travel;
@@ -14,6 +16,8 @@ use Orchid\Support\Facades\Toast;
 
 class TravelListScreen extends Screen
 {
+    public string $name = 'Travel List';
+
     public function __construct(private readonly TravelService $service) {}
 
     public function query(): iterable
@@ -23,10 +27,6 @@ class TravelListScreen extends Screen
         ];
     }
 
-    public function name(): ?string
-    {
-        return 'Походы';
-    }
 
     public function description(): ?string
     {

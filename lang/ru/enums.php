@@ -42,5 +42,13 @@ return [
         'Pending'   => 'Ожидает подтверждения',
         'Confirmed' => 'Подтверждено',
         'Revoked'   => 'Отозвано',
-    ]
+    ],
+
+    'travel_type' => [
+        'cycling'          => 'Велопоход',
+        'MountainCampaign' => 'Горная кампания',
+        'Hiking'           => 'Пеший поход',
+        'Kayaks'           => 'Каяки',
+        'MountainClimbing' => 'Альпинизм',
+    ],
 ];

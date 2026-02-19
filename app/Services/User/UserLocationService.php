@@ -25,4 +25,9 @@ final readonly class UserLocationService
 
         $this->repository->setLocation($userId, $city->id, $dto->lat, $dto->lng);
     }
+
+    public function deleteUserLocation(int $userId): void
+    {
+        $this->repository->deleteUserLocation($userId);
+    }
 }

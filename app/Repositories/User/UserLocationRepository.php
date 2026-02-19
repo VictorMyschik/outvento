@@ -62,4 +62,9 @@ final readonly class UserLocationRepository extends DatabaseRepository
             [$lng, $lat, $location->id]
         );
     }
+
+    public function deleteUserLocation(int $userId): void
+    {
+        $this->db->table(UserLocation::getTableName())->where('user_id', $userId)->delete();
+    }
 }
