@@ -41,8 +41,6 @@ class UserProfileEditLayout extends Rows
                 Input::make('last_name')->max(100)->title('Last name'),
             ]),
 
-            ViewField::make('')->view('admin.google-places'),
-
             Select::make('language')
                 ->title('Language')
                 ->options(Language::getSelectList()),

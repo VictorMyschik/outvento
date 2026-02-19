@@ -10,6 +10,7 @@ use App\Http\Controllers\API\User\Request\UserLocationRequest;
 use App\Models\User;
 use App\Models\UserInfo\Communication;
 use App\Orchid\Layouts\User\Profile\AvatarUploadLayout;
+use App\Orchid\Layouts\User\Profile\UserLanguagesEditLayout;
 use App\Orchid\Layouts\User\Profile\UserLocationLayout;
 use App\Orchid\Layouts\User\Profile\UserNotificationSettingsEditLayout;
 use App\Orchid\Layouts\User\TelegramDeeplinkLayout;
@@ -100,14 +101,17 @@ class ProfileScreen extends Screen
         $out[] = Layout::modal('user_notification_settings_modal', UserNotificationSettingsEditLayout::class)->async('asyncGetServiceUserNotificationSettings')->size(Modal::SIZE_LG);
         $out[] = Layout::modal('user_role_modal', UserRolesEditLayout::class)->async('asyncGetUserRoles');
         $out[] = Layout::modal('telegram_deep_link_modal', TelegramDeeplinkLayout::class)->async('asyncGetTelegramDeepLink')->size(Modal::SIZE_LG);
-        $out[] = Layout::modal('user_location', UserLocationLayout::class)->async('asyncGetUserLocation');
+        $out[] = Layout::modal('user_location', UserLocationLayout::class);
+        $out[] = Layout::modal('user_languages', UserLanguagesEditLayout::class)->async('asyncGetUserLanguages');
 
         return $out;
     }
 
-    public function asyncGetUserLocation(): array
+    public function asyncGetUserLanguages(): array
     {
-        return [];
+        return [
+            'languages'  => $this->service->getUserLanguages($this->user, Language::from($this->user->language)),
+        ];
     }
 
     public function view(array|Repository $httpQueryArguments = [])
@@ -135,7 +139,7 @@ class ProfileScreen extends Screen
             'active'                => $this->service->isUserNotificationActive($this->user->id, ServiceEvent::from($event)),
             'notificationEventType' => $event,
             'userSettings'          => $this->service->getServiceUserNotificationList($this->user->id),
-            'userCommunications'    => $this->service->getCommunicationsForNotification($this->user->id, ServiceEvent::from($event)),
+            'userCommunications'    => $this->service->getCommunicationsForNotification($this->user->id),
         ];
     }
 
@@ -206,6 +210,37 @@ class ProfileScreen extends Screen
                 ->method('sendVerifyUserEmail', ['id' => $this->user->id]);
         }
 
+        $locationData = [
+            'location'  => [
+                'city'    => $this->user->getUserLocation()?->getCity()->name,
+                'country' => $this->user->getUserLocation()?->getCity()->getCountry()->name_ru,
+                'btns'    => Group::make([
+                    ModalToggle::make('')
+                        ->icon('pencil')
+                        ->class('mr-btn-primary')
+                        ->modal('user_location')
+                        ->modalTitle('Set location')
+                        ->method('saveUserLocation'),
+                    Button::make('')
+                        ->icon('trash')
+                        ->class('mr-btn-danger')
+                        ->confirm('Are you sure you want to delete user location?')
+                        ->method('deleteUserLocation'),
+                ])->autoWidth(),
+            ],
+            'languages' => [
+                'list' => $this->service->getUserLanguages($this->user, Language::from($this->user->language)),
+                'btns' => Group::make([
+                    ModalToggle::make('')
+                        ->icon('pencil')
+                        ->class('mr-btn-primary')
+                        ->modal('user_languages')
+                        ->modalTitle('Set languages')
+                        ->method('saveUserLanguages'),
+                ])->autoWidth(),
+            ],
+        ];
+
         return Layout::rows([
             Group::make([
                 Label::make('id')->title('ID')->value((string)$this->user->id),
@@ -217,38 +252,18 @@ class ProfileScreen extends Screen
             Group::make([
                 Label::make('first_name')->title('First name')->value($this->user->first_name ?: '-'),
                 Label::make('last_name')->title('Last name')->value($this->user->last_name ?: '-'),
-                Label::make('language')->title('Language')->value($this->user->getLanguage()->getLabel() ?? '-'),
-            ]),
-            ViewField::make('')->view('hr'),
-            Group::make([
-                Label::make('location')->title('Location')->value($this->user->getUserLocation()?->getCity()->name ?? '-'),
-                ModalToggle::make('')
-                    ->icon('pencil')
-                    ->class('mr-btn-primary')
-                    ->modal('user_location')
-                    ->modalTitle('User id ' . $this->user->email)
-                    ->method('saveUserLocation'),
-                Button::make('')
-                    ->icon('trash')
-                    ->class('mr-btn-danger')
-                    ->confirm('Are you sure you want to delete user location?')
-                    ->method('deleteUserLocation'),
-            ])->autoWidth(),
-            Group::make([
-                Label::make('languages')->title('Location')->value($this->user->getUserLocation()?->getCity()->name ?? '-'),
-                ModalToggle::make('')
-                    ->icon('pencil')
-                    ->class('mr-btn-primary')
-                    ->modal('user_location')
-                    ->modalTitle('User id ' . $this->user->email)
-                    ->method('saveUserLocation'),
-            ]),
-            ViewField::make('')->view('hr'),
-            Group::make([
-                Label::make('birthday')->title('Дата рождения')->value(
+                Label::make('gender')->title('Gender')->value($this->user->getGender()?->getLabel() ?: '-'),
+                Label::make('birthday')->title('Birthday')->value(
                     $this->user->birthday ? $this->user->birthday->format('d.m.Y') : '-'
                 ),
-                Label::make('gender')->title('Пол')->value($this->user->getGender()?->getLabel() ?: '-'),
+                Label::make('language')->title('Default Language')->value($this->user->getLanguage()->getLabel() ?? '-'),
+            ]),
+            ViewField::make('')->view('hr'),
+            ViewField::make('')->view('admin.users.location_language')->value($locationData),
+            ViewField::make('')->view('hr'),
+            Group::make([
+
+
                 Label::make('relationship_status')->title('Семейное положение')->value($this->user->getRelationshipStatus()->getLabel()),
 
             ]),
@@ -261,6 +276,13 @@ class ProfileScreen extends Screen
                 ->method('saveUser')
                 ->asyncParameters(['id' => $this->user->id]),
         ]);
+    }
+
+    public function saveUserLanguages(Request $request): void
+    {
+        $input = $request->get('languages', []);
+
+        $this->service->updateUserLanguages($this->user, $input);
     }
 
     private function getRightLayout(): Tabs

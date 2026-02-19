@@ -14,6 +14,7 @@ use App\Services\Notifications\Enum\ServiceEvent;
 use App\Services\Notifications\Enum\SystemEvent;
 use App\Services\Notifications\ServiceNotificationService;
 use App\Services\Notifications\SystemNotificationService;
+use App\Services\System\Enum\Language;
 use App\Services\User\Enum\CommunicationType;
 use App\Services\User\Enum\VerificationStatus;
 use Illuminate\Http\UploadedFile;
@@ -214,4 +215,14 @@ final readonly class UserService
     }
 
     #endregion
+
+    public function getUserLanguages(User $user, Language $language): array
+    {
+        return $this->repository->getUserLanguages($user, $language);
+    }
+
+    public function updateUserLanguages(User $user, array $languages): void
+    {
+        $this->repository->updateUserLanguages($user, $languages);
+    }
 }

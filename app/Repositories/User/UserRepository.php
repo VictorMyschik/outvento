@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Repositories\User;
 
+use App\Models\LanguageName;
 use App\Models\User;
 use App\Models\UserInfo\Communication;
+use App\Models\UserLanguage;
 use App\Repositories\DatabaseRepository;
+use App\Services\System\Enum\Language;
 use App\Services\User\Enum\VerificationStatus;
 
 final readonly class UserRepository extends DatabaseRepository
@@ -121,5 +124,31 @@ final readonly class UserRepository extends DatabaseRepository
     public function getCommunicationByToken(string $token): ?Communication
     {
         return Communication::where('address_ext', $token)->first();
+    }
+
+    public function getUserLanguages(User $user, Language $language): array
+    {
+        return $this->db->table(LanguageName::getTableName())
+            ->join(UserLanguage::getTableName(), LanguageName::getTableName() . '.language_id', '=', UserLanguage::getTableName() . '.language_id')
+            ->where(UserLanguage::getTableName() . '.user_id', $user->id)
+            ->where(LanguageName::getTableName() . '.locale', $language->getCode())
+            ->pluck(LanguageName::getTableName() . '.name', UserLanguage::getTableName() . '.language_id')
+            ->all();
+    }
+
+    public function updateUserLanguages(User $user, array $languages): void
+    {
+        $this->db->table(UserLanguage::getTableName())->where('user_id', $user->id)->delete();
+
+        if (count($languages)) {
+            $data = array_map(static function ($languageId) use ($user) {
+                return [
+                    'user_id'     => (int)$user->id,
+                    'language_id' => (int)$languageId,
+                ];
+            }, $languages);
+
+            $this->db->table(UserLanguage::getTableName())->insert($data);
+        }
     }
 }

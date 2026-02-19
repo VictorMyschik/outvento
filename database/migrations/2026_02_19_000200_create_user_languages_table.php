@@ -18,7 +18,6 @@ return new class extends Migration {
             $table->unique(['user_id', 'language_id']);
 
             $table->timestampTz('created_at')->useCurrent();
-            $table->timestampTz('updated_at')->nullable()->useCurrentOnUpdate();
         });
     }
 
