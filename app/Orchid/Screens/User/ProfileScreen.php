@@ -109,8 +109,10 @@ class ProfileScreen extends Screen
 
     public function asyncGetUserLanguages(): array
     {
+        $list = $this->service->getUserLanguages($this->user, Language::from($this->user->language));
+
         return [
-            'languages'  => $this->service->getUserLanguages($this->user, Language::from($this->user->language)),
+            'languages'  => array_flip($list),
         ];
     }
 
