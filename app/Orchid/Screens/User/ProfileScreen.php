@@ -239,6 +239,11 @@ class ProfileScreen extends Screen
                         ->modal('user_languages')
                         ->modalTitle('Set languages')
                         ->method('saveUserLanguages'),
+                    Button::make('')
+                        ->icon('trash')
+                        ->class('mr-btn-danger')
+                        ->confirm('Are you sure you want to delete user languages?')
+                        ->method('deleteUserLanguages'),
                 ])->autoWidth(),
             ],
         ];
@@ -285,6 +290,11 @@ class ProfileScreen extends Screen
         $input = $request->get('languages', []);
 
         $this->service->updateUserLanguages($this->user, $input);
+    }
+
+    public function deleteUserLanguages(): void
+    {
+        $this->service->deleteUserLanguages($this->user);
     }
 
     private function getRightLayout(): Tabs

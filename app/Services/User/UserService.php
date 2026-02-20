@@ -225,4 +225,9 @@ final readonly class UserService
     {
         $this->repository->updateUserLanguages($user, $languages);
     }
+
+    public function deleteUserLanguages(User $user): void
+    {
+        $this->repository->deleteUserLanguages($user);
+    }
 }

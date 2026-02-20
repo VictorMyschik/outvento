@@ -151,4 +151,9 @@ final readonly class UserRepository extends DatabaseRepository
             $this->db->table(UserLanguage::getTableName())->insert($data);
         }
     }
+
+    public function deleteUserLanguages(User $user): void
+    {
+        $this->db->table(UserLanguage::getTableName())->where('user_id', $user->id)->delete();
+    }
 }
