@@ -85,7 +85,7 @@ class purge extends Command
             'cron',
             'countries',
             'cities',
-            'travel_types',
+            'activities',
             'communications',
             'user_service_notifications',
             'travels',

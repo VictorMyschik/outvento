@@ -51,4 +51,23 @@ return [
         'Kayaks'           => 'Kajaki',
         'MountainClimbing' => 'Alpinizm',
     ],
+
+    'travel_visible' => [
+        'Public'   => 'Publiczny',
+        'ForMe'    => 'Tylko dla mnie',
+        'Platform' => 'Tylko dla zarejestrowanych użytkowników',
+    ],
+
+    'travel_visible_description' => [
+        'Public'   => 'Prywatny, nie uczestniczy w publicznych wyszukiwaniach',
+        'ForMe'    => 'Tylko dla mnie, nie uczestniczy w publicznych wyszukiwaniach',
+        'Platform' => 'Tylko dla zarejestrowanych użytkowników, nie uczestniczy w publicznych wyszukiwaniach',
+    ],
+
+    'travel_status' => [
+        'Draft'    => 'Szkic',
+        'Active'   => 'Aktywny',
+        'Archived' => 'Zarchiwizowany',
+        'Deleted'  => 'Usunięty',
+    ],
 ];

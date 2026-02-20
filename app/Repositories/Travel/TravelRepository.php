@@ -12,7 +12,7 @@ use App\Models\User;
 use App\Repositories\DatabaseRepository;
 use App\Services\Travel\Enum\ImageType;
 use App\Services\Travel\Enum\TravelStatus;
-use App\Services\Travel\Enum\TravelVisibleType;
+use App\Services\Travel\Enum\TravelVisible;
 use App\Services\Travel\TravelRepositoryInterface;
 
 readonly class TravelRepository extends DatabaseRepository implements TravelRepositoryInterface
@@ -37,7 +37,7 @@ readonly class TravelRepository extends DatabaseRepository implements TravelRepo
     public function getPublicList(?User $user, array $filter = []): array
     {
         if (!$user) {
-            $query = Travel::where('visible_type', TravelVisibleType::VISIBLE_TYPE_PUBLIC)->whereIn('status', [TravelStatus::STATUS_ACTIVE]);
+            $query = Travel::where('visible_type', TravelVisible::Public)->whereIn('status', [TravelStatus::STATUS_ACTIVE]);
         }
 
         if ($user) {

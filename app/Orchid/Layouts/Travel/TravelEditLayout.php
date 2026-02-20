@@ -7,7 +7,7 @@ use App\Models\Travel\Travel;
 use App\Models\Travel\TravelType;
 use App\Models\User;
 use App\Services\Travel\Enum\TravelStatus;
-use App\Services\Travel\Enum\TravelVisibleType;
+use App\Services\Travel\Enum\TravelVisible;
 use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
@@ -51,7 +51,7 @@ class TravelEditLayout extends Rows
                 ->title('Visible type')
                 ->required()
                 ->empty('Select travel public type')
-                ->options(TravelVisibleType::getSelectList()),
+                ->options(TravelVisible::getSelectList()),
 
             Group::make([
                 Input::make('travel.date_from')

@@ -7,7 +7,9 @@ namespace App\Services\Travel;
 use App\Models\Orchid\Attachment;
 use App\Models\Travel\Travel;
 use App\Models\Travel\TravelImage;
+use App\Models\User;
 use App\Services\Travel\Enum\ImageType;
+use App\Services\Travel\Enum\TravelStatus;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
@@ -26,6 +28,8 @@ readonly class TravelService
     public function createTravel(array $data): int
     {
         $data['public_id'] = crc32((string)microtime());
+        $data['status'] = TravelStatus::Draft;
+
         return $this->travelRepository->saveTravel(0, $data);
     }
 

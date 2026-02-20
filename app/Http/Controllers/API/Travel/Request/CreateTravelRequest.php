@@ -4,31 +4,23 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\API\Travel\Request;
 
-use App\Http\Controllers\API\Request\InvalidArgumentException;
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CreateTravelRequest extends FormRequest
 {
-    public function authorize(): bool
-    {
-        return true;
-    }
-
     public function rules(): array
     {
         return [
-            'title'          => 'required|string|max:255',
-            'description'    => 'string|max:8000',
-            'status'         => 'required|int|in:-1,1,2',
-            'country_id'     => 'required|int|exists:country,id',
-            'visible_kind'   => 'required|int|in:0,1,2',
-            'travel_type_id' => 'required|int|exists:travel_type,id',
+            'title'   => 'required|string|max:255',
+            'preview' => 'nullable|string|max:355',
         ];
     }
 
-    protected function failedValidation(Validator $validator)
+    public function getInput(): array
     {
-        throw new InvalidArgumentException($validator->errors()->first());
+        return [
+            'title'   => $this->input('title'),
+            'preview' => $this->input('preview'),
+        ];
     }
 }

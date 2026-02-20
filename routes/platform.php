@@ -48,20 +48,11 @@ use App\Orchid\Screens\User\UserEditScreen;
 use App\Orchid\Screens\User\UserListScreen;
 use App\Orchid\Screens\User\UserProfileListScreen;
 use App\Orchid\Screens\User\UserProfileScreen;
+use App\Orchid\Screens\User\UserTravelDetailsScreen;
+use App\Orchid\Screens\User\UserTravelListScreen;
 use App\Orchid\Screens\Wishlist\WishlistScreen;
 use Illuminate\Support\Facades\Route;
 use Tabuna\Breadcrumbs\Trail;
-
-/*
-|--------------------------------------------------------------------------
-| Dashboard Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the need "dashboard" middleware group. Now create something great!
-|
-*/
 
 // Main
 Route::screen('/main', PlatformScreen::class)
@@ -146,6 +137,8 @@ Route::screen('promo/subscriptions/list', SubscriptionScreen::class)->name('prom
 // Users
 Route::screen('/profiles/list', UserProfileListScreen::class)->name('profiles.list');
 Route::screen('/profiles/{user}/details', ProfileScreen::class)->name('profiles.details');
+Route::screen('/profiles/{user}/travels', UserTravelListScreen::class)->name('profiles.travels');
+Route::screen('/profiles/{user}/travel/{travel}/details', UserTravelDetailsScreen::class)->name('profiles.travel.details');
 Route::screen('/profiles/communications/list', UserCommunicateScreen::class)->name('profiles.communication.list');
 
 // Travel

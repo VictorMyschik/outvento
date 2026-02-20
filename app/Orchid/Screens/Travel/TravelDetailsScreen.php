@@ -18,7 +18,7 @@ use App\Orchid\Layouts\Travel\TravelEditLayout;
 use App\Orchid\Layouts\Travel\TravelImageUploadLayout;
 use App\Services\Travel\Enum\ImageType;
 use App\Services\Travel\Enum\TravelStatus;
-use App\Services\Travel\Enum\TravelVisibleType;
+use App\Services\Travel\Enum\TravelVisible;
 use App\Services\Travel\Enum\UITStatus;
 use App\Services\Travel\TravelService;
 use Illuminate\Http\RedirectResponse;
@@ -105,7 +105,7 @@ class TravelDetailsScreen extends Screen
         return Layout::rows([
             Group::make([
                 Select::make('travel.status')->title('Общий статус')->required()->options(TravelStatus::getSelectList()),
-                Select::make('travel.visible_type')->title('Видимость')->required()->empty('Select travel public type')->options(TravelVisibleType::getSelectList()),
+                Select::make('travel.visible_type')->title('Видимость')->required()->empty('Select travel public type')->options(TravelVisible::getSelectList()),
                 Select::make('travel.travel_type_id')->title('Тип')->required()->empty('Select travel type')->fromModel(TravelType::class, 'name_ru'),
                 Select::make('travel.country_id')->title('Страна')->required()->empty('Select country')->options(Country::all()->pluck('name_ru', 'id')->toArray()),
             ]),

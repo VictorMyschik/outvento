@@ -14,6 +14,7 @@ use App\Orchid\Layouts\User\Profile\UserLanguagesEditLayout;
 use App\Orchid\Layouts\User\Profile\UserLocationLayout;
 use App\Orchid\Layouts\User\Profile\UserNotificationSettingsEditLayout;
 use App\Orchid\Layouts\User\TelegramDeeplinkLayout;
+use App\Orchid\Layouts\User\UserBaseScreen;
 use App\Orchid\Layouts\User\UserCommunicateEditLayout;
 use App\Orchid\Layouts\User\UserProfileEditLayout;
 use App\Orchid\Layouts\User\UserRolesEditLayout;
@@ -48,20 +49,12 @@ use Orchid\Screen\Layouts\Modal;
 use Orchid\Screen\Layouts\Rows;
 use Orchid\Screen\Layouts\Tabs;
 use Orchid\Screen\Repository;
-use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
 
-class ProfileScreen extends Screen
+class ProfileScreen extends UserBaseScreen
 {
     public ?User $user = null;
-
-    public function __construct(
-        private readonly UserService         $service,
-        private readonly AuthService         $authService,
-        private readonly SubscriptionService $subscriptionService,
-        private readonly UserLocationService $userLocationService,
-    ) {}
 
     public function name(): string
     {
@@ -89,6 +82,8 @@ class ProfileScreen extends Screen
 
     public function layout(): iterable
     {
+        $out[] = Layout::rows($this->getActionTopLayout());
+
         $out[] = Layout::columns([
             $this->getLeftLayout(),
             $this->getRightLayout(),
@@ -107,32 +102,20 @@ class ProfileScreen extends Screen
         return $out;
     }
 
+    private function getActionTopLayout(): array
+    {
+        return [
+            Link::make('Travels')->class('mr-btn mr-btn-route')->icon('map')->route('profiles.travels', $this->user->id),
+        ];
+    }
+
     public function asyncGetUserLanguages(): array
     {
         $list = $this->service->getUserLanguages($this->user, Language::from($this->user->language));
 
         return [
-            'languages'  => array_flip($list),
+            'languages' => array_flip($list),
         ];
-    }
-
-    public function view(array|Repository $httpQueryArguments = [])
-    {
-        $repository = is_a($httpQueryArguments, Repository::class)
-            ? $httpQueryArguments
-            : $this->buildQueryRepository($httpQueryArguments);
-
-        return view($this->screenBaseView(), [
-            'name'                    => $this->name(),
-            'description'             => $this->description(),
-            'commandBar'              => $this->buildCommandBar($repository),
-            'layouts'                 => $this->build($repository),
-            'formValidateMessage'     => $this->formValidateMessage(),
-            'needPreventsAbandonment' => $this->needPreventsAbandonment(),
-            'state'                   => $this->serializableState(),
-            'controller'              => $this->frontendController(),
-            'avatar'                  => $this->user->getAvatarExt(),
-        ]);
     }
 
     public function asyncGetServiceUserNotificationSettings(int $event): array
@@ -269,10 +252,7 @@ class ProfileScreen extends Screen
             ViewField::make('')->view('admin.users.location_language')->value($locationData),
             ViewField::make('')->view('hr'),
             Group::make([
-
-
                 Label::make('relationship_status')->title('Семейное положение')->value($this->user->getRelationshipStatus()->getLabel()),
-
             ]),
             ViewField::make('')->view('hr'),
             Label::make('about')->title('О себе')->value($this->user->about ?: '-'),

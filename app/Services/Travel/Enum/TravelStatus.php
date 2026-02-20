@@ -6,25 +6,22 @@ namespace App\Services\Travel\Enum;
 
 enum TravelStatus: int
 {
-    case STATUS_DRAFT = -1;
-    case STATUS_ACTIVE = 1;
-    case STATUS_ARCHIVED = 2;
+    case Draft = 0;
+    case Active = 1;
+    case Archived = 2;
+    case Deleted = 3;
 
     public static function getSelectList(): array
     {
-        return [
-            self::STATUS_DRAFT->value    => self::STATUS_DRAFT->getLabel(),
-            self::STATUS_ACTIVE->value   => self::STATUS_ACTIVE->getLabel(),
-            self::STATUS_ARCHIVED->value => self::STATUS_ARCHIVED->getLabel(),
-        ];
+        return collect(self::cases())
+            ->mapWithKeys(fn(self $case) => [
+                $case->value => $case->getLabel(),
+            ])
+            ->toArray();
     }
 
     public function getLabel(): string
     {
-        return match ($this) {
-            self::STATUS_DRAFT => __('common.draft'),
-            self::STATUS_ACTIVE => __('common.active'),
-            self::STATUS_ARCHIVED => __('common.archived'),
-        };
+        return __('enums.travel_status.' . $this->name);
     }
 }

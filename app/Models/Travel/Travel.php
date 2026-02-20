@@ -12,8 +12,7 @@ use App\Models\Reference\Country;
 use App\Models\User;
 use App\Services\Travel\Enum\ImageType;
 use App\Services\Travel\Enum\TravelStatus;
-use App\Services\Travel\Enum\TravelVisibleType;
-use App\Services\Travel\Enum\UITStatus;
+use App\Services\Travel\Enum\TravelVisible;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Orchid\Filters\Filterable;
@@ -36,12 +35,9 @@ class Travel extends ORM
         'preview',
         'status',
         'user_id',
-        'country_id',
+        'visible',
         'members',
-        'public',
-        'travel_type_id',
         'public_id',
-        'visible_type',
         'created_at',
         'updated_at',
     ];
@@ -71,9 +67,9 @@ class Travel extends ORM
         return $this->preview;
     }
 
-    public function getVisibleType(): TravelVisibleType
+    public function getVisibleType(): TravelVisible
     {
-        return TravelVisibleType::from($this->visible_type);
+        return TravelVisible::from($this->visible_type);
     }
 
     private const string STORAGE_PATH = 'files/travel_images';

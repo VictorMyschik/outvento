@@ -51,4 +51,23 @@ return [
         'Kayaks'           => 'Kayaks',
         'MountainClimbing' => 'Mountain climbing',
     ],
+
+    'travel_visible' => [
+        'Public'   => 'Public',
+        'ForMe'    => 'Only for me',
+        'Platform' => 'Only for registered users',
+    ],
+
+    'travel_visible_description' => [
+        'Public'   => 'Public, participates in public searches',
+        'ForMe'    => 'Only for me, does not participate in public searches',
+        'Platform' => 'Only for registered users, does not participate in public searches',
+    ],
+
+    'travel_status' => [
+        'Draft'    => 'Draft',
+        'Active'   => 'Active',
+        'Archived' => 'Archived',
+        'Deleted'  => 'Deleted',
+    ],
 ];

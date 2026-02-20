@@ -7,17 +7,15 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('travel_types', function (Blueprint $table) {
+        Schema::create('activities', function (Blueprint $table) {
             $table->id();
-            $table->string('name_ru', 50);
-            $table->string('name_en', 50)->nullable();
-            $table->string('name_pl', 50)->nullable();
+            $table->string('code', 50);
             $table->string('image_path')->nullable();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('travel_types');
+        Schema::dropIfExists('activities');
     }
 };
