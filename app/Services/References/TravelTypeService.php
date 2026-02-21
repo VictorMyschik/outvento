@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\References;
 
-use App\Models\Travel\TravelType;
+use App\Models\Travel\Activity;
 use App\Services\References\Enum\ImageTypeEnum;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -16,6 +16,6 @@ final readonly class TravelTypeService extends AbstractReferenceService
             $data['image_path'] = $this->saveImage(ImageTypeEnum::TravelType, $file);
         }
 
-        return $this->repository->save($id, TravelType::class, $data);
+        return $this->repository->save($id, Activity::class, $data);
     }
 }

@@ -146,7 +146,6 @@ Route::screen('/travel/list', TravelListScreen::class)->name('travel.list');
 Route::screen('/travel/details/{travel}', TravelDetailsScreen::class)->name('travel.details');
 
 // References
-Route::screen('/reference/travel-type/list', TravelTypeListScreen::class)->name('reference.travel-type.list');
 Route::screen('/reference/category-equipments/list', CategoryEquipmentScreen::class)->name('reference.category.equipments.list');
 Route::screen('/reference/equipments/list', EquipmentScreen::class)->name('reference.equipments.list');
 Route::screen('/reference/cities/list', CitiesScreen::class)->name('reference.cities.list');

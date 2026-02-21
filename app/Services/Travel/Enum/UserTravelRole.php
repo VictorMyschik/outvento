@@ -4,17 +4,14 @@ declare(strict_types=1);
 
 namespace App\Services\Travel\Enum;
 
-enum Type: int
+enum UserTravelRole: int
 {
-    case cycling = 1;
-    case MountainCampaign = 2;
-    case Hiking = 3;
-    case Kayaks = 4;
-    case MountainClimbing = 5;
+    case Owner = 0;
+    case Member = 1;
 
     public function getLabel(): string
     {
-        return __('enums.travel_type.' . $this->name);
+        return __('enums.user_travel_role.' . $this->name);
     }
 
     public static function getSelectList(): array

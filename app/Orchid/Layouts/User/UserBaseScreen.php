@@ -17,6 +17,8 @@ class UserBaseScreen extends Screen
 {
     public ?User $user = null;
 
+    private ?string $avatar = null;
+
     public function __construct(
         protected readonly UserService         $service,
         protected readonly AuthService         $authService,
@@ -57,12 +59,22 @@ class UserBaseScreen extends Screen
             'needPreventsAbandonment' => $this->needPreventsAbandonment(),
             'state'                   => $this->serializableState(),
             'controller'              => $this->frontendController(),
-            'avatar'                  => $this->user->getAvatarExt(),
+            'avatar'                  => $this->getAvatar(),
         ]);
     }
 
     public function layout(): iterable
     {
         return [];
+    }
+
+    protected function setAvatar(string $avatar): void
+    {
+        $this->avatar = $avatar;
+    }
+
+    public function getAvatar(): ?string
+    {
+        return $this->avatar ?: $this->user->getAvatarExt();
     }
 }

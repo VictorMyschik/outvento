@@ -9,7 +9,7 @@ use App\Models\Orchid\Attachment;
 use App\Models\Reference\Country;
 use App\Models\Travel\Travel;
 use App\Models\Travel\TravelImage;
-use App\Models\Travel\TravelType;
+use App\Models\Travel\Activity;
 use App\Models\Travel\UIT;
 use App\Models\User;
 use App\Orchid\Layouts\Travel\InviteByEmailEditLayout;
@@ -61,11 +61,6 @@ class TravelDetailsScreen extends Screen
         return $this->travel?->getTitle();
     }
 
-    public function description(): ?string
-    {
-        return '';
-    }
-
     public function commandBar(): iterable
     {
         return [
@@ -106,7 +101,7 @@ class TravelDetailsScreen extends Screen
             Group::make([
                 Select::make('travel.status')->title('Общий статус')->required()->options(TravelStatus::getSelectList()),
                 Select::make('travel.visible_type')->title('Видимость')->required()->empty('Select travel public type')->options(TravelVisible::getSelectList()),
-                Select::make('travel.travel_type_id')->title('Тип')->required()->empty('Select travel type')->fromModel(TravelType::class, 'name_ru'),
+                Select::make('travel.travel_type_id')->title('Тип')->required()->empty('Select travel type')->fromModel(Activity::class, 'name_ru'),
                 Select::make('travel.country_id')->title('Страна')->required()->empty('Select country')->options(Country::all()->pluck('name_ru', 'id')->toArray()),
             ]),
             ViewField::make('')->view('space'),

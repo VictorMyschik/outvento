@@ -6,13 +6,13 @@ namespace App\Repositories\Travel;
 
 use App\Models\Travel\Travel;
 use App\Models\Travel\TravelImage;
-use App\Models\Travel\TravelType;
 use App\Models\Travel\UIT;
 use App\Models\User;
 use App\Repositories\DatabaseRepository;
 use App\Services\Travel\Enum\ImageType;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\TravelVisible;
+use App\Services\Travel\Enum\UserTravelRole;
 use App\Services\Travel\TravelRepositoryInterface;
 
 readonly class TravelRepository extends DatabaseRepository implements TravelRepositoryInterface
@@ -28,7 +28,8 @@ readonly class TravelRepository extends DatabaseRepository implements TravelRepo
 
     public function getTravelUsers(Travel $travel): array
     {
-        return UIT::where('travel_id', $travel->id())->get()->all();
+        return User::join(UIT::getTableName(), 'users.id', '=', UIT::getTableName() . '.user_id')
+            ->where('travel_id', $travel->id())->selectRaw('users.*, ' . UIT::getTableName() . '.role')->get()->all();
     }
 
     /**
@@ -37,11 +38,11 @@ readonly class TravelRepository extends DatabaseRepository implements TravelRepo
     public function getPublicList(?User $user, array $filter = []): array
     {
         if (!$user) {
-            $query = Travel::where('visible_type', TravelVisible::Public)->whereIn('status', [TravelStatus::STATUS_ACTIVE]);
+            $query = Travel::where('visible_type', TravelVisible::Public)->whereIn('status', [TravelStatus::Active]);
         }
 
         if ($user) {
-            $query = Travel::whereIn('status', [TravelStatus::STATUS_ACTIVE, TravelStatus::STATUS_ARCHIVED]);
+            $query = Travel::whereIn('status', [TravelStatus::Active, TravelStatus::Archived]);
         }
 
         // Filtering
@@ -95,11 +96,6 @@ readonly class TravelRepository extends DatabaseRepository implements TravelRepo
         return Travel::find($travelId);
     }
 
-    public function getTravelTypeList(): array
-    {
-        return TravelType::get()->all();
-    }
-
     public function getTravelLogo(int $travelId): ?TravelImage
     {
         return TravelImage::where('travel_id', $travelId)->where('type', ImageType::LOGO->value)->first();
@@ -132,4 +128,52 @@ readonly class TravelRepository extends DatabaseRepository implements TravelRepo
     }
 
     #endregion
+    public function saveTravelUser(int $userId, int $travelId, UserTravelRole $role): void
+    {
+        $this->db->table(UIT::getTableName())->updateOrInsert([
+            'user_id'   => $userId,
+            'travel_id' => $travelId,
+        ], [
+            'role' => $role->value,
+        ]);
+    }
+
+    public function updateTravelCountries(int $travelId, array $countryIds): void
+    {
+        $this->db->table('travel_countries')->where('travel_id', $travelId)->delete();
+
+        $insertData = [];
+        foreach ($countryIds as $countryId) {
+            $insertData[] = [
+                'travel_id'  => $travelId,
+                'country_id' => $countryId,
+            ];
+        }
+
+        if (!empty($insertData)) {
+            $this->db->table('travel_countries')->insert($insertData);
+        }
+    }
+
+    public function updateTravelActivities(int $travelId, array $activityIds): void
+    {
+        $this->db->table('travel_activities')->where('travel_id', $travelId)->delete();
+
+        $insertData = [];
+        foreach ($activityIds as $activityId) {
+            $insertData[] = [
+                'travel_id'   => $travelId,
+                'activity' => $activityId,
+            ];
+        }
+
+        if (!empty($insertData)) {
+            $this->db->table('travel_activities')->insert($insertData);
+        }
+    }
+
+    public function deleteTravel(int $travelId): void
+    {
+        $this->db->table(Travel::getTableName())->where('id', $travelId)->delete();
+    }
 }

@@ -13,7 +13,9 @@ use App\Models\User;
 use App\Services\Travel\Enum\ImageType;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\TravelVisible;
+use App\Services\Travel\Enum\UserTravelRole;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
@@ -89,9 +91,16 @@ class Travel extends ORM
         return Country::loadByOrDie($this->country_id);
     }
 
-    public function getTravelType(): TravelType
+    public function getActivities(): Collection
     {
-        return TravelType::loadByOrDie($this->travel_type_id);
+        return TravelActivity::where('travel_id', $this->id())->get();
+    }
+
+    public function getCountries(): Collection
+    {
+        return Country::join(TravelCountry::getTableName(), 'countries.id', '=', TravelCountry::getTableName() . '.country_id')
+            ->where(TravelCountry::getTableName() . '.travel_id', $this->id())
+            ->get(['countries.*']);
     }
 
     public function getPublicId(): ?string
@@ -132,5 +141,34 @@ class Travel extends ORM
         return Cache::rememberForever('travel_image_list_' . $this->id(), function () {
             return TravelImage::where('travel_id', $this->id())->where('type', ImageType::PHOTO)->get()->all();
         });
+    }
+
+    public function getActivitiesForOrchid(): array
+    {
+        $out = [];
+
+        /** @var TravelActivity $activity */
+        foreach ($this->getActivities() as $activity) {
+            $out[] = (int)$activity->activity;
+        }
+
+        return $out;
+    }
+
+    public function getCountriesForOrchid(): array
+    {
+        $out = [];
+
+        /** @var Country $country */
+        foreach ($this->getCountries() as $country) {
+            $out[] = (int)$country->id;
+        }
+
+        return $out;
+    }
+
+    public function getOwnerId(): int
+    {
+        return UIT::where('travel_id', $this->id())->where('role', UserTravelRole::Owner->value)->value('user_id');
     }
 }

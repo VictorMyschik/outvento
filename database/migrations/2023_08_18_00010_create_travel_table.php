@@ -21,7 +21,6 @@ return new class extends Migration {
             $table->smallInteger('members_exists')->default(0);
             $table->string('public_id', 15)->nullable()->index();
             $table->tinyInteger('visible')->default(0)->index();
-            $table->unsignedBigInteger('user_id')->index();
 
             $table->timestampTz('archived_at')->nullable()->index(); // Архивирование - для скрытия из общего списка, но сохранения данных
             $table->timestampTz('deleted_at')->nullable()->index(); // Удаление - для полного удаления из системы, но с возможностью восстановления (soft delete)
@@ -29,7 +28,6 @@ return new class extends Migration {
             $table->timestampTz('created_at')->useCurrent();
             $table->timestampTz('updated_at')->nullable()->useCurrentOnUpdate();
 
-            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
             $table->foreign('start_city_id')->references('id')->on('cities')->cascadeOnDelete();
         });
     }

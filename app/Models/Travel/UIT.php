@@ -8,6 +8,7 @@ use App\Models\Lego\Fields\TravelFieldTrait;
 use App\Models\Lego\Fields\UserFieldTrait;
 use App\Models\ORM\ORM;
 use App\Services\Travel\Enum\UITStatus;
+use App\Services\Travel\Enum\UserTravelRole;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
 
@@ -25,7 +26,13 @@ class UIT extends ORM
         'travel_id',
         'user_id',
         'status',
+        'role',
     ];
+
+    public function getRole(): UserTravelRole
+    {
+        return UserTravelRole::from($this->role);
+    }
 
     public function getStatus(): UITStatus
     {

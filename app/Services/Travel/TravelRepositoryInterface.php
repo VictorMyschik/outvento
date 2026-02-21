@@ -4,12 +4,18 @@ namespace App\Services\Travel;
 
 use App\Models\Travel\Travel;
 use App\Models\Travel\TravelImage;
-use App\Models\Travel\TravelType;
 use App\Models\User;
+use App\Services\Travel\Enum\UserTravelRole;
 
 interface TravelRepositoryInterface
 {
+    public function saveTravelUser(int $userId, int $travelId, UserTravelRole $role): void;
+
     public function saveTravel(int $travelId, array $data): int;
+
+    public function updateTravelCountries(int $travelId, array $countryIds): void;
+
+    public function updateTravelActivities(int $travelId, array $activityIds): void;
 
     public function getTravelUsers(Travel $travel): array;
 
@@ -19,10 +25,6 @@ interface TravelRepositoryInterface
 
     public function getTravelById(int $travelId): ?Travel;
 
-    /**
-     * @return TravelType[]
-     */
-    public function getTravelTypeList(): array;
 
     public function getTravelLogo(int $travelId): ?TravelImage;
 
@@ -36,4 +38,6 @@ interface TravelRepositoryInterface
     public function saveImage(int $id, array $input): int;
 
     public function deleteTravelImage(int $imageId): void;
+
+    public function deleteTravel(int $travelId): void;
 }

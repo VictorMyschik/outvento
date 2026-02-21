@@ -12,13 +12,12 @@ use App\Http\Controllers\API\Travel\Response\Components\TravelVisibleType;
 use App\Http\Controllers\API\Travel\Response\TravelDetailsResponse;
 use App\Models\Travel\Travel;
 use App\Models\Travel\TravelImage;
-use App\Models\Travel\TravelType;
 use App\Models\User;
 use App\Services\References\API\Response\Components\CountryComponent;
-use App\Services\References\API\Response\Components\CountryContinentComponent;
 use App\Services\System\Enum\Language;
 use App\Services\Travel\Api\Components\TravelListByTypeComponent;
 use App\Services\Travel\Api\Components\TravelTypeComponent;
+use App\Services\Travel\Enum\Activity;
 use App\Services\Travel\Enum\ImageType;
 use App\Services\Travel\TravelRepositoryInterface;
 
@@ -32,11 +31,11 @@ final readonly class TravelApiService
     {
         $items = [];
 
-        foreach ($this->travelRepository->getTravelTypeList() as $type) {
+        foreach (Activity::getSelectList() as $item) {
             $items[] = new TravelListByTypeComponent(
-                travelTypeId: $type->id(),
+                travelTypeId: $item->value,
                 travels: $this->searchTravels([
-                    'travelType' => $type->id(),
+                    'travelType' => $item->value,
                     'limit'      => 3,
                     'dateFrom'   => now()->subYear()->toDateString(),
                 ], $language, null)
@@ -47,7 +46,7 @@ final readonly class TravelApiService
     }
 
 
-    private function buildTravelTypeComponent(TravelType $travelType, Language $language): TravelTypeComponent
+    private function buildTravelTypeComponent(Activity $travelType, Language $language): TravelTypeComponent
     {
         return new TravelTypeComponent(
             id: $travelType->id(),
@@ -129,7 +128,7 @@ final readonly class TravelApiService
                 iso2: '',
                 label: '',
             ),
-            travelType: $this->buildTravelTypeComponent($travel->getTravelType(), $language),
+            travelType: $this->buildTravelTypeComponent($travel->getActivities(), $language),
             dateFrom: $travel->getDateFrom()->format('d.M.Y'),
             dateTo: $travel->getDateTo()->format('d.M.Y'),
             members: new MembersComponent(

@@ -9,7 +9,7 @@ use App\Models\ORM\ORM;
 use App\Models\Reference\City;
 use App\Models\Reference\Country;
 use App\Models\Travel\Travel;
-use App\Models\Travel\TravelType;
+use App\Models\Travel\Activity;
 use App\Models\UserInfo\CommunicationType;
 use App\Repositories\DatabaseRepository;
 use App\Services\References\ReferenceRepositoryInterface;
@@ -48,18 +48,18 @@ readonly class ReferenceRepository extends DatabaseRepository implements Referen
 
     public function getTravelTypeList(): Collection
     {
-        return TravelType::all();
+        return Activity::all();
     }
 
     public function saveTravelType(int $id, array $data): int
     {
         if ($id > 0) {
-            $this->db->table(TravelType::getTableName())->where('id', $id)->update($data);
+            $this->db->table(Activity::getTableName())->where('id', $id)->update($data);
 
             return $id;
         }
 
-        return $this->db->table(TravelType::getTableName())->insertGetId($data);
+        return $this->db->table(Activity::getTableName())->insertGetId($data);
     }
 
     public function saveCity(int $id, array $data): int

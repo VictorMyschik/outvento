@@ -8,10 +8,11 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('uit', function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->autoIncrement();
-            $table->unsignedBigInteger('travel_id');
+            $table->id();
+            $table->unsignedBigInteger('travel_id')->index();
             $table->unsignedBigInteger('user_id');
             $table->tinyInteger('status')->default(0)->index();
+            $table->tinyInteger('role')->default(0)->index();
             $table->timestampTz('created_at')->useCurrent();
             $table->timestampTz('updated_at')->nullable()->useCurrentOnUpdate();
 

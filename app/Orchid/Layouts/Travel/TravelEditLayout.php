@@ -4,7 +4,7 @@ namespace App\Orchid\Layouts\Travel;
 
 use App\Models\Reference\Country;
 use App\Models\Travel\Travel;
-use App\Models\Travel\TravelType;
+use App\Models\Travel\Activity;
 use App\Models\User;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\TravelVisible;
@@ -45,7 +45,7 @@ class TravelEditLayout extends Rows
                 ->title('Travel type')
                 ->required()
                 ->empty('Select travel type')
-                ->fromModel(TravelType::class, 'name_ru'),
+                ->fromModel(Activity::class, 'name_ru'),
 
             Select::make('travel.visible_type')
                 ->title('Visible type')

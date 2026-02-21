@@ -26,7 +26,6 @@ class PlatformProvider extends OrchidServiceProvider
 
             // References
             Menu::make('References')->icon('grid')->list([
-                Menu::make('Travel types')->icon('bs.list')->route('reference.travel-type.list'),
                 Menu::make('Emails')->icon('bs.list')->route('reference.email.list'),
                 Menu::make('Category Equipments')->icon('bs.list')->route('reference.category.equipments.list'),
                 Menu::make('Equipments')->icon('bs.list')->route('reference.equipments.list'),

@@ -44,8 +44,8 @@ return [
         'Revoked'   => 'Wycofany',
     ],
 
-    'travel_type' => [
-        'cycling'          => 'Rowerowy',
+    'activities' => [
+        'Cycling'          => 'Rowerowy',
         'MountainCampaign' => 'Górska kampania',
         'Hiking'           => 'Pieszy',
         'Kayaks'           => 'Kajaki',
@@ -69,5 +69,10 @@ return [
         'Active'   => 'Aktywny',
         'Archived' => 'Zarchiwizowany',
         'Deleted'  => 'Usunięty',
+    ],
+
+    'user_travel_role' => [
+        'Owner' => 'Właściciel',
+        'Member' => 'Uczestnik',
     ],
 ];

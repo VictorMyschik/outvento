@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Orchid\Filters\User;
 
 use App\Models\Travel\Travel;
+use App\Models\Travel\UIT;
 use App\Orchid\Layouts\Lego\ActionFilterPanel;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\TravelVisible;
@@ -33,7 +34,6 @@ class UserTravelFilter extends Filter
         'membersExists',
         'publicId',
         'visible',
-        'userId',
         'archivedAt',
         'deletedAt',
         'createdAt',
@@ -42,7 +42,11 @@ class UserTravelFilter extends Filter
 
     public static function runQuery(int $userId): Builder
     {
-        return Travel::filters([self::class])->where('user_id', $userId)->orderBy('id', 'desc');
+        return Travel::filters([self::class])
+            ->join(UIT::getTableName(), UIT::getTableName() . '.travel_id', '=', Travel::getTableName() . '.id')
+            ->where('user_id', $userId)
+            ->select(UIT::getTableName() . '.user_id', Travel::getTableName() . '.*')
+            ->orderBy('id', 'desc');
     }
 
     public function run(Builder $builder): Builder

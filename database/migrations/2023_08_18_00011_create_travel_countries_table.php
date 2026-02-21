@@ -12,7 +12,7 @@ return new class extends Migration {
 
             $table->unsignedBigInteger('travel_id')->index();
             $table->unsignedBigInteger('country_id')->index();
-            $table->smallInteger('sort');
+            $table->smallInteger('sort')->default(0);
 
             $table->foreign('country_id')->references('id')->on('countries')->cascadeOnDelete();
             $table->foreign('travel_id')->references('id')->on('travels')->cascadeOnDelete();

@@ -44,8 +44,8 @@ return [
         'Revoked'   => 'Revoked',
     ],
 
-    'travel_type' => [
-        'cycling'          => 'Cycling',
+    'activities' => [
+        'Cycling'          => 'Cycling',
         'MountainCampaign' => 'Mountain campaign',
         'Hiking'           => 'Hiking',
         'Kayaks'           => 'Kayaks',
@@ -69,5 +69,10 @@ return [
         'Active'   => 'Active',
         'Archived' => 'Archived',
         'Deleted'  => 'Deleted',
+    ],
+
+    'user_travel_role' => [
+        'Owner' => 'Owner',
+        'Member' => 'Member',
     ],
 ];

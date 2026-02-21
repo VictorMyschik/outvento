@@ -44,9 +44,9 @@ return [
         'Revoked'   => 'Отозвано',
     ],
 
-    'travel_type' => [
-        'cycling'          => 'Велопоход',
-        'MountainCampaign' => 'Горная кампания',
+    'activities' => [
+        'Cycling'          => 'Велопоход',
+        'MountainCampaign' => 'Горная компания',
         'Hiking'           => 'Пеший поход',
         'Kayaks'           => 'Каяки',
         'MountainClimbing' => 'Альпинизм',
@@ -69,5 +69,10 @@ return [
         'Active' => 'Активный',
         'Archived' => 'Архивный',
         'Deleted' => 'Удаленный',
+    ],
+
+    'user_travel_role' => [
+        'Owner' => 'Владелец',
+        'Member' => 'Участник',
     ],
 ];

@@ -12,10 +12,8 @@ return new class extends Migration {
 
             $table->unsignedBigInteger('travel_id')->index();
             $table->unsignedBigInteger('activity')->index();
-            $table->smallInteger('sort');
 
             $table->foreign('travel_id')->references('id')->on('travels')->cascadeOnDelete();
-            $table->foreign('activity')->references('id')->on('activities')->cascadeOnDelete();
         });
     }
 
