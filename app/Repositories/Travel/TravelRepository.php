@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace App\Repositories\Travel;
 
 use App\Models\Travel\Travel;
-use App\Models\Travel\TravelImage;
+use App\Models\Travel\TravelMedia;
 use App\Models\Travel\UIT;
 use App\Models\User;
 use App\Repositories\DatabaseRepository;
-use App\Services\Travel\Enum\ImageType;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\TravelVisible;
 use App\Services\Travel\Enum\UserTravelRole;
@@ -88,7 +87,7 @@ readonly class TravelRepository extends DatabaseRepository implements TravelRepo
 
     public function getTravelFullImages(int $travelId): array
     {
-        return TravelImage::where('travel_id', $travelId)->get()->all();
+        return TravelMedia::where('travel_id', $travelId)->get()->all();
     }
 
     public function getTravelById(int $travelId): ?Travel
@@ -96,35 +95,38 @@ readonly class TravelRepository extends DatabaseRepository implements TravelRepo
         return Travel::find($travelId);
     }
 
-    public function getTravelLogo(int $travelId): ?TravelImage
+    public function getTravelLogo(int $travelId): ?TravelMedia
     {
-        return TravelImage::where('travel_id', $travelId)->where('type', ImageType::LOGO->value)->first();
+        return TravelMedia::where('travel_id', $travelId)->where('is_avatar', true)->first();
     }
 
-    public function getTravelPhotoList(int $travelId): array
+    public function getTravelMediaList(int $travelId): array
     {
-        return TravelImage::where('travel_id', $travelId)->where('type', ImageType::PHOTO->value)->get()->all();
+        return $this->db->table(TravelMedia::getTableName())->where('travel_id', $travelId)
+            ->orderBy('is_avatar', 'DESC')
+            ->orderBy('sort', 'ASC')
+            ->get()->all();
     }
 
     #region Images
     public function saveImage(int $id, array $input): int
     {
         if ($id > 0) {
-            $this->db->table(TravelImage::getTableName())->where('id', $id)->update($input);
+            $this->db->table(TravelMedia::getTableName())->where('id', $id)->update($input);
             return $id;
         }
 
-        return $this->db->table(TravelImage::getTableName())->insertGetId($input);
+        return $this->db->table(TravelMedia::getTableName())->insertGetId($input);
     }
 
-    public function deleteTravelImage(int $imageId): void
+    public function deleteTravelMedia(int $mediaId): void
     {
-        $this->db->table(TravelImage::getTableName())->where('id', $imageId)->delete();
+        $this->db->table(TravelMedia::getTableName())->where('id', $mediaId)->delete();
     }
 
-    public function getTravelImage(int $imageId): ?TravelImage
+    public function getTravelMedia(int $imageId): TravelMedia
     {
-        return TravelImage::find($imageId);
+        return TravelMedia::loadByOrDie($imageId);
     }
 
     #endregion
@@ -162,8 +164,8 @@ readonly class TravelRepository extends DatabaseRepository implements TravelRepo
         $insertData = [];
         foreach ($activityIds as $activityId) {
             $insertData[] = [
-                'travel_id'   => $travelId,
-                'activity' => $activityId,
+                'travel_id' => $travelId,
+                'activity'  => $activityId,
             ];
         }
 
@@ -175,5 +177,19 @@ readonly class TravelRepository extends DatabaseRepository implements TravelRepo
     public function deleteTravel(int $travelId): void
     {
         $this->db->table(Travel::getTableName())->where('id', $travelId)->delete();
+    }
+
+    public function setAsLogo(int $imageId): void
+    {
+        $image = TravelMedia::loadByOrDie($imageId);
+        $this->db->beginTransaction();
+        $this->db->table(TravelMedia::getTableName())->where('travel_id', $image->travel_id)->update(['is_avatar' => false]);
+        $this->db->table(TravelMedia::getTableName())->where('id', $imageId)->update(['is_avatar' => true]);
+        $this->db->commit();
+    }
+
+    public function getFullTravelMediaSize(int $travelId): int
+    {
+        return (int)TravelMedia::where('travel_id', $travelId)->sum('size');
     }
 }

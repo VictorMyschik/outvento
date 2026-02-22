@@ -67,6 +67,14 @@ return [
             'throw' => false,
             'report' => false,
         ],
+
+        'travels' => [
+            'driver' => 'local',
+            'root' => storage_path('app/travels'),
+            'serve' => false,
+            'throw' => false,
+            'report' => false,
+        ],
     ],
 
     /*

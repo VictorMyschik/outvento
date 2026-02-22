@@ -7,14 +7,14 @@ namespace App\Orchid\Screens\User;
 use App\Models\Orchid\Attachment;
 use App\Models\Reference\Country;
 use App\Models\Travel\Travel;
-use App\Models\Travel\TravelImage;
+use App\Models\Travel\TravelMedia;
 use App\Models\User;
 use App\Orchid\Fields\CKEditor;
 use App\Orchid\Layouts\Travel\InviteListLayout;
-use App\Orchid\Layouts\Travel\TravelImageUploadLayout;
+use App\Orchid\Layouts\Travel\TravelMediaUploadLayout;
 use App\Orchid\Layouts\User\UserBaseScreen;
 use App\Services\Travel\Enum\Activity;
-use App\Services\Travel\Enum\ImageType;
+use App\Services\Travel\Enum\MediaType;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\TravelVisible;
 use Illuminate\Http\RedirectResponse;
@@ -22,7 +22,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Orchid\Screen\Actions\Button;
-use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Fields\Group;
@@ -36,6 +35,7 @@ use Orchid\Screen\Layouts\Modal;
 use Orchid\Screen\Layouts\Rows;
 use Orchid\Screen\Layouts\Tabs;
 use Orchid\Support\Facades\Layout;
+use Orchid\Support\Facades\Toast;
 
 class UserTravelDetailsScreen extends UserBaseScreen
 {
@@ -54,6 +54,8 @@ class UserTravelDetailsScreen extends UserBaseScreen
 
     public function query(User $user, ?Travel $travel = null): iterable
     {
+        $this->setAvatar($travel->getAvatarExt());
+
         return [
             'user'   => $user,
             'travel' => $travel,
@@ -84,9 +86,16 @@ class UserTravelDetailsScreen extends UserBaseScreen
 
         $out[] = Layout::rows($this->getActionBottomLinkLayout());
 
-        $out[] = Layout::modal('upload_travel_photo', TravelImageUploadLayout::class)->size(Modal::SIZE_LG);
+        $out[] = Layout::modal('upload_travel_photo', TravelMediaUploadLayout::class)->async('asyncTravelMedia')->size(Modal::SIZE_LG);
 
         return $out;
+    }
+
+    public function asyncTravelMedia(int $mediaId = 0): array
+    {
+        return [
+            'media' => TravelMedia::loadBy($mediaId),
+        ];
     }
 
     private function getBaseLayout(): Rows
@@ -181,12 +190,7 @@ class UserTravelDetailsScreen extends UserBaseScreen
 
     private function getPhotoTab(): array
     {
-        $logo = $this->travelService->getTravelLogo($this->travel->id());
-        $photoList = $this->travelService->getTravelPhotoList($this->travel->id());
-
-        if ($logo) {
-            $photoList = array_merge([$logo], $photoList);
-        }
+        $mediaList = $this->travelService->getTravelMediaList($this->travel->id());
 
         $photoTab = [
             Group::make([
@@ -197,75 +201,125 @@ class UserTravelDetailsScreen extends UserBaseScreen
                     ->method('saveTravelPhoto'),
 
                 Button::make('Удалить все фото')
-                    ->method('deleteTravelPhoto')
+                    ->method('deleteAllTravelPhotos')
                     ->novalidate()
                     ->class('mr-btn-danger')
-                    ->canSee(count($photoList) > 0)
+                    ->canSee(count($mediaList) > 0)
                     ->confirm('Вы уверены, что хотите удалить все фото?')
                     ->parameters(['travelId' => $this->travel->id()]),
+
+                ViewField::make('')->view('admin.raw')->class('')->value('Full size: ' . $this->travelService->getFullTravelMediaSizeInMb($this->travel->id()) . ' Mb'),
             ])->autoWidth(),
         ];
 
-        $group = [];
+        $rows = [];
+        /** @var TravelMedia $item */
+        foreach (array_chunk($mediaList, 2) as $chunkRow) {
+            $block = [];
 
-        /** @var TravelImage $img */
-        foreach ($photoList as $img) {
-            $group[] = Group::make([
-                ViewField::make('#')->view('admin.travel.photo')->value(['path' => $img->getUrl(), 'is_logo' => $img->getType() === ImageType::LOGO]),
-                ViewField::make('table')->view('admin.travel.photo_data')->value(['photo' => $img]),
+            foreach ($chunkRow as $key => $item) {
+                $block[$key]['data'] = ViewField::make('')->view('admin.travel.photo_block')->value([
+                    'image' => ViewField::make('#')->view('admin.travel.photo')
+                        ->value([
+                            'path'      => route('api.v1.travel.image', [
+                                'travel' => $this->travel->id,
+                                'media'  => $item->id
+                            ]),
+                            'is_avatar' => $item->is_avatar,
+                        ]),
+                    'table' => ViewField::make('table')->view('admin.travel.photo_data')->value(['photo' => TravelMedia::loadBy($item->id)]),
+                ]);
 
-                DropDown::make()->icon('options-vertical')->list([
-                    ModalToggle::make('изменить')->icon('pencil')->modal('upload_travel_photo')
+                $block[$key]['actions'] = Group::make([
+                    ModalToggle::make('изменить')
+                        ->icon('pencil')
+                        ->modal('upload_travel_photo')
                         ->modalTitle('Изменить описание')
-                        ->method('saveGoodPhoto', ['catalog_image_id' => $img->id()]),
+                        ->method('saveTravelPhoto', ['mediaId' => $item->id]),
 
-                    Button::make('Сделать главной')->icon('star')
+                    Button::make('Сделать главной')
+                        ->icon('star')
                         ->method('setAsLogo')
                         ->confirm('Сделать главной?')
-                        ->parameters(['travelId' => $this->travel->id(), 'imageId' => $img->id()]),
+                        ->parameters(['imageId' => $item->id]),
 
-                    Button::make('удалить')->icon('trash')->method('deleteGoodPhoto')->novalidate()
-                        ->confirm('Удалить фото?')
-                        ->parameters(['travelId' => $this->travel->id(), 'imageId' => $img->id()]),
-                ]),
-            ])->autoWidth()->alignStart();
+                    Button::make('удалить')->icon('trash')
+                        ->method('deleteGoodMedia')
+                        ->novalidate()
+                        ->confirm('Удалить?')
+                        ->parameters(['imageId' => $item->id]),
+                ])->autoWidth();
+            }
+
+            $rows[] = ViewField::make('')->view('admin.travel.photo_tab')->value($block);
         }
 
-        return array_merge($photoTab, [ViewField::make('')->view('space')], $group);
+        return array_merge(
+            $photoTab,
+            [ViewField::make('')->view('space')],
+            $rows
+        );
     }
 
     public function deleteTravelPhoto(int $travelId): void
     {
-        $this->travelService->deleteTravelImages($travelId);
+        $this->travelService->deleteTravelMedias($travelId);
     }
 
-    public function setAsLogo(int $travelId, int $imageId): void
+    public function setAsLogo(int $imageId): void
     {
-        $this->travelService->setAsLogo($travelId, $imageId);
+        $this->travelService->setAsLogo($imageId);
     }
 
-    public function deleteGoodPhoto(int $travelId, int $imageId): void
+    public function deleteGoodMedia(int $imageId): void
     {
         $this->travelService->deleteImage($imageId);
     }
 
-    public function saveTravelPhoto(Request $request): void
+    public function saveTravelPhoto(Request $request, int $mediaId = 0): void
     {
         $imageAttachIds = $request->all()['travel']['images'] ?? [];
 
-        foreach (Attachment::whereIn('id', $imageAttachIds)->orderBy('sort')->get()->all() as $attachment) {
-            $path = Storage::path($attachment->getFullPath());
+        if ($mediaId) {
+            $data = [
+                'sort'        => $request->input('media')['sort'] ?? null,
+                'description' => $request->input('media')['description'] ?? null,
+            ];
 
-            if (!file_exists($path) || !is_file($path)) {
-                Attachment::where('hash', $attachment->getHash())->delete();
-                throw new \Exception('Ошибка при загрузке файла. Попробуйте ещё раз.');
+            if ($request->input('media')['is_avatar'] ?? false) {
+                $this->setAsLogo($mediaId);
             }
 
-            $uploadedFile = new UploadedFile($path, $attachment->getOriginalName(), $attachment->getMime(), null, true);
+            $this->travelService->updateTravelMedia($mediaId, $data);
 
-            $this->travelService->saveTravelImage($this->travel, $uploadedFile, ImageType::PHOTO);
+            return;
+        }
 
-            $attachment->delete();
+
+        try {
+            foreach (Attachment::whereIn('id', $imageAttachIds)->orderBy('sort')->get()->all() as $attachment) {
+                $path = Storage::path($attachment->getFullPath());
+
+                if (!file_exists($path) || !is_file($path)) {
+                    Attachment::where('hash', $attachment->getHash())->delete();
+                    throw new \Exception('Ошибка при загрузке файла. Попробуйте ещё раз.');
+                }
+
+                $uploadedFile = new UploadedFile($path, $attachment->getOriginalName(), $attachment->getMime(), null, true);
+
+                $mediaType = match ($uploadedFile->getMimeType()) {
+                    'image/jpeg', 'image/png', 'image/gif' => MediaType::Image,
+                    'video/mp4', 'video/avi', 'video/mpeg' => MediaType::Video,
+                    default => throw new \Exception('Unsupported file type: ' . $uploadedFile->getMimeType()),
+                };
+
+                $this->travelService->saveTravelMedia($mediaId, $this->travel, $uploadedFile, $mediaType);
+
+                $attachment->delete();
+            }
+        } catch (\Exception $e) {
+            Attachment::whereIn('id', $imageAttachIds)->delete();
+            Toast::error($e->getMessage());
         }
     }
 
@@ -300,6 +354,11 @@ class UserTravelDetailsScreen extends UserBaseScreen
         $id = $this->travelService->cloneTravel($this->travel);
 
         return redirect()->route('profiles.travel.details', ['user' => $this->user->id, 'travel' => $id]);
+    }
+
+    public function deleteAllTravelPhotos(): void
+    {
+        $this->travelService->deleteTravelMedias($this->travel->id);
     }
 
     public function saveTravel(Request $request): void

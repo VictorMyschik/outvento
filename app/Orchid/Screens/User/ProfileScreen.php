@@ -27,15 +27,11 @@ use App\Services\Notifications\Resolvers\NotificationAudienceResolver;
 use App\Services\Promo\DTO\SubscriptionDto;
 use App\Services\Promo\Enum\PromoSource;
 use App\Services\Promo\Enum\Status;
-use App\Services\Promo\SubscriptionService;
 use App\Services\System\Enum\Language;
-use App\Services\User\AuthService;
 use App\Services\User\Enum\CommunicationType;
 use App\Services\User\Enum\VerificationStatus;
 use App\Services\User\Enum\Visibility;
 use App\Services\User\Google\DTO\UserLocationDto;
-use App\Services\User\UserLocationService;
-use App\Services\User\UserService;
 use Illuminate\Http\Request;
 use Orchid\Platform\Models\Role;
 use Orchid\Screen\Actions\Button;
@@ -48,7 +44,6 @@ use Orchid\Screen\Fields\ViewField;
 use Orchid\Screen\Layouts\Modal;
 use Orchid\Screen\Layouts\Rows;
 use Orchid\Screen\Layouts\Tabs;
-use Orchid\Screen\Repository;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
 
@@ -68,6 +63,7 @@ class ProfileScreen extends UserBaseScreen
 
     public function query(User $user): iterable
     {
+        $this->setAvatar($user->getAvatar());
         return [
             'user' => $user,
         ];

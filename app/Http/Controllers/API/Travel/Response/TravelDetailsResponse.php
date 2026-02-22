@@ -30,7 +30,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'dateFrom', description: 'Start date (ISO 8601)', type: 'string', format: 'date', example: '2025-06-01'),
         new OA\Property(property: 'dateTo', description: 'End date (ISO 8601)', type: 'string', format: 'date', example: '2025-06-05', nullable: true),
         new OA\Property(property: 'members', ref: '#/components/schemas/MembersComponent', description: 'Members information'),
-        new OA\Property(property: 'images', description: 'Array of images', type: 'array', items: new OA\Items(ref: '#/components/schemas/TravelImageComponent')),
+        new OA\Property(property: 'images', description: 'Array of images', type: 'array', items: new OA\Items(ref: '#/components/schemas/TravelMediaComponent')),
         new OA\Property(property: 'owner', description: 'Owner name or identifier', type: 'string', example: 'john_doe'),
     ]
 )]
@@ -49,7 +49,7 @@ final readonly class TravelDetailsResponse
         public string                $dateFrom,
         public ?string               $dateTo,
         public MembersComponent      $members,
-        public array                 $images, // TravelImageComponent[]
+        public array                 $images, // TravelMediaComponent[]
         public string                $owner,
     ) {}
 }

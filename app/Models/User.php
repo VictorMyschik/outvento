@@ -152,10 +152,10 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
 
     public function getAvatar(): ?string
     {
-        return $this->avatar ? route('api.v1.admin.user.avatar', ['user' => $this->id]) : null;
+        return $this->avatar ? route('api.v1.user.avatar', ['user' => $this->id]) : null;
     }
 
-    public function getAvatarExt()
+    public function getAvatarExt(): string
     {
         return $this->getAvatar() ?: '/images/avatar.png';
     }

@@ -7,8 +7,8 @@ namespace App\Http\Controllers\API\Travel\Response\Components;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(
-    schema: 'TravelImageComponent',
-    title: 'TravelImageComponent',
+    schema: 'TravelMediaComponent',
+    title: 'TravelMediaComponent',
     description: 'Image information for a travel item',
     required: ['logo', 'url'],
     properties: [
@@ -17,7 +17,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'description', description: 'Optional image description', type: 'string', example: 'Front view of the hiking trail', nullable: true),
     ]
 )]
-final readonly class TravelImageComponent
+final readonly class TravelMediaComponent
 {
     public function __construct(
         public bool    $logo,

@@ -10,7 +10,6 @@ use App\Models\Lego\Fields\TitleFieldTrait;
 use App\Models\ORM\ORM;
 use App\Models\Reference\Country;
 use App\Models\User;
-use App\Services\Travel\Enum\ImageType;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\TravelVisible;
 use App\Services\Travel\Enum\UserTravelRole;
@@ -125,22 +124,24 @@ class Travel extends ORM
 
     public function getFullImagesList(): array
     {
-        return TravelImage::where('travel_id', $this->id())->get()->all();
+        return TravelMedia::where('travel_id', $this->id())->get()->all();
     }
 
-    public function getMainImage(): ?TravelImage
+    public function hasLogo(): ?string
     {
-        return TravelImage::where('travel_id', $this->id())->where('kind', ImageType::LOGO)->value('name');
+        if ($id = TravelMedia::where('travel_id', $this->id())->where('is_avatar', true)->value('id')) {
+            return route('api.v1.travel.image', [
+                'travel' => $this->id,
+                'media'  => $id,
+            ]);
+        }
+
+        return null;
     }
 
-    /**
-     * @return TravelImage[]
-     */
-    public function getImagesList(): array
+    public function getAvatarExt(): string
     {
-        return Cache::rememberForever('travel_image_list_' . $this->id(), function () {
-            return TravelImage::where('travel_id', $this->id())->where('type', ImageType::PHOTO)->get()->all();
-        });
+        return $this->hasLogo() ?: '/images/travel_logo_circle.webp';
     }
 
     public function getActivitiesForOrchid(): array

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Travel\Travel;
-use App\Models\Travel\TravelImage;
+use App\Models\Travel\TravelMedia;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -21,7 +21,7 @@ class AdminTravelController extends Controller
 
     public function deleteImage(int $image_id): RedirectResponse
     {
-        $image = TravelImage::loadByOrDie($image_id);
+        $image = TravelMedia::loadByOrDie($image_id);
         $image->delete();
 
         return back();

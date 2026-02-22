@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Services\Travel\Api;
 
 use App\Http\Controllers\API\Travel\Response\Components\MembersComponent;
-use App\Http\Controllers\API\Travel\Response\Components\TravelImageComponent;
+use App\Http\Controllers\API\Travel\Response\Components\TravelMediaComponent;
 use App\Http\Controllers\API\Travel\Response\Components\TravelStatusComponent;
 use App\Http\Controllers\API\Travel\Response\Components\TravelUserComponent;
 use App\Http\Controllers\API\Travel\Response\Components\TravelVisibleType;
 use App\Http\Controllers\API\Travel\Response\TravelDetailsResponse;
 use App\Models\Travel\Travel;
-use App\Models\Travel\TravelImage;
+use App\Models\Travel\TravelMedia;
 use App\Models\User;
 use App\Services\References\API\Response\Components\CountryComponent;
 use App\Services\System\Enum\Language;
@@ -95,9 +95,9 @@ final readonly class TravelApiService
     {
         $images = [];
 
-        /** @var TravelImage $image */
+        /** @var TravelMedia $image */
         foreach ($this->travelRepository->getTravelFullImages($travel->id()) as $image) {
-            $images[] = new TravelImageComponent(
+            $images[] = new TravelMediaComponent(
                 logo: $image->getType() === ImageType::LOGO,
                 url: $image->getUrl(),
                 description: $image->getDescription(),

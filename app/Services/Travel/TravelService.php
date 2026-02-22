@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Services\Travel;
 
 use App\Models\Travel\Travel;
-use App\Models\Travel\TravelImage;
-use App\Services\Travel\Enum\ImageType;
+use App\Models\Travel\TravelMedia;
+use App\Services\Travel\Enum\MediaType;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\UserTravelRole;
 use Illuminate\Http\UploadedFile;
@@ -57,7 +57,7 @@ readonly class TravelService
 
     public function deleteTravel(int $travelId): void
     {
-        $this->deleteTravelImages($travelId);
+        $this->deleteTravelMedias($travelId);
         $this->travelRepository->deleteTravel($travelId);
     }
 
@@ -66,53 +66,47 @@ readonly class TravelService
         return $this->travelRepository->getTravelUsers($travel);
     }
 
-    public function saveTravelImage(Travel $travel, UploadedFile $uploadedFile, ImageType $type): int
+    public function saveTravelMedia(int $mediaId, Travel $travel, UploadedFile $uploadedFile, MediaType $type): int
     {
-        return $this->fileStorage->uploadTravelImage($uploadedFile, $travel, $type);
+        return $this->fileStorage->uploadTravelMedia($mediaId, $uploadedFile, $travel, $type);
     }
 
-    public function deleteImage(int $imageId): void
+    public function updateTravelMedia(int $mediaId, array $data): void
+    {
+        $this->fileStorage->updateTravelMediaModel($mediaId, $data);
+    }
+
+    public function deleteImage(int $mediaId): void
     {
         $this->fileStorage->deleteFile(
-            $this->travelRepository->getTravelImage($imageId)->getPath()
+            $this->travelRepository->getTravelMedia($mediaId)->path
         );
 
-        $this->travelRepository->deleteTravelImage($imageId);
+        $this->travelRepository->deleteTravelMedia($mediaId);
     }
 
-    public function deleteTravelImages(int $travelId): void
+    public function deleteTravelMedias(int $travelId): void
     {
-        $logo = $this->getTravelLogo($travelId);
-        if ($logo !== null) {
-            $this->deleteImage($logo->id());
-        }
-
-        foreach ($this->getTravelPhotoList($travelId) as $image) {
+        foreach ($this->getTravelMediaList($travelId) as $image) {
             $this->deleteImage($image->id());
         }
 
         $this->fileStorage->deleteFoldersByTravelId($travelId);
     }
 
-    public function getTravelLogo(int $travelId): ?TravelImage
+    public function getTravelLogo(int $travelId): ?TravelMedia
     {
         return $this->travelRepository->getTravelLogo($travelId);
     }
 
-    public function getTravelPhotoList(int $travelId): array
+    public function getTravelMediaList(int $travelId): array
     {
-        return $this->travelRepository->getTravelPhotoList($travelId);
+        return $this->travelRepository->getTravelMediaList($travelId);
     }
 
-    public function setAsLogo(int $travelId, int $imageId): void
+    public function setAsLogo(int $imageId): void
     {
-        $logo = $this->getTravelLogo($travelId);
-
-        if ($logo !== null) {
-            $this->travelRepository->saveImage($logo->id(), ['type' => ImageType::PHOTO, 'travel_id' => $travelId]);
-        }
-
-        $this->travelRepository->saveImage($imageId, ['type' => ImageType::LOGO, 'travel_id' => $travelId]);
+        $this->travelRepository->setAsLogo($imageId);
     }
 
     public function cloneTravel(Travel $travel): int
@@ -133,5 +127,15 @@ readonly class TravelService
         $this->updateTravelActivities($newTravelId, $travel->getActivities()->pluck('id')->toArray());
 
         return $newTravelId;
+    }
+
+    public function getFullTravelMediaSize(int $travelId): int
+    {
+        return $this->travelRepository->getFullTravelMediaSize($travelId);
+    }
+
+    public function getFullTravelMediaSizeInMb(int $travelId): string
+    {
+        return number_format(round($this->getFullTravelMediaSize($travelId) / 1024 / 1024, 2), 2, '.', ' ') . ' MB';
     }
 }

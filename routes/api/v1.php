@@ -10,10 +10,10 @@ use App\Http\Controllers\API\FormsController;
 use App\Http\Controllers\API\SocialAuthController;
 use App\Http\Controllers\API\SubscriptionController;
 use App\Http\Controllers\API\TelegramApiController;
+use App\Http\Controllers\API\Travel\TravelController;
 use App\Http\Controllers\API\User\UsersController;
 use App\Http\Controllers\API\WelcomeController;
-use App\Http\Controllers\Travel\Travel\TravelController;
-use App\Http\Controllers\Travel\Travel\TravelImageController;
+use App\Http\Controllers\Travel\Travel\TravelMediaController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('optional:sanctum')->group(function () {
@@ -24,7 +24,8 @@ Route::middleware('optional:sanctum')->group(function () {
     });
 
     /// Users profile
-    Route::get('/user/{user}/avatar', [UsersController::class, 'getUserAvatar'])->name('admin.user.avatar');
+    Route::get('/user/{user}/avatar', [UsersController::class, 'getUserAvatar'])->name('user.avatar');
+    Route::get('/travel/{travel}/image/{media}', [TravelController::class, 'getTravelAvatar'])->name('travel.image');
 });
 
 Route::middleware('guest')->group(static function () {
@@ -71,15 +72,15 @@ Route::group(['prefix' => 'travels'], function () {
     Route::post('personal/list', [TravelController::class, 'personalList'])->name('api.travel.personal.list');
 
     // Get list
-    Route::post('image/list', [TravelImageController::class, 'getList'])->name('api.travel.image.list');
+    Route::post('image/list', [TravelMediaController::class, 'getList'])->name('api.travel.image.list');
     // Upload image
-    Route::post('image/upload', [TravelImageController::class, 'imageUpload'])->name('api.travel.image.upload');
+    Route::post('image/upload', [TravelMediaController::class, 'imageUpload'])->name('api.travel.image.upload');
     // Delete image
-    Route::post('image/delete', [TravelImageController::class, 'deleteImage'])->name('api.travel.image.delete');
+    Route::post('image/delete', [TravelMediaController::class, 'deleteImage'])->name('api.travel.image.delete');
     // Public URL
-    Route::get('{travel_id}/image/show/{image_name}', [TravelImageController::class, 'showImage'])->name('api.travel.image.get');
+    Route::get('{travel_id}/image/show/{image_name}', [TravelMediaController::class, 'showImage'])->name('api.travel.image.get');
     // Update image description
-    Route::post('image/update', [TravelImageController::class, 'updateImage'])->name('api.travel.image.update');
+    Route::post('image/update', [TravelMediaController::class, 'updateImage'])->name('api.travel.image.update');
 });
 
 Route::get('/auth/social/{provider}/redirect', [SocialAuthController::class, 'redirect']);

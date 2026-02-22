@@ -68,13 +68,13 @@ class UserBaseScreen extends Screen
         return [];
     }
 
-    protected function setAvatar(string $avatar): void
+    protected function setAvatar(?string $avatar): void
     {
         $this->avatar = $avatar;
     }
 
-    public function getAvatar(): ?string
+    private function getAvatar(): ?string
     {
-        return $this->avatar ?: $this->user->getAvatarExt();
+        return $this->avatar;
     }
 }

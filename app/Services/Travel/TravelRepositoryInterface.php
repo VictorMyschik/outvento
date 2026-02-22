@@ -3,7 +3,7 @@
 namespace App\Services\Travel;
 
 use App\Models\Travel\Travel;
-use App\Models\Travel\TravelImage;
+use App\Models\Travel\TravelMedia;
 use App\Models\User;
 use App\Services\Travel\Enum\UserTravelRole;
 
@@ -26,18 +26,22 @@ interface TravelRepositoryInterface
     public function getTravelById(int $travelId): ?Travel;
 
 
-    public function getTravelLogo(int $travelId): ?TravelImage;
+    public function getTravelLogo(int $travelId): ?TravelMedia;
 
-    public function getTravelImage(int $imageId): ?TravelImage;
+    public function getTravelMedia(int $imageId): TravelMedia;
 
     /**
-     * @return TravelImage[]
+     * @return TravelMedia[]
      */
-    public function getTravelPhotoList(int $travelId): array;
+    public function getTravelMediaList(int $travelId): array;
 
     public function saveImage(int $id, array $input): int;
 
-    public function deleteTravelImage(int $imageId): void;
+    public function deleteTravelMedia(int $mediaId): void;
 
     public function deleteTravel(int $travelId): void;
+
+    public function setAsLogo(int $imageId): void;
+
+    public function getFullTravelMediaSize(int $travelId): int;
 }

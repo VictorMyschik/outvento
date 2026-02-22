@@ -7,28 +7,25 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('travel_images', function (Blueprint $table) {
+        Schema::create('travel_media', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('travel_id')->index();
             $table->string('path');
             $table->unsignedBigInteger('size');
             $table->integer('sort')->default(0);
-            $table->string('description', 50)->nullable();
-            $table->string('hash', 50)->index();
-            $table->unsignedBigInteger('user_id')->index();
-            $table->tinyInteger('type')->default(0); // ImageType
-            $table->string('group')->nullable();
+            $table->string('description')->nullable();
+            $table->tinyInteger('media_type')->default(0); // MediaType
+            $table->boolean('is_avatar')->default(0);
 
             $table->timestampTz('created_at')->useCurrent();
             $table->timestampTz('updated_at')->nullable()->useCurrentOnUpdate();
 
             $table->foreign('travel_id')->references('id')->on('travels')->cascadeOnDelete();
-            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('travel_images');
+        Schema::dropIfExists('travel_media');
     }
 };

@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Services\Travel;
 
 use App\Models\Travel\Travel;
-use App\Services\Travel\Enum\ImageType;
+use App\Models\Travel\TravelMedia;
+use App\Services\Travel\Enum\MediaType;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -17,6 +18,7 @@ final readonly class TravelUploadService
     public function __construct(
         private Filesystem                $filesystem,
         private TravelRepositoryInterface $repository,
+        private array                     $basePaths,
     ) {}
 
     private function uploadFiles(UploadedFile $file, string $path): void
@@ -27,25 +29,31 @@ final readonly class TravelUploadService
         $this->filesystem->put($filePathWithName, $file->getContent());
     }
 
-    public function uploadTravelImage(UploadedFile $file, Travel $travel, ImageType $type): int
+    public function uploadTravelMedia(int $mediaId, UploadedFile $file, Travel $travel, MediaType $type): int
     {
         $path = $this->getPath($travel->id(), $file->getClientOriginalName());
         $this->uploadFiles($file, $path);
 
-        return $this->repository->saveImage(0, [
-            'travel_id'   => $travel->id(),
-            'path'        => $path . '/' . $file->getClientOriginalName(),
-            'size'        => $file->getSize(),
-            'description' => null,
-            'hash'        => hash_file('md5', $file->getPathname()),
-            'user_id'     => $travel->getUser()->id,
-            'type'        => $type->value,
-        ]);
+        if ($mediaId){
+            $this->deleteFile($this->repository->getTravelMedia($mediaId)->path);
+        }
+
+       return $this->updateTravelMediaModel($mediaId, [
+           'travel_id'  => $travel->id(),
+           'path'       => $path . '/' . $file->getClientOriginalName(),
+           'size'       => $file->getSize(),
+           'media_type' => $type->value,
+       ]);
+    }
+
+    public function updateTravelMediaModel(int $mediaId, array $data): int
+    {
+        return $this->repository->saveImage($mediaId, $data);
     }
 
     private function getPath(int $travelId, string $fileName): string
     {
-        $basePath = self::TRAVEL_PATH . '/' . $travelId;
+        $basePath = $this->basePaths['media'] . '/' . $travelId;
 
         $list = array_reverse(Storage::directories($basePath));
 

@@ -8,14 +8,14 @@ use App\Models\EmailInvite;
 use App\Models\Orchid\Attachment;
 use App\Models\Reference\Country;
 use App\Models\Travel\Travel;
-use App\Models\Travel\TravelImage;
+use App\Models\Travel\TravelMedia;
 use App\Models\Travel\Activity;
 use App\Models\Travel\UIT;
 use App\Models\User;
 use App\Orchid\Layouts\Travel\InviteByEmailEditLayout;
 use App\Orchid\Layouts\Travel\InviteListLayout;
 use App\Orchid\Layouts\Travel\TravelEditLayout;
-use App\Orchid\Layouts\Travel\TravelImageUploadLayout;
+use App\Orchid\Layouts\Travel\TravelMediaUploadLayout;
 use App\Services\Travel\Enum\ImageType;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\TravelVisible;
@@ -90,7 +90,7 @@ class TravelDetailsScreen extends Screen
             ])->fullWidth()
         ]);
 
-        $out[] = Layout::modal('upload_travel_photo', TravelImageUploadLayout::class)->size(Modal::SIZE_LG);
+        $out[] = Layout::modal('upload_travel_photo', TravelMediaUploadLayout::class)->size(Modal::SIZE_LG);
 
         return $out;
     }
@@ -154,7 +154,7 @@ class TravelDetailsScreen extends Screen
     private function getPhotoTab(): array
     {
         $logo = $this->travelService->getTravelLogo($this->travel->id());
-        $photoList = $this->travelService->getTravelPhotoList($this->travel->id());
+        $photoList = $this->travelService->getTravelMediaList($this->travel->id());
 
         if ($logo) {
             $photoList = array_merge([$logo], $photoList);
@@ -180,7 +180,7 @@ class TravelDetailsScreen extends Screen
 
         $group = [];
 
-        /** @var TravelImage $img */
+        /** @var TravelMedia $img */
         foreach ($photoList as $img) {
             $group[] = Group::make([
                 ViewField::make('#')->view('admin.travel.photo')->value(['path' => $img->getUrl(), 'is_logo' => $img->getType() === ImageType::LOGO]),
@@ -208,7 +208,7 @@ class TravelDetailsScreen extends Screen
 
     public function deleteTravelPhoto(int $travelId): void
     {
-        $this->travelService->deleteTravelImages($travelId);
+        $this->travelService->deleteTravelMedias($travelId);
     }
 
     public function setAsLogo(int $travelId, int $imageId): void
@@ -228,7 +228,7 @@ class TravelDetailsScreen extends Screen
         $travel = Travel::loadByOrDie($travelId);
 
         foreach (Attachment::whereIn('id', $imageAttachIds)->orderBy('sort')->get()->all() as $attachment) {
-            $this->travelService->saveTravelImage($travel, $attachment, ImageType::PHOTO);
+            $this->travelService->saveTravelMedia($travel, $attachment, ImageType::PHOTO);
         }
     }
 
