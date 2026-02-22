@@ -33,6 +33,8 @@ class Travel extends ORM
     protected array $allowedSorts = [
         'id',
         'title',
+        'date_from',
+        'date_to',
         'preview',
         'status',
         'user_id',

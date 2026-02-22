@@ -288,6 +288,8 @@ class UserTravelDetailsScreen extends UserBaseScreen
 
             if ($request->input('media')['is_avatar'] ?? false) {
                 $this->setAsLogo($mediaId);
+            } else {
+                $data['is_avatar'] = false;
             }
 
             $this->travelService->updateTravelMedia($mediaId, $data);

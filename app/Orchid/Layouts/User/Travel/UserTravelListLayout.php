@@ -25,6 +25,9 @@ class UserTravelListLayout extends Table
                     ->stretched()
                     ->route('profiles.travel.details', ['user' => $travel->user_id, 'travel' => $travel->id]);
             })->sort(),
+            TD::make('', 'Logo')->render(function (Travel $travel) {
+                return ' <img src="' . $travel->getAvatarExt() . '" class="rounded-circle border" style="width:58px;height:58px;object-fit:cover">';
+            })->sort(),
             TD::make('title', 'Title')->sort(),
             TD::make('status', 'Status')->render(fn(Travel $travel) => $travel->getStatus()->getLabel())->sort(),
             TD::make('date_from', 'Date from')->sort(),
