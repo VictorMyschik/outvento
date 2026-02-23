@@ -10,6 +10,7 @@ use App\Models\Lego\Fields\TitleFieldTrait;
 use App\Models\ORM\ORM;
 use App\Models\Reference\Country;
 use App\Models\User;
+use App\Services\System\Enum\Language;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\TravelVisible;
 use App\Services\Travel\Enum\UserTravelRole;
@@ -46,6 +47,8 @@ class Travel extends ORM
     ];
 
     public $casts = [
+        'date_from'  => 'datetime',
+        'date_to'    => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -109,11 +112,6 @@ class Travel extends ORM
         return $this->public_id;
     }
 
-    public function getDirNameForImages(): string
-    {
-        return self::STORAGE_PATH;
-    }
-
     public function getMaxMembers(): ?int
     {
         return $this->members;
@@ -173,5 +171,29 @@ class Travel extends ORM
     public function getOwnerId(): int
     {
         return UIT::where('travel_id', $this->id())->where('role', UserTravelRole::Owner->value)->value('user_id');
+    }
+
+    public function getActivitiesByLanguage(Language $language): array
+    {
+        $out = [];
+
+        /** @var TravelActivity $activity */
+        foreach ($this->getActivities() as $activity) {
+            $out[] = (string)$activity->getActivity()->getLabel($language);
+        }
+
+        return $out;
+    }
+
+    public function getCountriesByLanguage(Language $language): array
+    {
+        $out = [];
+
+        /** @var Country $country */
+        foreach ($this->getCountries() as $country) {
+            $out[] = $country->getName($language);
+        }
+
+        return $out;
     }
 }

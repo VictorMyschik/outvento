@@ -54,6 +54,19 @@ final readonly class UserService
         return $this->repository->getUserById($user->id);
     }
 
+    public function findUser(string $address): ?User
+    {
+        if (filter_var($address, FILTER_VALIDATE_EMAIL) === false) {
+            $address = $this->repository->getEmailByName($address);
+
+            if (!$address) {
+                return null;
+            }
+        }
+
+        return $this->repository->getUserByEmail($address);
+    }
+
     public function getCommunicationByToken(string $token): ?Communication
     {
         return $this->repository->getCommunicationByToken($token);

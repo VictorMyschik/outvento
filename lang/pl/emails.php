@@ -48,4 +48,15 @@ return [
         'confirm_email' => 'Potwierdź adres e-mail',
         'ignore'        => 'Jeśli nie wskazywałeś tego adresu e-mail, zignoruj tę wiadomość. Ze względów bezpieczeństwa nie udostępniaj tego linku osobom trzecim.',
     ],
+
+    'travel_invite' => [
+        'title'       => 'Zaproszenie do podróży',
+        'header'      => 'Zostałeś zaproszony na wyprawę',
+        'greeting'    => 'Cześć!',
+        'intro'       => 'Zostałeś zaproszony do udziału w podróży. To świetna okazja, aby poznać nowych ludzi i odkryć nowe miejsca.',
+        'activities'  => 'Planowane aktywności:',
+        'countries'   => 'Planowane kraje:',
+        'travel_info' => 'Zobacz szczegóły podróży',
+        'slogan'      => 'Gotowy na nowe wrażenia? Dołącz — znam krótszą drogę!',
+    ],
 ];

@@ -22,6 +22,7 @@ readonly class TravelService
     {
         $data['public_id'] = now()->format('dmyHis') . random_int(1, 9);
         $data['status'] = TravelStatus::Draft;
+        $data['private_id'] = hash('sha256', $data['public_id'] . config('app.key'));
 
         $id = $this->travelRepository->saveTravel(0, $data);
 
@@ -137,5 +138,10 @@ readonly class TravelService
     public function getFullTravelMediaSizeInMb(int $travelId): string
     {
         return number_format(round($this->getFullTravelMediaSize($travelId) / 1024 / 1024, 2), 2, '.', ' ') . ' MB';
+    }
+
+    public function getUID(int $travelId): string
+    {
+        return $this->travelRepository->getTravelUsers($travelId)->getPublicId();
     }
 }

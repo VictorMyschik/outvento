@@ -4,24 +4,32 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\User;
 
+use App\Models\TravelInvite;
 use App\Models\Orchid\Attachment;
 use App\Models\Reference\Country;
 use App\Models\Travel\Travel;
 use App\Models\Travel\TravelMedia;
+use App\Models\Travel\UIT;
 use App\Models\User;
 use App\Orchid\Fields\CKEditor;
+use App\Orchid\Layouts\Travel\InviteByEmailEditLayout;
 use App\Orchid\Layouts\Travel\InviteListLayout;
 use App\Orchid\Layouts\Travel\TravelMediaUploadLayout;
+use App\Orchid\Layouts\Travel\TravelStartCityLocationLayout;
 use App\Orchid\Layouts\User\UserBaseScreen;
+use App\Services\System\Enum\Language;
 use App\Services\Travel\Enum\Activity;
 use App\Services\Travel\Enum\MediaType;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\TravelVisible;
+use App\Services\Travel\Enum\UITStatus;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Orchid\Screen\Actions\Button;
+use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Fields\Group;
@@ -57,8 +65,9 @@ class UserTravelDetailsScreen extends UserBaseScreen
         $this->setAvatar($travel->getAvatarExt());
 
         return [
-            'user'   => $user,
-            'travel' => $travel,
+            'user'           => $user,
+            'travel'         => $travel,
+            'travel_invites' => $this->inviteService->getListByTravel($travel->id()),
         ];
     }
 
@@ -87,6 +96,8 @@ class UserTravelDetailsScreen extends UserBaseScreen
         $out[] = Layout::rows($this->getActionBottomLinkLayout());
 
         $out[] = Layout::modal('upload_travel_photo', TravelMediaUploadLayout::class)->async('asyncTravelMedia')->size(Modal::SIZE_LG);
+        $out[] = Layout::modal('new_invite_email_modal', InviteByEmailEditLayout::class);
+        $out[] = Layout::modal('start_city_modal', TravelStartCityLocationLayout::class);
 
         return $out;
     }
@@ -105,7 +116,7 @@ class UserTravelDetailsScreen extends UserBaseScreen
             $membersOptions[$user->id] = $user->name;
         }
 
-        $out = Layout::rows([
+        return Layout::rows([
             Group::make([
                 Label::make('travel.id')->title('ID')->value($this->travel->id ?? 'N/A'),
                 Input::make('travel.date_from')
@@ -120,8 +131,15 @@ class UserTravelDetailsScreen extends UserBaseScreen
                     ->required()
                     ->value($this->travel->user_id ?? null)
                     ->options($membersOptions),
+                Select::make('travel.language')
+                    ->title('Language')
+                    ->required()
+                    ->value($this->travel->language ?? null)
+                    ->options(Language::getSelectList()),
             ]),
+
             ViewField::make('')->view('space'),
+
             Group::make([
                 Select::make('travel.status')->title('Общий статус')->required()->options(TravelStatus::getSelectList()),
                 Select::make('travel.visible')->title('Видимость')->required()->options(TravelVisible::getSelectList()),
@@ -146,7 +164,15 @@ class UserTravelDetailsScreen extends UserBaseScreen
                     ->title('Countries')
                     ->value($this->travel->getCountriesForOrchid())
                     ->empty('Select countries')
-                    ->multiple()
+                    ->multiple(),
+                ViewField::make('')->view('admin.travel.start_city')->value([
+                    'label' => Label::make('travel.start_city_id')->title('Start')->value($this->travel->start_city_id ?? 'N/A'),
+                    'btn'   => ModalToggle::make('Set start city')
+                        ->class('mr-btn-primary')
+                        ->modal('start_city_modal')
+                        ->modalTitle('Set start city')
+                        ->method('setStartCity'),
+                ]),
             ]),
             Input::make('travel.title')->title('Заголовок')->required()->maxlength(255),
             TextArea::make('travel.preview')->title('Короткое описание')->rows(3)->maxlength(355),
@@ -161,31 +187,52 @@ class UserTravelDetailsScreen extends UserBaseScreen
                 ->class('mr-btn-success pull-right')
                 ->method('saveTravel'),
         ]);
-
-        return $out;
     }
 
     private function getRightTab(): Tabs
     {
         return Layout::tabs([
             'Фото'       => Layout::rows($this->getPhotoTab()),
-            //'Активные'   => Layout::rows([$this->getUITActiveListLayout()]),
+            'Активные'   => Layout::rows($this->getUITActiveListLayout()),
             //'Отказ'      => Layout::rows([$this->getUITNotActiveListLayout()]),
             'В ожидании' => InviteListLayout::class,
-            'Пригласить' => Layout::rows([
-                Group::make([
-                    Link::make('QR code')->class('mr-btn-success')->icon('qrcode')->target('_blank')
-                        ->href('https://api.qrserver.com/v1/create-qr-code/?data=' . $this->travelService->getPublicUrl($this->travel) . '&amp;size=200x200'),
-
-                    ModalToggle::make('Email')
-                        ->class('mr-btn-success')
-                        ->modal('new_invite_email_modal')
-                        ->modalTitle('Create new invite by email')
-                        ->method('createNewInvite')
-                        ->asyncParameters(['id' => $this->travel->id()]),
-                ])->autoWidth()
-            ])
         ]);
+    }
+
+    private function getUITActiveListLayout(): array
+    {
+        $list = $this->travelService->getTravelUsers($this->travel);
+
+        /** @var UIT $userInTravel */
+        foreach ($list as $key => &$userInTravel) {
+            if ($userInTravel->status !== UITStatus::Confirmed->value) {
+                unset($list[$key]);
+            }
+
+            $userInTravel->btn = DropDown::make()->icon('options-vertical')->list([
+                Button::make(__('Delete'))
+                    ->icon('bs.trash3')
+                    ->confirm('Удалить участника из списка')
+                    ->method('removeUIH', ['id' => $userInTravel->id])
+            ])->render();
+        }
+
+        return [
+            Group::make([
+                ViewField::make('')->view('admin.h6')->value('<b>Пригласить участников: </b>'),
+                Link::make('QR code')->class('mr-btn-success')->icon('qrcode')->target('_blank')
+                    ->href('https://api.qrserver.com/v1/create-qr-code/?data=' . $this->travelService->getPublicUrl($this->travel) . '&amp;size=200x200'),
+
+                ModalToggle::make('by Email')
+                    ->icon('envelope')
+                    ->class('mr-btn-success')
+                    ->modal('new_invite_email_modal')
+                    ->modalTitle('Create new invite by email')
+                    ->method('createInvite'),
+            ])->autoWidth(),
+            ViewField::make('')->view('hr'),
+            ViewField::make('')->view('admin.travel.users')->value($list)
+        ];
     }
 
     private function getPhotoTab(): array
@@ -256,7 +303,7 @@ class UserTravelDetailsScreen extends UserBaseScreen
 
         return array_merge(
             $photoTab,
-            [ViewField::make('')->view('space')],
+            [ViewField::make('')->view('hr')],
             $rows
         );
     }
@@ -375,6 +422,7 @@ class UserTravelDetailsScreen extends UserBaseScreen
             'title'     => $input['title'],
             'preview'   => $input['preview'],
             'members'   => $input['members'] ?? 0,
+            'language'  => $input['language'],
         ]);
 
         $this->travelService->updateTravelCountries($this->travel->id, $input['countries'] ?? []);
@@ -388,5 +436,34 @@ class UserTravelDetailsScreen extends UserBaseScreen
         $this->travelService->deleteTravel($this->travel->id);
 
         return redirect()->route('profiles.travels', ['user' => $this->user->id]);
+    }
+
+    public function createInvite(): void
+    {
+        $email = request()->validate([
+            'email' => 'required|email|max:255'
+        ])['email'];
+
+        $this->inviteService->invite($this->travel, $email);
+
+        Toast::info('Приглашение отправлено')->delay(1000);;
+    }
+
+    public function removeTravelInvite(int $inviteId): void
+    {
+        $this->inviteService->removeTravelInvite($inviteId);
+    }
+
+    public function resendTravelInvite(int $inviteId): void
+    {
+        $this->inviteService->reSendTravelInvite($inviteId);
+
+        Toast::info('Приглашение повторно отправлено')->delay(1000);;
+    }
+
+    public function setStartCity(Request $request): void
+    {
+        $lat = $request->input('start_lat');
+        $lng = $request->input('start_lng');
     }
 }

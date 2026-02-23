@@ -7,6 +7,7 @@ namespace App\Orchid\Screens\User;
 use App\Http\Controllers\API\User\Request\CommunicationRequest;
 use App\Http\Controllers\API\User\Request\UpdateProfileRequest;
 use App\Http\Controllers\API\User\Request\UserLocationRequest;
+use App\Models\TravelInvite;
 use App\Models\User;
 use App\Models\UserInfo\Communication;
 use App\Orchid\Layouts\User\Profile\AvatarUploadLayout;
@@ -91,7 +92,7 @@ class ProfileScreen extends UserBaseScreen
         $out[] = Layout::modal('user_modal', UserProfileEditLayout::class)->async('asyncGetUserProfile');
         $out[] = Layout::modal('user_notification_settings_modal', UserNotificationSettingsEditLayout::class)->async('asyncGetServiceUserNotificationSettings')->size(Modal::SIZE_LG);
         $out[] = Layout::modal('user_role_modal', UserRolesEditLayout::class)->async('asyncGetUserRoles');
-        $out[] = Layout::modal('telegram_deep_link_modal', TelegramDeeplinkLayout::class)->async('asyncGetTelegramDeepLink')->size(Modal::SIZE_LG);
+        $out[] = Layout::modal('telegram_deep_link_modal', TelegramDeeplinkLayout::class)->async('asyncGetTelegramDeepLink')->size(Modal::SIZE_LG)->withoutApplyButton();
         $out[] = Layout::modal('user_location', UserLocationLayout::class);
         $out[] = Layout::modal('user_languages', UserLanguagesEditLayout::class)->async('asyncGetUserLanguages');
 
@@ -280,7 +281,38 @@ class ProfileScreen extends UserBaseScreen
             'Communication'        => Layout::rows($this->getCommunicationLayout()),
             'Service Notification' => Layout::rows($this->getServiceNotificationLayout()),
             'Promo Notification'   => Layout::rows($this->getPromoNotificationLayout()),
+            'Travel Invites'       => Layout::rows($this->getTravelInvitesLayout()),
         ]);
+    }
+
+    public function getTravelInvitesLayout(): array
+    {
+        $rows['header'] = ['Title', 'Date', 'City', '#'];
+
+        $list = $this->inviteService->getListByUser($this->user->id);
+
+        /** @var TravelInvite $item */
+        foreach ($list as $item) {
+            $travel = $item->getTravel();
+
+            $rowBtns = [
+                Link::make('Open travel')
+                    ->icon('map')
+                    ->href(route('profiles.travel.details', ['user' => $travel->getOwnerId(), 'travel' => $travel->id]))
+                    ->target('_blank')
+            ];
+
+            $rows['body'][] = [
+                'Title' => $travel->getTitle(),
+                'Date'  => $travel->date_from?->format('d.m.Y') ?? '-',
+                'City'  => $travel->start_city_id ?: '-',
+                '#'     => DropDown::make()->icon('bs.three-dots-vertical')->list($rowBtns),
+            ];
+        }
+
+        return [
+            ViewField::make('')->view('admin.table')->value($rows),
+        ];
     }
 
     private function getPromoNotificationLayout(): array

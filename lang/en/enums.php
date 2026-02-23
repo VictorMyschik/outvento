@@ -56,6 +56,7 @@ return [
         'Public'   => 'Public',
         'ForMe'    => 'Only for me',
         'Platform' => 'Only for registered users',
+        'ByLink'   => 'Только по ссылке',
     ],
 
     'travel_visible_description' => [
@@ -72,7 +73,13 @@ return [
     ],
 
     'user_travel_role' => [
-        'Owner' => 'Owner',
+        'Owner'  => 'Owner',
         'Member' => 'Member',
+    ],
+
+    'travel_invite_status' => [
+        'Pending'  => 'Pending',
+        'Accepted' => 'Accepted',
+        'Declined' => 'Declined',
     ],
 ];

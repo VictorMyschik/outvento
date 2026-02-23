@@ -48,4 +48,15 @@ return [
         'confirm_email' => 'Confirm Email',
         'ignore'        => 'If you did not indicate this email address, please ignore this email. For security reasons, do not share this link with anyone.',
     ],
+
+    'travel_invite' => [
+        'title'       => 'Travel Invitation',
+        'header'      => 'You’ve been invited to a trip',
+        'greeting'    => 'Hi!',
+        'intro'       => 'You’ve been invited to join a trip. It’s a great opportunity to meet new people and explore new places.',
+        'activities'  => 'Planned activities:',
+        'countries'   => 'Planned countries:',
+        'travel_info' => 'View trip details',
+        'slogan'      => 'Ready for new experiences? Join in — I know a shortcut!',
+    ],
 ];

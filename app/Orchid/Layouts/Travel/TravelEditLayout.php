@@ -3,9 +3,8 @@
 namespace App\Orchid\Layouts\Travel;
 
 use App\Models\Reference\Country;
-use App\Models\Travel\Travel;
-use App\Models\Travel\Activity;
 use App\Models\User;
+use App\Services\Travel\Enum\Activity;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\TravelVisible;
 use Orchid\Screen\Fields\Group;

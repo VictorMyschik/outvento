@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\References;
 
+use App\Models\Reference\Country;
 use App\Services\Forms\DTO\FormFeedbackDTO;
 use App\Services\Notifications\AbstractNotificationService;
 use App\Services\System\Enum\Language;
+use App\Services\Travel\DTO\TravelInviteDto;
+use App\Services\Travel\Enum\Activity;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -78,6 +81,20 @@ class EmailScreen extends Screen
             'expireMinutes'   => AbstractNotificationService::EXPIRE_MINUTES,
         ];
 
+        $fakeData['travel_invite'] = [
+            'dto' => new TravelInviteDTO(
+                activities: [
+                    Activity::Hiking->getLabel(),
+                    Activity::Cycling->getLabel(),
+                ],
+                countryLabels: [
+                    Country::loadByOrDie(1)->getName(Language::EN),
+                    Country::loadByOrDie(2)->getName(Language::EN),
+                ],
+                confirmationUrl: 'https://example.com',
+            )
+        ];
+
         App::setlocale(Language::from((int)$this->request->get('locale', Language::RU->value))->getCode());
 
         return [
@@ -94,6 +111,7 @@ class EmailScreen extends Screen
                 'Email verification'         => $this->getTemplate('emails.verify_email_code', $fakeData['verify_account']),
                 'Feedback'                   => $this->getTemplate('emails.feedback', $fakeData['feedback']),
                 'Verify Communication Email' => $this->getTemplate('emails.verify_communication_email', $fakeData['verify_communication_email']),
+                'Travel Invite'              => $this->getTemplate('emails.travel_invite', $fakeData['travel_invite']),
             ]),
         ];
     }

@@ -2,19 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Services\User\Enum;
+namespace App\Services\Travel\Enum;
 
-enum Visibility: int
+enum TravelInviteStatus: int
 {
-    case Private = 0;
-    case Public = 1;
-    case FriendsOnly = 2;
-    case RegisteredUsers = 3;
-
-    public function getLabel(): string
-    {
-        return __('enums.users_visibility.' . $this->name);
-    }
+    case Pending = 0;
+    case Accepted = 1;
+    case Declined = 2;
 
     public static function getSelectList(): array
     {
@@ -23,5 +17,10 @@ enum Visibility: int
                 $case->value => $case->getLabel(),
             ])
             ->toArray();
+    }
+
+    public function getLabel(): string
+    {
+        return __('enums.travel_invite_status.' . $this->name);
     }
 }

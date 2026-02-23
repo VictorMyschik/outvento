@@ -9,6 +9,7 @@ enum TravelVisible: int
     case ForMe = 0; // только для меня, в публичном поиске не участвует
     case Platform = 1; // только для зарегистрированных пользователей
     case Public = 2; // публичный
+    case ByLink = 3; // по ссылке, в публичном поиске не участвует
 
     public static function getSelectList(): array
     {

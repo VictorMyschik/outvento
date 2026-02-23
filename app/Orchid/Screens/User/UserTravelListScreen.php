@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Orchid\Screens\User;
 
 use App\Http\Controllers\API\Travel\Request\CreateTravelRequest;
-use App\Models\Travel\Travel;
 use App\Models\User;
 use App\Orchid\Filters\User\UserTravelFilter;
 use App\Orchid\Layouts\User\Travel\AddTravelModalLayout;
@@ -66,6 +65,7 @@ class UserTravelListScreen extends UserBaseScreen
     public function saveUserTravel(CreateTravelRequest $request, TravelService $travelService): RedirectResponse
     {
         $input = $request->getInput();
+        $input['language'] = $this->user->language;
 
         $id = $travelService->createTravel($this->user->id, $input);
 

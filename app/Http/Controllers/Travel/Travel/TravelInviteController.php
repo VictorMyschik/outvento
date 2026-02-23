@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Travel\Travel;
 
 use App\Http\Controllers\Controller;
-use App\Models\EmailInvite;
+use App\Models\TravelInvite;
 use App\Models\Travel\UIT;
 use App\Models\User;
 use App\Services\Travel\Enum\UITStatus;
@@ -17,8 +17,8 @@ class TravelInviteController extends Controller
         $token = substr($token, 0, 32);
         abort_if(!preg_match('/[a-z0-9]{32}/', $token), 404);
 
-        /** @var EmailInvite $emailInvite */
-        $emailInvite = EmailInvite::where('token', $token)->first();
+        /** @var TravelInvite $emailInvite */
+        $emailInvite = TravelInvite::where('token', $token)->first();
 
         if (!$emailInvite) {
             return redirect('/');
@@ -29,7 +29,7 @@ class TravelInviteController extends Controller
         if ($user) {
             Auth::login($user);
 
-            $status = $status === 'true' ? UITStatus::CONFIRMED : UITStatus::REJECTED;
+            $status = $status === 'true' ? UITStatus::Confirmed : UITStatus::Rejected;
 
             UIT::where('travel_id', $emailInvite->getTravel()->id())->where('user_id', $user->id)->updateOrCreate([
                 'travel_id' => $emailInvite->getTravel()->id(),

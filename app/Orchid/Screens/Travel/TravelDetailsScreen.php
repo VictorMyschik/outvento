@@ -4,19 +4,17 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\Travel;
 
-use App\Models\EmailInvite;
+use App\Models\TravelInvite;
 use App\Models\Orchid\Attachment;
 use App\Models\Reference\Country;
 use App\Models\Travel\Travel;
 use App\Models\Travel\TravelMedia;
-use App\Models\Travel\Activity;
 use App\Models\Travel\UIT;
 use App\Models\User;
 use App\Orchid\Layouts\Travel\InviteByEmailEditLayout;
 use App\Orchid\Layouts\Travel\InviteListLayout;
 use App\Orchid\Layouts\Travel\TravelEditLayout;
 use App\Orchid\Layouts\Travel\TravelMediaUploadLayout;
-use App\Services\Travel\Enum\ImageType;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\TravelVisible;
 use App\Services\Travel\Enum\UITStatus;
@@ -52,7 +50,7 @@ class TravelDetailsScreen extends Screen
     {
         return [
             'travel'     => $travel,
-            'invite-uih' => EmailInvite::filters([])->where('travel_id', $travel->id())->paginate(20)
+            'invite-uih' => TravelInvite::filters([])->where('travel_id', $travel->id())->paginate(20)
         ];
     }
 
@@ -71,10 +69,6 @@ class TravelDetailsScreen extends Screen
 
     public function layout(): iterable
     {
-        $out[] = Layout::columns([
-            $this->getBaseLayout(),
-            $this->getRightTab(),
-        ]);
 
         $out[] = Layout::rows([
             Quill::make('travel.description')->title('Подробное описание')->rows(5)->maxlength(8000),
@@ -101,7 +95,6 @@ class TravelDetailsScreen extends Screen
             Group::make([
                 Select::make('travel.status')->title('Общий статус')->required()->options(TravelStatus::getSelectList()),
                 Select::make('travel.visible_type')->title('Видимость')->required()->empty('Select travel public type')->options(TravelVisible::getSelectList()),
-                Select::make('travel.travel_type_id')->title('Тип')->required()->empty('Select travel type')->fromModel(Activity::class, 'name_ru'),
                 Select::make('travel.country_id')->title('Страна')->required()->empty('Select country')->options(Country::all()->pluck('name_ru', 'id')->toArray()),
             ]),
             ViewField::make('')->view('space'),
@@ -238,7 +231,7 @@ class TravelDetailsScreen extends Screen
 
         /** @var UIT $userInTravel */
         foreach ($list as $key => &$userInTravel) {
-            if ($userInTravel->getStatus() !== UITStatus::CONFIRMED) {
+            if ($userInTravel->getStatus() !== UITStatus::Confirmed) {
                 unset($list[$key]);
             }
 
@@ -258,7 +251,7 @@ class TravelDetailsScreen extends Screen
         $list = $this->travelService->getTravelUsers($this->travel);
 
         foreach ($list as $key => &$userInTravel) {
-            if ($userInTravel->getStatus() == UITStatus::REJECTED) {
+            if ($userInTravel->getStatus() == UITStatus::Rejected) {
                 $userInTravel->btn = DropDown::make()->icon('options-vertical')->list([
                     Button::make(__('Delete'))
                         ->icon('bs.trash3')
@@ -339,7 +332,7 @@ class TravelDetailsScreen extends Screen
             'email' => 'required|email|max:255'
         ])['email'];
 
-        $exists = DB::table(EmailInvite::getTableName())->where('email', $email)->where('travel_id', $id)->exists();
+        $exists = DB::table(TravelInvite::getTableName())->where('email', $email)->where('travel_id', $id)->exists();
         if ($exists) {
             Toast::error('Приглашение уже отправлено');
             return;
@@ -348,10 +341,10 @@ class TravelDetailsScreen extends Screen
 
         $travel = Travel::loadByOrDie($id);
 
-        $invite = new EmailInvite();
+        $invite = new TravelInvite();
         $invite->setEmail($email);
         $invite->setTravelID($travel->id());
-        $invite->setStatus(EmailInvite::STATUS_NEW);
+        $invite->setStatus(TravelInvite::STATUS_NEW);
         $invite->setToken($invite->generateToken());
         $invite->setUserID($travel->getUser()->id);
         $invite->save();
@@ -363,7 +356,7 @@ class TravelDetailsScreen extends Screen
 
     public function resendEmailInvite(int $id): void
     {
-        $invite = EmailInvite::loadByOrDie($id);
+        $invite = TravelInvite::loadByOrDie($id);
         EmailService::sendTravelInvite($invite);
         Toast::info('Приглашение отправлено')->delay(1000);;
     }
@@ -371,7 +364,7 @@ class TravelDetailsScreen extends Screen
     public function declineUIH(int $id): void
     {
         $invite = UIT::loadByOrDie($id);
-        $invite->setStatus(UITStatus::REJECTED);
+        $invite->setStatus(UITStatus::Rejected);
         $invite->save();
 
         Toast::info('Приглашение отклонено')->delay(1000);;

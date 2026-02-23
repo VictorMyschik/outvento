@@ -176,7 +176,7 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
      */
     public function notificationChannelsFor(string $notificationClass): array
     {
-        // return [NotificationChannel::Email->value, NotificationChannel::Telegram->value]; // - Будет ошибка если notification не реализовал один из каналов
+        return [NotificationChannel::Email->value, NotificationChannel::Telegram->value]; // - Будет ошибка если notification не реализовал один из каналов
 
         // Вернёт список каналов, которые есть и используются
         return $this->notificationSettings()
@@ -216,14 +216,16 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
 
     public function routeNotificationForMail(Notification $notification): string|array|null
     {
+        $email = null;
+
         if (isset(ServiceEvent::getSelectList()[$notification::KEY])) {
-            return $this->getCommunicationAddressFor(
+            $email = $this->getCommunicationAddressFor(
                 channel: NotificationChannel::Email->value,
                 event: $notification::KEY
             );
         }
 
-        return $this->email;
+        return $email ?: $this->email;
     }
 
     public function routeNotificationForTelegram(Notification $notification): string|int|null

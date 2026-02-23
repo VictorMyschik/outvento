@@ -6,6 +6,7 @@ namespace App\Orchid\Layouts\User;
 
 use App\Models\User;
 use App\Services\Promo\SubscriptionService;
+use App\Services\Travel\TravelInviteService;
 use App\Services\Travel\TravelService;
 use App\Services\User\AuthService;
 use App\Services\User\UserLocationService;
@@ -25,6 +26,7 @@ class UserBaseScreen extends Screen
         protected readonly SubscriptionService $subscriptionService,
         protected readonly UserLocationService $userLocationService,
         protected readonly TravelService       $travelService,
+        protected readonly TravelInviteService $inviteService,
     ) {}
 
     public function name(): string

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\Travel\Enum;
 
+use App\Services\System\Enum\Language;
+use Illuminate\Support\Facades\Lang;
+
 enum Activity: int
 {
     case Cycling = 1;
@@ -12,15 +15,23 @@ enum Activity: int
     case Kayaks = 4;
     case MountainClimbing = 5;
 
-    public function getLabel(): string
+    public function getLabel(?Language $language = null): string
     {
+        if ($language) {
+            return Lang::get(
+                'enums.activities.' . $this->name,
+                [],
+                $language->getCode()
+            );
+        }
+
         return __('enums.activities.' . $this->name);
     }
 
     public static function getSelectList(): array
     {
         return collect(self::cases())
-            ->mapWithKeys(fn (self $case) => [
+            ->mapWithKeys(fn(self $case) => [
                 $case->value => $case->getLabel(),
             ])
             ->toArray();

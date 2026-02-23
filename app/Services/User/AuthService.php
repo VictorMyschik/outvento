@@ -14,6 +14,8 @@ use App\Services\Notifications\Enum\SystemEvent;
 use App\Services\Notifications\SystemNotificationService;
 use App\Services\System\Enum\Language;
 use App\Services\User\DTO\UserProfileDTO;
+use App\Services\User\Enum\CommunicationType;
+use App\Services\User\Enum\Visibility;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;

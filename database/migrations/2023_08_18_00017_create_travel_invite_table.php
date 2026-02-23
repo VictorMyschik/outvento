@@ -7,12 +7,11 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('email_invites', function (Blueprint $table) {
+        Schema::create('travel_invites', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('travel_id')->index();
-            $table->unsignedBigInteger('user_id')->index();
+            $table->unsignedBigInteger('user_id')->nullable()->index();
             $table->string('email')->index();
-            $table->string('token', 32)->unique()->index();
             $table->tinyInteger('status')->default(0);
 
             $table->timestampTz('created_at')->useCurrent();
@@ -25,6 +24,6 @@ return new class extends Migration {
 
     public function down(): void
     {
-        Schema::dropIfExists('email_invites');
+        Schema::dropIfExists('travel_invites');
     }
 };

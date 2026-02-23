@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('travels', function (Blueprint $table) {
             $table->id();
-            //$table->smallInteger('language')->index();
+            $table->smallInteger('language')->index();
             $table->string('title')->index();
             $table->string('preview', 350)->nullable()->index();
             $table->text('description')->nullable();
@@ -20,6 +20,7 @@ return new class extends Migration {
             $table->smallInteger('members')->nullable();
             $table->smallInteger('members_exists')->default(0);
             $table->string('public_id', 15)->nullable()->index();
+            $table->string('private_id', 64)->index();
             $table->tinyInteger('visible')->default(0)->index();
 
             $table->timestampTz('archived_at')->nullable()->index(); // Архивирование - для скрытия из общего списка, но сохранения данных

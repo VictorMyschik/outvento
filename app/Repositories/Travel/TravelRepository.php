@@ -28,7 +28,8 @@ readonly class TravelRepository extends DatabaseRepository implements TravelRepo
     public function getTravelUsers(Travel $travel): array
     {
         return User::join(UIT::getTableName(), 'users.id', '=', UIT::getTableName() . '.user_id')
-            ->where('travel_id', $travel->id())->selectRaw('users.*, ' . UIT::getTableName() . '.role')->get()->all();
+            ->where('travel_id', $travel->id())
+            ->selectRaw('users.*, ' . UIT::getTableName() . '.role, ' . UIT::getTableName() . '.status')->get()->all();
     }
 
     /**

@@ -56,6 +56,7 @@ return [
         'Public'   => 'Publiczny',
         'ForMe'    => 'Tylko dla mnie',
         'Platform' => 'Tylko dla zarejestrowanych użytkowników',
+        'ByLink'   => 'Tylko po linku',
     ],
 
     'travel_visible_description' => [
@@ -71,8 +72,14 @@ return [
         'Deleted'  => 'Usunięty',
     ],
 
-    'user_travel_role' => [
-        'Owner' => 'Właściciel',
+    'user_travel_role'     => [
+        'Owner'  => 'Właściciel',
         'Member' => 'Uczestnik',
+    ],
+
+    'travel_invite_status' => [
+        'Pending'  => 'Oczekuje na odpowiedź',
+        'Accepted' => 'Zaakceptowano',
+        'Declined' => 'Odrzucono',
     ],
 ];
