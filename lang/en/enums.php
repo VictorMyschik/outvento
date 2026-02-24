@@ -85,6 +85,7 @@ return [
 
     'travel_point' => [
         'Start'  => 'Start',
+        'Stop'   => 'Stop',
         'Finish' => 'Finish',
         'Poi'    => 'Point of interest',
     ],

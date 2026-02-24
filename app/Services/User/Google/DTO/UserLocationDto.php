@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\User\Google\DTO;
 
+use App\Services\System\Enum\Language;
+
 final readonly class UserLocationDto
 {
     public function __construct(
@@ -12,5 +14,6 @@ final readonly class UserLocationDto
         public float $lng,
         public string $countryCode,
         public ?string $cityName,
+        public Language $language,
     ) {}
 }

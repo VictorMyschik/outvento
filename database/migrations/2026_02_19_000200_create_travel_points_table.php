@@ -15,6 +15,7 @@ return new class extends Migration {
 
             $table->smallInteger('type')->index();      // start / finish / stop / poi
             $table->integer('position')->nullable();    // порядок маршрута
+            $table->smallInteger('rating')->default(0);    // пользовательская оценка
 
             $table->string('address')->nullable();      // Google formatted_address
             $table->text('description')->nullable();    // пользовательское примечание

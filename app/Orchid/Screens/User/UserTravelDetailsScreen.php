@@ -8,6 +8,7 @@ use App\Models\Orchid\Attachment;
 use App\Models\Reference\Country;
 use App\Models\Travel\Travel;
 use App\Models\Travel\TravelMedia;
+use App\Models\Travel\TravelPoint;
 use App\Models\Travel\UIT;
 use App\Models\User;
 use App\Orchid\Fields\CKEditor;
@@ -19,6 +20,7 @@ use App\Orchid\Layouts\User\UserBaseScreen;
 use App\Services\System\Enum\Language;
 use App\Services\Travel\Enum\Activity;
 use App\Services\Travel\Enum\MediaType;
+use App\Services\Travel\Enum\TravelPointType;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\TravelVisible;
 use App\Services\Travel\Enum\UITStatus;
@@ -95,7 +97,7 @@ class UserTravelDetailsScreen extends UserBaseScreen
 
         $out[] = Layout::modal('upload_travel_photo', TravelMediaUploadLayout::class)->async('asyncTravelMedia')->size(Modal::SIZE_LG);
         $out[] = Layout::modal('new_invite_email_modal', InviteByEmailEditLayout::class);
-        $out[] = Layout::modal('start_city_modal', TravelStartCityLocationLayout::class)->size(Modal::SIZE_LG);
+        $out[] = Layout::modal('point_edit_modal', TravelStartCityLocationLayout::class)->size(Modal::SIZE_LG);
 
         return $out;
     }
@@ -163,14 +165,6 @@ class UserTravelDetailsScreen extends UserBaseScreen
                     ->value($this->travel->getCountriesForOrchid())
                     ->empty('Select countries')
                     ->multiple(),
-                ViewField::make('')->view('admin.travel.start_city')->value([
-                    'label' => Label::make('travel.start_city_id')->title('Start')->value($this->travel->start_city_id ?? 'N/A'),
-                    'btn'   => ModalToggle::make('Set start city')
-                        ->class('mr-btn-primary')
-                        ->modal('start_city_modal')
-                        ->modalTitle('Set start city')
-                        ->method('setStartCity'),
-                ]),
             ]),
             Input::make('travel.title')->title('Заголовок')->required()->maxlength(255),
             TextArea::make('travel.preview')->title('Короткое описание')->rows(3)->maxlength(355),
@@ -190,11 +184,59 @@ class UserTravelDetailsScreen extends UserBaseScreen
     private function getRightTab(): Tabs
     {
         return Layout::tabs([
-            'Фото'       => Layout::rows($this->getPhotoTab()),
-            'Активные'   => Layout::rows($this->getUITActiveListLayout()),
-            //'Отказ'      => Layout::rows([$this->getUITNotActiveListLayout()]),
-            'В ожидании' => InviteListLayout::class,
+            'Photo'   => Layout::rows($this->getPhotoTab()),
+            'Points'  => Layout::rows($this->getTravelPointsLayout()),
+            'Users'   => Layout::rows($this->getUITActiveListLayout()),
+            //'Rejected'      => Layout::rows([$this->getUITNotActiveListLayout()]),
+            'Invites' => InviteListLayout::class,
         ]);
+    }
+
+    private function getTravelPointsLayout(): array
+    {
+        $list = $this->travelService->getTravelPoints($this->travel->id);
+
+        $btns = [
+            ModalToggle::make('Добавить точку')
+                ->class('mr-btn-success')
+                ->modal('point_edit_modal')
+                ->modalTitle('Edit point')
+                ->method('setPoint', ['pointId' => 0]),
+            Button::make('Удалить все точки')
+                ->class('mr-btn-danger')
+                ->confirm('Delete all points?')
+                ->method('deletePoint')
+        ];
+
+        /** @var TravelPoint $point */
+        foreach ($list as $key => &$point) {
+            $point->btn = DropDown::make()->icon('options-vertical')->list([
+                ModalToggle::make('Edit')
+                    ->icon('pencil')
+                    ->modal('point_edit_modal')
+                    ->modalTitle('Edit point')
+                    ->method('setPoint', ['pointId' => $point->id]),
+                Button::make('Delete')
+                    ->icon('bs.trash3')
+                    ->confirm('Удалить точку?')
+                    ->method('pointId', ['id' => $point->id])
+            ])->render();
+        }
+
+        return [
+            Group::make($btns)->autoWidth(),
+            ViewField::make('')->view('hr'),
+            ViewField::make('')->view('admin.travel.points')->value($list)
+        ];
+    }
+
+    public function deletePoint(int $pointId = 0): void
+    {
+        if ($pointId) {
+            $this->travelService->deletePoint($pointId);
+        } else {
+            $this->travelService->deleteTravelPoints($this->travel->id);
+        }
     }
 
     private function getUITActiveListLayout(): array
@@ -459,19 +501,24 @@ class UserTravelDetailsScreen extends UserBaseScreen
         Toast::info('Приглашение повторно отправлено')->delay(1000);;
     }
 
-    public function setStartCity(Request $request): void
+    public function setPoint(Request $request): void
     {
+        $all = $request->all();
         $lat = (float)$request->input('start_lat');
         $lng = (float)$request->input('start_lng');
 
         $address = $request->input('start_address');
 
-        $this->travelService->savePoint(0, $this->travel->id, [
-            'lng'         => '',
-            'lat'         => '',
-            'address'     => '',
-            'description' => '',
-            'position'    => '',
-        ]);
+        $this->travelService->savePoint(
+            pointId: 0,
+            travelId: $this->travel->id,
+            type: TravelPointType::Start,
+            data: [
+                'lat'         => (float)$request->input('start_lat'),
+                'lng'         => (float)$request->input('start_lng'),
+                'address'     => $address,
+                'description' => '',
+            ],
+        );
     }
 }

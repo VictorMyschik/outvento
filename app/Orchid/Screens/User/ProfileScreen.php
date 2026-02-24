@@ -194,7 +194,7 @@ class ProfileScreen extends UserBaseScreen
 
         $locationData = [
             'location'  => [
-                'city'    => $this->user->getUserLocation()?->getCity()->name,
+                'city'    => $this->user->getUserLocation()?->getCity()->getName(Language::RU),
                 'country' => $this->user->getUserLocation()?->getCity()->getCountry()->name_ru,
                 'btns'    => Group::make([
                     ModalToggle::make('')
@@ -682,6 +682,7 @@ class ProfileScreen extends UserBaseScreen
                 lng: $request->getLng(),
                 countryCode: $request->getCountryCode(),
                 cityName: $request->getCityName(),
+                language: Language::fromCode(app()->getLocale()),
             ),
         );
     }

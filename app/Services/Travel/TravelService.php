@@ -15,7 +15,7 @@ use Illuminate\Http\UploadedFile;
 readonly class TravelService
 {
     public function __construct(
-        private TravelRepositoryInterface $travelRepository,
+        private TravelRepositoryInterface $repository,
         private TravelUploadService       $fileStorage,
     ) {}
 
@@ -25,31 +25,31 @@ readonly class TravelService
         $data['status'] = TravelStatus::Draft;
         $data['private_id'] = hash('sha256', $data['public_id'] . config('app.key'));
 
-        $id = $this->travelRepository->saveTravel(0, $data);
+        $id = $this->repository->saveTravel(0, $data);
 
-        $this->travelRepository->saveTravelUser($ownerId, $id, UserTravelRole::Owner);
+        $this->repository->saveTravelUser($ownerId, $id, UserTravelRole::Owner);
 
         return $id;
     }
 
     public function updateTravel(int $id, array $data): int
     {
-        return $this->travelRepository->saveTravel($id, $data);
+        return $this->repository->saveTravel($id, $data);
     }
 
     public function updateTravelCountries(int $travelId, array $countryIds): void
     {
-        $this->travelRepository->updateTravelCountries($travelId, $countryIds);
+        $this->repository->updateTravelCountries($travelId, $countryIds);
     }
 
     public function updateTravelActivities(int $travelId, array $activityIds): void
     {
-        $this->travelRepository->updateTravelActivities($travelId, $activityIds);
+        $this->repository->updateTravelActivities($travelId, $activityIds);
     }
 
     public function updateTravelOwner(int $travelId, int $userId): void
     {
-        $this->travelRepository->saveTravelUser($userId, $travelId, UserTravelRole::Owner);
+        $this->repository->saveTravelUser($userId, $travelId, UserTravelRole::Owner);
     }
 
     public function getPublicUrl(Travel $travel): string
@@ -60,12 +60,12 @@ readonly class TravelService
     public function deleteTravel(int $travelId): void
     {
         $this->deleteTravelMedias($travelId);
-        $this->travelRepository->deleteTravel($travelId);
+        $this->repository->deleteTravel($travelId);
     }
 
     public function getTravelUsers(Travel $travel): array
     {
-        return $this->travelRepository->getTravelUsers($travel);
+        return $this->repository->getTravelUsers($travel);
     }
 
     public function saveTravelMedia(int $mediaId, Travel $travel, UploadedFile $uploadedFile, MediaType $type): int
@@ -81,10 +81,10 @@ readonly class TravelService
     public function deleteImage(int $mediaId): void
     {
         $this->fileStorage->deleteFile(
-            $this->travelRepository->getTravelMedia($mediaId)->path
+            $this->repository->getTravelMedia($mediaId)->path
         );
 
-        $this->travelRepository->deleteTravelMedia($mediaId);
+        $this->repository->deleteTravelMedia($mediaId);
     }
 
     public function deleteTravelMedias(int $travelId): void
@@ -98,17 +98,17 @@ readonly class TravelService
 
     public function getTravelLogo(int $travelId): ?TravelMedia
     {
-        return $this->travelRepository->getTravelLogo($travelId);
+        return $this->repository->getTravelLogo($travelId);
     }
 
     public function getTravelMediaList(int $travelId): array
     {
-        return $this->travelRepository->getTravelMediaList($travelId);
+        return $this->repository->getTravelMediaList($travelId);
     }
 
     public function setAsLogo(int $imageId): void
     {
-        $this->travelRepository->setAsLogo($imageId);
+        $this->repository->setAsLogo($imageId);
     }
 
     public function cloneTravel(Travel $travel): int
@@ -133,7 +133,7 @@ readonly class TravelService
 
     public function getFullTravelMediaSize(int $travelId): int
     {
-        return $this->travelRepository->getFullTravelMediaSize($travelId);
+        return $this->repository->getFullTravelMediaSize($travelId);
     }
 
     public function getFullTravelMediaSizeInMb(int $travelId): string
@@ -141,13 +141,28 @@ readonly class TravelService
         return number_format(round($this->getFullTravelMediaSize($travelId) / 1024 / 1024, 2), 2, '.', ' ') . ' MB';
     }
 
+    public function getTravelPoints(int $travelId): array
+    {
+        return $this->repository->getTravelPoints($travelId);
+    }
+
     public function savePoint(int $pointId, int $travelId, TravelPointType $type, array $data): int
     {
-        return $this->travelRepository->savePoint(
+        return $this->repository->savePoint(
             pointId: $pointId,
             travelId: $travelId,
             type: $type,
             data: $data
         );
+    }
+
+    public function deletePoint(int $pointId): void
+    {
+        $this->repository->deletePoint($pointId);
+    }
+
+    public function deleteTravelPoints(int $travelId): void
+    {
+        $this->repository->deleteTravelPoints($travelId);
     }
 }

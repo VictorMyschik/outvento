@@ -46,5 +46,11 @@ interface TravelRepositoryInterface
 
     public function getFullTravelMediaSize(int $travelId): int;
 
+    public function getTravelPoints(int $travelId): array;
+
     public function savePoint(int $pointId, int $travelId, TravelPointType $type, array $data): int;
+
+    public function deletePoint(int $pointId): void;
+
+    public function deleteTravelPoints(int $travelId): void;
 }

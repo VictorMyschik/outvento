@@ -233,4 +233,21 @@ readonly class TravelRepository extends DatabaseRepository implements TravelRepo
 
         return $table->insertGetId($payload);
     }
+
+    public function getTravelPoints(int $travelId): array
+    {
+        return TravelPoint::where('travel_id', $travelId)
+            ->orderBy('position', 'ASC')
+            ->get()->all();
+    }
+
+    public function deletePoint(int $pointId): void
+    {
+        $this->db->table(TravelPoint::getTableName())->where('id', $pointId)->delete();
+    }
+
+    public function deleteTravelPoints(int $travelId): void
+    {
+        $this->db->table(TravelPoint::getTableName())->where('travel_id', $travelId)->delete();
+    }
 }

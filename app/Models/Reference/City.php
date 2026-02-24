@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models\Reference;
 
-use App\Models\Lego\Fields\NameByLanguageFieldTrait;
 use App\Models\ORM\ORM;
+use App\Services\System\Enum\Language;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
 
@@ -13,7 +13,8 @@ class City extends ORM
 {
     use AsSource;
     use Filterable;
-    use NameByLanguageFieldTrait;
+
+    public const null UPDATED_AT = null;
 
     protected $table = 'cities';
 
@@ -24,6 +25,7 @@ class City extends ORM
         'lat',
         'lng',
         'place_id',
+        'point',
     ];
 
     protected array $allowedSorts = [
@@ -34,15 +36,21 @@ class City extends ORM
         'lat',
         'lng',
         'place_id',
+        'point',
+        'created_at',
     ];
 
     public $casts = [
         'created_at' => 'datetime',
-        'updated_at' => 'datetime',
     ];
 
     public function getCountry(): Country
     {
         return Country::loadByOrDie($this->country_id);
+    }
+
+    public function getName(Language $language): string
+    {
+        return CityTranslation::where('city_id', $this->id)->where('language', $language->value)->value('name');
     }
 }

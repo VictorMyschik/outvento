@@ -15,7 +15,7 @@
 </div>
 
 <script
-        src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.map_key') }}&libraries=places">
+        src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.map_key') }}&libraries=places&language={{ app()->getLocale() }}">
 </script>
 
 <script>
@@ -51,7 +51,6 @@
             document.getElementById('lng').value = place.geometry.location.lng();
             document.getElementById('countryCode').value = countryCode;
             document.getElementById('cityName').value = place.name;
-
         });
 
         input.dataset.autocompleteInitialized = '1';

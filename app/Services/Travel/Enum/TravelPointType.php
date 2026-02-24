@@ -7,8 +7,9 @@ namespace App\Services\Travel\Enum;
 enum TravelPointType: int
 {
     case Start = 1;
-    case Finish = 2;
-    case Poi = 3;
+    case Stop = 2;
+    case Finish = 3;
+    case Poi = 4;
 
     public static function getSelectList(): array
     {

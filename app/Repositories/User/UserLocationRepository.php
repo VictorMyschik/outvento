@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories\User;
 
 use App\Models\Reference\City;
+use App\Models\Reference\CityTranslation;
 use App\Models\Reference\Country;
 use App\Models\Reference\UserLocation;
 use App\Repositories\DatabaseRepository;
@@ -32,9 +33,14 @@ final readonly class UserLocationRepository extends DatabaseRepository
             'place_id'   => $dto->placeId,
             'country_id' => $countryId,
             'timezone'   => $timezone,
-            'name'       => $dto->cityName ?? 'Unknown',
             'lat'        => $dto->lat,
             'lng'        => $dto->lng,
+        ]);
+
+        $this->db->table(CityTranslation::getTableName())->insert([
+            'city_id'  => $id,
+            'language' => $dto->language->value,
+            'name'     => $dto->cityName ?? 'Unknown',
         ]);
 
         return City::loadByOrDie($id);
