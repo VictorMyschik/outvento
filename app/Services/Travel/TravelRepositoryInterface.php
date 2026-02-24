@@ -5,6 +5,7 @@ namespace App\Services\Travel;
 use App\Models\Travel\Travel;
 use App\Models\Travel\TravelMedia;
 use App\Models\User;
+use App\Services\Travel\Enum\TravelPointType;
 use App\Services\Travel\Enum\UserTravelRole;
 
 interface TravelRepositoryInterface
@@ -28,7 +29,7 @@ interface TravelRepositoryInterface
 
     public function getTravelLogo(int $travelId): ?TravelMedia;
 
-    public function getTravelMedia(int $imageId): TravelMedia;
+    public function getTravelMedia(int $mediaId): TravelMedia;
 
     /**
      * @return TravelMedia[]
@@ -44,4 +45,6 @@ interface TravelRepositoryInterface
     public function setAsLogo(int $imageId): void;
 
     public function getFullTravelMediaSize(int $travelId): int;
+
+    public function savePoint(int $pointId, int $travelId, TravelPointType $type, array $data): int;
 }

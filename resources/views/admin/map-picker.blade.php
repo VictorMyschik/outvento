@@ -6,7 +6,7 @@
     let autocomplete;
 
     function initMap() {
-        const defaultPosition = { lat: 52.2297, lng: 21.0122 }; // Warsaw
+        const defaultPosition = { lat: 52.2297, lng: 21.0122 };
 
         map = new google.maps.Map(document.getElementById("map"), {
             center: defaultPosition,
@@ -19,9 +19,8 @@
             draggable: true,
         });
 
-        setLatLng(defaultPosition.lat, defaultPosition.lng);
+        setLocation(defaultPosition.lat, defaultPosition.lng, null);
 
-        // --- Autocomplete ---
         const input = document.getElementById('address_search');
         autocomplete = new google.maps.places.Autocomplete(input, {
             types: ['geocode'],
@@ -38,33 +37,51 @@
 
             map.setCenter(location);
             map.setZoom(12);
-
             marker.setPosition(location);
 
-            setLatLng(location.lat(), location.lng());
+            setLocation(
+                location.lat(),
+                location.lng(),
+                place.formatted_address
+            );
         });
 
-        // Клик по карте
         map.addListener("click", (event) => {
             marker.setPosition(event.latLng);
-            setLatLng(event.latLng.lat(), event.latLng.lng());
+            reverseGeocode(event.latLng);
         });
 
-        // Drag маркера
         marker.addListener("dragend", (event) => {
-            setLatLng(event.latLng.lat(), event.latLng.lng());
+            reverseGeocode(event.latLng);
         });
 
-        // Фикс для Orchid modal
         setTimeout(() => {
             google.maps.event.trigger(map, 'resize');
             map.setCenter(marker.getPosition());
         }, 300);
     }
 
-    function setLatLng(lat, lng) {
+    function setLocation(lat, lng, address) {
         document.getElementById('start_lat').value = lat;
         document.getElementById('start_lng').value = lng;
+
+        if (address !== null) {
+            document.getElementById('start_address').value = address;
+        }
+    }
+
+    function reverseGeocode(latLng) {
+        const geocoder = new google.maps.Geocoder();
+
+        geocoder.geocode({ location: latLng }, (results, status) => {
+            if (status === "OK" && results[0]) {
+                setLocation(
+                    latLng.lat(),
+                    latLng.lng(),
+                    results[0].formatted_address
+                );
+            }
+        });
     }
 
     window.initMap = initMap;

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\User;
 
-use App\Models\TravelInvite;
 use App\Models\Orchid\Attachment;
 use App\Models\Reference\Country;
 use App\Models\Travel\Travel;
@@ -26,7 +25,6 @@ use App\Services\Travel\Enum\UITStatus;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
@@ -97,7 +95,7 @@ class UserTravelDetailsScreen extends UserBaseScreen
 
         $out[] = Layout::modal('upload_travel_photo', TravelMediaUploadLayout::class)->async('asyncTravelMedia')->size(Modal::SIZE_LG);
         $out[] = Layout::modal('new_invite_email_modal', InviteByEmailEditLayout::class);
-        $out[] = Layout::modal('start_city_modal', TravelStartCityLocationLayout::class);
+        $out[] = Layout::modal('start_city_modal', TravelStartCityLocationLayout::class)->size(Modal::SIZE_LG);
 
         return $out;
     }
@@ -463,7 +461,17 @@ class UserTravelDetailsScreen extends UserBaseScreen
 
     public function setStartCity(Request $request): void
     {
-        $lat = $request->input('start_lat');
-        $lng = $request->input('start_lng');
+        $lat = (float)$request->input('start_lat');
+        $lng = (float)$request->input('start_lng');
+
+        $address = $request->input('start_address');
+
+        $this->travelService->savePoint(0, $this->travel->id, [
+            'lng'         => '',
+            'lat'         => '',
+            'address'     => '',
+            'description' => '',
+            'position'    => '',
+        ]);
     }
 }

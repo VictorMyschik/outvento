@@ -7,6 +7,7 @@ namespace App\Services\Travel;
 use App\Models\Travel\Travel;
 use App\Models\Travel\TravelMedia;
 use App\Services\Travel\Enum\MediaType;
+use App\Services\Travel\Enum\TravelPointType;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\UserTravelRole;
 use Illuminate\Http\UploadedFile;
@@ -140,8 +141,13 @@ readonly class TravelService
         return number_format(round($this->getFullTravelMediaSize($travelId) / 1024 / 1024, 2), 2, '.', ' ') . ' MB';
     }
 
-    public function getUID(int $travelId): string
+    public function savePoint(int $pointId, int $travelId, TravelPointType $type, array $data): int
     {
-        return $this->travelRepository->getTravelUsers($travelId)->getPublicId();
+        return $this->travelRepository->savePoint(
+            pointId: $pointId,
+            travelId: $travelId,
+            type: $type,
+            data: $data
+        );
     }
 }

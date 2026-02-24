@@ -82,4 +82,10 @@ return [
         'Accepted' => 'Zaakceptowano',
         'Declined' => 'Odrzucono',
     ],
+
+    'travel_point' => [
+        'Start'  => 'Początek',
+        'Finish' => 'Koniec',
+        'Poi'    => 'Punkt zainteresowania',
+    ],
 ];

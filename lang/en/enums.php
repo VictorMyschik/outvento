@@ -82,4 +82,10 @@ return [
         'Accepted' => 'Accepted',
         'Declined' => 'Declined',
     ],
+
+    'travel_point' => [
+        'Start'  => 'Start',
+        'Finish' => 'Finish',
+        'Poi'    => 'Point of interest',
+    ],
 ];

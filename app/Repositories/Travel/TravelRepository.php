@@ -6,9 +6,11 @@ namespace App\Repositories\Travel;
 
 use App\Models\Travel\Travel;
 use App\Models\Travel\TravelMedia;
+use App\Models\Travel\TravelPoint;
 use App\Models\Travel\UIT;
 use App\Models\User;
 use App\Repositories\DatabaseRepository;
+use App\Services\Travel\Enum\TravelPointType;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\TravelVisible;
 use App\Services\Travel\Enum\UserTravelRole;
@@ -125,9 +127,9 @@ readonly class TravelRepository extends DatabaseRepository implements TravelRepo
         $this->db->table(TravelMedia::getTableName())->where('id', $mediaId)->delete();
     }
 
-    public function getTravelMedia(int $imageId): TravelMedia
+    public function getTravelMedia(int $mediaId): TravelMedia
     {
-        return TravelMedia::loadByOrDie($imageId);
+        return TravelMedia::loadByOrDie($mediaId);
     }
 
     #endregion
@@ -192,5 +194,43 @@ readonly class TravelRepository extends DatabaseRepository implements TravelRepo
     public function getFullTravelMediaSize(int $travelId): int
     {
         return (int)TravelMedia::where('travel_id', $travelId)->sum('size');
+    }
+
+    public function savePoint(int $pointId, int $travelId, TravelPointType $type, array $data): int
+    {
+        $table = $this->db->table(TravelPoint::getTableName());
+
+        $payload = [
+            'type'        => $type->value,
+            'point'       => $this->db->raw(
+                sprintf(
+                    'ST_SetSRID(ST_MakePoint(%F, %F), 4326)::geography',
+                    $data['lng'],
+                    $data['lat']
+                )
+            ),
+            'address'     => $data['address'] ?? null,
+            'description' => $data['description'] ?? null,
+            'position'    => $data['position'] ?? null,
+        ];
+
+        // 🔁 Редактирование существующей точки
+        if ($pointId) {
+            $updated = $table
+                ->where('id', $pointId)
+                ->where('travel_id', $travelId)
+                ->update($payload);
+
+            if ($updated === 0) {
+                throw new \RuntimeException('Travel point not found or access denied');
+            }
+
+            return $pointId;
+        }
+
+        // ➕ Создание новой точки
+        $payload['travel_id'] = $travelId;
+
+        return $table->insertGetId($payload);
     }
 }
