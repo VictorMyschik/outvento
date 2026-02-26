@@ -12,18 +12,22 @@ use App\Models\Travel\TravelPoint;
 use App\Models\Travel\UIT;
 use App\Models\User;
 use App\Orchid\Fields\CKEditor;
+use App\Orchid\Layouts\Travel\DescriptionPointShowLayout;
 use App\Orchid\Layouts\Travel\InviteByEmailEditLayout;
 use App\Orchid\Layouts\Travel\InviteListLayout;
 use App\Orchid\Layouts\Travel\TravelMediaUploadLayout;
-use App\Orchid\Layouts\Travel\TravelStartCityLocationLayout;
+use App\Orchid\Layouts\Travel\TravelPointLayout;
 use App\Orchid\Layouts\User\UserBaseScreen;
 use App\Services\System\Enum\Language;
+use App\Services\Travel\DTO\TravelPointDto;
 use App\Services\Travel\Enum\Activity;
 use App\Services\Travel\Enum\MediaType;
 use App\Services\Travel\Enum\TravelPointType;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\TravelVisible;
 use App\Services\Travel\Enum\UITStatus;
+use App\Services\User\Google\DTO\CityLocationDto;
+use DB;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -97,7 +101,47 @@ class UserTravelDetailsScreen extends UserBaseScreen
 
         $out[] = Layout::modal('upload_travel_photo', TravelMediaUploadLayout::class)->async('asyncTravelMedia')->size(Modal::SIZE_LG);
         $out[] = Layout::modal('new_invite_email_modal', InviteByEmailEditLayout::class);
-        $out[] = Layout::modal('point_edit_modal', TravelStartCityLocationLayout::class)->size(Modal::SIZE_LG);
+        $out[] = Layout::modal('point_edit_modal', TravelPointLayout::class)->size(Modal::SIZE_LG)->async('asyncTravelPoint');
+        $out[] = Layout::modal('description_modal', DescriptionPointShowLayout::class)->size(Modal::SIZE_LG)->async('asyncTravelPointDescription')->withoutApplyButton();
+
+        return $out;
+    }
+
+    public function asyncTravelPointDescription(int $pointId): array
+    {
+        return [
+            'description' => TravelPoint::loadBy($pointId)->description,
+        ];
+    }
+
+    public function asyncTravelPoint(int $pointId = 0): array
+    {
+        $point = TravelPoint::loadBy($pointId);
+        if ($point) {
+            $city = $point->getCity();
+
+            $out = $point->toArray();
+            $out['city_country_code'] = trim($point->getCity()->getCountry()->getCode());
+            $out['city_name'] = $city->getName($this->user->getLanguage());
+            $out['city_lat'] = $city->lat;
+            $out['city_lng'] = $city->lng;
+            $out['city_place_id'] = $city->place_id;
+
+            $coords = DB::selectOne(
+                'SELECT ST_Y(?) as lat, ST_X(?) as lng',
+                [$point->point, $point->point]
+            );
+
+            $out['lat'] = $coords->lat;
+            $out['lng'] = $coords->lng;
+        } else {
+            $point = $this->user->getUserLocation()?->getCity();
+            $out['lat'] = $point?->lat;
+            $out['lng'] = $point?->lng;
+        }
+
+        $out['languageCode'] = $this->user->getLanguage()->getCode();
+        $out['languageLabel'] = $this->user->getLanguage()->getLabel();
 
         return $out;
     }
@@ -205,11 +249,16 @@ class UserTravelDetailsScreen extends UserBaseScreen
             Button::make('Удалить все точки')
                 ->class('mr-btn-danger')
                 ->confirm('Delete all points?')
-                ->method('deletePoint')
+                ->method('deleteTravelPoint')
         ];
 
         /** @var TravelPoint $point */
         foreach ($list as $key => &$point) {
+            $point->descriptionModal = $point->description ? ModalToggle::make('')
+                ->icon('eye')
+                ->modal('description_modal', ['pointId' => $point->id])
+                ->modalTitle('Description for point: ' . $point->getCity()->getName($this->user->getLanguage())) : '';
+
             $point->btn = DropDown::make()->icon('options-vertical')->list([
                 ModalToggle::make('Edit')
                     ->icon('pencil')
@@ -219,7 +268,7 @@ class UserTravelDetailsScreen extends UserBaseScreen
                 Button::make('Delete')
                     ->icon('bs.trash3')
                     ->confirm('Удалить точку?')
-                    ->method('pointId', ['id' => $point->id])
+                    ->method('deleteTravelPoint', ['id' => $point->id])
             ])->render();
         }
 
@@ -230,10 +279,10 @@ class UserTravelDetailsScreen extends UserBaseScreen
         ];
     }
 
-    public function deletePoint(int $pointId = 0): void
+    public function deleteTravelPoint(int $pointId = 0): void
     {
         if ($pointId) {
-            $this->travelService->deletePoint($pointId);
+            $this->travelService->deleteTravelPoint($pointId);
         } else {
             $this->travelService->deleteTravelPoints($this->travel->id);
         }
@@ -501,24 +550,28 @@ class UserTravelDetailsScreen extends UserBaseScreen
         Toast::info('Приглашение повторно отправлено')->delay(1000);;
     }
 
-    public function setPoint(Request $request): void
+    public function setPoint(Request $request, int $pointId = 0): void
     {
-        $all = $request->all();
-        $lat = (float)$request->input('start_lat');
-        $lng = (float)$request->input('start_lng');
-
-        $address = $request->input('start_address');
-
         $this->travelService->savePoint(
-            pointId: 0,
-            travelId: $this->travel->id,
-            type: TravelPointType::Start,
-            data: [
-                'lat'         => (float)$request->input('start_lat'),
-                'lng'         => (float)$request->input('start_lng'),
-                'address'     => $address,
-                'description' => '',
-            ],
+            pointId: $pointId,
+            type: TravelPointType::from((int)$request->input('type')),
+            dto: new CityLocationDto(
+                placeId: $request->input('city_place_id'),
+                lat: (float)$request->input('city_lat'),
+                lng: (float)$request->input('city_lng'),
+                countryCode: $request->input('city_country_code'),
+                cityName: $request->input('city_name'),
+                language: Language::fromCode(app()->getLocale()),
+            ),
+            data: new TravelPointDto(
+                travelId: $this->travel->id,
+                address: $request->input('address'),
+                position: (int)$request->input('position'),
+                rating: (int)$request->input('rating'),
+                lat: (float)$request->input('lat'),
+                lng: (float)$request->input('lng'),
+                description: $request->input('description'),
+            )
         );
     }
 }

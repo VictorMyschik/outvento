@@ -6,10 +6,13 @@ namespace App\Services\Travel;
 
 use App\Models\Travel\Travel;
 use App\Models\Travel\TravelMedia;
+use App\Services\Location\LocationService;
+use App\Services\Travel\DTO\TravelPointDto;
 use App\Services\Travel\Enum\MediaType;
 use App\Services\Travel\Enum\TravelPointType;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\UserTravelRole;
+use App\Services\User\Google\DTO\CityLocationDto;
 use Illuminate\Http\UploadedFile;
 
 readonly class TravelService
@@ -17,6 +20,7 @@ readonly class TravelService
     public function __construct(
         private TravelRepositoryInterface $repository,
         private TravelUploadService       $fileStorage,
+        private LocationService           $location,
     ) {}
 
     public function createTravel(int $ownerId, array $data): int
@@ -146,17 +150,16 @@ readonly class TravelService
         return $this->repository->getTravelPoints($travelId);
     }
 
-    public function savePoint(int $pointId, int $travelId, TravelPointType $type, array $data): int
+    public function savePoint(int $pointId, TravelPointType $type, CityLocationDto $dto, TravelPointDto $data): int
     {
-        return $this->repository->savePoint(
-            pointId: $pointId,
-            travelId: $travelId,
-            type: $type,
-            data: $data
-        );
+        $city = $this->location->getCityExt($dto);
+
+        $data->setCityId($city->id);
+
+        return $this->repository->savePoint($pointId, $type, $data);
     }
 
-    public function deletePoint(int $pointId): void
+    public function deleteTravelPoint(int $pointId): void
     {
         $this->repository->deletePoint($pointId);
     }

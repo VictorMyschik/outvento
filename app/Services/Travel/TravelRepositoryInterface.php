@@ -5,6 +5,7 @@ namespace App\Services\Travel;
 use App\Models\Travel\Travel;
 use App\Models\Travel\TravelMedia;
 use App\Models\User;
+use App\Services\Travel\DTO\TravelPointDto;
 use App\Services\Travel\Enum\TravelPointType;
 use App\Services\Travel\Enum\UserTravelRole;
 
@@ -48,7 +49,7 @@ interface TravelRepositoryInterface
 
     public function getTravelPoints(int $travelId): array;
 
-    public function savePoint(int $pointId, int $travelId, TravelPointType $type, array $data): int;
+    public function savePoint(int $pointId, TravelPointType $type, TravelPointDto $data): int;
 
     public function deletePoint(int $pointId): void;
 

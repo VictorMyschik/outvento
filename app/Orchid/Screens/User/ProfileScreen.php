@@ -32,7 +32,7 @@ use App\Services\System\Enum\Language;
 use App\Services\User\Enum\CommunicationType;
 use App\Services\User\Enum\VerificationStatus;
 use App\Services\User\Enum\Visibility;
-use App\Services\User\Google\DTO\UserLocationDto;
+use App\Services\User\Google\DTO\CityLocationDto;
 use Illuminate\Http\Request;
 use Orchid\Platform\Models\Role;
 use Orchid\Screen\Actions\Button;
@@ -676,7 +676,7 @@ class ProfileScreen extends UserBaseScreen
     {
         $this->userLocationService->saveUserLocation(
             userId: $this->user->id,
-            dto: new UserLocationDto(
+            dto: new CityLocationDto(
                 placeId: $request->getPlaceId(),
                 lat: $request->getLat(),
                 lng: $request->getLng(),

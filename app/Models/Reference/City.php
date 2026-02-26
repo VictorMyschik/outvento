@@ -51,6 +51,21 @@ class City extends ORM
 
     public function getName(Language $language): string
     {
-        return CityTranslation::where('city_id', $this->id)->where('language', $language->value)->value('name');
+        $name = CityTranslation::where('city_id', $this->id)
+            ->where('language', $language->value)
+            ->value('name');
+
+        if (!$name) {
+            $name = CityTranslation::where('city_id', $this->id)
+                ->where('language', Language::EN->value)
+                ->value('name');
+        }
+
+        if (!$name) {
+            $name = CityTranslation::where('city_id', $this->id)
+                ->first()->name;
+        }
+
+        return $name;
     }
 }

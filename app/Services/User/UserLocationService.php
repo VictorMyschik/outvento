@@ -5,23 +5,19 @@ declare(strict_types=1);
 namespace App\Services\User;
 
 use App\Repositories\User\UserLocationRepository;
-use App\Services\User\Google\DTO\UserLocationDto;
+use App\Services\Location\LocationService;
+use App\Services\User\Google\DTO\CityLocationDto;
 
 final readonly class UserLocationService
 {
     public function __construct(
         private UserLocationRepository $repository,
-        private GoogleApiInterface     $google,
+        private LocationService        $location,
     ) {}
 
-    public function saveUserLocation(int $userId, UserLocationDto $dto): void
+    public function saveUserLocation(int $userId, CityLocationDto $dto): void
     {
-        $city = $this->repository->getCityByPlaceId($dto->placeId);
-
-        if (!$city) {
-            $timezone = $this->google->getTimezoneByCoordinates($dto->lat, $dto->lng);
-            $city = $this->repository->createCity($dto, $timezone);
-        }
+        $this->location->getCityExt($city->id);
 
         $this->repository->setLocation($userId, $city->id, $dto->lat, $dto->lng);
     }

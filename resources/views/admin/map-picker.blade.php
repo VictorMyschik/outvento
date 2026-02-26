@@ -8,7 +8,7 @@
     let timezoneService;
 
     function initMap() {
-        const defaultPosition = { lat: 52.2297, lng: 21.0122 };
+        const defaultPosition = {lat: {{ (float)$value['lat'] }}, lng: {{ (float)$value['lng'] }}};
 
         geocoder = new google.maps.Geocoder();
 
@@ -64,11 +64,11 @@
     }
 
     function setLocation(lat, lng, address, place = null) {
-        document.getElementById('start_lat').value = lat;
-        document.getElementById('start_lng').value = lng;
+        document.getElementById('lat').value = lat;
+        document.getElementById('lng').value = lng;
 
         if (address !== null) {
-            document.getElementById('start_address').value = address;
+            document.getElementById('address').value = address;
         }
 
         if (place) {
@@ -77,7 +77,7 @@
     }
 
     function reverseGeocode(latLng) {
-        geocoder.geocode({ location: latLng }, (results, status) => {
+        geocoder.geocode({location: latLng}, (results, status) => {
             if (status === "OK" && results[0]) {
                 setLocation(
                     latLng.lat(),
@@ -131,7 +131,7 @@
 </script>
 
 <script async
-        src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.map_key') }}&libraries=places&callback=initMap&language={{ app()->getLocale() }}">
+        src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.map_key') }}&libraries=places&callback=initMap&language={{ $value['languageCode'] }}">
 </script>
 
 <style>

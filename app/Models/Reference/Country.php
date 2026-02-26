@@ -78,4 +78,9 @@ class Country extends ORM
             self::CONTINENT_AN => 'AN',
         ][$this->continent];
     }
+
+    public function getCode(): string
+    {
+        return $this->iso3166alpha2;
+    }
 }

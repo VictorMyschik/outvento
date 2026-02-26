@@ -4,6 +4,7 @@ use App\Orchid\Providers\TableServiceProvider;
 use App\Providers\CatalogServiceProvider;
 use App\Providers\ConstructorProvider;
 use App\Providers\FaqProvider;
+use App\Providers\LocationProvider;
 use App\Providers\NewsletterProvider;
 use App\Providers\NotificationProvider;
 use App\Providers\ReferenceProvider;
@@ -31,4 +32,5 @@ return [
     ConstructorProvider::class,
     TelegramProvider::class,
     FaqProvider::class,
+    LocationProvider::class,
 ];

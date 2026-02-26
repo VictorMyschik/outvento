@@ -10,6 +10,7 @@ use App\Models\Travel\TravelPoint;
 use App\Models\Travel\UIT;
 use App\Models\User;
 use App\Repositories\DatabaseRepository;
+use App\Services\Travel\DTO\TravelPointDto;
 use App\Services\Travel\Enum\TravelPointType;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\TravelVisible;
@@ -196,29 +197,30 @@ readonly class TravelRepository extends DatabaseRepository implements TravelRepo
         return (int)TravelMedia::where('travel_id', $travelId)->sum('size');
     }
 
-    public function savePoint(int $pointId, int $travelId, TravelPointType $type, array $data): int
+    public function savePoint(int $pointId, TravelPointType $type, TravelPointDto $data): int
     {
         $table = $this->db->table(TravelPoint::getTableName());
 
         $payload = [
+            'city_id'     => $data->cityId,
+            'rating'      => $data->rating,
             'type'        => $type->value,
             'point'       => $this->db->raw(
                 sprintf(
                     'ST_SetSRID(ST_MakePoint(%F, %F), 4326)::geography',
-                    $data['lng'],
-                    $data['lat']
+                    $data->lng,
+                    $data->lat,
                 )
             ),
-            'address'     => $data['address'] ?? null,
-            'description' => $data['description'] ?? null,
-            'position'    => $data['position'] ?? null,
+            'address'     => $data->address,
+            'description' => $data->description,
+            'position'    => $data->position,
         ];
 
-        // 🔁 Редактирование существующей точки
         if ($pointId) {
             $updated = $table
                 ->where('id', $pointId)
-                ->where('travel_id', $travelId)
+                ->where('travel_id', $data->travelId)
                 ->update($payload);
 
             if ($updated === 0) {
@@ -228,8 +230,7 @@ readonly class TravelRepository extends DatabaseRepository implements TravelRepo
             return $pointId;
         }
 
-        // ➕ Создание новой точки
-        $payload['travel_id'] = $travelId;
+        $payload['travel_id'] = $data->travelId;
 
         return $table->insertGetId($payload);
     }
