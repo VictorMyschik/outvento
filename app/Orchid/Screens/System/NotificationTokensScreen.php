@@ -8,6 +8,7 @@ use App\Models\NotificationToken;
 use App\Orchid\Filters\System\NotificationTokenFilter;
 use App\Orchid\Layouts\Lego\InfoRawModalLayout;
 use App\Orchid\Layouts\System\NotificationTokenListLayout;
+use App\Services\Notifications\DTO\SystemEmailNotificationDto;
 use App\Services\Notifications\SystemNotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -78,7 +79,12 @@ class NotificationTokensScreen extends Screen
     {
         try {
             $notificationToken = NotificationToken::loadByOrDie($id);
-            $this->service->send($notificationToken);
+            $this->service->send(new SystemEmailNotificationDto(
+                address: $notificationToken->address,
+                eventType: $notificationToken->getType(),
+                channel: $notificationToken->getChannel(),
+                data: json_decode($notificationToken->sl, true) ?? [],
+            ));
             $notificationToken->touch();
             Toast::info('Notification resent successfully.');
         } catch (\Throwable $e) {

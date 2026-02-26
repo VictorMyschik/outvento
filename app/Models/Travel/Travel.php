@@ -85,9 +85,9 @@ class Travel extends ORM
         return TravelStatus::from($this->status);
     }
 
-    public function getUser(): User
+    public function getOwner(): User
     {
-        return User::findOrFail($this->user_id);
+        return UIT::where('travel_id', $this->id())->where('role', UserTravelRole::Owner->value)->first()->getUser();
     }
 
     public function getCountry(): Country

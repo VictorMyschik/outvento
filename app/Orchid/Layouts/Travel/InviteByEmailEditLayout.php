@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Orchid\Layouts\Travel;
 
 use Orchid\Screen\Fields\Input;

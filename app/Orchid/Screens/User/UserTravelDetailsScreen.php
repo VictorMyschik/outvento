@@ -316,7 +316,7 @@ class UserTravelDetailsScreen extends UserBaseScreen
                     ->icon('envelope')
                     ->class('mr-btn-success')
                     ->modal('new_invite_email_modal')
-                    ->modalTitle('Create new invite by email')
+                    ->modalTitle('Create invite')
                     ->method('createInvite'),
             ])->autoWidth(),
             ViewField::make('')->view('hr'),

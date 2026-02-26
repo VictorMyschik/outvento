@@ -104,7 +104,7 @@ final readonly class TravelApiService
             );
         }
 
-        $user = $travel->getUser();
+        $user = $travel->getOwner();
 
         return new TravelDetailsResponse(
             id: $travel->id(),
@@ -137,7 +137,7 @@ final readonly class TravelApiService
                 title: __('mr-t.travel_members'),
             ),
             images: $images,
-            owner: $travel->getUser()->name,
+            owner: $travel->getOwner()->name,
         );
     }
 }

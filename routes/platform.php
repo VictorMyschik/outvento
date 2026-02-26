@@ -143,7 +143,6 @@ Route::screen('/profiles/communications/list', UserCommunicateScreen::class)->na
 
 // Travel
 Route::screen('/travel/list', TravelListScreen::class)->name('travel.list');
-Route::screen('/travel/details/{travel}', TravelDetailsScreen::class)->name('travel.details');
 
 // References
 Route::screen('/reference/category-equipments/list', CategoryEquipmentScreen::class)->name('reference.category.equipments.list');
