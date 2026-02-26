@@ -17,4 +17,8 @@ interface TravelInviteRepositoryInterface
     public function isMute(int $userId, ServiceEvent $event): bool;
 
     public function getListByUser(int $userId): array;
+
+    public function confirmInvite(int $userId, int $inviteId): void;
+
+    public function updateTravelInvites(int $userId, string $email): void;
 }

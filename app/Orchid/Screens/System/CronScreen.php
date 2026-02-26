@@ -42,13 +42,13 @@ class CronScreen extends Screen
                 ->asyncParameters(['id' => 0]),
 
             Button::make('run all active')
-                ->class('mr-btn-danger')
+                ->class('mr-btn-primary')
                 ->icon('refresh')
                 ->method('run', ['id' => self::ALL_ACTIVE])
                 ->confirm('Запустить все активные задания, если необходимо'),
 
             Button::make('run all active now')
-                ->class('mr-btn-danger')
+                ->class('mr-btn-primary')
                 ->icon('refresh')
                 ->method('run', ['id' => self::ALL_ACTIVE_NOW])
                 ->confirm('Запустить все активные задания немедленно'),

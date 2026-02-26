@@ -13,9 +13,8 @@ use App\Services\Notifications\Enum\NotificationChannel;
 use App\Services\Notifications\Enum\SystemEvent;
 use App\Services\Notifications\SystemNotificationService;
 use App\Services\System\Enum\Language;
+use App\Services\Travel\TravelInviteRepositoryInterface;
 use App\Services\User\DTO\UserProfileDTO;
-use App\Services\User\Enum\CommunicationType;
-use App\Services\User\Enum\Visibility;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -29,8 +28,9 @@ final readonly class AuthService
     public const int ACTION_VERIFY_REG_TIME_EXPIRY_MINUTES = 20;
 
     public function __construct(
-        private UserRepository            $repository,
-        private SystemNotificationService $systemNotificationService,
+        private UserRepository                  $repository,
+        private TravelInviteRepositoryInterface $travelInviteService,
+        private SystemNotificationService       $systemNotificationService,
     ) {}
 
     public function authorize(string $loginOrEmail, string $password, bool $isRememberMe): ?string
@@ -122,6 +122,7 @@ final readonly class AuthService
         ]);
 
         $this->repository->updateUserRoles($id, $this->repository->getIdsForRoles($dto->roles));
+        $this->travelInviteService->updateTravelInvites($id, $dto->email);
 
         return $this->repository->getUserById($id);
     }

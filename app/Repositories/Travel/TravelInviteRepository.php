@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Repositories\Travel;
 
 use App\Models\Notification\NotificationMute;
-use App\Models\Travel\Travel;
+use App\Models\Travel\UIT;
 use App\Models\TravelInvite;
 use App\Repositories\DatabaseRepository;
 use App\Services\Notifications\Enum\ServiceEvent;
+use App\Services\Travel\Enum\UserTravelRole;
 use App\Services\Travel\TravelInviteRepositoryInterface;
 
 final readonly class TravelInviteRepository extends DatabaseRepository implements TravelInviteRepositoryInterface
@@ -54,5 +55,38 @@ final readonly class TravelInviteRepository extends DatabaseRepository implement
             ->orderBy('created_at', 'desc')
             ->limit(100)
             ->get()->all();
+    }
+
+    public function confirmInvite(int $userId, int $inviteId): void
+    {
+        $this->db->beginTransaction();
+
+        $travelId = $this->db->table(TravelInvite::getTableName())
+            ->where('user_id', $userId) // Пользователь должен быть зарегистрирован, а значит указан в user_id
+            ->where('id', $inviteId)
+            ->value('travel_id');
+
+        if (!$travelId) {
+            $this->db->commit();
+            return;
+        }
+
+        $this->db->table(UIT::getTableName())->insert([
+            'user_id'   => $userId,
+            'travel_id' => $travelId,
+            'role'      => UserTravelRole::Member->value,
+        ]);
+
+        $this->db->table(TravelInvite::getTableName())->where('id', $inviteId)->delete();
+
+        $this->db->commit();
+    }
+
+    /**
+     * После регистрации пользователя, обновляем все его приглашения по email
+     */
+    public function updateTravelInvites(int $userId, string $email): void
+    {
+        $this->db->table(TravelInvite::getTableName())->where('email', $email)->update(['user_id' => $userId]);
     }
 }

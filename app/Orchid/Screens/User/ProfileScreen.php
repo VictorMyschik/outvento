@@ -304,15 +304,24 @@ class ProfileScreen extends UserBaseScreen
 
             $rowBtns = [
                 Link::make('Open travel')
-                    ->icon('map')
+                    ->icon('eye')
                     ->href(route('profiles.travel.details', ['user' => $travel->getOwnerId(), 'travel' => $travel->id]))
-                    ->target('_blank')
+                    ->target('_blank'),
+                Button::make('Confirm invite')
+                    ->icon('check')
+                    ->confirm('Are you sure you want to confirm the invite?')
+                    ->method('confirmTravelInvite', ['id' => $item->id]),
+                Button::make('Reject invite')
+                    ->icon('xmark')
+                    ->confirm('Are you sure you want to reject the invite?')
+                    ->method('rejectTravelInvite', ['id' => $item->id]),
             ];
 
             $cityName = '-';
             $geoBtn = '-';
             $country = '-';
             $startCity = $travel->getStartCity();
+
             if ($startCity) {
                 $country = $startCity->getCountry()->getName($travel->getLanguage());
                 $cityGeo = $startCity->lat . ',' . $startCity->lng;
@@ -736,5 +745,15 @@ class ProfileScreen extends UserBaseScreen
     public function removeLogo(): void
     {
         $this->service->removeAvatar($this->user);
+    }
+
+    public function confirmTravelInvite(int $id): void
+    {
+        $this->inviteService->confirmInvite($this->user->id, $id);
+    }
+
+    public function rejectTravelInvite(int $id): void
+    {
+
     }
 }

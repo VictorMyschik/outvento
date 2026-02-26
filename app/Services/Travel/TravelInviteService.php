@@ -92,4 +92,14 @@ final readonly class TravelInviteService
             confirmationUrl: $travel->getPublicId(),
         )));
     }
+
+    public function updateTravelInvites(int $userId, string $email): void
+    {
+        $this->repository->updateTravelInvites($userId, $email);
+    }
+
+    public function confirmInvite(int $userId, int $inviteId): void
+    {
+        $this->repository->confirmInvite($userId, $inviteId);
+    }
 }
