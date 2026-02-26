@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Orchid\Layouts\Travel;
 
-use App\Services\System\Enum\Language;
 use App\Services\Travel\Enum\TravelPointType;
 use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
@@ -50,8 +49,8 @@ class TravelPointLayout extends Rows
 
             ViewField::make('')->view('admin.map-picker')->value([
                 'languageCode' => $this->query->get('languageCode'),
-                'lat' => $this->query->get('lat'),
-                'lng' => $this->query->get('lng'),
+                'lat'          => $this->query->get('lat'),
+                'lng'          => $this->query->get('lng'),
             ]),
 
             Input::make('lat')

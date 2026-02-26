@@ -6,11 +6,14 @@ namespace App\Models\Travel;
 
 use App\Models\Lego\Fields\DeletedNullableFieldTrait;
 use App\Models\Lego\Fields\DescriptionNullableFieldTrait;
+use App\Models\Lego\Fields\LanguageFieldTrait;
 use App\Models\Lego\Fields\TitleFieldTrait;
 use App\Models\ORM\ORM;
+use App\Models\Reference\City;
 use App\Models\Reference\Country;
 use App\Models\User;
 use App\Services\System\Enum\Language;
+use App\Services\Travel\Enum\TravelPointType;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\TravelVisible;
 use App\Services\Travel\Enum\UserTravelRole;
@@ -25,6 +28,7 @@ class Travel extends ORM
     use AsSource;
     use Filterable;
 
+    use LanguageFieldTrait;
     use TitleFieldTrait;
     use DescriptionNullableFieldTrait;
     use DeletedNullableFieldTrait;
@@ -90,11 +94,6 @@ class Travel extends ORM
         return UIT::where('travel_id', $this->id())->where('role', UserTravelRole::Owner->value)->first()->getUser();
     }
 
-    public function getCountry(): Country
-    {
-        return Country::loadByOrDie($this->country_id);
-    }
-
     public function getActivities(): Collection
     {
         return TravelActivity::where('travel_id', $this->id())->get();
@@ -105,6 +104,13 @@ class Travel extends ORM
         return Country::join(TravelCountry::getTableName(), 'countries.id', '=', TravelCountry::getTableName() . '.country_id')
             ->where(TravelCountry::getTableName() . '.travel_id', $this->id())
             ->get(['countries.*']);
+    }
+
+    public function getStartCity(): ?City
+    {
+        return TravelPoint::where('travel_id', $this->id())
+            ->where('type', TravelPointType::Start->value)
+            ->first()?->getCity();
     }
 
     public function getPublicId(): ?string

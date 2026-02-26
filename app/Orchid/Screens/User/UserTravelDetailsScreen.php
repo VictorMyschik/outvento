@@ -36,6 +36,7 @@ use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Actions\ModalToggle;
+use Orchid\Screen\Fields\DateTimer;
 use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Label;
@@ -163,13 +164,12 @@ class UserTravelDetailsScreen extends UserBaseScreen
         return Layout::rows([
             Group::make([
                 Label::make('travel.id')->title('ID')->value($this->travel->id ?? 'N/A'),
-                Input::make('travel.date_from')
-                    ->title('Date from')
-                    ->type('date'),
-
-                Input::make('travel.date_to')
-                    ->title('Date to')
-                    ->type('date'),
+                DateTimer::make('travel.date_from')
+                    ->title('Date from'),
+                DateTimer::make('travel.date_to')
+                    ->enableTime(false)
+                    ->format('Y-m-d')
+                    ->title('Date to'),
                 Select::make('travel.user_id')
                     ->title('Владелец')
                     ->required()

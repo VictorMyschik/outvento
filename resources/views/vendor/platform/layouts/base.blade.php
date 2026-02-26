@@ -2,10 +2,12 @@
 
 @if(isset($avatar))
     @section('avatar')
-        <img src="{{$avatar}}"
-             class="rounded-circle border"
-             style="width:58px;height:58px;object-fit:cover"
-        >
+        <a href="{{$avatar}}" target="_blank">
+            <img src="{{$avatar}}"
+                 class="rounded-circle border"
+                 style="width:58px;height:58px;object-fit:cover"
+            >
+        </a>
     @endsection
 @endif
 @section('title', (string) $name)

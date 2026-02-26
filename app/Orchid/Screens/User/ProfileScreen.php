@@ -10,6 +10,7 @@ use App\Http\Controllers\API\User\Request\UserLocationRequest;
 use App\Models\TravelInvite;
 use App\Models\User;
 use App\Models\UserInfo\Communication;
+use App\Orchid\Layouts\Travel\TravelLocationEditLayout;
 use App\Orchid\Layouts\User\Profile\AvatarUploadLayout;
 use App\Orchid\Layouts\User\Profile\UserLanguagesEditLayout;
 use App\Orchid\Layouts\User\Profile\UserLocationLayout;
@@ -54,7 +55,7 @@ class ProfileScreen extends UserBaseScreen
 
     public function name(): string
     {
-        return 'ID ' . $this->user->id . ($this->user->getFullName() ? ' | ' . $this->user->getFullName() : '');
+        return 'ID ' . $this->user->id . ($this->user->getFullName() ? ' | ' . $this->user->getFullName() : ' | ' . $this->user->name);
     }
 
     public function description(): string
@@ -95,6 +96,7 @@ class ProfileScreen extends UserBaseScreen
         $out[] = Layout::modal('telegram_deep_link_modal', TelegramDeeplinkLayout::class)->async('asyncGetTelegramDeepLink')->size(Modal::SIZE_LG)->withoutApplyButton();
         $out[] = Layout::modal('user_location', UserLocationLayout::class);
         $out[] = Layout::modal('user_languages', UserLanguagesEditLayout::class)->async('asyncGetUserLanguages');
+        $out[] = Layout::modal('travel_location_modal', TravelLocationEditLayout::class)->async('asyncGetTravelLocation')->withoutApplyButton();
 
         return $out;
     }
@@ -170,6 +172,11 @@ class ProfileScreen extends UserBaseScreen
         $this->service->updateUserRoles($this->user, $input);
 
         Toast::message('User roles saved successfully');
+    }
+
+    public function asyncGetTravelLocation(float $lat, float $lng): array
+    {
+        return ['lat' => $lat, 'lng' => $lng];
     }
 
     public function removeUser(): void
@@ -287,7 +294,7 @@ class ProfileScreen extends UserBaseScreen
 
     public function getTravelInvitesLayout(): array
     {
-        $rows['header'] = ['Title', 'Date', 'City', '#'];
+        $rows['header'] = ['Title', 'Date', 'Peoples', 'Country', 'City', 'Geo', '#'];
 
         $list = $this->inviteService->getListByUser($this->user->id);
 
@@ -302,11 +309,28 @@ class ProfileScreen extends UserBaseScreen
                     ->target('_blank')
             ];
 
+            $cityName = '-';
+            $geoBtn = '-';
+            $country = '-';
+            $startCity = $travel->getStartCity();
+            if ($startCity) {
+                $country = $startCity->getCountry()->getName($travel->getLanguage());
+                $cityGeo = $startCity->lat . ',' . $startCity->lng;
+                $cityName = $startCity->getName($travel->getLanguage());
+                $geoBtn = ModalToggle::make($cityGeo)
+                    ->modal('travel_location_modal')
+                    ->modalTitle('Travel location')
+                    ->asyncParameters(['lat' => $startCity->lat, 'lng' => $startCity->lng]);
+            }
+
             $rows['body'][] = [
-                'Title' => $travel->getTitle(),
-                'Date'  => $travel->date_from?->format('d.m.Y') ?? '-',
-                'City'  => $travel->start_city_id ?: '-',
-                '#'     => DropDown::make()->icon('bs.three-dots-vertical')->list($rowBtns),
+                'Title'   => $travel->getTitle(),
+                'Date'    => $travel->date_from?->format('h:m d/m/Y') ?? '-',
+                'Peoples' => $travel->members,
+                'Country' => $country,
+                'City'    => $cityName,
+                'Geo'     => $geoBtn,
+                '#'       => DropDown::make()->icon('bs.three-dots-vertical')->list($rowBtns),
             ];
         }
 
