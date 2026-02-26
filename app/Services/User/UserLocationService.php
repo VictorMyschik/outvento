@@ -17,7 +17,7 @@ final readonly class UserLocationService
 
     public function saveUserLocation(int $userId, CityLocationDto $dto): void
     {
-        $this->location->getCityExt($city->id);
+        $city = $this->location->getCityExt($dto);
 
         $this->repository->setLocation($userId, $city->id, $dto->lat, $dto->lng);
     }
