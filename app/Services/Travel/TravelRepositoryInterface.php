@@ -45,7 +45,9 @@ interface TravelRepositoryInterface
 
     public function setAsLogo(int $imageId): void;
 
-    public function getFullTravelMediaSize(int $travelId): int;
+    public function getTravelMediaSize(int $travelId): int;
+
+    public function getFullUserMediaSize(int $userId): int;
 
     public function getTravelPoints(int $travelId): array;
 
@@ -54,4 +56,10 @@ interface TravelRepositoryInterface
     public function deletePoint(int $pointId): void;
 
     public function deleteTravelPoints(int $travelId): void;
+
+    public function getTravelLinks(int $travelId): array;
+
+    public function getResources(int $travelId): array;
+
+    public function saveTravelResourceLink(int $resourceId, array $data): int;
 }

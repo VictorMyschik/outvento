@@ -18,8 +18,6 @@ interface ReferenceRepositoryInterface
 
     public function getUsingCountrySelectList(Language $language): array;
 
-    public function getTravelTypeList(): Collection;
-
     public function saveCity(int $id, array $data): int;
 
     public function save(int $id, string $class, array $data): int;

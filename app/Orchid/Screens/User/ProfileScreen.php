@@ -289,7 +289,15 @@ class ProfileScreen extends UserBaseScreen
             'Service Notification' => Layout::rows($this->getServiceNotificationLayout()),
             'Promo Notification'   => Layout::rows($this->getPromoNotificationLayout()),
             'Travel Invites'       => Layout::rows($this->getTravelInvitesLayout()),
+            'Storage'              => Layout::rows($this->getUserStorageLayout()),
         ]);
+    }
+
+    private function getUserStorageLayout(): array
+    {
+        return [
+            ViewField::make('')->view('admin.raw')->class('')->value('Full size: ' . $this->service->getStorageUsed($this->user->id) . ' Mb'),
+        ];
     }
 
     public function getTravelInvitesLayout(): array
@@ -752,8 +760,5 @@ class ProfileScreen extends UserBaseScreen
         $this->inviteService->confirmInvite($this->user->id, $id);
     }
 
-    public function rejectTravelInvite(int $id): void
-    {
-
-    }
+    public function rejectTravelInvite(int $id): void {}
 }

@@ -9,6 +9,7 @@ use App\Models\Reference\Country;
 use App\Models\Travel\Travel;
 use App\Models\Travel\TravelMedia;
 use App\Models\Travel\TravelPoint;
+use App\Models\Travel\TravelResource;
 use App\Models\Travel\UIT;
 use App\Models\User;
 use App\Orchid\Fields\CKEditor;
@@ -17,12 +18,14 @@ use App\Orchid\Layouts\Travel\InviteByEmailEditLayout;
 use App\Orchid\Layouts\Travel\InviteListLayout;
 use App\Orchid\Layouts\Travel\TravelMediaUploadLayout;
 use App\Orchid\Layouts\Travel\TravelPointLayout;
+use App\Orchid\Layouts\Travel\TravelResourceLinkEditLayout;
 use App\Orchid\Layouts\User\UserBaseScreen;
 use App\Services\System\Enum\Language;
 use App\Services\Travel\DTO\TravelPointDto;
 use App\Services\Travel\Enum\Activity;
 use App\Services\Travel\Enum\MediaType;
 use App\Services\Travel\Enum\TravelPointType;
+use App\Services\Travel\Enum\TravelResourceType;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\TravelVisible;
 use App\Services\Travel\Enum\UITStatus;
@@ -104,8 +107,16 @@ class UserTravelDetailsScreen extends UserBaseScreen
         $out[] = Layout::modal('new_invite_email_modal', InviteByEmailEditLayout::class);
         $out[] = Layout::modal('point_edit_modal', TravelPointLayout::class)->size(Modal::SIZE_LG)->async('asyncTravelPoint');
         $out[] = Layout::modal('description_modal', DescriptionPointShowLayout::class)->size(Modal::SIZE_LG)->async('asyncTravelPointDescription')->withoutApplyButton();
+        $out[] = Layout::modal('travel_resource_link', TravelResourceLinkEditLayout::class)->async('asyncTravelResource');
 
         return $out;
+    }
+
+    public function asyncTravelResource(int $resourceId): array
+    {
+        return [
+            'resource' => TravelResource::loadBy($resourceId)?->toArray(),
+        ];
     }
 
     public function asyncTravelPointDescription(int $pointId): array
@@ -228,12 +239,85 @@ class UserTravelDetailsScreen extends UserBaseScreen
     private function getRightTab(): Tabs
     {
         return Layout::tabs([
-            'Photo'   => Layout::rows($this->getPhotoTab()),
-            'Points'  => Layout::rows($this->getTravelPointsLayout()),
-            'Users'   => Layout::rows($this->getUITActiveListLayout()),
-            //'Rejected'      => Layout::rows([$this->getUITNotActiveListLayout()]),
-            'Invites' => InviteListLayout::class,
+            'Photo'     => Layout::rows($this->getPhotoTab()),
+            'Resources' => Layout::rows($this->getResourceTab()),
+            'Points'    => Layout::rows($this->getTravelPointsLayout()),
+            'Users'     => Layout::rows($this->getUITActiveListLayout()),
+            'Invites'   => InviteListLayout::class,
         ]);
+    }
+
+    public function getResourceTab(): array
+    {
+        $rows['header'] = ['Title', 'Sort', 'link', 'Created', '#'];
+        $list = $this->travelService->getResources($this->travel->id);
+
+        $btns = [
+            ModalToggle::make('Link')
+                ->class('mr-btn-success')
+                ->modal('travel_resource_link')
+                ->modalTitle('Add link')
+                ->method('addTravelLink', ['resourceId' => 0]),
+            ModalToggle::make('File')
+                ->class('mr-btn-success')
+                ->modal('travel_resource_file')
+                ->modalTitle('Add file')
+                ->method('addTravelFile', ['resourceId' => 0]),
+            Button::make('Delete all')
+                ->class('mr-btn-danger')
+                ->confirm('Delete all resources?')
+                ->method('deleteTravelResources')
+        ];
+
+        /** @var TravelResource $item */
+        foreach ($list as &$item) {
+            $item->linkAction = null;
+
+            $item->linkAction = match ($item->getType()) {
+                TravelResourceType::Link => Link::make('')->icon('eye')->href($item->path)->target('_blank'),
+                //TravelResourceType::File => Link::make('')->icon('paperclip')->href(route('api.v1.travel.resource.file', ['resourceId' => $item->id])),
+                default => null,
+            };
+
+            $item->btn = DropDown::make()->icon('options-vertical')->list([
+                ModalToggle::make('Edit')
+                    ->icon('pencil')
+                    ->modal('point_edit_modal')
+                    ->modalTitle('Edit point')
+                    ->method('setPoint', ['pointId' => $item->id]),
+                Button::make('Delete')
+                    ->icon('bs.trash3')
+                    ->confirm('Удалить точку?')
+                    ->method('deleteTravelPoint', ['id' => $item->id])
+            ])->render();
+        }
+
+        return [
+            Group::make($btns)->autoWidth(),
+            ViewField::make('')->view('hr'),
+            ViewField::make('')->view('admin.table')->value($rows),
+        ];
+    }
+
+    public function addTravelLink(Request $request, int $resourceId): void
+    {
+        $input = $request->validate([
+            'title' => 'sometimes|nullable|string|max:255',
+            'path'  => 'required|url|max:255',
+            'sort'  => 'required|int',
+        ]);
+
+        $this->travelService->saveTravelResource(
+            resourceId: $resourceId,
+            travelId: $this->travel->id,
+            type: TravelResourceType::Link,
+            data: [
+                'title'   => $input['title'] ?? null,
+                'path'    => $input['path'],
+                'sort'    => $input['sort'],
+                'user_id' => $this->user->id,
+            ]
+        );
     }
 
     private function getTravelPointsLayout(): array
@@ -330,18 +414,18 @@ class UserTravelDetailsScreen extends UserBaseScreen
 
         $photoTab = [
             Group::make([
-                ModalToggle::make('Загрузить фото')
+                ModalToggle::make('Add photo')
                     ->class('mr-btn-success')
                     ->modal('upload_travel_photo')
-                    ->modalTitle('Загрузить фото')
+                    ->modalTitle('Add photo')
                     ->method('saveTravelPhoto'),
 
-                Button::make('Удалить все фото')
+                Button::make('Delete all')
                     ->method('deleteAllTravelPhotos')
                     ->novalidate()
                     ->class('mr-btn-danger')
                     ->canSee(count($mediaList) > 0)
-                    ->confirm('Вы уверены, что хотите удалить все фото?')
+                    ->confirm('Delete all photos?')
                     ->parameters(['travelId' => $this->travel->id()]),
 
                 ViewField::make('')->view('admin.raw')->class('')->value('Full size: ' . $this->travelService->getFullTravelMediaSizeInMb($this->travel->id()) . ' Mb'),

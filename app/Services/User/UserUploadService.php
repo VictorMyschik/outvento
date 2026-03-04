@@ -40,4 +40,16 @@ final readonly class UserUploadService
 
         return $path;
     }
+
+    public function getUserStorageUsed(int $userId): int
+    {
+        $files = $this->filesystem->allFiles($userId);
+        $size = 0;
+
+        foreach ($files as $file) {
+            $size += $this->filesystem->size($file);
+        }
+
+        return $size;
+    }
 }

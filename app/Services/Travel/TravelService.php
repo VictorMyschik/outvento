@@ -10,6 +10,7 @@ use App\Services\Location\LocationService;
 use App\Services\Travel\DTO\TravelPointDto;
 use App\Services\Travel\Enum\MediaType;
 use App\Services\Travel\Enum\TravelPointType;
+use App\Services\Travel\Enum\TravelResourceType;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\UserTravelRole;
 use App\Services\User\Google\DTO\CityLocationDto;
@@ -137,7 +138,12 @@ readonly class TravelService
 
     public function getFullTravelMediaSize(int $travelId): int
     {
-        return $this->repository->getFullTravelMediaSize($travelId);
+        return $this->repository->getTravelMediaSize($travelId);
+    }
+
+    public function getFullUserMediaSize(int $userId): int
+    {
+        return $this->repository->getFullUserMediaSize($userId);
     }
 
     public function getFullTravelMediaSizeInMb(int $travelId): string
@@ -167,5 +173,29 @@ readonly class TravelService
     public function deleteTravelPoints(int $travelId): void
     {
         $this->repository->deleteTravelPoints($travelId);
+    }
+
+    public function saveTravelResource(int $resourceId, int $travelId, TravelResourceType $type, array $data): void
+    {
+        $payload = [
+            'travel_id' => $travelId,
+            'type'      => $type->value,
+            'title'     => (string)$data['title'],
+            'path'      => (string)$data['path'],
+            'sort'      => (int)$data['sort'],
+            'user_id'   => (int)$data['user_id'],
+        ];
+
+        $this->repository->saveTravelResourceLink($resourceId, $payload);
+    }
+
+    public function getTravelLinks(int $travelId): array
+    {
+        return $this->repository->getTravelLinks($travelId);
+    }
+
+    public function getResources(int $travelId): array
+    {
+        return $this->repository->getResources($travelId);
     }
 }

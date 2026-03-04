@@ -7,6 +7,7 @@ namespace App\Providers;
 use App\Repositories\User\UserRepository;
 use App\Services\Notifications\ServiceNotificationService;
 use App\Services\Notifications\SystemNotificationService;
+use App\Services\Travel\TravelService;
 use App\Services\User\AuthService;
 use App\Services\User\Google\GoogleAPIAdapter;
 use App\Services\User\Google\GoogleClient;
@@ -36,6 +37,7 @@ class UserProvider extends ServiceProvider
                 authService: $app->make(AuthService::class),
                 notificationService: $app->make(SystemNotificationService::class),
                 serviceNotificationService: $app->make(ServiceNotificationService::class),
+                travelService: $app->make(TravelService::class),
             );
         });
 

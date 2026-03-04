@@ -9,13 +9,10 @@ use App\Models\ORM\ORM;
 use App\Models\Reference\City;
 use App\Models\Reference\Country;
 use App\Models\Travel\Travel;
-use App\Models\Travel\Activity;
-use App\Models\UserInfo\CommunicationType;
 use App\Repositories\DatabaseRepository;
 use App\Services\References\ReferenceRepositoryInterface;
 use App\Services\System\Enum\Language;
 use Brick\Money\ISOCurrencyProvider;
-use Illuminate\Support\Collection;
 
 readonly class ReferenceRepository extends DatabaseRepository implements ReferenceRepositoryInterface
 {
@@ -46,22 +43,6 @@ readonly class ReferenceRepository extends DatabaseRepository implements Referen
             ->groupBy(Country::getTableName() . '.id')->get()->all();
     }
 
-    public function getTravelTypeList(): Collection
-    {
-        return Activity::all();
-    }
-
-    public function saveTravelType(int $id, array $data): int
-    {
-        if ($id > 0) {
-            $this->db->table(Activity::getTableName())->where('id', $id)->update($data);
-
-            return $id;
-        }
-
-        return $this->db->table(Activity::getTableName())->insertGetId($data);
-    }
-
     public function saveCity(int $id, array $data): int
     {
         if ($id > 0) {
@@ -87,17 +68,6 @@ readonly class ReferenceRepository extends DatabaseRepository implements Referen
         }
 
         return $this->db->table(Country::getTableName())->insertGetId($data);
-    }
-
-    public function saveCommunicationType(int $id, array $data): int
-    {
-        if ($id > 0) {
-            $this->db->table(CommunicationType::getTableName())->where('id', $id)->update($data);
-
-            return $id;
-        }
-
-        return $this->db->table(CommunicationType::getTableName())->insertGetId($data);
     }
 
     /**

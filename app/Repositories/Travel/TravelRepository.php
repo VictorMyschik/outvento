@@ -7,15 +7,19 @@ namespace App\Repositories\Travel;
 use App\Models\Travel\Travel;
 use App\Models\Travel\TravelMedia;
 use App\Models\Travel\TravelPoint;
+use App\Models\Travel\TravelResource;
 use App\Models\Travel\UIT;
 use App\Models\User;
 use App\Repositories\DatabaseRepository;
 use App\Services\Travel\DTO\TravelPointDto;
 use App\Services\Travel\Enum\TravelPointType;
+use App\Services\Travel\Enum\TravelResourceType;
 use App\Services\Travel\Enum\TravelStatus;
 use App\Services\Travel\Enum\TravelVisible;
 use App\Services\Travel\Enum\UserTravelRole;
 use App\Services\Travel\TravelRepositoryInterface;
+use DateTime;
+use RuntimeException;
 
 readonly class TravelRepository extends DatabaseRepository implements TravelRepositoryInterface
 {
@@ -32,7 +36,7 @@ readonly class TravelRepository extends DatabaseRepository implements TravelRepo
     {
         return User::join(UIT::getTableName(), 'users.id', '=', UIT::getTableName() . '.user_id')
             ->where('travel_id', $travel->id())
-            ->selectRaw('users.*, ' . UIT::getTableName() . '.role, ' . UIT::getTableName() . '.status')->get()->all();
+            ->selectRaw('users.*, ' . UIT::getTableName() . '.role')->get()->all();
     }
 
     /**
@@ -58,12 +62,12 @@ readonly class TravelRepository extends DatabaseRepository implements TravelRepo
         }
 
         if (!empty($filter['dateFrom'])) {
-            $dateFrom = \DateTime::createFromFormat('Y-m-d', $filter['dateFrom']);
+            $dateFrom = DateTime::createFromFormat('Y-m-d', $filter['dateFrom']);
             $query->where('date_from', '>=', $dateFrom->format('Y-m-d'));
         }
 
         if (!empty($filter['dateTo'])) {
-            $dateTo = \DateTime::createFromFormat('Y-m-d', $filter['dateTo']);
+            $dateTo = DateTime::createFromFormat('Y-m-d', $filter['dateTo']);
             $query->where('date_to', '<=', $dateTo->format('Y-m-d'));
         }
 
@@ -192,9 +196,16 @@ readonly class TravelRepository extends DatabaseRepository implements TravelRepo
         $this->db->commit();
     }
 
-    public function getFullTravelMediaSize(int $travelId): int
+    public function getTravelMediaSize(int $travelId): int
     {
         return (int)TravelMedia::where('travel_id', $travelId)->sum('size');
+    }
+
+    public function getFullUserMediaSize(int $userId): int
+    {
+        return (int)TravelMedia::join(Travel::getTableName(), TravelMedia::getTableName() . '.travel_id', '=', Travel::getTableName() . '.id')
+            ->join(UIT::getTableName(), UIT::getTableName() . '.travel_id', '=', Travel::getTableName() . '.id')
+            ->where('user_id', $userId)->sum(TravelMedia::getTableName() . '.size');
     }
 
     public function savePoint(int $pointId, TravelPointType $type, TravelPointDto $data): int
@@ -224,7 +235,7 @@ readonly class TravelRepository extends DatabaseRepository implements TravelRepo
                 ->update($payload);
 
             if ($updated === 0) {
-                throw new \RuntimeException('Travel point not found or access denied');
+                throw new RuntimeException('Travel point not found or access denied');
             }
 
             return $pointId;
@@ -250,5 +261,33 @@ readonly class TravelRepository extends DatabaseRepository implements TravelRepo
     public function deleteTravelPoints(int $travelId): void
     {
         $this->db->table(TravelPoint::getTableName())->where('travel_id', $travelId)->delete();
+    }
+
+    public function getTravelLinks(int $travelId): array
+    {
+        return $this->db->table(TravelResource::getTableName())
+            ->orderBy('sort', 'ASC')
+            ->orderBy('created_at', 'ASC')
+            ->where('travel_id', $travelId)
+            ->where('type', TravelResourceType::Link->value)
+            ->get()->all();
+    }
+
+    public function getResources(int $travelId): array
+    {
+        return TravelResource::where('travel_id', $travelId)
+            ->orderBy('sort', 'ASC')
+            ->orderBy('created_at', 'ASC')
+            ->get()->all();
+    }
+
+    public function saveTravelResourceLink(int $resourceId, array $data): int
+    {
+        if ($resourceId > 0) {
+            $this->db->table(TravelResource::getTableName())->where('id', $resourceId)->update($data);
+            return $resourceId;
+        }
+
+        return $this->db->table(TravelResource::getTableName())->insertGetId($data);
     }
 }

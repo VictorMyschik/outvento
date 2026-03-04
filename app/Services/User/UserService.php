@@ -15,6 +15,7 @@ use App\Services\Notifications\Enum\SystemEvent;
 use App\Services\Notifications\ServiceNotificationService;
 use App\Services\Notifications\SystemNotificationService;
 use App\Services\System\Enum\Language;
+use App\Services\Travel\TravelService;
 use App\Services\User\Enum\CommunicationType;
 use App\Services\User\Enum\VerificationStatus;
 use Illuminate\Http\UploadedFile;
@@ -28,6 +29,7 @@ final readonly class UserService
         private AuthService                $authService,
         private SystemNotificationService  $notificationService,
         private ServiceNotificationService $serviceNotificationService,
+        private TravelService              $travelService,
     ) {}
 
     public function updateUser(User $user, array $data): User
@@ -242,5 +244,23 @@ final readonly class UserService
     public function deleteUserLanguages(User $user): void
     {
         $this->repository->deleteUserLanguages($user);
+    }
+
+    public function getStorageUsed(int $userId): string
+    {
+        $personalStorage = $this->uploadService->getUserStorageUsed($userId);
+        $travelStorage = $this->travelService->getFullUserMediaSize($userId);
+
+        $bytes = $personalStorage + $travelStorage;
+
+        return $this->formatBytes($bytes);
+    }
+
+    private function formatBytes(int $bytes): string
+    {
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $factor = floor((strlen((string)$bytes) - 1) / 3);
+
+        return sprintf('%.2f', $bytes / pow(1024, $factor)) . ' ' . $units[(int)$factor];
     }
 }
