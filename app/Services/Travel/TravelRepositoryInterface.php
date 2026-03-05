@@ -32,6 +32,8 @@ interface TravelRepositoryInterface
 
     public function getTravelMedia(int $mediaId): TravelMedia;
 
+    public function deleteTravelMedias(int $travelId): void;
+
     /**
      * @return TravelMedia[]
      */
@@ -61,5 +63,11 @@ interface TravelRepositoryInterface
 
     public function getResources(int $travelId): array;
 
-    public function saveTravelResourceLink(int $resourceId, array $data): int;
+    public function saveTravelResource(int $resourceId, array $data): int;
+
+    public function deleteTravelResource(int $resourceId): void;
+
+    public function deleteTravelResources(int $travelId): void;
+
+    public function getTravelResourcesSize(int $travelId): int;
 }

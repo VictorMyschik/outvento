@@ -1,4 +1,4 @@
-<table class="table table-compact table-hover">
+<table class="table table-compact table-hover ">
     <tr class="text-center">
         <td>ID</td>
         <td>Sort</td>
@@ -17,24 +17,29 @@
             <td class="text-nowrap text-center">
                 {{ $resource->sort }}
             </td>
-            <td class="text-nowrap text-end">
+            <td class="text-nowrap ">
                 {{ $resource->title }}
             </td>
-            <td class="text-nowrap text-end">
+            <td class="text-nowrap text-center">
                 {!! $resource->linkAction !!}
             </td>
-            <td>
+            <td class="">
                 {{ $resource->size }}
             </td>
-            <td class="text-nowrap text-end">
+            <td class="text-nowrap text-end ">
                 {{ $resource->created_at->format('H:i d/m/Y') }}
             </td>
-            <td class="text-nowrap text-end">
+            <td class="text-nowrap text-end ">
                 {{ $resource->updated_at?->format('H:i d/m/Y') }}
             </td>
-            <td style="text-align: right">
+            <td class="" style="text-align: right">
                 <div class="text-right">{!! $resource->btn !!}</div>
             </td>
         </tr>
     @endforeach
 </table>
+<style>
+    .table tbody tr td:first-child {
+        padding-left: 0 !important;
+    }
+</style>

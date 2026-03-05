@@ -6,6 +6,7 @@ namespace App\Services\Travel;
 
 use App\Models\Travel\Travel;
 use App\Models\Travel\TravelMedia;
+use App\Models\Travel\TravelResource;
 use App\Services\Location\LocationService;
 use App\Services\Travel\DTO\TravelPointDto;
 use App\Services\Travel\Enum\MediaType;
@@ -94,9 +95,7 @@ readonly class TravelService
 
     public function deleteTravelMedias(int $travelId): void
     {
-        foreach ($this->getTravelMediaList($travelId) as $image) {
-            $this->deleteImage($image->id());
-        }
+        $this->repository->deleteTravelMedias($travelId);
 
         $this->fileStorage->deleteFoldersByTravelId($travelId);
     }
@@ -177,16 +176,21 @@ readonly class TravelService
 
     public function saveTravelResource(int $resourceId, int $travelId, TravelResourceType $type, array $data): void
     {
-        $payload = [
+        $insert = [
             'travel_id' => $travelId,
             'type'      => $type->value,
             'title'     => (string)$data['title'],
-            'path'      => (string)$data['path'],
+            'path'      => (string)($data['path'] ?? null),
             'sort'      => (int)$data['sort'],
             'user_id'   => (int)$data['user_id'],
         ];
 
-        $this->repository->saveTravelResourceLink($resourceId, $payload);
+        if ($type === TravelResourceType::File) {
+            $insert['path'] = $this->fileStorage->uploadTravelResourceFile($travelId, $data['file']);
+            $insert['size'] = $data['file']->getSize();
+        }
+
+        $this->repository->saveTravelResource($resourceId, $insert);
     }
 
     public function getTravelLinks(int $travelId): array
@@ -197,5 +201,32 @@ readonly class TravelService
     public function getResources(int $travelId): array
     {
         return $this->repository->getResources($travelId);
+    }
+
+    public function deleteTravelResource(int $resourceId): void
+    {
+        $service = TravelResource::loadByOrDie($resourceId);
+
+        if ($service->getType() === TravelResourceType::File) {
+            $this->fileStorage->deleteFile($service->path);
+        }
+
+        $this->repository->deleteTravelResource($resourceId);
+    }
+
+    public function deleteTravelResources(int $travelId): void
+    {
+        $this->fileStorage->deleteTravelResourcesByTravelId($travelId);
+        $this->repository->deleteTravelResources($travelId);
+    }
+
+    public function getTravelResourcesSize(int $travelId): int
+    {
+        return $this->repository->getTravelResourcesSize($travelId);
+    }
+
+    public function getTravelResourcesSizeDisplay(int $travelId): string
+    {
+        return number_format(round($this->getTravelResourcesSize($travelId) / 1024 / 1024, 2), 2, '.', ' ') . ' MB';
     }
 }

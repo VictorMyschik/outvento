@@ -18,6 +18,7 @@ use App\Orchid\Layouts\Travel\InviteByEmailEditLayout;
 use App\Orchid\Layouts\Travel\InviteListLayout;
 use App\Orchid\Layouts\Travel\TravelMediaUploadLayout;
 use App\Orchid\Layouts\Travel\TravelPointLayout;
+use App\Orchid\Layouts\Travel\TravelResourceFileEditLayout;
 use App\Orchid\Layouts\Travel\TravelResourceLinkEditLayout;
 use App\Orchid\Layouts\User\UserBaseScreen;
 use App\Services\System\Enum\Language;
@@ -108,6 +109,7 @@ class UserTravelDetailsScreen extends UserBaseScreen
         $out[] = Layout::modal('point_edit_modal', TravelPointLayout::class)->size(Modal::SIZE_LG)->async('asyncTravelPoint');
         $out[] = Layout::modal('description_modal', DescriptionPointShowLayout::class)->size(Modal::SIZE_LG)->async('asyncTravelPointDescription')->withoutApplyButton();
         $out[] = Layout::modal('travel_resource_link', TravelResourceLinkEditLayout::class)->async('asyncTravelResource');
+        $out[] = Layout::modal('travel_resource_file', TravelResourceFileEditLayout::class)->async('asyncTravelResource');
 
         return $out;
     }
@@ -115,7 +117,7 @@ class UserTravelDetailsScreen extends UserBaseScreen
     public function asyncTravelResource(int $resourceId): array
     {
         return [
-            'resource' => TravelResource::loadBy($resourceId)?->toArray(),
+            'resource' => TravelResource::loadBy($resourceId),
         ];
     }
 
@@ -249,7 +251,6 @@ class UserTravelDetailsScreen extends UserBaseScreen
 
     public function getResourceTab(): array
     {
-        $rows['header'] = ['Title', 'Sort', 'link', 'Created', '#'];
         $list = $this->travelService->getResources($this->travel->id);
 
         $btns = [
@@ -262,50 +263,63 @@ class UserTravelDetailsScreen extends UserBaseScreen
                 ->class('mr-btn-success')
                 ->modal('travel_resource_file')
                 ->modalTitle('Add file')
-                ->method('addTravelFile', ['resourceId' => 0]),
+                ->method('saveTravelFile', ['resourceId' => 0]),
             Button::make('Delete all')
                 ->class('mr-btn-danger')
                 ->confirm('Delete all resources?')
-                ->method('deleteTravelResources')
+                ->method('deleteTravelResources'),
+            ViewField::make('')->view('admin.raw')->class('')->value('Full size: ' . $this->travelService->getTravelResourcesSizeDisplay($this->user->id)),
         ];
 
         /** @var TravelResource $item */
         foreach ($list as &$item) {
             $item->linkAction = null;
+            $rowBtns = [];
+            $deleteResourceBtn = Button::make('delete')
+                ->icon('bs.trash3')
+                ->confirm('Delete resource?')
+                ->method('deleteTravelResource', ['resourceId' => $item->id]);
 
-            $item->linkAction = match ($item->getType()) {
-                TravelResourceType::Link => Link::make('')->icon('eye')->href($item->path)->target('_blank'),
-                //TravelResourceType::File => Link::make('')->icon('paperclip')->href(route('api.v1.travel.resource.file', ['resourceId' => $item->id])),
-                default => null,
-            };
+            switch ($item->getType()) {
+                case TravelResourceType::Link:
+                    $item->linkAction = Link::make('')->icon('eye')->href($item->path)->target('_blank');
+                    $rowBtns[] = ModalToggle::make('edit')
+                        ->icon('pencil')
+                        ->modal('travel_resource_link')
+                        ->modalTitle('Edit link')
+                        ->method('addTravelLink', ['resourceId' => $item->id]);
+                    break;
+                case TravelResourceType::File:
+                    $item->title = $item->path;
+                    $item->linkAction = Link::make('')->icon('download')->download($item->path)->target('_blank');
+                    $rowBtns[] = ModalToggle::make('edit')
+                        ->icon('pencil')
+                        ->modal('travel_resource_file')
+                        ->modalTitle('Edit file')
+                        ->method('addTravelLink', ['resourceId' => $item->id]);
+                    break;
+                default:
+                    $item->typeLabel = 'Unknown';
+            }
 
-            $item->btn = DropDown::make()->icon('options-vertical')->list([
-                ModalToggle::make('Edit')
-                    ->icon('pencil')
-                    ->modal('point_edit_modal')
-                    ->modalTitle('Edit point')
-                    ->method('setPoint', ['pointId' => $item->id]),
-                Button::make('Delete')
-                    ->icon('bs.trash3')
-                    ->confirm('Удалить точку?')
-                    ->method('deleteTravelPoint', ['id' => $item->id])
-            ])->render();
+            $rowBtns[] = $deleteResourceBtn;
+            $item->btn = DropDown::make()->icon('options-vertical')->list($rowBtns)->render();
         }
 
         return [
             Group::make($btns)->autoWidth(),
             ViewField::make('')->view('hr'),
-            ViewField::make('')->view('admin.table')->value($rows),
+            ViewField::make('')->view('admin.travel.resources')->value($list),
         ];
     }
 
     public function addTravelLink(Request $request, int $resourceId): void
     {
         $input = $request->validate([
-            'title' => 'sometimes|nullable|string|max:255',
-            'path'  => 'required|url|max:255',
-            'sort'  => 'required|int',
-        ]);
+            'resource.title' => 'sometimes|nullable|string|max:255',
+            'resource.path'  => 'required|url|max:255',
+            'resource.sort'  => 'nullable|int',
+        ])['resource'];
 
         $this->travelService->saveTravelResource(
             resourceId: $resourceId,
@@ -314,10 +328,43 @@ class UserTravelDetailsScreen extends UserBaseScreen
             data: [
                 'title'   => $input['title'] ?? null,
                 'path'    => $input['path'],
-                'sort'    => $input['sort'],
+                'sort'    => (int)$input['sort'],
                 'user_id' => $this->user->id,
             ]
         );
+    }
+
+    public function saveTravelFile(Request $request, int $resourceId): void
+    {
+        $input = $request->validate([
+            'resource.title' => 'sometimes|nullable|string|max:255',
+            'resource.file'  => 'required|file',
+            'resource.sort'  => 'nullable|int',
+        ])['resource'];
+
+        $uploadedFile = $request->file('resource.file');
+
+        $this->travelService->saveTravelResource(
+            resourceId: $resourceId,
+            travelId: $this->travel->id,
+            type: TravelResourceType::File,
+            data: [
+                'title'   => $input['title'] ?? null,
+                'file'    => new UploadedFile($uploadedFile->getRealPath(), $uploadedFile->getClientOriginalName(), $uploadedFile->getClientMimeType(), null, true),
+                'sort'    => (int)$input['sort'],
+                'user_id' => $this->user->id,
+            ]
+        );
+    }
+
+    public function deleteTravelResource(int $resourceId): void
+    {
+        $this->travelService->deleteTravelResource($resourceId);
+    }
+
+    public function deleteTravelResources(): void
+    {
+        $this->travelService->deleteTravelResources($this->travel->id);
     }
 
     private function getTravelPointsLayout(): array

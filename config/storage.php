@@ -7,8 +7,9 @@ return [
         'avatar' => '',
     ],
     'travels'     => [
-        'disk'   => 'travels',
-        'media'  => '',
+        'disk'      => 'travels',
+        'media'     => 'media',
+        'resources' => 'resources',
     ],
     'news_logo'   => 'news_logo',
     'constructor' => [

@@ -29,21 +29,29 @@ final readonly class TravelUploadService
         $this->filesystem->put($filePathWithName, $file->getContent());
     }
 
-    public function uploadTravelMedia(int $mediaId, UploadedFile $file, Travel $travel, MediaType $type): int
+    public function uploadTravelResourceFile(int $travelId, UploadedFile $file): string
     {
-        $path = $this->getPath($travel->id(), $file->getClientOriginalName());
+        $path = $this->getPath($travelId, $file->getClientOriginalName(), 'resources');
         $this->uploadFiles($file, $path);
 
-        if ($mediaId){
+        return $path . '/' . $file->getClientOriginalName();
+    }
+
+    public function uploadTravelMedia(int $mediaId, UploadedFile $file, Travel $travel, MediaType $type): int
+    {
+        $path = $this->getPath($travel->id(), $file->getClientOriginalName(), 'media');
+        $this->uploadFiles($file, $path);
+
+        if ($mediaId) {
             $this->deleteFile($this->repository->getTravelMedia($mediaId)->path);
         }
 
-       return $this->updateTravelMediaModel($mediaId, [
-           'travel_id'  => $travel->id(),
-           'path'       => $path . '/' . $file->getClientOriginalName(),
-           'size'       => $file->getSize(),
-           'media_type' => $type->value,
-       ]);
+        return $this->updateTravelMediaModel($mediaId, [
+            'travel_id'  => $travel->id(),
+            'path'       => $path . '/' . $file->getClientOriginalName(),
+            'size'       => $file->getSize(),
+            'media_type' => $type->value,
+        ]);
     }
 
     public function updateTravelMediaModel(int $mediaId, array $data): int
@@ -51,21 +59,22 @@ final readonly class TravelUploadService
         return $this->repository->saveImage($mediaId, $data);
     }
 
-    private function getPath(int $travelId, string $fileName): string
+    private function getPath(int $travelId, string $fileName, string $type): string
     {
-        $basePath = $this->basePaths['media'] . '/' . $travelId;
+        $basePath = $travelId . '/' . $this->basePaths[$type];
 
-        $list = array_reverse(Storage::directories($basePath));
+        $directories = $this->filesystem->directories($basePath);
+        sort($directories);
 
-        foreach ($list as $dir) {
-            if (Storage::exists($dir . '/' . $fileName) || count(Storage::files($dir)) >= 3) {
+        foreach ($directories as $dir) {
+            if ($this->filesystem->exists($dir . '/' . $fileName) || count($this->filesystem->files($dir)) >= 100) {
                 continue;
             }
 
             return $dir;
         }
 
-        $currentDir = count($list) + 1;
+        $currentDir = count($directories) + 1;
 
         return $basePath . '/' . $currentDir;
     }
@@ -77,8 +86,13 @@ final readonly class TravelUploadService
 
     public function deleteFoldersByTravelId(int $travelId): bool
     {
-        $basePath = self::TRAVEL_PATH . '/' . $travelId;
+        return $this->filesystem->deleteDirectory($travelId);
+    }
 
-        return $this->filesystem->deleteDirectory($basePath);
+    public function deleteTravelResourcesByTravelId(int $travelId): void
+    {
+        $basePath = $travelId . '/' . $this->basePaths['resources'];
+
+        $this->filesystem->deleteDirectory($basePath);
     }
 }

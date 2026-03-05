@@ -281,7 +281,7 @@ readonly class TravelRepository extends DatabaseRepository implements TravelRepo
             ->get()->all();
     }
 
-    public function saveTravelResourceLink(int $resourceId, array $data): int
+    public function saveTravelResource(int $resourceId, array $data): int
     {
         if ($resourceId > 0) {
             $this->db->table(TravelResource::getTableName())->where('id', $resourceId)->update($data);
@@ -289,5 +289,25 @@ readonly class TravelRepository extends DatabaseRepository implements TravelRepo
         }
 
         return $this->db->table(TravelResource::getTableName())->insertGetId($data);
+    }
+
+    public function deleteTravelResource(int $resourceId): void
+    {
+        $this->db->table(TravelResource::getTableName())->where('id', $resourceId)->delete();
+    }
+
+    public function deleteTravelResources(int $travelId): void
+    {
+        $this->db->table(TravelResource::getTableName())->where('travel_id', $travelId)->delete();
+    }
+
+    public function getTravelResourcesSize(int $travelId): int
+    {
+        return (int)$this->db->table(TravelResource::getTableName())->where('travel_id', $travelId)->sum('size');
+    }
+
+    public function deleteTravelMedias(int $travelId): void
+    {
+        $this->db->table(TravelMedia::getTableName())->where('travel_id', $travelId)->delete();
     }
 }
