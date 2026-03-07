@@ -56,8 +56,8 @@ class WelcomeController extends APIController
             new WelcomeResponse(
                 countries: $this->referenceApiService->getUsingCountrySelectList($language),
                 translations: $this->translateApiService->getTranslateFor([TranslateGroupEnum::PageWelcome], $language),
-                travelTypeList: $this->referenceApiService->getTravelTypeList($language),
-                travelExamples: $this->apiService->travelExamples($language),
+                activities: $this->referenceApiService->getActivities(),
+                travelExamples: [],//$this->apiService->travelExamples($language),
             ),
         );
     }

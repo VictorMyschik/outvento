@@ -33,6 +33,7 @@ services:
 
   postgres:
     image: postgis/postgis:16-3.4
+    platform: linux/amd64
     networks:
       backend:
     mem_limit: 512m

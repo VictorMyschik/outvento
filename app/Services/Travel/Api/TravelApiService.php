@@ -31,7 +31,7 @@ final readonly class TravelApiService
     {
         $items = [];
 
-        foreach (Activity::getSelectList() as $item) {
+        foreach (Activity::cases() as $item) {
             $items[] = new TravelListByTypeComponent(
                 travelTypeId: $item->value,
                 travels: $this->searchTravels([
@@ -63,9 +63,9 @@ final readonly class TravelApiService
             $input['dateFrom'] = now()->toDateString();
         }
 
-        foreach ($this->travelRepository->getPublicList($user, $input) as $travel) {
-            $out[] = $this->getTravelDetailsResponse($travel, $language);
-        }
+        /*foreach ($this->travelRepository->getPublicList($user, $input) as $travel) {
+            //$out[] = $this->getTravelDetailsResponse($travel, $language);
+        }*/
 
         return $out;
     }

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Repositories\Travel;
 
+use App\Models\Reference\Country;
 use App\Models\Travel\Travel;
+use App\Models\Travel\TravelCountry;
 use App\Models\Travel\TravelMedia;
 use App\Models\Travel\TravelPoint;
 use App\Models\Travel\TravelResource;
@@ -44,17 +46,21 @@ readonly class TravelRepository extends DatabaseRepository implements TravelRepo
      */
     public function getPublicList(?User $user, array $filter = []): array
     {
+        $query = Travel::query();
+        $query->join(TravelCountry::getTableName(), TravelCountry::getTableName() . '.travel_id', '=', Travel::getTableName() . '.id');
+        $query->join(Country::getTableName(), TravelCountry::getTableName() . '.travel_id', '=', Country::getTableName() . '.id');
+
         if (!$user) {
-            $query = Travel::where('visible_type', TravelVisible::Public)->whereIn('status', [TravelStatus::Active]);
+            $query->where('visible_type', TravelVisible::Public)->whereIn('status', [TravelStatus::Active]);
         }
 
         if ($user) {
-            $query = Travel::whereIn('status', [TravelStatus::Active, TravelStatus::Archived]);
+            $query->whereIn('status', [TravelStatus::Active, TravelStatus::Archived]);
         }
 
         // Filtering
         if (!empty($filter['country'])) {
-            $query->where('country_id', (int)$filter['country']);
+            $query->where(Country::getTableName() . '.id', (int)$filter['country']);
         }
 
         if (!empty($filter['travelType'])) {

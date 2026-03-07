@@ -9,6 +9,7 @@ use App\Models\ORM\ORM;
 use App\Models\Reference\City;
 use App\Models\Reference\Country;
 use App\Models\Travel\Travel;
+use App\Models\Travel\TravelCountry;
 use App\Repositories\DatabaseRepository;
 use App\Services\References\ReferenceRepositoryInterface;
 use App\Services\System\Enum\Language;
@@ -34,7 +35,9 @@ readonly class ReferenceRepository extends DatabaseRepository implements Referen
         $field = 'name_' . $language->getCode();
 
         return $this->db->table(Country::getTableName())
-            ->join(Travel::getTableName(), Country::getTableName() . '.id', '=', Travel::getTableName() . '.country_id')
+            ->join(TravelCountry::getTableName(), Country::getTableName() . '.id', TravelCountry::getTableName() . '.country_id')
+            ->join(Travel::getTableName(), TravelCountry::getTableName() . '.travel_id', '=', Travel::getTableName() . '.id')
+            ->where(Travel::getTableName() . '.date_from', '>=', now())
             ->orderBy($field)->selectRaw(implode(',', [
                 Country::getTableName() . '.id as id',
                 Country::getTableName() . '.iso3166alpha2 as iso2',
