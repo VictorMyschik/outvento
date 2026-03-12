@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\User;
 
+use App\Models\Catalog\CatalogAttribute;
 use App\Models\Orchid\Attachment;
 use App\Models\Reference\Country;
 use App\Models\Travel\Travel;
@@ -64,7 +65,7 @@ class UserTravelDetailsScreen extends UserBaseScreen
 
     public function description(): string
     {
-        $link = "<a href='" . route('profiles.details', ['user'=> $this->user->id]) . "'>" . $this->user->name . "</a>";
+        $link = "<a href='" . route('profiles.details', ['user' => $this->user->id]) . "'>" . $this->user->name . "</a>";
         return $link . ' | ' . View('admin.created_updated', ['value' => $this->travel])->toHtml();
     }
 
@@ -93,14 +94,18 @@ class UserTravelDetailsScreen extends UserBaseScreen
             $this->getRightTab(),
         ]);
 
-        $out[] = Layout::rows([
-            CKEditor::make('travel.description')->value($this->travel->description)->title('Full description')->rows(5)->maxlength(8000),
-            ViewField::make('')->view('space'),
-            Button::make('save')
-                ->class('mr-btn-success pull-right')
-                ->method('saveTravelDescription'),
+        $out[] = Layout::accordion([
+            'Full description' => Layout::rows([
+                CKEditor::make('travel.description')->value($this->travel->description)->rows(5)->maxlength(8000),
+                ViewField::make('')->view('space'),
+                Button::make('save')
+                    ->class('mr-btn-success pull-right')
+                    ->method('saveTravelDescription'),
+            ]),
         ]);
 
+
+        $out[] = Layout::accordion($this->getTravelCommentsLayout());
         $out[] = Layout::rows($this->getActionBottomLinkLayout());
 
         $out[] = Layout::modal('upload_travel_photo', TravelMediaUploadLayout::class)->async('asyncTravelMedia')->size(Modal::SIZE_LG);
@@ -111,6 +116,23 @@ class UserTravelDetailsScreen extends UserBaseScreen
         $out[] = Layout::modal('travel_resource_file', TravelResourceFileEditLayout::class)->async('asyncTravelResource');
 
         return $out;
+    }
+
+    private function getTravelCommentsLayout(): array
+    {
+        $list = [];
+        /** @var CatalogAttribute $value */
+        foreach ([1, 3] as $key => $attribute) {
+            $list[] = [
+                Layout::rows([
+                    ViewField::make('')->view('admin.raw')->value($key),
+                ]),
+            ];
+        }
+
+        return [
+            'Comments (' . count($list) . ')' => $list
+        ];
     }
 
     public function asyncTravelResource(int $resourceId): array
