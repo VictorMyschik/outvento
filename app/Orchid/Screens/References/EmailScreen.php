@@ -83,6 +83,7 @@ class EmailScreen extends Screen
 
         $fakeData['travel_invite'] = [
             'dto' => new TravelInviteDTO(
+                userId: 1,
                 activities: [
                     Activity::Hiking->getLabel(),
                     Activity::Cycling->getLabel(),

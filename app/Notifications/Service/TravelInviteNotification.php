@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Notifications\Service;
 
+use App\Notifications\Channels\Internal;
 use App\Services\Notifications\Enum\ServiceEvent;
 use App\Services\Notifications\NotificationRecipientInterface;
 use App\Services\Travel\DTO\TravelInviteDto;
@@ -23,7 +24,7 @@ class TravelInviteNotification extends Notification
 
     public function via(NotificationRecipientInterface $notifiable): array
     {
-        return $notifiable->notificationChannelsFor(self::class);
+        return array_merge($notifiable->notificationChannelsFor(self::class), [Internal::class]);
     }
 
     public function toMail($notifiable): MailMessage
@@ -36,10 +37,10 @@ class TravelInviteNotification extends Notification
 
     public function toTelegram($notifiable): TelegramMessage
     {
-        $lines = [];
-
-        $lines[] = 'New Travel Invite';
-        $lines[] = 'Link: ' . $this->dto->confirmationUrl;
+        $lines = [
+            'New Travel Invite',
+            'Link: ' . $this->dto->confirmationUrl,
+        ];
 
         return TelegramMessage::create()
             ->content(implode("\n", $lines))
@@ -51,8 +52,15 @@ class TravelInviteNotification extends Notification
 
     public function toInternalDatabase($notifiable): array
     {
+        $lines = [
+            'New Travel Invite',
+            'Link: ' . $this->dto->confirmationUrl,
+        ];
+
         return [
-            'message' => 'New Travel Invite. Link: ' . $this->dto->confirmationUrl,
+            'user_id' => $this->dto->userId,
+            'title'   => 'New Travel Invite',
+            'message' => implode("\n", $lines),
         ];
     }
 }

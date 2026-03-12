@@ -603,6 +603,10 @@ class ProfileScreen extends UserBaseScreen
                     ->method('saveInternalNotification')
                     ->modal('internal_notification_modal')
                     ->asyncParameters(['notificationId' => $item->id]),
+                Button::make('read')
+                    ->icon('eye')
+                    ->confirm('Are you sure you want to mark the notification as read?')
+                    ->method('markNotificationAsRead', ['id' => $item->id]),
                 Button::make('delete')
                     ->icon('trash')
                     ->confirm('Are you sure you want to delete the notification?')

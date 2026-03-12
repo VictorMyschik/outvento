@@ -47,6 +47,7 @@ final readonly class TravelInviteService
                 channel: NotificationChannel::Email,
                 data: [
                     'dto' => new TravelInviteDto(
+                        userId: null,
                         activities: $travel->getActivitiesByLanguage($travel->getOwner()->getLanguage()),
                         countryLabels: $travel->getCountriesByLanguage($travel->getOwner()->getLanguage()),
                         confirmationUrl: $travel->getPublicId(),
@@ -86,11 +87,16 @@ final readonly class TravelInviteService
             return;
         }
 
-        $user->notify(new TravelInviteNotification(new TravelInviteDto(
-            activities: $travel->getActivitiesByLanguage($user->getLanguage()),
-            countryLabels: $travel->getCountriesByLanguage($user->getLanguage()),
-            confirmationUrl: $travel->getPublicId(),
-        )));
+        $user->notify(
+            new TravelInviteNotification(
+                new TravelInviteDto(
+                    userId: $user->id,
+                    activities: $travel->getActivitiesByLanguage($user->getLanguage()),
+                    countryLabels: $travel->getCountriesByLanguage($user->getLanguage()),
+                    confirmationUrl: $travel->getPublicId(),
+                )
+            )
+        );
     }
 
     public function updateTravelInvites(int $userId, string $email): void

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Services\Notifications\InternalNotificationService;
+use App\Models\User;
+use App\Notifications\Service\TravelInviteNotification;
+use App\Services\Travel\DTO\TravelInviteDto;
 use Tests\TestCase;
 
 class ExampleTest extends TestCase
@@ -14,8 +16,16 @@ class ExampleTest extends TestCase
      */
     public function test_the_application_returns_a_successful_response(): void
     {
-        $service = app(InternalNotificationService::class);
-        $service->send(1, 'Test Title', 'Test Message');
+        $user = User::find(1);
+
+        $user->notify(new TravelInviteNotification(
+            new TravelInviteDto(
+                userId: $user->id,
+                activities: [],
+                countryLabels: [],
+                confirmationUrl: '1234',
+            )
+        ));
     }
 
 }

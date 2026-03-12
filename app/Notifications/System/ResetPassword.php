@@ -42,4 +42,18 @@ class ResetPassword extends Notification implements ShouldQueue
             //
         ];
     }
+
+    public function toInternalDatabase($notifiable): array
+    {
+        $lines = [
+            'New Travel Invite',
+            'Link: ' . $this->dto->confirmationUrl,
+        ];
+
+        return [
+            'user_id' => $this->dto->userId,
+            'title'   => 'New Travel Invite',
+            'message' => implode("\n", $lines),
+        ];
+    }
 }

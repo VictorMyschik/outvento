@@ -26,7 +26,7 @@ class UserNotificationSettingsEditLayout extends Rows
 
         $eventType = ServiceEvent::from($eventType);
 
-        foreach (NotificationChannel::cases() as $channel) {
+        foreach (NotificationChannel::getCasesOutList() as $channel) {
             $group['Event'] = Label::make((string)$eventType->value)->value($eventType->getLabel());
             $group['Active'] = Switcher::make('active')->value($this->query->get('active', false))->sendTrueOrFalse();
             $value = null;
