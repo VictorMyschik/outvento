@@ -94,9 +94,9 @@ class UserTravelDetailsScreen extends UserBaseScreen
         ]);
 
         $out[] = Layout::rows([
-            CKEditor::make('travel.description')->value($this->travel->description)->title('Подробное описание')->rows(5)->maxlength(8000),
+            CKEditor::make('travel.description')->value($this->travel->description)->title('Full description')->rows(5)->maxlength(8000),
             ViewField::make('')->view('space'),
-            Button::make('Сохранить изменения')
+            Button::make('save')
                 ->class('mr-btn-success pull-right')
                 ->method('saveTravelDescription'),
         ]);
@@ -231,7 +231,7 @@ class UserTravelDetailsScreen extends UserBaseScreen
 
             ViewField::make('')->view('hr'),
 
-            Button::make('Сохранить изменения')
+            Button::make('save')
                 ->class('mr-btn-success pull-right')
                 ->method('saveTravel'),
         ]);
@@ -267,19 +267,19 @@ class UserTravelDetailsScreen extends UserBaseScreen
         $list = $this->travelService->getResources($this->travel->id);
 
         $btns = [
-            ModalToggle::make('Link')
+            ModalToggle::make('link')
                 ->class('mr-btn-success')
                 ->modal('travel_resource_link')
-                ->modalTitle('Add link')
+                ->modalTitle('add link')
                 ->method('addTravelLink', ['resourceId' => 0]),
             ModalToggle::make('File')
                 ->class('mr-btn-success')
                 ->modal('travel_resource_file')
                 ->modalTitle('Add file')
                 ->method('saveTravelFile', ['resourceId' => 0]),
-            Button::make('Delete all')
+            Button::make('delete all')
                 ->class('mr-btn-danger')
-                ->confirm('Delete all resources?')
+                ->confirm('delete all resources?')
                 ->method('deleteTravelResources'),
             ViewField::make('')->view('admin.raw')->class('')->value('Full size: ' . $this->travelService->getTravelResourcesSizeDisplay($this->user->id)),
         ];
@@ -385,12 +385,12 @@ class UserTravelDetailsScreen extends UserBaseScreen
         $list = $this->travelService->getTravelPoints($this->travel->id);
 
         $btns = [
-            ModalToggle::make('Добавить точку')
+            ModalToggle::make('add point')
                 ->class('mr-btn-success')
                 ->modal('point_edit_modal')
                 ->modalTitle('Edit point')
                 ->method('setPoint', ['pointId' => 0]),
-            Button::make('Удалить все точки')
+            Button::make('delete all points')
                 ->class('mr-btn-danger')
                 ->confirm('Delete all points?')
                 ->method('deleteTravelPoint')
@@ -404,7 +404,7 @@ class UserTravelDetailsScreen extends UserBaseScreen
                 ->modalTitle('Description for point: ' . $point->getCity()->getName($this->user->getLanguage())) : '';
 
             $point->btn = DropDown::make()->icon('options-vertical')->list([
-                ModalToggle::make('Edit')
+                ModalToggle::make('edit')
                     ->icon('pencil')
                     ->modal('point_edit_modal')
                     ->modalTitle('Edit point')
