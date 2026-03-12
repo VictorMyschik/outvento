@@ -85,6 +85,11 @@ class Subscription extends ORM implements NotificationRecipientInterface, HasLoc
         return null;
     }
 
+    public function routeNotificationForInternal(Notification $notification): int|string|null
+    {
+        return null;
+    }
+
     public function getStatus(): Status
     {
         return Status::from($this->status);

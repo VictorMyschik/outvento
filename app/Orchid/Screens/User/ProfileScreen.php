@@ -10,13 +10,15 @@ use App\Http\Controllers\API\User\Request\UserLocationRequest;
 use App\Models\TravelInvite;
 use App\Models\User;
 use App\Models\UserInfo\Communication;
+use App\Models\UserNotification;
 use App\Orchid\Layouts\Travel\TravelLocationEditLayout;
+use App\Orchid\Layouts\User\InternalNotificationEditLayout;
+use App\Orchid\Layouts\User\InternalNotificationShowLayout;
 use App\Orchid\Layouts\User\Profile\AvatarUploadLayout;
 use App\Orchid\Layouts\User\Profile\UserLanguagesEditLayout;
 use App\Orchid\Layouts\User\Profile\UserLocationLayout;
 use App\Orchid\Layouts\User\Profile\UserNotificationSettingsEditLayout;
 use App\Orchid\Layouts\User\TelegramDeeplinkLayout;
-use App\Orchid\Layouts\User\UserBaseScreen;
 use App\Orchid\Layouts\User\UserCommunicateEditLayout;
 use App\Orchid\Layouts\User\UserProfileEditLayout;
 use App\Orchid\Layouts\User\UserRolesEditLayout;
@@ -97,8 +99,17 @@ class ProfileScreen extends UserBaseScreen
         $out[] = Layout::modal('user_location', UserLocationLayout::class);
         $out[] = Layout::modal('user_languages', UserLanguagesEditLayout::class)->async('asyncGetUserLanguages');
         $out[] = Layout::modal('travel_location_modal', TravelLocationEditLayout::class)->async('asyncGetTravelLocation')->withoutApplyButton();
+        $out[] = Layout::modal('internal_notification_modal', InternalNotificationEditLayout::class)->async('asyncGetInternalNotification')->size(Modal::SIZE_LG);
+        $out[] = Layout::modal('internal_notification_show_modal', InternalNotificationShowLayout::class)->async('asyncGetInternalNotification')->size(Modal::SIZE_LG);
 
         return $out;
+    }
+
+    public function asyncGetInternalNotification(int $notificationId = 0): array
+    {
+        return [
+            'notification' => UserNotification::loadBy($notificationId),
+        ];
     }
 
     private function getActionTopLayout(): array
@@ -156,7 +167,7 @@ class ProfileScreen extends UserBaseScreen
                     ->modalTitle('User Roles for ' . $this->user->name)
                     ->method('saveUserRoles')
                     ->asyncParameters(['id' => $this->user->id]),
-                Button::make('Удалить пользователя')
+                Button::make('Delete User')
                     ->class('mr-btn-danger pull-right')
                     ->icon('trash')
                     ->method('removeUser')
@@ -284,12 +295,12 @@ class ProfileScreen extends UserBaseScreen
     private function getRightLayout(): Tabs
     {
         return MrTabs::make([
-            'Аватар'               => Layout::rows($this->avatarTab()),
-            'Communication'        => Layout::rows($this->getCommunicationLayout()),
-            'Service Notification' => Layout::rows($this->getServiceNotificationLayout()),
-            'Promo Notification'   => Layout::rows($this->getPromoNotificationLayout()),
-            'Travel Invites'       => Layout::rows($this->getTravelInvitesLayout()),
-            'Storage'              => Layout::rows($this->getUserStorageLayout()),
+            'Avatar'         => Layout::rows($this->avatarTab()),
+            'Communication'  => Layout::rows($this->getCommunicationLayout()),
+            'Notification'   => Layout::rows($this->getServiceNotificationLayout()),
+            'Promo'          => Layout::rows($this->getPromoNotificationLayout()),
+            'Travel Invites' => Layout::rows($this->getTravelInvitesLayout()),
+            'Storage'        => Layout::rows($this->getUserStorageLayout()),
         ]);
     }
 
@@ -444,14 +455,14 @@ class ProfileScreen extends UserBaseScreen
     {
         $communications = $this->service->getCommunications($this->user->id);
 
-        $btns[] = ModalToggle::make('добавить')
+        $btns[] = ModalToggle::make('add')
             ->class('mr-btn-success')
             ->modal('communicate_modal')
             ->modalTitle('Add communication')
             ->method('saveCommunication', ['id' => 0]);
 
         if (!empty($communications)) {
-            $btns[] = Button::make('удалить все')
+            $btns[] = Button::make('clear all')
                 ->class('mr-btn-danger')
                 ->confirm('Are you sure you want to delete the communications?')
                 ->method('deleteAllCommunications');
@@ -546,14 +557,14 @@ class ProfileScreen extends UserBaseScreen
 
         $header = ['Active', 'Event Type'];
 
-        $header = array_merge($header, NotificationChannel::getSelectList(), ['#']);
+        $header = array_merge($header, NotificationChannel::getSelectOutList(), ['#']);
 
         foreach (ServiceEvent::selectListForAudiences(NotificationAudienceResolver::fromUser($this->user)) as $key => $serviceNotificationType) {
             $row = [
                 'Active'     => $this->service->isUserNotificationActive($this->user->id, ServiceEvent::from($key)) ? '<i class="fa fa-check" style="color: green"></i>' : '<i class="fa fa-times" style="color: red"></i>',
                 'Event Type' => $serviceNotificationType,
             ];
-            $row = array_merge($row, array_fill_keys(NotificationChannel::getSelectList(), null));
+            $row = array_merge($row, array_fill_keys(NotificationChannel::getSelectOutList(), null));
 
             foreach ($serviceNotifications as $userSettings) {
                 if ($userSettings->event === $key) {
@@ -579,13 +590,47 @@ class ProfileScreen extends UserBaseScreen
 
         $rows['header'] = $header;
 
+
+        $notifications = $this->service->getInternalNotificationList($this->user->id);
+
+        $internalHeader['header'] = ['ID', 'Title', 'Show', 'Read', 'Created', '#'];
+
+        foreach ($notifications as $item) {
+            $rowBtns = [
+                ModalToggle::make('edit')
+                    ->icon('pencil')
+                    ->modalTitle('Add Notification')
+                    ->method('saveInternalNotification')
+                    ->modal('internal_notification_modal')
+                    ->asyncParameters(['notificationId' => $item->id]),
+                Button::make('delete')
+                    ->icon('trash')
+                    ->confirm('Are you sure you want to delete the notification?')
+                    ->method('deleteInternalNotification', ['id' => $item->id]),
+            ];
+
+            $internalHeader['body'][] = [
+                'ID'      => $item->id,
+                'Title'   => $item->title,
+                'Show'    => ModalToggle::make('')
+                    ->icon('eye')
+                    ->modalTitle($item->title)
+                    ->method('saveInternalNotification')
+                    ->modal('internal_notification_show_modal')
+                    ->asyncParameters(['notificationId' => $item->id]),
+                'Read'    => $item->read_at ? '<i class="fa fa-check" style="color: green"></i>' : '<i class="fa fa-times" style="color: red"></i>',
+                'Created' => $item->created_at->format('H:i d/m/Y T'),
+                '#'       => DropDown::make()->icon('bs.three-dots-vertical')->list($rowBtns),
+            ];
+        }
+
         return [
             Group::make([
                 ViewField::make('Subscription token')->view('admin.tab_title')->value([
                     'title'       => 'Users service notifications',
                     'description' => $this->user->getRolesDisplay()
                 ]),
-                Button::make('удалить все')
+                Button::make('purge all')
                     ->class('mr-btn-danger pull-right')
                     ->confirm('Are you sure you want to delete the notifications?')
                     ->method('deleteAllNotifications'),
@@ -602,7 +647,65 @@ class ProfileScreen extends UserBaseScreen
                 Label::make('Subscription token')->value($this->user->subscription_token),
                 Button::make('')->class('mr-btn-primary')->icon('refresh')->method('generateSubscriptionToken'),
             ])->autoWidth(),
+            ViewField::make('')->view('hr'),
+
+            Group::make([
+                ViewField::make('User Notification')->view('admin.tab_title')->value([
+                    'title'       => 'Internal users notifications',
+                    'description' =>
+                        Group::make([
+                            ModalToggle::make('add')
+                                ->class('mr-btn-success')
+                                ->modalTitle('Add Notification')
+                                ->method('saveInternalNotification')
+                                ->modal('internal_notification_modal')
+                                ->asyncParameters(['notificationId' => 0]),
+                            Button::make('read all')
+                                ->class('mr-btn-primary')
+                                ->confirm('Are you sure you want to mark all notifications as read?')
+                                ->method('readAllNotifications'),
+                        ])->autoWidth(),
+                ]),
+                Button::make('purge all')
+                    ->class('mr-btn-danger pull-right')
+                    ->confirm('Are you sure you want to delete the notifications?')
+                    ->method('purgeInternalUserNotifications'),
+            ])->alignEnd(),
+
+            ViewField::make('')->view('admin.table')->value($internalHeader),
         ];
+    }
+
+    public function saveInternalNotification(Request $request, int $notificationId): void
+    {
+        $input = $request->validate([
+            'notification.title'   => 'required|string|max:255',
+            'notification.message' => 'required|string|max:5000'
+        ])['notification'];
+
+        $input['user_id'] = $this->user->id;
+
+        $this->service->saveUserNotification($notificationId, $input);
+    }
+
+    public function deleteInternalNotification(int $id): void
+    {
+        $this->service->deleteInternalNotificationById($this->user->id, $id);
+    }
+
+    public function markNotificationAsRead(int $id): void
+    {
+        $this->service->markUsReadInternalNotification($this->user->id, $id);
+    }
+
+    public function purgeInternalUserNotifications(): void
+    {
+        $this->service->purgeInternalUserNotifications($this->user->id);
+    }
+
+    public function readAllNotifications(): void
+    {
+        $this->service->readAllNotifications($this->user->id);
     }
 
     public function confirmVerifyCommunicationEmail(int $communicationId): void
@@ -642,12 +745,12 @@ class ProfileScreen extends UserBaseScreen
 
         $photoTab = [
             Group::make([
-                ModalToggle::make('Загрузить аватар')
+                ModalToggle::make('add avatar')
                     ->class('mr-btn-success')
                     ->modal('upload_user_photo')
-                    ->modalTitle('Загрузить аватар')
+                    ->modalTitle('Add avatar')
                     ->method('saveUserAvatar', ['userId' => $this->user->id]),
-                Button::make('Удалить изображение')
+                Button::make('delete')
                     ->class('mr-btn-danger')
                     ->method('removeLogo')
                     ->hidden(!$hasLogo)

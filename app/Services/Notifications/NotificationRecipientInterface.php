@@ -17,4 +17,6 @@ interface NotificationRecipientInterface
     public function routeNotificationForMail(Notification $notification): string|array|null;
 
     public function routeNotificationForTelegram(Notification $notification): string|int|null;
+
+    public function routeNotificationForInternal(Notification $notification): int|string|null;
 }

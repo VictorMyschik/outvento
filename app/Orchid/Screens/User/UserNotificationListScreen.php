@@ -7,49 +7,41 @@ namespace App\Orchid\Screens\User;
 use App\Http\Controllers\API\User\Request\CommunicationRequest;
 use App\Models\User;
 use App\Models\UserInfo\Communication;
+use App\Orchid\Filters\User\UserNotificationFilter;
 use App\Orchid\Filters\UserCommunicationFilter;
-use App\Orchid\Layouts\User\UserCommunicateEditLayout;
-use App\Orchid\Layouts\User\UserCommunicateListLayout;
+use App\Orchid\Layouts\User\UserNotificationEditLayout;
+use App\Orchid\Layouts\User\UserNotificationListLayout;
 use App\Services\User\UserService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
 
-class UserCommunicateScreen extends Screen
+class UserNotificationListScreen extends Screen
 {
-    public string $name = 'User Communication';
+    public string $name = 'User Notifications';
 
     public function __construct(private readonly UserService $service) {}
 
     public function query(): iterable
     {
         return [
-            'list' => UserCommunicationFilter::runQuery()->paginate(20),
+            'list' => UserNotificationFilter::runQuery()->paginate(20),
         ];
     }
 
     public function commandBar(): iterable
     {
-        return [
-            ModalToggle::make('Add Contact')
-                ->class('mr-btn-success')
-                ->modal('communicate_modal')
-                ->method('saveCommunication')
-                ->modalTitle('Add Contact')
-                ->asyncParameters(['id' => 0])
-                ->icon('plus'),
-        ];
+        return [];
     }
 
     public function layout(): iterable
     {
         return [
-            UserCommunicationFilter::displayFilterCard(),
-            UserCommunicateListLayout::class,
-            Layout::modal('communicate_modal', UserCommunicateEditLayout::class)->async('asyncGetCommunicate'),
+            UserNotificationFilter::displayFilterCard(request()),
+            UserNotificationListLayout::class,
+            Layout::modal('user_notification_modal', UserNotificationShowLayout::class)->async('asyncGetNotification'),
         ];
     }
 
@@ -70,7 +62,7 @@ class UserCommunicateScreen extends Screen
         return redirect()->route('profiles.communication.list');
     }
 
-    public function asyncGetCommunicate(int $id = 0): array
+    public function asyncGetNotification(int $id = 0): array
     {
         return Communication::loadBy($id)?->getAttributes() ?: [];
     }
@@ -82,7 +74,7 @@ class UserCommunicateScreen extends Screen
 
         $this->service->saveCommunication($id, $data);
 
-        Toast::info('Saved contact');
+        Toast::info('Контакт сохранен');
     }
 
     public function removeCommunication(int $userId, int $id): void
@@ -95,6 +87,6 @@ class UserCommunicateScreen extends Screen
         $communicate = Communication::loadByOrDie($id);
         $communicate->delete();
 
-        Toast::info('Contact removed');
+        Toast::info('Контакт удален');
     }
 }

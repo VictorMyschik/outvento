@@ -9,7 +9,6 @@ use App\Models\User;
 use App\Orchid\Filters\User\UserTravelFilter;
 use App\Orchid\Layouts\User\Travel\AddTravelModalLayout;
 use App\Orchid\Layouts\User\Travel\UserTravelListLayout;
-use App\Orchid\Layouts\User\UserBaseScreen;
 use App\Services\Travel\TravelService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

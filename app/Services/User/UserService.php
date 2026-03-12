@@ -12,6 +12,7 @@ use App\Services\Notifications\DTO\ServiceNotificationDto;
 use App\Services\Notifications\Enum\NotificationChannel;
 use App\Services\Notifications\Enum\ServiceEvent;
 use App\Services\Notifications\Enum\SystemEvent;
+use App\Services\Notifications\InternalNotificationService;
 use App\Services\Notifications\ServiceNotificationService;
 use App\Services\Notifications\SystemNotificationService;
 use App\Services\System\Enum\Language;
@@ -24,12 +25,13 @@ use Nette\Utils\Random;
 final readonly class UserService
 {
     public function __construct(
-        private UserUploadService          $uploadService,
-        private UserRepository             $repository,
-        private AuthService                $authService,
-        private SystemNotificationService  $notificationService,
-        private ServiceNotificationService $serviceNotificationService,
-        private TravelService              $travelService,
+        private UserUploadService           $uploadService,
+        private UserRepository              $repository,
+        private AuthService                 $authService,
+        private SystemNotificationService   $notificationService,
+        private ServiceNotificationService  $serviceNotificationService,
+        private TravelService               $travelService,
+        private InternalNotificationService $internalNotificationService,
     ) {}
 
     public function updateUser(User $user, array $data): User
@@ -262,5 +264,35 @@ final readonly class UserService
         $factor = floor((strlen((string)$bytes) - 1) / 3);
 
         return sprintf('%.2f', $bytes / pow(1024, $factor)) . ' ' . $units[(int)$factor];
+    }
+
+    public function saveUserNotification(int $notificationId, array $data): void
+    {
+        $this->internalNotificationService->saveUserNotification($notificationId, $data);
+    }
+
+    public function getInternalNotificationList(int $userId): array
+    {
+        return $this->internalNotificationService->getNotificationList($userId);
+    }
+
+    public function deleteInternalNotificationById(int $userId, int $internalNotificationId): void
+    {
+        $this->internalNotificationService->deleteNotificationById($userId, $internalNotificationId);
+    }
+
+    public function markUsReadInternalNotification(int $userId, int $internalNotificationId): void
+    {
+        $this->internalNotificationService->markUsRead($internalNotificationId);
+    }
+
+    public function purgeInternalUserNotifications(int $userId): void
+    {
+        $this->internalNotificationService->purgeInternalUserNotifications($userId);
+    }
+
+    public function readAllNotifications(int $userId): void
+    {
+        $this->internalNotificationService->markAllAsRead($userId);
     }
 }

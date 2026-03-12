@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Repositories\User\UserRepository;
+use App\Services\Notifications\InternalNotificationService;
 use App\Services\Notifications\ServiceNotificationService;
 use App\Services\Notifications\SystemNotificationService;
 use App\Services\Travel\TravelService;
@@ -38,6 +39,7 @@ class UserProvider extends ServiceProvider
                 notificationService: $app->make(SystemNotificationService::class),
                 serviceNotificationService: $app->make(ServiceNotificationService::class),
                 travelService: $app->make(TravelService::class),
+                internalNotificationService: $app->make(InternalNotificationService::class),
             );
         });
 

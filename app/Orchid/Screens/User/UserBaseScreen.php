@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Orchid\Layouts\User;
+namespace App\Orchid\Screens\User;
 
 use App\Models\User;
 use App\Services\Promo\SubscriptionService;

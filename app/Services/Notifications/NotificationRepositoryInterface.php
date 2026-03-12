@@ -42,4 +42,18 @@ interface NotificationRepositoryInterface
     public function deleteServiceNotifications(int $id): void;
 
     public function deleteNotificationCode(int $userId, SystemEvent $event);
+
+    public function saveUserNotification(int $id, array $data): void;
+
+    public function getInternalNotificationsByUserId(int $userId): array;
+
+    public function addInternalUserNotification(array $data): void;
+
+    public function deleteInternalNotificationById(int $userId, int $notificationId): void;
+
+    public function updateInternalNotification(int $id, array $data): void;
+
+    public function purgeInternalUserNotifications(int $userId): void;
+
+    public function markAllInternalNotificationsAsRead(int $userId): void;
 }

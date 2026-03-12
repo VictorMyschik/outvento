@@ -176,7 +176,7 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
      */
     public function notificationChannelsFor(string $notificationClass): array
     {
-        return [NotificationChannel::Email->value, NotificationChannel::Telegram->value]; // - Будет ошибка если notification не реализовал один из каналов
+        //return [NotificationChannel::Email->value, NotificationChannel::Telegram->value, NotificationChannel::Internal->value]; // - Будет ошибка если notification не реализовал один из каналов
 
         // Вернёт список каналов, которые есть и используются
         return $this->notificationSettings()
@@ -195,7 +195,19 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
 
     protected function getCommunicationAddressFor(string $channel, int $event): ?string
     {
-        $value = $channel === NotificationChannel::Telegram->value ? Communication::getTableName() . '.address_ext' : Communication::getTableName() . '.address';
+        if ($channel === NotificationChannel::Internal->value) {
+            if (NotificationMute::where('user_id', $this->id)->where('event', $event)->exists()) {
+                return null;
+            }
+
+            return (string)$this->id;
+        }
+
+        $value = match ($channel) {
+            NotificationChannel::Email->value => Communication::getTableName() . '.address',
+            NotificationChannel::Telegram->value => Communication::getTableName() . '.address_ext',
+            default => null,
+        };
 
         return $this->notificationSettings()
             ->leftJoin(NotificationMute::getTableName(), function ($join) use ($event) {
@@ -233,6 +245,18 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
         if (isset(ServiceEvent::getSelectList()[$notification::KEY])) {
             return $this->getCommunicationAddressFor(
                 channel: NotificationChannel::Telegram->value,
+                event: $notification::KEY
+            );
+        }
+
+        return null;
+    }
+
+    public function routeNotificationForInternal(Notification $notification): int|string|null
+    {
+        if (isset(ServiceEvent::getSelectList()[$notification::KEY])) {
+            return $this->getCommunicationAddressFor(
+                channel: NotificationChannel::Internal->value,
                 event: $notification::KEY
             );
         }

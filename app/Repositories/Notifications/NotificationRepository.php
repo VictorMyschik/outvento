@@ -10,6 +10,7 @@ use App\Models\Notification\ServiceNotification;
 use App\Models\NotificationCode;
 use App\Models\NotificationToken;
 use App\Models\User;
+use App\Models\UserNotification;
 use App\Repositories\DatabaseRepository;
 use App\Services\Notifications\Enum\NotificationChannel;
 use App\Services\Notifications\Enum\ServiceEvent;
@@ -121,5 +122,46 @@ final readonly class NotificationRepository extends DatabaseRepository implement
             'user_id' => $userId,
             'type'    => $event->value,
         ])->delete();
+    }
+
+    public function getInternalNotificationsByUserId(int $userId): array
+    {
+        return UserNotification::where('user_id', $userId)->orderBy('id', 'desc')->get()->all();
+    }
+
+    public function addInternalUserNotification(array $data): void
+    {
+        $this->db->table(UserNotification::getTableName())->insert($data);
+    }
+
+    public function deleteInternalNotificationById(int $userId, int $notificationId): void
+    {
+        $this->db->table(UserNotification::getTableName())->where(['user_id' => $userId, 'id' => $notificationId])->delete();
+    }
+
+    public function updateInternalNotification(int $id, array $data): void
+    {
+        $this->db->table(UserNotification::getTableName())->where('id', $id)->update($data);
+    }
+
+    public function purgeInternalUserNotifications(int $userId): void
+    {
+        $this->db->table(UserNotification::getTableName())->where('user_id', $userId)->delete();
+    }
+
+    public function markAllInternalNotificationsAsRead(int $userId): void
+    {
+        $this->db->table(UserNotification::getTableName())->where('user_id', $userId)->update(['read_at' => now()]);
+    }
+
+    public function saveUserNotification(int $id, array $data): void
+    {
+        if ($id > 0) {
+            $this->db->table(UserNotification::getTableName())->where('id', $id)->update($data);
+
+            return;
+        }
+
+        $this->db->table(UserNotification::getTableName())->insert($data);
     }
 }

@@ -48,4 +48,11 @@ class TravelInviteNotification extends Notification
                 'disable_web_page_preview' => true,
             ]);
     }
+
+    public function toInternalDatabase($notifiable): array
+    {
+        return [
+            'message' => 'New Travel Invite. Link: ' . $this->dto->confirmationUrl,
+        ];
+    }
 }

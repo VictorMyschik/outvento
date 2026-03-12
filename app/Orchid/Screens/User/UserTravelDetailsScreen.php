@@ -15,12 +15,10 @@ use App\Models\User;
 use App\Orchid\Fields\CKEditor;
 use App\Orchid\Layouts\Travel\DescriptionPointShowLayout;
 use App\Orchid\Layouts\Travel\InviteByEmailEditLayout;
-use App\Orchid\Layouts\Travel\InviteListLayout;
 use App\Orchid\Layouts\Travel\TravelMediaUploadLayout;
 use App\Orchid\Layouts\Travel\TravelPointLayout;
 use App\Orchid\Layouts\Travel\TravelResourceFileEditLayout;
 use App\Orchid\Layouts\Travel\TravelResourceLinkEditLayout;
-use App\Orchid\Layouts\User\UserBaseScreen;
 use App\Services\System\Enum\Language;
 use App\Services\Travel\DTO\TravelPointDto;
 use App\Services\Travel\Enum\Activity;
@@ -66,7 +64,8 @@ class UserTravelDetailsScreen extends UserBaseScreen
 
     public function description(): string
     {
-        return $this->user->name . ' | ' . View('admin.created_updated', ['value' => $this->travel])->toHtml();
+        $link = "<a href='" . route('profiles.details', ['user'=> $this->user->id]) . "'>" . $this->user->name . "</a>";
+        return $link . ' | ' . View('admin.created_updated', ['value' => $this->travel])->toHtml();
     }
 
     public function query(User $user, ?Travel $travel = null): iterable
@@ -136,7 +135,7 @@ class UserTravelDetailsScreen extends UserBaseScreen
 
             $out = $point->toArray();
             $out['city_country_code'] = trim($point->getCity()->getCountry()->getCode());
-            $out['city_name'] = $city->getName($this->user->getLanguage());
+            $out['city_name'] = $city->getName($this->travel->getLanguage());
             $out['city_lat'] = $city->lat;
             $out['city_lng'] = $city->lng;
             $out['city_place_id'] = $city->place_id;
@@ -154,8 +153,8 @@ class UserTravelDetailsScreen extends UserBaseScreen
             $out['lng'] = $point?->lng;
         }
 
-        $out['languageCode'] = $this->user->getLanguage()->getCode();
-        $out['languageLabel'] = $this->user->getLanguage()->getLabel();
+        $out['languageCode'] = $this->travel->getLanguage()->getCode();
+        $out['languageLabel'] = $this->travel->getLanguage()->getLabel();
 
         return $out;
     }
@@ -245,7 +244,21 @@ class UserTravelDetailsScreen extends UserBaseScreen
             'Resources' => Layout::rows($this->getResourceTab()),
             'Points'    => Layout::rows($this->getTravelPointsLayout()),
             'Users'     => Layout::rows($this->getUITActiveListLayout()),
-            'Invites'   => InviteListLayout::class,
+            'Invites'   => Layout::rows([
+                Group::make([
+                    ViewField::make('')->view('admin.h6')->value('<b>Пригласить участников: </b>'),
+                    Link::make('QR code')->class('mr-btn-success')->icon('qrcode')->target('_blank')
+                        ->href('https://api.qrserver.com/v1/create-qr-code/?data=' . $this->travelService->getPublicUrl($this->travel) . '&amp;size=200x200'),
+
+                    ModalToggle::make('by Email')
+                        ->icon('envelope')
+                        ->class('mr-btn-success')
+                        ->modal('new_invite_email_modal')
+                        ->modalTitle('Create invite')
+                        ->method('createInvite'),
+                ])->autoWidth(),
+                //new InviteListLayout()
+            ]),
         ]);
     }
 
@@ -438,18 +451,6 @@ class UserTravelDetailsScreen extends UserBaseScreen
         }
 
         return [
-            Group::make([
-                ViewField::make('')->view('admin.h6')->value('<b>Пригласить участников: </b>'),
-                Link::make('QR code')->class('mr-btn-success')->icon('qrcode')->target('_blank')
-                    ->href('https://api.qrserver.com/v1/create-qr-code/?data=' . $this->travelService->getPublicUrl($this->travel) . '&amp;size=200x200'),
-
-                ModalToggle::make('by Email')
-                    ->icon('envelope')
-                    ->class('mr-btn-success')
-                    ->modal('new_invite_email_modal')
-                    ->modalTitle('Create invite')
-                    ->method('createInvite'),
-            ])->autoWidth(),
             ViewField::make('')->view('hr'),
             ViewField::make('')->view('admin.travel.users')->value($list)
         ];
