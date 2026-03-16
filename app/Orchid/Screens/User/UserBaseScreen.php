@@ -6,6 +6,7 @@ namespace App\Orchid\Screens\User;
 
 use App\Models\User;
 use App\Services\Promo\SubscriptionService;
+use App\Services\Travel\TravelCommentService;
 use App\Services\Travel\TravelInviteService;
 use App\Services\Travel\TravelService;
 use App\Services\User\AuthService;
@@ -21,12 +22,13 @@ class UserBaseScreen extends Screen
     private ?string $avatar = null;
 
     public function __construct(
-        protected readonly UserService         $service,
-        protected readonly AuthService         $authService,
-        protected readonly SubscriptionService $subscriptionService,
-        protected readonly UserLocationService $userLocationService,
-        protected readonly TravelService       $travelService,
-        protected readonly TravelInviteService $inviteService,
+        protected readonly UserService          $service,
+        protected readonly AuthService          $authService,
+        protected readonly SubscriptionService  $subscriptionService,
+        protected readonly UserLocationService  $userLocationService,
+        protected readonly TravelService        $travelService,
+        protected readonly TravelInviteService  $inviteService,
+        protected readonly TravelCommentService $travelCommentService,
     ) {}
 
     public function name(): string

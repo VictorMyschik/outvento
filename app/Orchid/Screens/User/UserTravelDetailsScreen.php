@@ -8,6 +8,7 @@ use App\Models\Catalog\CatalogAttribute;
 use App\Models\Orchid\Attachment;
 use App\Models\Reference\Country;
 use App\Models\Travel\Travel;
+use App\Models\Travel\TravelComment;
 use App\Models\Travel\TravelMedia;
 use App\Models\Travel\TravelPoint;
 use App\Models\Travel\TravelResource;
@@ -16,6 +17,7 @@ use App\Models\User;
 use App\Orchid\Fields\CKEditor;
 use App\Orchid\Layouts\Travel\DescriptionPointShowLayout;
 use App\Orchid\Layouts\Travel\InviteByEmailEditLayout;
+use App\Orchid\Layouts\Travel\TravelCommentEditLayout;
 use App\Orchid\Layouts\Travel\TravelMediaUploadLayout;
 use App\Orchid\Layouts\Travel\TravelPointLayout;
 use App\Orchid\Layouts\Travel\TravelResourceFileEditLayout;
@@ -104,7 +106,6 @@ class UserTravelDetailsScreen extends UserBaseScreen
             ]),
         ]);
 
-
         $out[] = Layout::accordion($this->getTravelCommentsLayout());
         $out[] = Layout::rows($this->getActionBottomLinkLayout());
 
@@ -114,25 +115,75 @@ class UserTravelDetailsScreen extends UserBaseScreen
         $out[] = Layout::modal('description_modal', DescriptionPointShowLayout::class)->size(Modal::SIZE_LG)->async('asyncTravelPointDescription')->withoutApplyButton();
         $out[] = Layout::modal('travel_resource_link', TravelResourceLinkEditLayout::class)->async('asyncTravelResource');
         $out[] = Layout::modal('travel_resource_file', TravelResourceFileEditLayout::class)->async('asyncTravelResource');
+        $out[] = Layout::modal('edit_comment_modal', TravelCommentEditLayout::class)->async('asyncGetTravelComment');
 
         return $out;
     }
 
     private function getTravelCommentsLayout(): array
     {
-        $list = [];
-        /** @var CatalogAttribute $value */
-        foreach ([1, 3] as $key => $attribute) {
-            $list[] = [
+        $list = $this->travelCommentService->getTravelCommentsTree($this->travel->id);
+
+        /** @var TravelComment $value */
+        foreach ($list as $key => $comment) {
+            $rows[] = [
                 Layout::rows([
-                    ViewField::make('')->view('admin.raw')->value($key),
+                    ViewField::make('')->view('admin.travel.comment')->value($comment),
                 ]),
             ];
         }
 
+        $rows[] = Layout::rows([
+            CKEditor::make('content')->title('New Comment')->maxlength(8000),
+            ViewField::make('')->view('space'),
+            Group::make([
+                Button::make('add')->class('mr-btn-success pull-left')->method('saveTravelComment'),
+                Button::make('purge')
+                    ->confirm('Are you sure? Will delete all comments for this travel!')
+                    ->class('mr-btn-danger pull-right')
+                    ->method('clearTravelComment'),
+            ])
+        ]);
+
         return [
-            'Comments (' . count($list) . ')' => $list
+            'Comments (' . count($list) . ')' => $rows
         ];
+    }
+
+    public function clearTravelComment(): void
+    {
+        $this->travelCommentService->purgeTravelComments($this->travel->id);
+    }
+
+    public function asyncGetTravelComment(int $commentId): array
+    {
+        return [
+            'comment' => TravelComment::loadBy($commentId),
+        ];
+    }
+
+    public function deleteTravelComment(int $commentId): void
+    {
+        $this->travelCommentService->deleteComment($commentId);
+    }
+
+    public function saveTravelComment(Request $request, int $commentId = 0, ?int $parentId = null): void
+    {
+        if ($commentId) {
+            $this->travelCommentService->updateCommentContent(
+                commentId: $commentId,
+                content: $request->input('comment.content'),
+            );
+
+            return;
+        }
+
+        $this->travelCommentService->addComment(
+            travelId: $this->travel->id,
+            userId: $this->user->id,
+            parentId: $parentId,
+            comment: trim((string)($request->input('content') ?: $request->input('comment.content'))),
+        );
     }
 
     public function asyncTravelResource(int $resourceId): array
