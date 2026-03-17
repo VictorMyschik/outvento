@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\User;
 
-use App\Models\Catalog\CatalogAttribute;
 use App\Models\Orchid\Attachment;
 use App\Models\Reference\Country;
 use App\Models\Travel\Travel;
@@ -134,8 +133,16 @@ class UserTravelDetailsScreen extends UserBaseScreen
         }
 
         $rows[] = Layout::rows([
+            Group::make([
+                Button::make('purge')
+                    ->confirm('Are you sure? Will delete all comments for this travel!')
+                    ->class('mr-btn-danger pull-right')
+                    ->method('clearTravelComment'),
+            ]),
+            ViewField::make('')->view('hr'),
             CKEditor::make('content')->title('New Comment')->maxlength(8000),
             ViewField::make('')->view('space'),
+
             Group::make([
                 Button::make('add')->class('mr-btn-success pull-left')->method('saveTravelComment'),
                 Button::make('purge')

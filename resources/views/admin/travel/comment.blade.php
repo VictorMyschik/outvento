@@ -1,5 +1,5 @@
 @php use Orchid\Screen\Actions\Button;use Orchid\Screen\Actions\ModalToggle;use Orchid\Screen\Fields\Group; @endphp
-<div class="comment" style="margin-left:  20px">
+<div class="comment" style="margin-left:  20px;">
 
     <div class="comment-header mr-table-head">
          <span class="comment-score">
