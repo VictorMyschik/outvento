@@ -207,6 +207,11 @@ class UserTravelDetailsScreen extends UserBaseScreen
         ];
     }
 
+    public function toggleUpVote(int $commentId): void
+    {
+        $this->travelCommentService->toggleUpVote($commentId, $this->user->id);
+    }
+
     public function asyncTravelPoint(int $pointId = 0): array
     {
         $point = TravelPoint::loadBy($pointId);

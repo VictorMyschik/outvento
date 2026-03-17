@@ -1,15 +1,47 @@
 @php use Orchid\Screen\Actions\Button;use Orchid\Screen\Actions\ModalToggle;use Orchid\Screen\Fields\Group; @endphp
-<div class="comment" style="margin-left:  20px;">
+<?php
+$value->btns = Group::make([
+    ModalToggle::make('add')
+        ->class('mr-btn-success pull-left')
+        ->modal('edit_comment_modal')
+        ->modalTitle('Create comment')
+        ->method('saveTravelComment', ['commentId' => 0, 'parentId' => $value->id]),
+    ModalToggle::make('edit')
+        ->class('mr-btn-primary pull-left')
+        ->modal('edit_comment_modal')
+        ->modalTitle('Edit comment')
+        ->method('saveTravelComment', ['commentId' => $value->id, 'parentId' => $value->parent_id]),
+    Button::make('delete')
+        ->class('mr-btn-danger pull-right')
+        ->confirm('Delete comment?')
+        ->method('deleteTravelComment', ['commentId' => $value->id]),
+])->autoWidth();
 
+$value->scoreBtn = Button::make('↑ '. $value->score)
+    ->class('mr-btn-route')
+    ->method('toggleUpVote', ['commentId' => $value->id]);
+?>
+
+<div class="comment" style="margin-left:  20px; margin-top: 15px;">
     <div class="comment-header mr-table-head">
-         <span class="comment-score">
-             <button class="mr-btn-route">↑</button> {{ $value->score }}
-        </span>
-        <strong><a href="{{route('profiles.details', ['user' => $value->user_id])}}"
-                   target="_blank">{{ $value->name }}</a></strong>
-        <span class="comment-date">
+
+        <div class="comment-header-left">
+            <div class="comment-score">
+                {!! $value->scoreBtn !!}
+            </div>
+
+            <strong class="comment-user">
+                <a href="{{ route('profiles.details', ['user' => $value->user_id]) }}"
+                   target="_blank">
+                    {{ $value->name }}
+                </a>
+            </strong>
+        </div>
+
+        <div class="comment-date">
             {{ \Carbon\Carbon::parse($value->created_at)->format('H:i:s d/m/Y') }}
-        </span>
+        </div>
+
     </div>
 
     <div class="comment-body">
@@ -21,24 +53,6 @@
     </div>
 
     <div class="comment-footer">
-        <?php
-        $value->btns = Group::make([
-            ModalToggle::make('add')
-                ->class('mr-btn-success pull-left')
-                ->modal('edit_comment_modal')
-                ->modalTitle('Create comment')
-                ->method('saveTravelComment', ['commentId' => 0, 'parentId' => $value->id]),
-            ModalToggle::make('edit')
-                ->class('mr-btn-primary pull-left')
-                ->modal('edit_comment_modal')
-                ->modalTitle('Edit comment')
-                ->method('saveTravelComment', ['commentId' => $value->id, 'parentId' => $value->parent_id]),
-            Button::make('delete')
-                ->class('mr-btn-danger pull-right')
-                ->confirm('Delete comment?')
-                ->method('deleteTravelComment', ['commentId' => $value->id]),
-        ])->autoWidth();
-        ?>
         {!! $value->btns !!}
 
         @if($value->replies_count > 0)
@@ -60,24 +74,35 @@
 </div>
 
 <style>
-    .comment {
-        border-left: 2px solid #ddd;
-        border-top: 2px solid #ddd;
-        padding-left: 10px;
-        margin-top: 10px;
-    }
-
     .comment-header {
-        font-size: 14px;
-        color: #666;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
 
-    .comment-body {
-        margin: 5px 0;
+    .comment-header-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
-    .comment-footer {
+    .comment-score {
+        display: flex;
+        align-items: center;
+    }
+
+    .comment-score button {
+        margin-left: 4px;
+    }
+
+    .comment-user a {
+        text-decoration: none;
+    }
+
+    .comment-date {
         font-size: 12px;
-        color: #888;
+        color: #c55;
+        white-space: nowrap;
+        margin-right: 10px;
     }
 </style>

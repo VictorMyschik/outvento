@@ -102,4 +102,52 @@ final readonly class TravelCommentRepository extends DatabaseRepository
     {
         $this->db->table(TravelComment::getTableName())->where('travel_id', $travelId)->delete();
     }
+
+    public function toggleUpVote(int $commentId, int $userId): void
+    {
+        $this->db->transaction(function () use ($commentId, $userId) {
+            $vote = $this->db->table('travel_comment_votes')
+                ->where('comment_id', $commentId)
+                ->where('user_id', $userId)
+                ->lockForUpdate()
+                ->first();
+
+            // 1. нет голоса → ставим +1
+            if (!$vote) {
+                $this->db->table('travel_comment_votes')->insert([
+                    'comment_id' => $commentId,
+                    'user_id'    => $userId,
+                    'vote'       => 1,
+                ]);
+
+                $this->db->table('travel_comments')
+                    ->where('id', $commentId)
+                    ->increment('score', 1);
+
+                return;
+            }
+
+            // 2. уже +1 → убираем голос
+            if ($vote->vote === 1) {
+                $this->db->table('travel_comment_votes')
+                    ->where('id', $vote->id)
+                    ->delete();
+
+                $this->db->table('travel_comments')
+                    ->where('id', $commentId)
+                    ->decrement('score', 1);
+
+                return;
+            }
+
+            // 3. было -1 → делаем +1
+            $this->db->table('travel_comment_votes')
+                ->where('id', $vote->id)
+                ->update(['vote' => 1]);
+
+            $this->db->table('travel_comments')
+                ->where('id', $commentId)
+                ->increment('score', 2);
+        });
+    }
 }

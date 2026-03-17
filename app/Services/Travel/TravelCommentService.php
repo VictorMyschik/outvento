@@ -13,6 +13,11 @@ final readonly class TravelCommentService
         private TravelCommentRepository $repository
     ) {}
 
+    public function toggleUpVote(int $commentId, int $userId): void
+    {
+        $this->repository->toggleUpVote($commentId, $userId);
+    }
+
     public function getTravelCommentsTree(int $travelId): array
     {
         $list = $this->repository->getTravelComments($travelId);
