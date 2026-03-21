@@ -115,7 +115,10 @@ class ProfileScreen extends UserBaseScreen
     private function getActionTopLayout(): array
     {
         return [
-            Link::make('Travels')->class('mr-btn mr-btn-route')->icon('map')->route('profiles.travels', $this->user->id),
+            Group::make([
+                Link::make('Travels')->class('mr-btn mr-btn-route')->icon('map')->route('profiles.travels', $this->user->id),
+                Link::make('Messages ')->class('mr-btn mr-btn-route')->icon('send')->route('profiles.messages.list', $this->user->id),
+            ])->autoWidth(),
         ];
     }
 

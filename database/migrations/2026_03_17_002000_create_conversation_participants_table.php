@@ -7,18 +7,16 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('conversation_participants', function (Blueprint $table) {
-            $table->ulid('id')->primary();
-
-            $table->ulid('conversation_id')->index();
+        Schema::create('conversation_users', function (Blueprint $table) {
+            $table->unsignedBigInteger('conversation_id')->index();
             $table->unsignedBigInteger('user_id')->index();
             $table->ulid('last_read_message_id')->nullable();
-            $table->timestamp('muted_until')->nullable();
-            $table->timestamp('deleted_at')->nullable(); // soft delete per user
+            $table->timestampTz('muted_until')->nullable();
+            $table->timestampTz('deleted_at')->nullable(); // soft delete per user
             $table->timestampTz('created_at')->useCurrent();
             $table->timestampTz('updated_at')->nullable()->useCurrentOnUpdate();
 
-            $table->unique(['conversation_id', 'user_id']);
+            $table->primary(['conversation_id', 'user_id']);
 
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
             $table->foreign('conversation_id')->references('id')->on('conversations')->cascadeOnDelete();
@@ -27,6 +25,6 @@ return new class extends Migration {
 
     public function down(): void
     {
-        Schema::dropIfExists('conversation_participants');
+        Schema::dropIfExists('conversation_users');
     }
 };

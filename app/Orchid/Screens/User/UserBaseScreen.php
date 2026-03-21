@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Orchid\Screens\User;
 
 use App\Models\User;
+use App\Services\Conversations\ConversationService;
 use App\Services\Promo\SubscriptionService;
 use App\Services\Travel\TravelCommentService;
 use App\Services\Travel\TravelInviteService;
@@ -29,11 +30,12 @@ class UserBaseScreen extends Screen
         protected readonly TravelService        $travelService,
         protected readonly TravelInviteService  $inviteService,
         protected readonly TravelCommentService $travelCommentService,
+        protected readonly ConversationService  $conversations,
     ) {}
 
     public function name(): string
     {
-        return 'User profile';
+        return $this->name;
     }
 
     public function description(): string

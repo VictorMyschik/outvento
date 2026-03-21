@@ -44,6 +44,8 @@ use App\Orchid\Screens\User\ProfileScreen;
 use App\Orchid\Screens\User\UserCommunicateScreen;
 use App\Orchid\Screens\User\UserEditScreen;
 use App\Orchid\Screens\User\UserListScreen;
+use App\Orchid\Screens\User\UserMessagesListScreen;
+use App\Orchid\Screens\User\UserMessagesScreen;
 use App\Orchid\Screens\User\UserProfileListScreen;
 use App\Orchid\Screens\User\UserProfileScreen;
 use App\Orchid\Screens\User\UserTravelDetailsScreen;
@@ -136,6 +138,8 @@ Route::screen('promo/subscriptions/list', SubscriptionScreen::class)->name('prom
 Route::screen('/profiles/list', UserProfileListScreen::class)->name('profiles.list');
 Route::screen('/profiles/{user}/details', ProfileScreen::class)->name('profiles.details');
 Route::screen('/profiles/{user}/travels', UserTravelListScreen::class)->name('profiles.travels');
+Route::screen('/profiles/{user}/messages', UserMessagesListScreen::class)->name('profiles.messages.list');
+Route::screen('/profiles/{user}/messages/{conversation}', UserMessagesScreen::class)->name('profiles.messages');
 Route::screen('/profiles/{user}/travel/{travel}/details', UserTravelDetailsScreen::class)->name('profiles.travel.details');
 Route::screen('/profiles/communications/list', UserCommunicateScreen::class)->name('profiles.communication.list');
 

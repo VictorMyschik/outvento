@@ -8,7 +8,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('conversations', function (Blueprint $table) {
-            $table->ulid('id')->primary();
+            $table->id();
 
             $table->string('type', 20); // private | group | travel
 
