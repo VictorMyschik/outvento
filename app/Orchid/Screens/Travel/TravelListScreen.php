@@ -13,7 +13,7 @@ use Orchid\Screen\Screen;
 class TravelListScreen extends Screen
 {
     public string $name = 'Travel List';
-    
+
 
     public function __construct(private readonly TravelService $service) {}
 
@@ -23,7 +23,6 @@ class TravelListScreen extends Screen
             'list' => TravelFilter::runQuery()->paginate(20)
         ];
     }
-
 
     public function description(): ?string
     {
