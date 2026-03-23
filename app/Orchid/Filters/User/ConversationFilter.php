@@ -64,7 +64,8 @@ class ConversationFilter extends Filter
                                         ->whereColumn('conversation_id', ConversationUser::TABLE . '.conversation_id');
                                 });
                         })
-                        ->selectRaw(implode(',', self::selectRaw())));
+                        ->selectRaw(implode(',', self::selectRaw()))
+                );
             });
     }
 

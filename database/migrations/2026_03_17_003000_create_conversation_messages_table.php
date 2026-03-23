@@ -10,6 +10,7 @@ return new class extends Migration {
         Schema::create('conversation_messages', function (Blueprint $table) {
             $table->ulid('id')->primary();
             $table->unsignedBigInteger('conversation_id')->index();
+            $table->unsignedInteger('deleted_by_count')->default(0);
             $table->foreignId('user_id')->index();
             $table->string('content', 10000)->nullable();
             $table->timestampTz('created_at')->useCurrent();

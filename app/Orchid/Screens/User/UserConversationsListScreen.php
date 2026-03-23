@@ -18,10 +18,10 @@ use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Fields\Group;
 use Orchid\Support\Facades\Layout;
 
-class UserMessagesListScreen extends UserBaseScreen
+class UserConversationsListScreen extends UserBaseScreen
 {
     public ?User $user = null;
-    public string $name = 'Users Messages';
+    public string $name = 'Users Conversations';
 
     public function description(): string
     {

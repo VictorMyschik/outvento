@@ -27,7 +27,7 @@ class ConversationListLayout extends Table
             TD::make('email', 'User Email')->sort(),
             TD::make('full_name', 'User Full Name')->sort(),
             TD::make('content', 'Last Message')->render(function (ConversationUser $conversationUser) {
-                return Link::make(substr((string)$conversationUser->content, 0, 50));
+                return Link::make(substr((string)$conversationUser->content, 0, 50))->route('profiles.messages', ['user' => $this->query->get('user'), 'conversation' => $conversationUser->conversation_id]);
             }),
             TD::make('created_at', 'Date')->render(function (ConversationUser $conversationUser) {
                 return $conversationUser->created_at?->format('H:i:s d/m/Y');

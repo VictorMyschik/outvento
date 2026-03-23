@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Models\Conversations\ConversationMessage;
+use App\Models\Conversations\ConversationMessageUserState;
 use App\Models\Conversations\ConversationUser;
 use App\Services\Conversations\ConversationService;
 use Tests\TestCase;
@@ -16,21 +17,11 @@ class ExampleTest extends TestCase
      */
     public function test_the_application_returns_a_successful_response(): void
     {
-        $userId = 1;
-
-        $conversationIds = ConversationUser::where('user_id', $userId)
-            ->whereNull(ConversationUser::TABLE . '.deleted_at')
-            ->pluck('conversation_id')->toArray();
-
-        $r =  ConversationUser::query()->whereIn(ConversationUser::TABLE . '.conversation_id', $conversationIds)
-            ->whereNull(ConversationUser::TABLE . '.deleted_at')
-            ->groupBy(ConversationUser::TABLE . '.conversation_id')
-            ->havingRaw("count(" . ConversationUser::TABLE . ".conversation_id) = 1")
-            ->value('conversation_id');
-
-        $sql = $r->toSql();
-
-        $result = $r->get()->toArray();
+        $r = ConversationMessage::join(ConversationMessageUserState::TABLE, ConversationMessageUserState::TABLE . '.message_id', '=', ConversationMessage::TABLE . '.id')
+            ->where(ConversationMessageUserState::TABLE . '.updated_at', '=', null)
+            ->where('conversation_id', 1)
+            ->orderByDesc('created_at')
+            ->get()->all();
     }
 
     private static function selectRaw(): array

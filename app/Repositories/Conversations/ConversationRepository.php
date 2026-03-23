@@ -6,6 +6,7 @@ namespace App\Repositories\Conversations;
 
 use App\Models\Conversations\Conversation;
 use App\Models\Conversations\ConversationMessage;
+use App\Models\Conversations\ConversationMessageUserState;
 use App\Models\Conversations\ConversationUser;
 use App\Repositories\DatabaseRepository;
 use App\Services\Conversations\ConversationRepositoryInterface;
@@ -14,6 +15,11 @@ use Illuminate\Support\Str;
 
 final readonly class ConversationRepository extends DatabaseRepository implements ConversationRepositoryInterface
 {
+    public function getConversationById(int $conversationId): ?Conversation
+    {
+        return Conversation::loadBy($conversationId);
+    }
+
     public function getConversationByUsers(int $ownerId, int $userId): ?int
     {
         $count = $ownerId === $userId ? 1 : 2;
@@ -63,6 +69,11 @@ final readonly class ConversationRepository extends DatabaseRepository implement
             'user_id'         => $userId,
             'content'         => $text,
         ]);
+
+        $this->db->table(ConversationUser::TABLE)
+            ->where('conversation_id', $conversationId)
+            ->where('user_id', $userId)
+            ->update(['last_read_message_id' => $id]);
     }
 
     public function setConversationAsDeleted(?int $conversationId, int $userId): void
@@ -86,6 +97,7 @@ final readonly class ConversationRepository extends DatabaseRepository implement
         } while ($deleted > 0);
 
         $this->db->table(ConversationUser::TABLE)->where('conversation_id', $conversationId)->delete();
+        $this->db->table(Conversation::TABLE)->where('id', $conversationId)->delete();
     }
 
     public function getRemovedConversationIds(): array
@@ -96,5 +108,79 @@ final readonly class ConversationRepository extends DatabaseRepository implement
             ->havingRaw('COUNT(*) = COUNT(deleted_at)')
             ->pluck('conversation_id')
             ->toArray();
+    }
+
+    public function deleteMessageForUser(int $userId, string $messageId): void
+    {
+        $this->db->beginTransaction();
+        $this->db->table(ConversationMessageUserState::TABLE)->updateOrInsert(['message_id' => $messageId, 'user_id' => $userId]);
+        $this->db->table(ConversationMessage::TABLE)->where('id', $messageId)->increment('deleted_by_count');
+        $this->db->commit();
+    }
+
+    public function updateMessage(string $messageId, string $content): void
+    {
+        $this->db->table(ConversationMessage::TABLE)->where('id', $messageId)->update(['content' => $content]);
+    }
+
+    public function deleteMessage(string $messageId): void
+    {
+        $this->db->table(ConversationMessage::TABLE)->where('id', $messageId)->delete();
+        $this->db->table(ConversationMessageUserState::TABLE)->where('message_id', $messageId)->delete();
+    }
+
+    public function getConversationUsersByConversationId(int $conversationId): array
+    {
+        return $this->db->table(ConversationUser::TABLE)->where(['conversation_id' => $conversationId])->get()->all();
+    }
+
+    public function getDeletedByCount(string $messageId): int
+    {
+        return $this->db->table(ConversationMessage::TABLE)->where('id', $messageId)->value('deleted_by_count');
+    }
+
+    public function getUnreadMessagesCount(int $conversationId, int $userId): int
+    {
+        return $this->db->table(ConversationMessage::TABLE . ' as m')
+            ->join(ConversationUser::TABLE . ' as c', function ($join) use ($userId) {
+                $join->on('c.conversation_id', '=', 'm.conversation_id')
+                    ->where('c.user_id', '=', $userId);
+            })
+            ->leftJoin(ConversationMessageUserState::TABLE . ' as s', function ($join) use ($userId) {
+                $join->on('m.id', '=', 's.message_id')
+                    ->where('s.user_id', '=', $userId);
+            })
+            ->where('m.conversation_id', $conversationId)
+
+            // ❗ не считаем удалённые пользователем
+            ->whereNull('s.updated_at')
+
+            // ❗ unread логика
+            ->where(function ($q) {
+                $q->whereNull('c.last_read_message_id')
+                    ->orWhereColumn('m.id', '>', 'c.last_read_message_id');
+            })
+            ->count();
+    }
+
+    public function setMessageAsRead(int $conversationId, int $userId, string $messageId): void
+    {
+        $this->db->table(ConversationUser::TABLE)
+            ->where('conversation_id', $conversationId)
+            ->where('user_id', $userId)
+            ->update(['last_read_message_id' => $messageId]);
+    }
+
+    public function getLastMessageIdForUser(int $conversationId, int $userId): ?string
+    {
+        return $this->db->table(ConversationMessage::TABLE . ' as m')
+            ->leftJoin(ConversationMessageUserState::TABLE . ' as s', function ($join) use ($userId) {
+                $join->on('m.id', '=', 's.message_id')
+                    ->where('s.user_id', '=', $userId);
+            })
+            ->where('m.conversation_id', $conversationId)
+            ->whereNull('s.updated_at')
+            ->orderBy('m.created_at', 'desc')
+            ->value('m.id');
     }
 }

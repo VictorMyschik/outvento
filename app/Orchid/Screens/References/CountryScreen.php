@@ -8,6 +8,7 @@ use App\Models\Reference\Country;
 use App\Orchid\Layouts\References\CountriesListLayout;
 use App\Orchid\Layouts\References\CountryEditLayout;
 use App\Services\References\AbstractReferenceService;
+use App\Services\References\CountryService;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Screen;
@@ -18,7 +19,7 @@ class CountryScreen extends Screen
     public string $name = 'Countries';
     public string $description = 'List of countries available in the system';
 
-    public function __construct(private readonly AbstractReferenceService $service) {}
+    public function __construct(private readonly CountryService $service) {}
 
     public function query(): iterable
     {

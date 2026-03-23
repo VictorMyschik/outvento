@@ -31,18 +31,6 @@ abstract readonly class AbstractReferenceService
         return $this->repository->getCurrencySelectList();
     }
 
-    public function getTravelTypeSelectList(Language $language): array
-    {
-        return $this->repository->getTravelTypeSelectList($language);
-    }
-
-
-
-    public function saveCity(int $id, array $data): int
-    {
-        return $this->repository->saveCity($id, $data);
-    }
-
     protected function saveImage(ImageTypeEnum $type, UploadedFile $file): string
     {
         return $this->imageRepository->saveImage($type, $file);
