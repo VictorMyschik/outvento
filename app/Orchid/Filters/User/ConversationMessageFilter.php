@@ -24,13 +24,19 @@ class ConversationMessageFilter extends Filter
     public static function runQuery(int $conversationId, int $userId): Builder
     {
         return ConversationMessage::filters([self::class])
+            ->join('users', 'users.id', '=', 'conversation_messages.user_id')
             ->leftJoin(ConversationMessageUserState::TABLE, function ($query) use ($conversationId, $userId) {
                 $query->on(ConversationMessageUserState::TABLE . '.message_id', '=', ConversationMessage::TABLE . '.id')
                     ->where(ConversationMessageUserState::TABLE . '.user_id', $userId);
             })
             ->whereNull(ConversationMessageUserState::TABLE . '.updated_at')
             ->where('conversation_id', $conversationId)
-            ->orderByDesc('created_at');
+            ->orderByDesc(ConversationMessage::TABLE . '.created_at')
+            ->selectRaw(implode(',', [
+                ConversationMessage::TABLE . '.*',
+                'users.name as user_name',
+                'users.id as user_id',
+            ]));
     }
 
     public function run(Builder $builder): Builder

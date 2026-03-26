@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Orchid\Screens\User;
+namespace App\Orchid\Screens\User\Conversations;
 
 use App\Models\User;
 use App\Orchid\Filters\User\ConversationFilter;
 use App\Orchid\Layouts\User\Conversations\AddConversationLayout;
+use App\Orchid\Layouts\User\Conversations\AddGroupConversationLayout;
 use App\Orchid\Layouts\User\Conversations\ConversationListLayout;
 use App\Orchid\Layouts\User\Conversations\MessageEditLayout;
-use App\Services\Conversations\Enum\Type;
+use App\Orchid\Screens\User\UserBaseScreen;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
@@ -21,7 +22,7 @@ use Orchid\Support\Facades\Layout;
 class UserConversationsListScreen extends UserBaseScreen
 {
     public ?User $user = null;
-    public string $name = 'Users Conversations';
+    public string $name = 'Private User Conversations';
 
     public function description(): string
     {
@@ -56,9 +57,9 @@ class UserConversationsListScreen extends UserBaseScreen
         return [
             ConversationFilter::displayFilterCard(request()),
             ConversationListLayout::class,
-            Layout::modal('add_conversation_modal', AddConversationLayout::class),
             Layout::rows($this->getActionBottomLayout()),
 
+            Layout::modal('add_conversation_modal', AddConversationLayout::class),
             Layout::modal('message_modal', MessageEditLayout::class),
         ];
     }
@@ -102,10 +103,20 @@ class UserConversationsListScreen extends UserBaseScreen
 
     public function saveConversation(Request $request): RedirectResponse
     {
-        $id = $this->conversations->addConversation(
+        $id = $this->conversations->addPersonalConversation(
             ownerId: $this->user->id,
-            userId: (int)$request->input('user_id'),
-            type: Type::Private,
+            userId: (int)$request->input('userId'),
+        );
+
+        return redirect()->route('profiles.messages', ['user' => $this->user->id, 'conversation' => $id]);
+    }
+
+    public function saveGroupConversation(Request $request): RedirectResponse
+    {
+        $id = $this->conversations->addGroupConversation(
+            ownerId: $this->user->id,
+            userIds: (array)$request->input('userIds'),
+            title: $request->input('title'),
         );
 
         return redirect()->route('profiles.messages', ['user' => $this->user->id, 'conversation' => $id]);
@@ -120,11 +131,11 @@ class UserConversationsListScreen extends UserBaseScreen
             }
         }
 
-        return redirect()->route('profiles.messages.list', $list + ['user' => $this->user->id]);
+        return redirect()->route('profiles.conversations.list', $list + ['user' => $this->user->id]);
     }
 
     public function clearFilter(): RedirectResponse
     {
-        return redirect()->route('profiles.messages.list', ['user' => $this->user->id]);
+        return redirect()->route('profiles.conversations.list', ['user' => $this->user->id]);
     }
 }

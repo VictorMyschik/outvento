@@ -10,6 +10,7 @@ return new class extends Migration {
         Schema::create('conversation_users', function (Blueprint $table) {
             $table->unsignedBigInteger('conversation_id')->index();
             $table->unsignedBigInteger('user_id')->index();
+            $table->tinyInteger('role')->default(0); // Role
             $table->ulid('last_read_message_id')->nullable();
             $table->timestampTz('muted_until')->nullable();
             $table->timestampTz('deleted_at')->nullable(); // soft delete per user

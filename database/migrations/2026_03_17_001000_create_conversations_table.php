@@ -11,8 +11,7 @@ return new class extends Migration {
             $table->id();
 
             $table->string('type', 20); // private | group | travel
-
-            $table->ulid('last_message_id')->nullable()->index();
+            $table->string('title')->nullable()->index(); // private | group | travel
 
             $table->timestampTz('created_at')->useCurrent();
             $table->timestampTz('updated_at')->nullable()->useCurrentOnUpdate();

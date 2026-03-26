@@ -19,4 +19,9 @@ class ConversationMessage extends ORM
     public $incrementing = false;
 
     protected $table = self::TABLE;
+
+    public $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
 }

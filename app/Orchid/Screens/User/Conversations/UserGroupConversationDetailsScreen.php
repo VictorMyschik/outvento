@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Orchid\Screens\User;
+namespace App\Orchid\Screens\User\Conversations;
 
 use App\Models\Conversations\Conversation;
 use App\Models\Conversations\ConversationMessage;
@@ -10,13 +10,14 @@ use App\Models\User;
 use App\Orchid\Filters\User\ConversationMessageFilter;
 use App\Orchid\Layouts\User\Conversations\ConversationMessageListLayout;
 use App\Orchid\Layouts\User\Conversations\MessageEditLayout;
+use App\Orchid\Screens\User\UserBaseScreen;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Support\Facades\Layout;
 
-class UserConversationDetailsScreen extends UserBaseScreen
+class UserGroupConversationDetailsScreen extends UserBaseScreen
 {
     public ?User $user = null;
     public ?Conversation $conversation = null;
@@ -24,7 +25,7 @@ class UserConversationDetailsScreen extends UserBaseScreen
 
     public function name(): string
     {
-        return $this->user->name . ' Messages';
+        return $this->user->name . ' messages';
     }
 
     public function description(): string
@@ -47,7 +48,7 @@ class UserConversationDetailsScreen extends UserBaseScreen
                 ->class('mr-btn-primary')
                 ->icon('eye')
                 ->method('markRead', ['id' => $this->user->id]),
-            Link::make('Назад')->class('mr-btn mr-btn-route')->icon('arrow-up')->route('profiles.messages.list', ['user' => $this->user->id]),
+            Link::make('Назад')->class('mr-btn mr-btn-route')->icon('arrow-up')->route('profiles.group-conversations.list', ['user' => $this->user->id]),
         ];
     }
 

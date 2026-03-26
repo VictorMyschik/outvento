@@ -40,12 +40,14 @@ use App\Orchid\Screens\System\PurgeScreen;
 use App\Orchid\Screens\System\SettingsScreen;
 use App\Orchid\Screens\System\SupervisorScreen;
 use App\Orchid\Screens\Travel\TravelListScreen;
+use App\Orchid\Screens\User\Conversations\UserConversationDetailsScreen;
+use App\Orchid\Screens\User\Conversations\UserConversationsListScreen;
+use App\Orchid\Screens\User\Conversations\UserGroupConversationDetailsScreen;
+use App\Orchid\Screens\User\Conversations\UserGroupConversationsListScreen;
 use App\Orchid\Screens\User\ProfileScreen;
 use App\Orchid\Screens\User\UserCommunicateScreen;
 use App\Orchid\Screens\User\UserEditScreen;
 use App\Orchid\Screens\User\UserListScreen;
-use App\Orchid\Screens\User\UserConversationsListScreen;
-use App\Orchid\Screens\User\UserConversationDetailsScreen;
 use App\Orchid\Screens\User\UserProfileListScreen;
 use App\Orchid\Screens\User\UserProfileScreen;
 use App\Orchid\Screens\User\UserTravelDetailsScreen;
@@ -138,8 +140,10 @@ Route::screen('promo/subscriptions/list', SubscriptionScreen::class)->name('prom
 Route::screen('/profiles/list', UserProfileListScreen::class)->name('profiles.list');
 Route::screen('/profiles/{user}/details', ProfileScreen::class)->name('profiles.details');
 Route::screen('/profiles/{user}/travels', UserTravelListScreen::class)->name('profiles.travels');
-Route::screen('/profiles/{user}/conversations', UserConversationsListScreen::class)->name('profiles.messages.list');
+Route::screen('/profiles/{user}/conversations', UserConversationsListScreen::class)->name('profiles.conversations.list');
+Route::screen('/profiles/{user}/group-conversations', UserGroupConversationsListScreen::class)->name('profiles.group-conversations.list');
 Route::screen('/profiles/{user}/conversation/{conversation}/details', UserConversationDetailsScreen::class)->name('profiles.messages');
+Route::screen('/profiles/{user}/group-conversation/{conversation}/details', UserGroupConversationDetailsScreen::class)->name('profiles.group-messages');
 Route::screen('/profiles/{user}/travel/{travel}/details', UserTravelDetailsScreen::class)->name('profiles.travel.details');
 Route::screen('/profiles/communications/list', UserCommunicateScreen::class)->name('profiles.communication.list');
 

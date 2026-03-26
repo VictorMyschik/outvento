@@ -117,7 +117,8 @@ class ProfileScreen extends UserBaseScreen
         return [
             Group::make([
                 Link::make('Travels')->class('mr-btn mr-btn-route')->icon('map')->route('profiles.travels', $this->user->id),
-                Link::make('Messages ')->class('mr-btn mr-btn-route')->icon('send')->route('profiles.messages.list', $this->user->id),
+                Link::make('Conversations')->class('mr-btn mr-btn-route')->icon('send')->route('profiles.conversations.list', $this->user->id),
+                Link::make('Group Conversations')->class('mr-btn mr-btn-route')->icon('send')->route('profiles.group-conversations.list', $this->user->id),
             ])->autoWidth(),
         ];
     }

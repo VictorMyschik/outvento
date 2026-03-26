@@ -10,6 +10,7 @@ use App\Models\Conversations\ConversationMessageUserState;
 use App\Models\Conversations\ConversationUser;
 use App\Repositories\DatabaseRepository;
 use App\Services\Conversations\ConversationRepositoryInterface;
+use App\Services\Conversations\Enum\Role;
 use App\Services\Conversations\Enum\Type;
 use Illuminate\Support\Str;
 
@@ -20,36 +21,37 @@ final readonly class ConversationRepository extends DatabaseRepository implement
         return Conversation::loadBy($conversationId);
     }
 
-    public function getConversationByUsers(int $ownerId, int $userId): ?int
+    public function getPersonalConversationByUsers(int $ownerId, int $userId): ?int
     {
         $count = $ownerId === $userId ? 1 : 2;
 
         return $this->db->table(ConversationUser::TABLE)
+            ->join(Conversation::TABLE, function ($query) use ($ownerId, $userId) {
+                $query->on(ConversationUser::TABLE . '.conversation_id', '=', Conversation::TABLE . '.id')
+                    ->where('type', Type::Private->value);
+            })
             ->whereIn('user_id', [$ownerId, $userId])
             ->groupBy('conversation_id')
             ->havingRaw('count(conversation_id) > ' . $count)
             ->value('conversation_id');
     }
 
-    public function addConversation(int $ownerId, int $userId, Type $type): int
+    public function addConversation(Type $type, ?string $title): int
     {
-        $conversationId = $this->db->table(Conversation::getTableName())->insertGetId(['type' => $type->value]);
+        return $this->db->table(Conversation::getTableName())->insertGetId([
+            'type'  => $type->value,
+            'title' => $title,
+        ]);
+    }
 
-        $participantsData[] = [
+    public function addUserToConversation(int $conversationId, int $userId, Role $role): void
+    {
+        $this->db->table(ConversationUser::TABLE)->updateOrInsert([
             'conversation_id' => $conversationId,
-            'user_id'         => $ownerId,
-        ];
-
-        if ($ownerId !== $userId) {
-            $participantsData[] = [
-                'conversation_id' => $conversationId,
-                'user_id'         => $userId,
-            ];
-        }
-
-        $this->db->table(ConversationUser::TABLE)->insertOrIgnore($participantsData);
-
-        return $conversationId;
+            'user_id'         => $userId,
+        ], [
+            'role' => $role->value
+        ]);
     }
 
     public function purgeConversation(int $conversationId): void

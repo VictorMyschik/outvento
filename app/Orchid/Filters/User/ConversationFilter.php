@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid\Filters\User;
 
+use App\Models\Conversations\Conversation;
 use App\Models\Conversations\ConversationMessage;
 use App\Models\Conversations\ConversationUser;
 use App\Models\User;
@@ -28,6 +29,7 @@ class ConversationFilter extends Filter
     {
         return [
             ConversationUser::TABLE . '.conversation_id as conversation_id',
+            'title',
             'users.id as user_id',
             'users.name as name',
             'users.email as email',
@@ -39,8 +41,13 @@ class ConversationFilter extends Filter
 
     public static function runQuery(int $userId): Builder
     {
-        $conversationIds = ConversationUser::where('user_id', $userId)
+        $conversationIds = ConversationUser::join(Conversation::TABLE, function ($join) {
+            $join->on(Conversation::TABLE . '.id', '=', ConversationUser::TABLE . '.conversation_id')
+                ->where(Conversation::TABLE . '.type', Type::Private->value);
+        })
+            ->where('user_id', $userId)
             ->whereNull(ConversationUser::TABLE . '.deleted_at')
+            ->where('type', Type::Private->value)
             ->pluck('conversation_id')->toArray();
 
         $singleConversation = ConversationUser::whereIn(ConversationUser::TABLE . '.conversation_id', $conversationIds)
@@ -74,6 +81,7 @@ class ConversationFilter extends Filter
         $input = $this->request->all(self::FIELDS);
 
         $builder->join('users', 'users.id', '=', ConversationUser::TABLE . '.user_id');
+        $builder->join(Conversation::TABLE, Conversation::TABLE . '.id', '=', ConversationUser::TABLE . '.conversation_id');
         $builder->leftJoin(ConversationMessage::TABLE, function ($join) {
             $join->on(ConversationMessage::TABLE . '.conversation_id', '=', ConversationUser::TABLE . '.conversation_id')
                 ->where(ConversationMessage::TABLE . '.created_at', function ($query) {

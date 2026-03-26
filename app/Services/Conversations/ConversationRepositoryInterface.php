@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Services\Conversations;
 
 use App\Models\Conversations\Conversation;
-use App\Models\Conversations\ConversationMessage;
+use App\Services\Conversations\Enum\Role;
 use App\Services\Conversations\Enum\Type;
 
 interface ConversationRepositoryInterface
 {
-    public function getConversationByUsers(int $ownerId, int $userId): ?int;
+    public function getPersonalConversationByUsers(int $ownerId, int $userId): ?int;
 
     public function getConversationUsersByConversationId(int $conversationId): array;
 
@@ -18,7 +18,9 @@ interface ConversationRepositoryInterface
 
     public function getConversationById(int $conversationId): ?Conversation;
 
-    public function addConversation(int $ownerId, int $userId, Type $type): int;
+    public function addConversation(Type $type, ?string $title): int;
+
+    public function addUserToConversation(int $conversationId, int $userId, Role $role): void;
 
     public function addMessage(int $conversationId, int $userId, string $text): void;
 

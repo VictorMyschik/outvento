@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Conversations;
 
-use App\Models\Conversations\ConversationMessage;
+use App\Services\Conversations\Enum\Role;
 use App\Services\Conversations\Enum\Type;
 
 final readonly class ConversationService
@@ -13,15 +13,44 @@ final readonly class ConversationService
         private ConversationRepositoryInterface $repository,
     ) {}
 
-    public function addConversation(int $ownerId, int $userId, Type $type): int
+    public function addGroupConversation(int $ownerId, array $userIds, string $title): int
     {
-        $id = $this->repository->getConversationByUsers($ownerId, $userId);
+        $id = $this->repository->addConversation(Type::Group, $title);
 
-        if (!$id) {
-            return $this->repository->addConversation($ownerId, $userId, $type);
+        $this->repository->addUserToConversation($id, $ownerId, Role::Admin);
+
+        foreach ($userIds as $userId) {
+            if ((int)$userId === $ownerId) {
+                continue;
+            }
+            $this->repository->addUserToConversation($id, (int)$userId, Role::User);
         }
 
         return $id;
+    }
+
+    public function addUserToGroupConversation(int $conversationId, int $userId, Role $role): void
+    {
+        $this->repository->addUserToConversation($conversationId, $userId, $role);
+    }
+
+    public function addPersonalConversation(int $ownerId, int $userId): int
+    {
+        $id = $this->repository->getPersonalConversationByUsers($ownerId, $userId);
+
+        if (!$id) {
+            $id = $this->repository->addConversation(Type::Private, null);
+
+            $this->repository->addUserToConversation($id, $ownerId, Role::User);
+            $this->repository->addUserToConversation($id, $userId, Role::User);
+        }
+
+        return $id;
+    }
+
+    public function setRole(int $conversationId, int $userId, Role $role): void
+    {
+        $this->repository->addUserToConversation($conversationId, $userId, $role);
     }
 
     public function addMessage(int $conversationId, int $userId, string $text): void

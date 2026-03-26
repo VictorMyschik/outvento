@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Models\Conversations\ConversationMessage;
-use App\Models\Conversations\ConversationMessageUserState;
+use App\Models\Conversations\Conversation;
 use App\Models\Conversations\ConversationUser;
 use App\Services\Conversations\ConversationService;
 use Tests\TestCase;
@@ -17,11 +16,12 @@ class ExampleTest extends TestCase
      */
     public function test_the_application_returns_a_successful_response(): void
     {
-        $r = ConversationMessage::join(ConversationMessageUserState::TABLE, ConversationMessageUserState::TABLE . '.message_id', '=', ConversationMessage::TABLE . '.id')
-            ->where(ConversationMessageUserState::TABLE . '.updated_at', '=', null)
-            ->where('conversation_id', 1)
-            ->orderByDesc('created_at')
-            ->get()->all();
+        $userId = 1;
+        $r = Conversation::join(ConversationUser::TABLE, function ($query) use ($userId) {
+            $query->where(Conversation::TABLE . '.id', '=', ConversationUser::TABLE . '.conversation_id')
+                ->where(ConversationUser::TABLE . '.user_id', $userId)
+                ->whereNull(ConversationUser::TABLE . '.deleted_at');
+        });
     }
 
     private static function selectRaw(): array

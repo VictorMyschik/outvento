@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services\Conversations\Enum;
 
-enum Type: string
+enum Role: int
 {
-    case Private = 'private';
-    case Group = 'group';
+    case User = 0;
+    case Admin = 1;
 
     public static function getSelectList(): array
     {
@@ -20,8 +20,8 @@ enum Type: string
     public function getLabel(): string
     {
         return match ($this) {
-            self::Private => 'Private',
-            self::Group => 'Group',
+            self::User => 'User',
+            self::Admin => 'Admin',
         };
     }
 }
