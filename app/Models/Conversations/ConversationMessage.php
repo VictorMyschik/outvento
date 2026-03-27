@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Models\Conversations;
 
 use App\Models\ORM\ORM;
-use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
 
@@ -15,6 +14,8 @@ class ConversationMessage extends ORM
 
     use AsSource;
     use Filterable;
+
+    public const null UPDATED_AT = null;
 
     public $incrementing = false;
 

@@ -13,6 +13,11 @@ final readonly class ConversationService
         private ConversationRepositoryInterface $repository,
     ) {}
 
+    public function getConversationUsers(int $conversationId): array
+    {
+        return $this->repository->getConversationUsers($conversationId);
+    }
+
     public function addGroupConversation(int $ownerId, array $userIds, string $title): int
     {
         $id = $this->repository->addConversation(Type::Group, $title);

@@ -6,6 +6,7 @@ namespace App\Orchid\Layouts\User\Conversations;
 
 use App\Models\Conversations\ConversationMessage;
 use Orchid\Screen\Actions\Button;
+use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\ViewField;
@@ -25,22 +26,26 @@ class ConversationMessageListLayout extends Table
                     'Created: ' . $message->created_at->format('H:i:s d/m/Y'),
                 ];
 
-                if ($message->updated_at) {
-                    $items[] = 'Updated: ' . $message->updated_at?->format('H:i:s d/m/Y');
+                if ($message->edited_at) {
+                    $items[] = 'Edited: ' . $message->edited_at?->format('H:i:s d/m/Y');
+                }
+
+                if ($message->deleted_at) {
+                    $items[] = 'Deleted: ' . $message->deleted_at?->format('H:i:s d/m/Y');
                 }
 
                 $items = array_merge($items, [
-                    ModalToggle::make('edit')
+                    ModalToggle::make('')
                         ->icon('pencil')
                         ->modal('message_edit_modal')
                         ->modalTitle('Edit Message')
                         ->method('editMessage')
                         ->asyncParameters(['messageId' => $message->id]),
-                    Button::make('delete')
+                    Button::make('')
                         ->icon('bs.trash3')
                         ->confirm('Are you sure you want to delete this message?')
                         ->method('deleteMessage', ['messageId' => $message->id]),
-                    Button::make('delete for me')
+                    Button::make('for me')
                         ->icon('bs.trash3')
                         ->confirm('Are you sure you want to delete this message for yourself?')
                         ->method('removeForMe', ['messageId' => $message->id]),
@@ -53,8 +58,8 @@ class ConversationMessageListLayout extends Table
         ];
     }
 
-    public function hoverable(): true
+    public function hoverable(): false
     {
-        return true;
+        return false;
     }
 }

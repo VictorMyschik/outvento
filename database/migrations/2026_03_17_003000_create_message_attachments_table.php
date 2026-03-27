@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('message_attachments', function (Blueprint $table) {
+        Schema::create('conversation_message_attachments', function (Blueprint $table) {
             $table->ulid('id')->primary();
             $table->ulid('conversation_message_id')->index();
             $table->string('path');
@@ -22,6 +22,6 @@ return new class extends Migration {
 
     public function down(): void
     {
-        Schema::dropIfExists('messages');
+        Schema::dropIfExists('conversation_message_attachments');
     }
 };

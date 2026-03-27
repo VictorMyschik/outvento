@@ -8,6 +8,7 @@ use App\Models\Conversations\Conversation;
 use App\Models\Conversations\ConversationMessage;
 use App\Models\Conversations\ConversationMessageUserState;
 use App\Models\Conversations\ConversationUser;
+use App\Models\User;
 use App\Repositories\DatabaseRepository;
 use App\Services\Conversations\ConversationRepositoryInterface;
 use App\Services\Conversations\Enum\Role;
@@ -184,5 +185,12 @@ final readonly class ConversationRepository extends DatabaseRepository implement
             ->whereNull('s.updated_at')
             ->orderBy('m.created_at', 'desc')
             ->value('m.id');
+    }
+
+    public function getConversationUsers(int $conversationId): array
+    {
+        return User::join(ConversationUser::TABLE, function ($join) use ($conversationId) {
+            $join->on(ConversationUser::TABLE . '.user_id', '=', User::getTableName() . '.id')->where(ConversationUser::TABLE . '.conversation_id', $conversationId);
+        })->get()->all();
     }
 }

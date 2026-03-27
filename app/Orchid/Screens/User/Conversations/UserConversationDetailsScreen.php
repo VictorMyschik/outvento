@@ -20,17 +20,19 @@ use Orchid\Support\Facades\Layout;
 class UserConversationDetailsScreen extends UserBaseScreen
 {
     public ?User $user = null;
+    public ?User $secondUser = null;
     public ?Conversation $conversation = null;
     public string $name = 'Users Messages';
 
     public function name(): string
     {
-        return $this->user->name . ' messages';
+        return $this->user->name . ' messages with ' . $this->secondUser->name . ' conversations';
     }
 
     public function description(): string
     {
         $link = "<a href='" . route('profiles.details', ['user' => $this->user->id]) . "'>" . $this->user->name . "</a>";
+
         return $link . ' | ' . $this->conversations->getUnreadMessagesCount($this->conversation->id, $this->user->id) . ' unread messages';
     }
 
@@ -61,6 +63,11 @@ class UserConversationDetailsScreen extends UserBaseScreen
     public function query(User $user, ?Conversation $conversation = null): iterable
     {
         $this->setAvatar($user->getAvatar());
+        foreach ($this->conversations->getConversationUsers($conversation->id()) as $users) {
+            if ($users->user_id !== $user->id) {
+                $this->secondUser = $users;
+            }
+        }
 
         return [
             'user'         => $user,

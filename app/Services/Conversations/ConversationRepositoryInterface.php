@@ -10,6 +10,8 @@ use App\Services\Conversations\Enum\Type;
 
 interface ConversationRepositoryInterface
 {
+    public function getConversationUsers(int $conversationId): array;
+
     public function getPersonalConversationByUsers(int $ownerId, int $userId): ?int;
 
     public function getConversationUsersByConversationId(int $conversationId): array;

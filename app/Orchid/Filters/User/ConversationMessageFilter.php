@@ -31,11 +31,12 @@ class ConversationMessageFilter extends Filter
             })
             ->whereNull(ConversationMessageUserState::TABLE . '.updated_at')
             ->where('conversation_id', $conversationId)
-            ->orderByDesc(ConversationMessage::TABLE . '.created_at')
+            //->orderByDesc(ConversationMessage::TABLE . '.created_at', 'ASC')
             ->selectRaw(implode(',', [
                 ConversationMessage::TABLE . '.*',
                 'users.name as user_name',
                 'users.id as user_id',
+                $userId . ' as current_user_id',
             ]));
     }
 
