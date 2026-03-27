@@ -5,40 +5,75 @@ declare(strict_types=1);
 namespace App\Orchid\Layouts\Notifications;
 
 use App\Models\User;
-use App\Services\Notifications\Enum\NotificationChannel;
-use App\Services\Notifications\Enum\NotificationType;
-use Orchid\Screen\Fields\Group;
+use App\Services\Notifications\Enum\ServiceEvent;
+use App\Services\Notifications\Resolvers\CommunicationChannelSupportResolver;
+use App\Services\Notifications\Resolvers\NotificationAudienceResolver;
+use App\Services\User\UserService;
+use Illuminate\Http\Request;
 use Orchid\Screen\Fields\Relation;
 use Orchid\Screen\Fields\Select;
-use Orchid\Screen\Fields\Switcher;
-use Orchid\Screen\Fields\ViewField;
-use Orchid\Screen\Layouts\Rows;
+use Orchid\Screen\Layouts\Listener;
+use Orchid\Screen\Repository;
+use Orchid\Support\Facades\Layout;
 
-class UserNotificationSettingEditLayout extends Rows
+class UserNotificationSettingEditLayout extends Listener
 {
-    public function fields(): array
+    public function __construct(
+        private readonly UserService $userService
+    ) {}
+
+    protected $targets = [
+        'setting.user_id',
+        'setting.communication_id',
+        'setting.event',
+    ];
+
+    protected function layouts(): iterable
     {
+        $communications = $this->userService->getCommunications((int)$this->query->get('setting.user_id'));
+
+        $options = [];
+        foreach ($communications as $communication) {
+            $channel = CommunicationChannelSupportResolver::fromCommunicationType($communication->getType());
+            if ($channel) {
+                $options[$communication->id] = $channel->getLabel() . ': ' . $communication->address;
+            }
+        }
+
+        $eventTypeOptions = ServiceEvent::getSelectList();
+        if ($user = User::find((int)$this->query->get('setting.user_id'))) {
+            $eventTypeOptions = ServiceEvent::selectListForAudiences(
+                NotificationAudienceResolver::fromUser($user)
+            );
+        }
+
         return [
-            Group::make([
-                Switcher::make('setting.active')->sendTrueOrFalse()->title('Active'),
+            Layout::rows([
+                    Relation::make('setting.user_id')
+                        ->fromModel(User::class, 'name', 'id')
+                        ->required()
+                        ->title('Пользователь'),
 
-                Relation::make('setting.user_id')
-                    ->fromModel(User::class, 'name', 'id')
-                    ->required()
-                    ->title('Пользователь'),
-            ]),
-            ViewField::make('separator')->view('space'),
-            Group::make([
-                Select::make('setting.notification_key')
-                    ->options(NotificationType::getSelectList())
-                    ->required()
-                    ->title('Тип оповещения'),
 
-                Select::make('setting.channel')
-                    ->options(NotificationChannel::getSelectList())
-                    ->required()
-                    ->title('Канал'),
-            ]),
+                    Select::make('setting.event')
+                        ->options($eventTypeOptions)
+                        ->required()
+                        ->title('Тип события'),
+
+
+                    Select::make('setting.communication_id')
+                        ->options($options)
+                        ->title('Адрес для уведомлений')
+                        ->required(),
+                ]
+            ),
         ];
+    }
+
+    public function handle(Repository $repository, Request $request): Repository
+    {
+        return $repository->set('setting.user_id', $request->input('setting.user_id'))
+            ->set('setting.event', $request->input('setting.event'))
+            ->set('setting.communication_id', $request->input('setting.communication_id'));
     }
 }

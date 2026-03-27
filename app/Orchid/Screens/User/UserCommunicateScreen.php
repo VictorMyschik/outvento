@@ -7,7 +7,7 @@ namespace App\Orchid\Screens\User;
 use App\Http\Controllers\API\User\Request\CommunicationRequest;
 use App\Models\User;
 use App\Models\UserInfo\Communication;
-use App\Orchid\Filters\UserCommunicateFilter;
+use App\Orchid\Filters\UserCommunicationFilter;
 use App\Orchid\Layouts\User\UserCommunicateEditLayout;
 use App\Orchid\Layouts\User\UserCommunicateListLayout;
 use App\Services\User\UserService;
@@ -20,25 +20,25 @@ use Orchid\Support\Facades\Toast;
 
 class UserCommunicateScreen extends Screen
 {
-    public string $name = 'Контакты пользователей';
+    public string $name = 'User Communication';
 
     public function __construct(private readonly UserService $service) {}
 
     public function query(): iterable
     {
         return [
-            'list' => UserCommunicateFilter::runQuery()->paginate(20),
+            'list' => UserCommunicationFilter::runQuery()->paginate(20),
         ];
     }
 
     public function commandBar(): iterable
     {
         return [
-            ModalToggle::make('Добавить контакт')
+            ModalToggle::make('Add Contact')
                 ->class('mr-btn-success')
                 ->modal('communicate_modal')
                 ->method('saveCommunication')
-                ->modalTitle('Добавить контакт')
+                ->modalTitle('Add Contact')
                 ->asyncParameters(['id' => 0])
                 ->icon('plus'),
         ];
@@ -47,7 +47,7 @@ class UserCommunicateScreen extends Screen
     public function layout(): iterable
     {
         return [
-            UserCommunicateFilter::displayFilterCard(),
+            UserCommunicationFilter::displayFilterCard(),
             UserCommunicateListLayout::class,
             Layout::modal('communicate_modal', UserCommunicateEditLayout::class)->async('asyncGetCommunicate'),
         ];
@@ -56,8 +56,8 @@ class UserCommunicateScreen extends Screen
     public function runFiltering(Request $request): RedirectResponse
     {
         $list = [];
-        foreach (UserCommunicateFilter::FIELDS as $item) {
-            if (!is_null($request->get($item))) {
+        foreach (UserCommunicationFilter::FIELDS as $item) {
+            if (!is_null($request->input($item))) {
                 $list[$item] = $request->get($item);
             }
         }
@@ -80,14 +80,14 @@ class UserCommunicateScreen extends Screen
         $data = $request->getUpdateData();
         $data['user_id'] = $request->get('user_id');
 
-        $this->service->saveCommunicate($id, $data);
+        $this->service->saveCommunication($id, $data);
 
-        Toast::info('Контакт сохранен');
+        Toast::info('Saved contact');
     }
 
     public function removeCommunication(int $userId, int $id): void
     {
-        $this->service->deleteCommunication(User::findOrFail($userId), $id);
+        $this->service->deleteCommunication(User::findOrFail($userId)->id, $id);
     }
 
     public function remove(int $id): void
@@ -95,6 +95,6 @@ class UserCommunicateScreen extends Screen
         $communicate = Communication::loadByOrDie($id);
         $communicate->delete();
 
-        Toast::info('Контакт удален');
+        Toast::info('Contact removed');
     }
 }

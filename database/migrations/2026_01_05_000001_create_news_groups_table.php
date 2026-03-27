@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('news_groups', function (Blueprint $table): void {
             $table->id();
-            $table->tinyInteger('language')->index(); // Language::RU
+            $table->smallInteger('language')->index(); // Language::RU
             $table->boolean('active')->default(false);
             $table->string('title');
             $table->string('code')->index();

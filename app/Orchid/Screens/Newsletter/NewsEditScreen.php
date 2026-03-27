@@ -83,7 +83,7 @@ class NewsEditScreen extends Screen
             Link::make('Назад')
                 ->icon('arrow-up')
                 ->class('mr-btn-primary')
-                ->href(request()->headers->get('referer') ?: route('newsletter.news.list')),
+                ->href(route('newsletter.news.list')),
         ];
     }
 
@@ -229,7 +229,6 @@ class NewsEditScreen extends Screen
                 }
                 $input['logo'] = new UploadedFile($path, $attachment->getOriginalName(), $attachment->getMime(), null, true);
             }
-            $subgroups && $input['subgroups'] = [$subgroups];
             $input['active'] = ((bool)$input['public'] === false) ? false : (bool)$input['active'];
             $input['public'] = ((bool)$input['active'] === true) ? true : (bool)$input['public'];
             $news_id = $this->service->saveNews($news_id, $input);

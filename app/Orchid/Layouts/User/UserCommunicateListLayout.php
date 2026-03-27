@@ -21,10 +21,10 @@ class UserCommunicateListLayout extends Table
             TD::make('id', 'ID')->sort(),
             TD::make('name', 'Login')->sort(),
             TD::make('email', 'Email')->sort(),
-            TD::make('telegram_chat_id', 'Telegram Chat ID')->sort(),
             TD::make('full_name', 'Full Name')->sort(),
-            TD::make('type', 'Type')->sort(),
+            TD::make('type', 'Type')->render(fn(Communication $communicate) => $communicate->getType()->getLabel())->sort(),
             TD::make('address', 'Address')->sort(),
+            TD::make('visibility', 'Visibility')->render(fn(Communication $communicate) => $communicate->getVisibility()->getLabel())->sort(),
             TD::make('description', 'Description')->sort(),
 
             TD::make('created_at', 'Created')
@@ -51,7 +51,7 @@ class UserCommunicateListLayout extends Table
                         Button::make('удалить')
                             ->method('removeCommunication')
                             ->confirm('Вы уверены, что хотите удалить этот контакт?')
-                            ->parameters(['userId' => $communicate->user_id,'id' => $communicate->id()])
+                            ->parameters(['userId' => $communicate->user_id, 'id' => $communicate->id()])
                             ->icon('trash'),
                     ])),
         ];

@@ -15,7 +15,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: "email", description: "Contact email address", type: "string", example: "test@test.com"),
         new OA\Property(property: "phone", description: "Contact phone number", type: "string", example: "+4515478818"),
         new OA\Property(property: "telegram", description: "Contact Telegram handle", type: "string", example: "@test"),
-        new OA\Property(property: "telegram_channel", description: "Contact Telegram channel handle", type: "string", example: "@test_channel"),
+        new OA\Property(property: "telegramChannel", description: "Contact Telegram channel handle", type: "string", example: "@test_channel"),
     ],
     type: "object",
 )]

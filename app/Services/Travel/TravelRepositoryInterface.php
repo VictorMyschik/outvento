@@ -3,13 +3,21 @@
 namespace App\Services\Travel;
 
 use App\Models\Travel\Travel;
-use App\Models\Travel\TravelImage;
-use App\Models\Travel\TravelType;
+use App\Models\Travel\TravelMedia;
 use App\Models\User;
+use App\Services\Travel\DTO\TravelPointDto;
+use App\Services\Travel\Enum\TravelPointType;
+use App\Services\Travel\Enum\UserTravelRole;
 
 interface TravelRepositoryInterface
 {
+    public function saveTravelUser(int $userId, int $travelId, UserTravelRole $role): void;
+
     public function saveTravel(int $travelId, array $data): int;
+
+    public function updateTravelCountries(int $travelId, array $countryIds): void;
+
+    public function updateTravelActivities(int $travelId, array $activityIds): void;
 
     public function getTravelUsers(Travel $travel): array;
 
@@ -19,21 +27,47 @@ interface TravelRepositoryInterface
 
     public function getTravelById(int $travelId): ?Travel;
 
-    /**
-     * @return TravelType[]
-     */
-    public function getTravelTypeList(): array;
 
-    public function getTravelLogo(int $travelId): ?TravelImage;
+    public function getTravelLogo(int $travelId): ?TravelMedia;
 
-    public function getTravelImage(int $imageId): ?TravelImage;
+    public function getTravelMedia(int $mediaId): TravelMedia;
+
+    public function deleteTravelMedias(int $travelId): void;
 
     /**
-     * @return TravelImage[]
+     * @return TravelMedia[]
      */
-    public function getTravelPhotoList(int $travelId): array;
+    public function getTravelMediaList(int $travelId): array;
 
     public function saveImage(int $id, array $input): int;
 
-    public function deleteTravelImage(int $imageId): void;
+    public function deleteTravelMedia(int $mediaId): void;
+
+    public function deleteTravel(int $travelId): void;
+
+    public function setAsLogo(int $imageId): void;
+
+    public function getTravelMediaSize(int $travelId): int;
+
+    public function getFullUserMediaSize(int $userId): int;
+
+    public function getTravelPoints(int $travelId): array;
+
+    public function savePoint(int $pointId, TravelPointType $type, TravelPointDto $data): int;
+
+    public function deletePoint(int $pointId): void;
+
+    public function deleteTravelPoints(int $travelId): void;
+
+    public function getTravelLinks(int $travelId): array;
+
+    public function getResources(int $travelId): array;
+
+    public function saveTravelResource(int $resourceId, array $data): int;
+
+    public function deleteTravelResource(int $resourceId): void;
+
+    public function deleteTravelResources(int $travelId): void;
+
+    public function getTravelResourcesSize(int $travelId): int;
 }

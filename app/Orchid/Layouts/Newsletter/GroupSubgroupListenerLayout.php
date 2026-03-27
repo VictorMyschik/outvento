@@ -40,7 +40,8 @@ class GroupSubgroupListenerLayout extends Listener
 
         $isPublic = $news->isPublic();
         $createdAt = $news->created_at->format('d.m.Y');
-        $link = '<a href="' . env('FRONT_HOST') . '/news/' . $news->id() . '" target="_blank"><b>ссылке</b></a>';
+
+        $links = $news->getUriList();
 
         $subgroupSelectedList = [];
         foreach ($news->getSubgroupList() ?? [] as $subgroup) {
@@ -50,10 +51,10 @@ class GroupSubgroupListenerLayout extends Listener
         return [
             Layout::rows([
                 Input::make('news.id')->type('hidden'),
-                ViewField::make('')->view('admin.h6')->value($news->getTextVisible($link))->class('text-muted mb-0'),
+                ViewField::make('')->view('admin.h6')->value($news->getTextVisible($links))->class('text-muted mb-0'),
                 Group::make([
-                    Switcher::make('news.active')->sendTrueOrFalse()->title('Активен'),
-                    Switcher::make('news.public')->sendTrueOrFalse()->value($isPublic)->title('Отображать на сайте'),
+                    Switcher::make('news.active')->sendTrueOrFalse()->title('В поиске'),
+                    Switcher::make('news.public')->sendTrueOrFalse()->value($isPublic)->title('Опубликовано'),
                     Input::make('news.code')->popover('Оставьте пустым, чтобы сгенерировать на основе имени статьи')->type('text')->max(255)->title('Код'),
                     Select::make('news.language')->required()->options(Language::getSelectList())->title('Язык')
                 ])->fullWidth(),

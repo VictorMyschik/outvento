@@ -3,11 +3,10 @@
 namespace App\Orchid\Layouts\Travel;
 
 use App\Models\Reference\Country;
-use App\Models\Travel\Travel;
-use App\Models\Travel\TravelType;
 use App\Models\User;
+use App\Services\Travel\Enum\Activity;
 use App\Services\Travel\Enum\TravelStatus;
-use App\Services\Travel\Enum\TravelVisibleType;
+use App\Services\Travel\Enum\TravelVisible;
 use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
@@ -45,13 +44,13 @@ class TravelEditLayout extends Rows
                 ->title('Travel type')
                 ->required()
                 ->empty('Select travel type')
-                ->fromModel(TravelType::class, 'name_ru'),
+                ->fromModel(Activity::class, 'name_ru'),
 
             Select::make('travel.visible_type')
                 ->title('Visible type')
                 ->required()
                 ->empty('Select travel public type')
-                ->options(TravelVisibleType::getSelectList()),
+                ->options(TravelVisible::getSelectList()),
 
             Group::make([
                 Input::make('travel.date_from')

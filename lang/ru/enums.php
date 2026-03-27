@@ -2,19 +2,91 @@
 
 return [
     'gender' => [
-        'MALE'   => 'Мужской',
-        'FEMALE' => 'Женский',
+        'Male'   => 'Мужской',
+        'Female' => 'Женский',
     ],
 
-    'communicateType' => [
-        'Phone'         => 'Телефон',
-        'Email'         => 'Email',
-        'Address'       => 'Адрес',
-        'WhatsApp'      => 'WhatsApp',
-        'Telegram'      => 'Telegram',
-        'Viber'         => 'Viber',
-        'Link'          => 'Ссылка',
-        'GeoCoordinate' => 'Геокоординаты',
-        'Other'         => 'Другое',
+    'communication_types' => [
+        'Phone'          => 'Телефон',
+        'Email'          => 'Email',
+        'Address'        => 'Адрес',
+        'Whatsapp'       => 'WhatsApp',
+        'Telegram'       => 'Telegram',
+        'Viber'          => 'Viber',
+        'Link'           => 'Ссылка',
+        'Geocoordinates' => 'Геокоординаты',
+        'Other'          => 'Другое',
+    ],
+
+    'users_visibility' => [
+        'Private'         => 'Приватный',
+        'Public'          => 'Публичный',
+        'FriendsOnly'     => 'Только для друзей',
+        'RegisteredUsers' => 'Только для зарегистрированных пользователей',
+    ],
+
+    'relationship_status' => [
+        'NotSpecified'   => 'Не указано',
+        'Single'         => 'Не в отношениях',
+        'InRelationship' => 'В отношениях',
+        'Married'        => 'Женат / замужем',
+        'Looking'        => 'В активном поиске',
+    ],
+
+    'verification_status' => [
+        'NotVerified' => 'Не подтвержден',
+        'Verified'    => 'Подтвержден',
+    ],
+
+    'promo_status' => [
+        'Pending'   => 'Ожидает подтверждения',
+        'Confirmed' => 'Подтверждено',
+        'Revoked'   => 'Отозвано',
+    ],
+
+    'activities' => [
+        'Cycling'          => 'Велопоход',
+        'MountainCampaign' => 'Горная компания',
+        'Hiking'           => 'Пеший поход',
+        'Kayaks'           => 'Каяки',
+        'MountainClimbing' => 'Альпинизм',
+    ],
+
+    'travel_visible' => [
+        'Public'   => 'Публичный',
+        'ForMe'    => 'Только для меня',
+        'Platform' => 'Только для зарегистрированных пользователей',
+        'ByLink'   => 'Только по ссылке',
+    ],
+
+    'travel_visible_description' => [
+        'Public'   => 'Любой пользователь может видеть эту походную программу',
+        'ForMe'    => 'Только я могу видеть эту походную программу',
+        'Platform' => 'Только зарегистрированные пользователи могут видеть эту походную программу',
+    ],
+
+    'travel_status' => [
+        'Draft'    => 'Черновик',
+        'Active'   => 'Активный',
+        'Archived' => 'Архивный',
+        'Deleted'  => 'Удаленный',
+    ],
+
+    'user_travel_role' => [
+        'Owner'  => 'Владелец',
+        'Member' => 'Участник',
+    ],
+
+    'travel_invite_status' => [
+        'Pending'  => 'Ожидает ответа',
+        'Accepted' => 'Принято',
+        'Declined' => 'Отклонено',
+    ],
+
+    'travel_point' => [
+        'Start'  => 'Старт',
+        'Stop'   => 'Остановка',
+        'Finish' => 'Финиш',
+        'Poi'    => 'Пункт интереса',
     ],
 ];

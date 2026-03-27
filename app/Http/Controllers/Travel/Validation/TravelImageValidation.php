@@ -10,14 +10,14 @@ use App\Exceptions\Validation\PermissionDeniedException;
 use App\Helpers\System\MrBaseHelper;
 use App\Models\System\Settings;
 use App\Models\Travel\Travel;
-use App\Models\Travel\TravelImage;
+use App\Models\Travel\TravelMedia;
 use App\Models\User;
 use GuzzleHttp\Psr7\UploadedFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
-readonly class TravelImageValidation
+readonly class TravelMediaValidation
 {
     public function __construct(private ?User $user) {}
 
@@ -30,8 +30,8 @@ readonly class TravelImageValidation
         }
 
         $name = $validator->safe()->only('image_name')['image_name'];
-        /** @var TravelImage $image */
-        $image = TravelImage::where('travel_id', $travel_id)->where('name', $name)->first();
+        /** @var TravelMedia $image */
+        $image = TravelMedia::where('travel_id', $travel_id)->where('name', $name)->first();
 
         if (!$image) {
             throw new InputMissingException('Image not found');
@@ -121,7 +121,7 @@ readonly class TravelImageValidation
         }
 
         $id = (int)$validator->safe()->only('image_id')['image_id'];
-        $image = TravelImage::loadByOrDie($id);
+        $image = TravelMedia::loadByOrDie($id);
 
         if (!$image->canEdit($this->user)) {
             throw new PermissionDeniedException();
@@ -145,7 +145,7 @@ readonly class TravelImageValidation
 
         $input = $validator->safe()->only('image_id', 'image_type', 'group', 'description');
 
-        $image = TravelImage::loadByOrDie($input['image_id']);
+        $image = TravelMedia::loadByOrDie($input['image_id']);
 
         if ($image->getTravel()->id() !== $this->user->id()) {
             throw new PermissionDeniedException();

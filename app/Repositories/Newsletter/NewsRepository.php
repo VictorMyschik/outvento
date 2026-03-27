@@ -26,7 +26,6 @@ final readonly class NewsRepository extends DatabaseRepository implements NewsRe
         $subgroups = $data['subgroups'] ?? null;
 
         if ($newsId > 0) {
-            $data['updated_at'] = now();
             unset($data['subgroups']);
             $this->db->table(News::getTableName())->where('id', $newsId)->update($data);
         } else {

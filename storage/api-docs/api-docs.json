@@ -230,38 +230,6 @@
                 ]
             }
         },
-        "/api/v1/auth/yandex": {
-            "get": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Yandex авторизация",
-                "description": "Будет произведён редирект на страницу авторизации Яндекс. После успешной авторизации, пользователь будет перенаправлен на указанный в настройках приложения URL.",
-                "operationId": "yandexAuth",
-                "responses": {
-                    "302": {
-                        "description": "Redirect to Yandex",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "redirect"
-                                        },
-                                        "url": {
-                                            "type": "string",
-                                            "example": "https://oauth.yandex.ru/authorize"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/user/verify": {
             "post": {
                 "tags": [
@@ -565,14 +533,33 @@
                 }
             }
         },
-        "/api/v1/translate/common": {
+        "/api/v1/translations": {
             "get": {
                 "tags": [
-                    "Common"
+                    "I18n"
                 ],
-                "summary": "Get common translations",
-                "operationId": "getCommonTranslate",
+                "summary": "Get translations",
+                "description": "Returns translations for specified groups in the requested language",
+                "operationId": "getTranslations",
                 "parameters": [
+                    {
+                        "name": "groups[]",
+                        "in": "query",
+                        "description": "Translation groups to load (multiple values allowed)",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "example": "auth"
+                            }
+                        },
+                        "example": [
+                            "auth",
+                            "passwords",
+                            "validation"
+                        ]
+                    },
                     {
                         "$ref": "#/components/parameters/XRequestedWithHeader"
                     }
@@ -593,12 +580,32 @@
                                             "example": "ok"
                                         },
                                         "content": {
-                                            "description": "Localization object (key => string)",
+                                            "description": "Key-value pairs of translations",
                                             "type": "object",
-                                            "example": "{'login': 'Вход'}"
+                                            "example": {
+                                                "failed": "Эти учетные данные не соответствуют нашим записям.",
+                                                "password": "Предоставленный пароль неверен.",
+                                                "throttle": "Слишком много попыток входа. Пожалуйста, попробуйте еще раз через :seconds секунд."
+                                            },
+                                            "additionalProperties": {
+                                                "type": "string"
+                                            }
                                         }
                                     },
                                     "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
                                 }
                             }
                         }
@@ -645,6 +652,222 @@
                 }
             }
         },
+        "/api/v1/legal/{type}": {
+            "get": {
+                "tags": [
+                    "Pages"
+                ],
+                "summary": "Get legal document by type",
+                "operationId": "getLegalDocumentByType",
+                "parameters": [
+                    {
+                        "name": "type",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "terms_and_conditions"
+                        }
+                    },
+                    {
+                        "$ref": "#/components/parameters/XRequestedWithHeader"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "status",
+                                        "content"
+                                    ],
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "ok"
+                                        },
+                                        "content": {
+                                            "$ref": "#/components/schemas/TermsAndConditionsResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/faq/search": {
+            "post": {
+                "tags": [
+                    "Pages"
+                ],
+                "summary": "Search FAQs",
+                "operationId": "searchFaqs",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/XRequestedWithHeader"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/FAQSearchRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "status",
+                                        "content"
+                                    ],
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "ok"
+                                        },
+                                        "content": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/FaqComponent"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/faq/list": {
+            "get": {
+                "tags": [
+                    "Pages"
+                ],
+                "summary": "Get base FAQs",
+                "operationId": "getBaseFaqList",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/XRequestedWithHeader"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "status",
+                                        "content"
+                                    ],
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "ok"
+                                        },
+                                        "content": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/FaqComponent"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/api/v1/form/feedback": {
+            "post": {
+                "tags": [
+                    "Forms"
+                ],
+                "summary": "Submit feedback",
+                "description": "Submit feedback form",
+                "operationId": "submitFeedback",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/FeedbackRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SuccessfulEmptyResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/subscription/subscribe": {
             "post": {
                 "tags": [
@@ -657,6 +880,17 @@
                         "$ref": "#/components/parameters/XRequestedWithHeader"
                     }
                 ],
+                "requestBody": {
+                    "description": "Subscription payload",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SubscriptionRequest"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "204": {
                         "description": "Successful",
@@ -1209,9 +1443,6 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/XRequestedWithHeader"
-                    },
-                    {
-                        "$ref": "#/components/parameters/AcceptLanguageHeader"
                     }
                 ],
                 "responses": {
@@ -1246,15 +1477,13 @@
         "schemas": {
             "AuthenticateRequest": {
                 "required": [
-                    "email",
+                    "login",
                     "password"
                 ],
                 "properties": {
-                    "email": {
+                    "login": {
                         "type": "string",
-                        "format": "email",
-                        "maxLength": 255,
-                        "example": "user@example.com"
+                        "maxLength": 255
                     },
                     "password": {
                         "type": "string",
@@ -1329,6 +1558,10 @@
                         "type": "string",
                         "format": "password",
                         "example": "password123"
+                    },
+                    "remember": {
+                        "type": "boolean",
+                        "example": true
                     }
                 },
                 "type": "object"
@@ -1397,6 +1630,79 @@
                 },
                 "type": "object"
             },
+            "FAQSearchRequest": {
+                "description": "Request schema for searching FAQs",
+                "properties": {
+                    "q": {
+                        "description": "Search query. Trimmed and sanitized; must be at least 2 characters after processing.",
+                        "type": "string",
+                        "maxLength": 100,
+                        "example": "password reset"
+                    }
+                },
+                "type": "object"
+            },
+            "FeedbackRequest": {
+                "required": [
+                    "name",
+                    "email",
+                    "message"
+                ],
+                "properties": {
+                    "name": {
+                        "description": "Sender name",
+                        "type": "string",
+                        "example": "John Doe"
+                    },
+                    "email": {
+                        "description": "Sender email",
+                        "type": "string",
+                        "format": "email",
+                        "example": "john@example.com"
+                    },
+                    "message": {
+                        "description": "Message content",
+                        "type": "string",
+                        "maxLength": 5000
+                    }
+                },
+                "type": "object"
+            },
+            "SubscriptionRequest": {
+                "required": [
+                    "email"
+                ],
+                "properties": {
+                    "email": {
+                        "description": "Subscriber email",
+                        "type": "string",
+                        "format": "email",
+                        "example": "user@example.com"
+                    }
+                },
+                "type": "object"
+            },
+            "TranslationRequest": {
+                "required": [
+                    "groups"
+                ],
+                "properties": {
+                    "groups": {
+                        "description": "Array of translation group codes",
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "maxLength": 50
+                        },
+                        "minItems": 1,
+                        "example": [
+                            "auth",
+                            "common"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
             "ContactsResponse": {
                 "description": "Response containing contact information",
                 "required": [
@@ -1418,6 +1724,11 @@
                         "description": "Contact Telegram handle",
                         "type": "string",
                         "example": "@test"
+                    },
+                    "telegramChannel": {
+                        "description": "Contact Telegram channel handle",
+                        "type": "string",
+                        "example": "@test_channel"
                     }
                 },
                 "type": "object"
@@ -1453,6 +1764,46 @@
                     "pl": "Polski"
                 }
             },
+            "TermsAndConditionsResponse": {
+                "properties": {
+                    "text": {
+                        "description": "Terms and Conditions text",
+                        "type": "string",
+                        "example": "These are the terms and conditions..."
+                    },
+                    "publishedAt": {
+                        "description": "Publication date of the Terms and Conditions",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T10:00:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "FaqComponent": {
+                "title": "FAQ Component",
+                "description": "FAQ item with title and text",
+                "required": [
+                    "id",
+                    "title",
+                    "text"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "How to use the API?"
+                    },
+                    "text": {
+                        "type": "string",
+                        "example": "Use the /api endpoint with a token."
+                    }
+                },
+                "type": "object"
+            },
             "FrontendSettingsResponse": {
                 "description": "Response containing frontend settings including languages and contacts",
                 "required": [
@@ -1465,6 +1816,14 @@
                     },
                     "contacts": {
                         "$ref": "#/components/schemas/ContactsResponse"
+                    },
+                    "translations": {
+                        "description": "Translations key-value pairs",
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string",
+                            "example": "Translated Text"
+                        }
                     }
                 },
                 "type": "object"
@@ -1493,7 +1852,7 @@
             "WelcomeResponse": {
                 "required": [
                     "countries",
-                    "translates",
+                    "translations",
                     "travelTypeList",
                     "travelExamples"
                 ],
@@ -1505,10 +1864,10 @@
                             "$ref": "#/components/schemas/CountryComponent"
                         }
                     },
-                    "translates": {
+                    "translations": {
                         "description": "Translation entries",
                         "type": "object",
-                        "example": "{'welcome_message': 'Welcome to our site!', 'login': 'Log In'}"
+                        "example": "{'page_welcome.slogan': 'Welcome to our site!'}"
                     },
                     "travelTypeList": {
                         "description": "List of travel types",
@@ -2130,6 +2489,12 @@
                         "description": "Информация о пользователе",
                         "type": "string",
                         "nullable": true
+                    },
+                    "updatedAt": {
+                        "description": "Дата и время последнего обновления профиля пользователя",
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
                     }
                 },
                 "type": "object"
@@ -2170,6 +2535,17 @@
                         "ru"
                     ]
                 }
+            },
+            "XLocaleHeader": {
+                "name": "X-Locale",
+                "in": "header",
+                "description": "Предпочитаемый язык (ISO 639-1 или BCP 47). Пример: ru, en, pl.\n\nОтсутствие заголовка → 400.\nНеподдерживаемое значение → 422.",
+                "required": true,
+                "schema": {
+                    "type": "string",
+                    "example": "ru"
+                },
+                "example": "ru"
             },
             "page": {
                 "name": "page",
@@ -2217,16 +2593,24 @@
             "description": "Common"
         },
         {
+            "name": "I18n",
+            "description": "I18n"
+        },
+        {
+            "name": "Pages",
+            "description": "Pages"
+        },
+        {
+            "name": "Forms",
+            "description": "Forms"
+        },
+        {
             "name": "Subscription",
             "description": "Subscription"
         },
         {
             "name": "User info",
             "description": "User info"
-        },
-        {
-            "name": "Pages",
-            "description": "Pages"
         }
     ]
 }

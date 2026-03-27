@@ -24,21 +24,21 @@ class UserInfoFilter extends Filter
         'id',
         'name',
         'email',
-        'email_verified_at',
-        'telegram_chat_id',
+        'emailVerifiedAt',
+        'subscriptionToken',
         'language',
-        'first_name',
-        'last_name',
+        'firstName',
+        'lastName',
         'gender',
         'birthday',
         'about',
-        'created_at',
-        'updated_at',
+        'createdAt',
+        'updatedAt',
     ];
 
     public static function runQuery(): Builder
     {
-        return User::filters([self::class]);
+        return User::filters([self::class])->orderBy('id', 'desc');
     }
 
     public function run(Builder $builder): Builder
@@ -54,17 +54,16 @@ class UserInfoFilter extends Filter
             $builder->where('email', 'like', '%' . $input['email'] . '%');
         }
 
-        if (isset($input['email_verified_at'])) {
-            if ((bool)$input['email_verified_at']) {
-                $builder->whereNotNull('email_verified_at');
+        if (isset($input['emailVerifiedAt'])) {
+            if ((bool)$input['emailVerifiedAt']) {
+                $builder->whereNotNull('emailVerifiedAt');
             } else {
-                $builder->whereNull('email_verified_at');
+                $builder->whereNull('emailVerifiedAt');
             }
         }
 
-        if (!empty($input['telegram_chat_id'])) {
-            $input['telegram_chat_id'] = substr($input['telegram_chat_id'], 0, 100);
-            $builder->where('telegram_chat_id', 'like', '%' . $input['telegram_chat_id'] . '%');
+        if (!empty($input['subscriptionToken'])) {
+            $builder->where('subscription_token', 'like', '%' . $input['subscriptionToken'] . '%');
         }
 
         if (!empty($input['name'])) {
@@ -78,14 +77,14 @@ class UserInfoFilter extends Filter
             $builder->where('language', (int)$input['language']);
         }
 
-        if (!empty($input['first_name'])) {
-            $input['first_name'] = substr($input['first_name'], 0, 100);
-            $builder->where('first_name', 'like', '%' . $input['first_name'] . '%');
+        if (!empty($input['firstName'])) {
+            $input['firstName'] = substr($input['firstName'], 0, 100);
+            $builder->where('first_name', 'like', '%' . $input['firstName'] . '%');
         }
 
-        if (!empty($input['last_name'])) {
-            $input['last_name'] = substr($input['last_name'], 0, 100);
-            $builder->where('last_name', 'like', '%' . $input['last_name'] . '%');
+        if (!empty($input['lastName'])) {
+            $input['lastName'] = substr($input['lastName'], 0, 100);
+            $builder->where('last_name', 'like', '%' . $input['lastName'] . '%');
         }
 
         if (!empty($input['gender']) && is_numeric($input['gender'])) {
@@ -99,13 +98,16 @@ class UserInfoFilter extends Filter
         if (!empty($input['about'])) {
             $builder->where('about', 'like', '%' . $input['about'] . '%');
         }
-
-        if (!empty($input['created_at'])) {
-            $builder->whereDate('created_at', $input['created_at']);
+        if (!empty($input['subscriptionToken'])) {
+            $builder->where('subscription_token', 'like', '%' . $input['subscriptionToken'] . '%');
         }
 
-        if (!empty($input['updated_at'])) {
-            $builder->whereDate('updated_at', $input['updated_at']);
+        if (!empty($input['createdAt'])) {
+            $builder->whereDate('created_at', $input['createdAt']);
+        }
+
+        if (!empty($input['updatedAt'])) {
+            $builder->whereDate('updated_at', $input['updatedAt']);
         }
 
         return $builder;
@@ -133,26 +135,22 @@ class UserInfoFilter extends Filter
             ->options(Language::getSelectList())
             ->value($input['language'])
             ->empty();
-        $outLine[] = Select::make('email_verified_at')
+        $outLine[] = Select::make('emailVerifiedAt')
             ->title('Email verified')
             ->options([
                 '1' => 'Verified',
                 '0' => 'Not verified',
             ])
-            ->value($input['email_verified_at'])
+            ->value($input['emailVerifiedAt'])
             ->empty('Any');
 
 
-        $outLine2[] = Input::make('telegram_chat_id')
-            ->value($input['telegram_chat_id'])
-            ->title('Telegram Chat ID');
-
-        $outLine2[] = Input::make('first_name')
-            ->value($input['first_name'])
+        $outLine2[] = Input::make('firstName')
+            ->value($input['firstName'])
             ->title('First name');
 
-        $outLine2[] = Input::make('last_name')
-            ->value($input['last_name'])
+        $outLine2[] = Input::make('lastName')
+            ->value($input['lastName'])
             ->title('Last name');
 
         $outLine2[] = Select::make('gender')
@@ -161,15 +159,15 @@ class UserInfoFilter extends Filter
             ->value($input['gender'])
             ->empty('[не выбрано]');
 
-        $outLine2[] = DateTimer::make('created_at')
+        $outLine2[] = DateTimer::make('createdAt')
             ->title('Created at')
             ->format('d.m.Y')
-            ->value($input['created_at']);
+            ->value($input['createdAt']);
 
-        $outLine2[] = DateTimer::make('updated_at')
+        $outLine2[] = DateTimer::make('updatedAt')
             ->title('Updated at')
             ->format('d.m.Y')
-            ->value($input['updated_at']);
+            ->value($input['updatedAt']);
 
         $outLine2[] = DateTimer::make('birthday')
             ->title('Birthday')

@@ -4,10 +4,17 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\ORM\ORM;
+use App\Services\Notifications\Enum\NotificationChannel;
+use App\Services\Notifications\Enum\SystemEvent;
+use Orchid\Filters\Filterable;
+use Orchid\Screen\AsSource;
 
-class NotificationCode extends Model
+class NotificationCode extends ORM
 {
+    use AsSource;
+    use Filterable;
+
     protected $table = 'notification_codes';
 
     public const null UPDATED_AT = null;
@@ -16,7 +23,48 @@ class NotificationCode extends Model
     protected $fillable = [
         'user_id',
         'code',
-        'action',
+        'type',
+        'channel',
+        'address',
         'data',
     ];
+
+    protected array $allowedSorts = [
+        'id',
+        'user_id',
+        'code',
+        'channel',
+        'address',
+        'type',
+        'data',
+        'created_at',
+        'updated_at',
+    ];
+
+    public $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    public function getType(): SystemEvent
+    {
+        return SystemEvent::from($this->type);
+    }
+
+    public function getChannel(): NotificationChannel
+    {
+        return NotificationChannel::from($this->channel);
+    }
+
+    public static function getSelectList(): array
+    {
+        return [
+            self::ACTION_VERIFY_REG => 'Verify Registration',
+        ];
+    }
+
+    public function getUser(): User
+    {
+        return User::findOrFail($this->user_id);
+    }
 }

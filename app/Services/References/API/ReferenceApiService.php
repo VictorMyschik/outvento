@@ -8,6 +8,7 @@ use App\Services\References\API\Response\Components\CountryComponent;
 use App\Services\References\ReferenceRepositoryInterface;
 use App\Services\System\Enum\Language;
 use App\Services\Travel\Api\Components\TravelTypeComponent;
+use App\Services\Travel\Enum\Activity;
 
 final readonly class ReferenceApiService
 {
@@ -15,12 +16,12 @@ final readonly class ReferenceApiService
         private ReferenceRepositoryInterface $repository,
     ) {}
 
-    public function getTravelTypeList(Language $language): array
+    public function getActivities(): array
     {
-        foreach ($this->repository->getTravelTypeList() as $type) {
+        foreach (Activity::cases() as $key => $type) {
             $out[] = new TravelTypeComponent(
-                id: $type->id(),
-                name: $type->getName($language),
+                id: $key,
+                name: $type->getLabel(),
                 icon: $type->getImageUrl(),
             );
         }

@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace App\Http\Controllers\API\User;
 
 use App\Http\Controllers\API\APIController;
-use App\Http\Controllers\API\Auth\Request\Auth\UpdatePasswordRequest;
 use App\Http\Controllers\API\User\Request\CommunicationRequest;
 use App\Http\Controllers\API\User\Request\UpdateProfileRequest;
+use App\Models\User;
 use App\Services\User\Api\UserApiResponse;
 use App\Services\User\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use OpenApi\Attributes as OA;
+use Symfony\Component\HttpFoundation\Response;
 
 class UsersController extends APIController
 {
@@ -94,32 +96,6 @@ class UsersController extends APIController
         );
     }
 
-    #[OA\Post(
-        path: "/api/v1/user/password",
-        operationId: "changePassword",
-        summary: "Изменить пароль пользователя",
-        security: [["bearerAuth" => []]],
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(ref: "#/components/schemas/UpdatePasswordRequest")
-        ),
-        tags: ["User info"],
-        parameters: [
-            new OA\Parameter(ref: "#/components/parameters/XRequestedWithHeader"),
-        ],
-        responses: [
-            new OA\Response(response: 204, description: "Successful", content: new OA\JsonContent(ref: "#/components/schemas/SuccessfulEmptyResponse")),
-            new OA\Response(response: 422, description: "Unprocessable Entity", content: new OA\JsonContent(ref: "#/components/schemas/ValidationError")),
-            new OA\Response(response: 401, description: "Unauthorized", content: new OA\JsonContent(ref: "#/components/schemas/AuthError")),
-        ]
-    )]
-    public function changePassword(UpdatePasswordRequest $request): JsonResponse
-    {
-        $this->userService->changePassword($request->user(), $request->getPassword());
-
-        return $this->apiResponse(code: 204);
-    }
-
     #[OA\Delete(
         path: "/api/v1/user/avatar",
         operationId: "removeAvatar",
@@ -178,7 +154,7 @@ class UsersController extends APIController
     {
         return $this->apiResponse(
             $this->response->getCommunicationsList(
-                $this->userService->getCommunicates($request->user(), $this->getLanguage()),
+                $this->userService->getCommunications($request->user()->id),
             ),
         );
     }
@@ -207,7 +183,7 @@ class UsersController extends APIController
         $data = $request->getUpdateData();
         $data['user_id'] = $request->user()->id;
 
-        $this->userService->saveCommunicate(0, $data);
+        $this->userService->saveCommunication(0, $data);
 
         return $this->apiResponse(code: 201);
     }
@@ -236,7 +212,7 @@ class UsersController extends APIController
     {
         $data = $request->getUpdateData();
         $data['user_id'] = $request->user()->id;
-        $this->userService->saveCommunicate($id, $data);
+        $this->userService->saveCommunication($id, $data);
 
         return $this->apiResponse(code: 204);
     }
@@ -258,8 +234,13 @@ class UsersController extends APIController
     )]
     public function deleteCommunication(Request $request, int $id): JsonResponse
     {
-        $this->userService->deleteCommunication($request->user(), $id);
+        $this->userService->deleteCommunication($request->user()->id, $id);
 
         return $this->apiResponse(code: 204);
+    }
+
+    public function getUserAvatar(User $user): Response
+    {
+        return response()->file(Storage::disk('users')->path($user->avatar));
     }
 }

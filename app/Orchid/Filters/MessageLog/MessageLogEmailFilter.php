@@ -6,13 +6,12 @@ namespace App\Orchid\Filters\MessageLog;
 
 use App\Models\MessageLog\EmailLog;
 use App\Orchid\Layouts\Lego\ActionFilterPanel;
-use App\Services\Email\Enum\EmailTypeEnum;
-use App\Services\Notifications\Enum\NotificationType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Orchid\Filters\Filter;
 use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
+use Orchid\Screen\Fields\Relation;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Fields\ViewField;
 use Orchid\Screen\Layouts\Rows;
@@ -43,7 +42,7 @@ class MessageLogEmailFilter extends Filter
         }
 
         if (!empty($input['type'])) {
-            $builder->where('type', (int)$input['type']);
+            $builder->where('type', (string)$input['type']);
         }
 
         if (!empty($input['email'])) {
@@ -70,8 +69,9 @@ class MessageLogEmailFilter extends Filter
         $input = $request->all(self::FIELDS);
 
         $group = Group::make([
-            Select::make('type')
-                ->options(NotificationType::getSelectList())
+            Input::make('id')->value($input['id'])->type('number')->title('ID'),
+            Relation::make('type')
+                ->fromModel(EmailLog::class, 'type', 'type')
                 ->value($input['type'])
                 ->empty()
                 ->title('Тип письма'),
@@ -82,7 +82,7 @@ class MessageLogEmailFilter extends Filter
                 ->empty('Все')
                 ->title('Статус письма'),
 
-            Input::make('id')->value($input['id'])->type('number')->title('ID'),
+
             Input::make('subject')->value($input['subject'])->type('text')->title('Тема'),
             Input::make('email')->value($input['email'])->type('text')->title('Email адрес'),
         ]);

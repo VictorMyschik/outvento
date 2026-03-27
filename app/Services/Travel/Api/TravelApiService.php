@@ -5,20 +5,19 @@ declare(strict_types=1);
 namespace App\Services\Travel\Api;
 
 use App\Http\Controllers\API\Travel\Response\Components\MembersComponent;
-use App\Http\Controllers\API\Travel\Response\Components\TravelImageComponent;
+use App\Http\Controllers\API\Travel\Response\Components\TravelMediaComponent;
 use App\Http\Controllers\API\Travel\Response\Components\TravelStatusComponent;
 use App\Http\Controllers\API\Travel\Response\Components\TravelUserComponent;
 use App\Http\Controllers\API\Travel\Response\Components\TravelVisibleType;
 use App\Http\Controllers\API\Travel\Response\TravelDetailsResponse;
 use App\Models\Travel\Travel;
-use App\Models\Travel\TravelImage;
-use App\Models\Travel\TravelType;
+use App\Models\Travel\TravelMedia;
 use App\Models\User;
 use App\Services\References\API\Response\Components\CountryComponent;
-use App\Services\References\API\Response\Components\CountryContinentComponent;
 use App\Services\System\Enum\Language;
 use App\Services\Travel\Api\Components\TravelListByTypeComponent;
 use App\Services\Travel\Api\Components\TravelTypeComponent;
+use App\Services\Travel\Enum\Activity;
 use App\Services\Travel\Enum\ImageType;
 use App\Services\Travel\TravelRepositoryInterface;
 
@@ -32,11 +31,11 @@ final readonly class TravelApiService
     {
         $items = [];
 
-        foreach ($this->travelRepository->getTravelTypeList() as $type) {
+        foreach (Activity::cases() as $item) {
             $items[] = new TravelListByTypeComponent(
-                travelTypeId: $type->id(),
+                travelTypeId: $item->value,
                 travels: $this->searchTravels([
-                    'travelType' => $type->id(),
+                    'travelType' => $item->value,
                     'limit'      => 3,
                     'dateFrom'   => now()->subYear()->toDateString(),
                 ], $language, null)
@@ -47,7 +46,7 @@ final readonly class TravelApiService
     }
 
 
-    private function buildTravelTypeComponent(TravelType $travelType, Language $language): TravelTypeComponent
+    private function buildTravelTypeComponent(Activity $travelType, Language $language): TravelTypeComponent
     {
         return new TravelTypeComponent(
             id: $travelType->id(),
@@ -64,9 +63,9 @@ final readonly class TravelApiService
             $input['dateFrom'] = now()->toDateString();
         }
 
-        foreach ($this->travelRepository->getPublicList($user, $input) as $travel) {
-            $out[] = $this->getTravelDetailsResponse($travel, $language);
-        }
+        /*foreach ($this->travelRepository->getPublicList($user, $input) as $travel) {
+            //$out[] = $this->getTravelDetailsResponse($travel, $language);
+        }*/
 
         return $out;
     }
@@ -96,16 +95,16 @@ final readonly class TravelApiService
     {
         $images = [];
 
-        /** @var TravelImage $image */
+        /** @var TravelMedia $image */
         foreach ($this->travelRepository->getTravelFullImages($travel->id()) as $image) {
-            $images[] = new TravelImageComponent(
+            $images[] = new TravelMediaComponent(
                 logo: $image->getType() === ImageType::LOGO,
                 url: $image->getUrl(),
                 description: $image->getDescription(),
             );
         }
 
-        $user = $travel->getUser();
+        $user = $travel->getOwner();
 
         return new TravelDetailsResponse(
             id: $travel->id(),
@@ -129,7 +128,7 @@ final readonly class TravelApiService
                 iso2: '',
                 label: '',
             ),
-            travelType: $this->buildTravelTypeComponent($travel->getTravelType(), $language),
+            travelType: $this->buildTravelTypeComponent($travel->getActivities(), $language),
             dateFrom: $travel->getDateFrom()->format('d.M.Y'),
             dateTo: $travel->getDateTo()->format('d.M.Y'),
             members: new MembersComponent(
@@ -138,7 +137,7 @@ final readonly class TravelApiService
                 title: __('mr-t.travel_members'),
             ),
             images: $images,
-            owner: $travel->getUser()->name,
+            owner: $travel->getOwner()->name,
         );
     }
 }

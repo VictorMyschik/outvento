@@ -13,15 +13,24 @@ enum SettingsKey: string
     case TelegramChannel = 'telegram_channel';
     case TelegramBot = 'telegram_bot';
 
+
+    public function getLabel(): string
+    {
+        return match ($this) {
+            self::AdminEmail => 'Admin Email',
+            self::AdminPhone => 'Admin Phone',
+            self::NotificationEnabled => 'Notification Service',
+            self::AdminTelegram => 'Admin Telegram',
+            self::TelegramChannel => 'Telegram Channel',
+            self::TelegramBot => 'Telegram Bot',
+        };
+    }
+
     public static function getSelectList(): array
     {
-        return [
-            self::AdminEmail->value          => 'Admin Email',
-            self::AdminPhone->value          => 'Admin Phone',
-            self::NotificationEnabled->value => 'Notification Service',
-            self::AdminTelegram->value       => 'Admin Telegram',
-            self::TelegramChannel->value     => 'Telegram Channel',
-            self::TelegramBot->value         => 'Telegram Bot',
-        ];
+        return array_combine(
+            array_map(fn($enum) => $enum->value, self::cases()),
+            array_map(fn($enum) => $enum->getLabel(), self::cases())
+        );
     }
 }

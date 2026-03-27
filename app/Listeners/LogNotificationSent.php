@@ -1,42 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Listeners;
 
-use App\Models\MessageLog\EmailLog;
-use Illuminate\Notifications\Events\NotificationSent;
+use App\Services\Notifications\NotificationRepositoryInterface;
+use Illuminate\Mail\Events\MessageSent;
 
-class LogNotificationSent
+readonly class LogNotificationSent
 {
-    /**
-     * Create the event listener.
-     */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct(private NotificationRepositoryInterface $repository) {}
 
-    /**
-     * Handle the event.
-     */
-    public function handle(NotificationSent $event): void
+    public function handle(MessageSent $event): void
     {
-       /* NotificationLog::create([
-            'notifiable_type' => get_class($event->notifiable),
-            'notifiable_id' => $event->notifiable->id ?? null,
-            'notification_key' => $event->notification::KEY ?? null,
-            'channel' => $event->channel,
-            'status' => 'failed',
-            'error' => $event->exception?->getMessage(),
+        $message = $event->message;
+
+        $this->repository->setEmailLog([
+            'type'    => $message->getHeaders()->get('X-Notification-Key')?->getBodyAsString(),
+            'email'   => $message->getTo()[0]->getAddress(),
+            'subject' => $message->getSubject(),
+            'sl'      => json_encode($message->getHtmlBody() ?? $message->getTextBody()),
+            'status'  => true,
+            'error'   => null,
         ]);
-
-
-        $log = new EmailLog();
-        $log->setType($type);
-        $log->setEmail($to);
-        $log->setSubject($email->subject);
-        $log->setEmailBody($email->render());
-        $log->setStatus((bool)($result ?? null));
-        $log->setError($event->exception?->getMessage());
-        $log->save();*/
     }
 }

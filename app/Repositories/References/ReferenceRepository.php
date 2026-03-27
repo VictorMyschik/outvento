@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Repositories\References;
 
+use App\Models\ModelRole;
+use App\Models\ORM\ORM;
 use App\Models\Reference\City;
 use App\Models\Reference\Country;
 use App\Models\Travel\Travel;
-use App\Models\Travel\TravelType;
-use App\Models\UserInfo\CommunicationType;
+use App\Models\Travel\TravelCountry;
 use App\Repositories\DatabaseRepository;
 use App\Services\References\ReferenceRepositoryInterface;
 use App\Services\System\Enum\Language;
 use Brick\Money\ISOCurrencyProvider;
-use Illuminate\Support\Collection;
 
 readonly class ReferenceRepository extends DatabaseRepository implements ReferenceRepositoryInterface
 {
@@ -35,29 +35,15 @@ readonly class ReferenceRepository extends DatabaseRepository implements Referen
         $field = 'name_' . $language->getCode();
 
         return $this->db->table(Country::getTableName())
-            ->join(Travel::getTableName(), Country::getTableName() . '.id', '=', Travel::getTableName() . '.country_id')
+            ->join(TravelCountry::getTableName(), Country::getTableName() . '.id', TravelCountry::getTableName() . '.country_id')
+            ->join(Travel::getTableName(), TravelCountry::getTableName() . '.travel_id', '=', Travel::getTableName() . '.id')
+            ->where(Travel::getTableName() . '.date_from', '>=', now())
             ->orderBy($field)->selectRaw(implode(',', [
                 Country::getTableName() . '.id as id',
                 Country::getTableName() . '.iso3166alpha2 as iso2',
                 Country::getTableName() . '.' . $field . ' AS name',
             ]))
             ->groupBy(Country::getTableName() . '.id')->get()->all();
-    }
-
-    public function getTravelTypeList(): Collection
-    {
-        return TravelType::all();
-    }
-
-    public function saveTravelType(int $id, array $data): int
-    {
-        if ($id > 0) {
-            $this->db->table(TravelType::getTableName())->where('id', $id)->update($data);
-
-            return $id;
-        }
-
-        return $this->db->table(TravelType::getTableName())->insertGetId($data);
     }
 
     public function saveCity(int $id, array $data): int
@@ -87,14 +73,64 @@ readonly class ReferenceRepository extends DatabaseRepository implements Referen
         return $this->db->table(Country::getTableName())->insertGetId($data);
     }
 
-    public function saveCommunicationType(int $id, array $data): int
+    /**
+     * @param class-string<ORM> $class
+     */
+    public function save(int $id, string $class, array $data): int
     {
         if ($id > 0) {
-            $this->db->table(CommunicationType::getTableName())->where('id', $id)->update($data);
+            if (isset($data['roles'])) {
+                $this->db->table(ModelRole::getTableName())->where([
+                    'table_name' => $class,
+                    'model_id'   => $id,
+                ])->delete();
+
+                $modelRoleData = [];
+                foreach ($data['roles'] as $roleId) {
+                    $modelRoleData[] = [
+                        'table_name' => $class,
+                        'model_id'   => $id,
+                        'role_id'    => $roleId,
+                    ];
+                }
+
+                $this->db->table(ModelRole::getTableName())->insert($modelRoleData);
+            }
+
+            unset($data['roles']);
+
+            $this->db->table($class::getTableName())->where('id', $id)->update($data);
 
             return $id;
         }
 
-        return $this->db->table(CommunicationType::getTableName())->insertGetId($data);
+        $id = $this->db->table($class::getTableName())->insertGetId($data);
+
+        if (isset($data['roles'])) {
+            $modelRoleData = [];
+
+            foreach ($data['roles'] as $roleId) {
+                $modelRoleData[] = [
+                    'table_name' => $class,
+                    'model_id'   => $id,
+                    'role_id'    => $roleId,
+                ];
+            }
+            unset($data['roles']);
+            $this->db->table(ModelRole::getTableName())->insert($modelRoleData);
+        }
+
+        $this->db->table($class::getTableName())->where('id', $id)->update($data);
+
+        return $id;
+    }
+
+    public function getRolesByModel(ORM $class): array
+    {
+        return $this->db->table(ModelRole::getTableName())
+            ->join('roles', ModelRole::getTableName() . '.role_id', '=', 'roles.id')
+            ->where(ModelRole::getTableName() . '.table_name', $class::class)
+            ->where(ModelRole::getTableName() . '.model_id', $class->id)
+            ->pluck('name', 'roles.id')->all();
     }
 }

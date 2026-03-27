@@ -9,7 +9,7 @@ use App\Models\Lego\Fields\LanguageFieldTrait;
 use App\Models\Lego\Fields\NameFieldTrait;
 use App\Models\ORM\ORM;
 use App\Models\User;
-use App\Services\Forms\Enum\FormTypeEnum;
+use App\Services\Forms\Enum\FormType;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
 
@@ -29,6 +29,8 @@ class Form extends ORM
         'active',
         'type',
         'user_id',
+        'contact',
+        'description',
         'created_at',
         'updated_at',
     ];
@@ -39,9 +41,14 @@ class Form extends ORM
         'updated_at' => 'datetime',
     ];
 
-    public function getType(): FormTypeEnum
+    public function getContact(): ?string
     {
-        return FormTypeEnum::from($this->type);
+        return $this->contact;
+    }
+
+    public function getType(): FormType
+    {
+        return FormType::from($this->type);
     }
 
     public function getEmail(): ?string

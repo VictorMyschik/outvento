@@ -6,8 +6,7 @@ namespace App\Services\Forms;
 
 use App\Events\FormRequestEvent;
 use App\Models\Forms\Form;
-use App\Services\Forms\Enum\FormTypeEnum;
-use App\Services\Notifications\Enum\NotificationType;
+use App\Services\Forms\Enum\FormType;
 
 final readonly class FormService
 {
@@ -15,7 +14,7 @@ final readonly class FormService
 
     public function addForm(FormInterface $dto): void
     {
-        $dto->setID($this->repository->addForm($dto));
+        $this->repository->addForm($dto);
 
         if ($this->isEmailEnabled($dto->getType())) {
             event(new FormRequestEvent($dto));
@@ -37,7 +36,7 @@ final readonly class FormService
         $this->repository->saveFormComment($formId, $data);
     }
 
-    public function deleteAllRequestsByType(FormTypeEnum $type): void
+    public function deleteAllRequestsByType(FormType $type): void
     {
         $this->repository->deleteAllRequestsByType($type);
     }
@@ -47,10 +46,15 @@ final readonly class FormService
         $this->repository->deleteAllRequests();
     }
 
-    private function isEmailEnabled(FormTypeEnum $formType): bool
+    public function runAllAsRead(): void
+    {
+        $this->repository->runAllAsRead();
+    }
+
+    private function isEmailEnabled(FormType $formType): bool
     {
         return in_array($formType, [
-            NotificationType::Feedback,
+            FormType::Feedback,
         ]);
     }
 }

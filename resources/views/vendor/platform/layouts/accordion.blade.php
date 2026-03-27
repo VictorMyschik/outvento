@@ -1,4 +1,4 @@
-<div id="accordion-{{$templateSlug}}" class="accordion mb-3">
+<div id="accordion-{{$templateSlug}}" class="accordion mb-3" style="background-color: #ffffff">
     @foreach($manyForms as $name => $forms)
         <div class="accordion-heading collapsed"
              id="heading-{{\Illuminate\Support\Str::slug($name)}}"
@@ -7,7 +7,7 @@
              aria-expanded="true"
              aria-controls="collapse-{{\Illuminate\Support\Str::slug($name)}}">
             <div class="pt-2 pb-2 mb-1 px-4 mt-2 shadow-sm" style="cursor: pointer;">
-                {!! $name !!}
+                <h5> {!! $name !!}</h5>
             </div>
         </div>
 

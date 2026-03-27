@@ -23,16 +23,13 @@ class CronListLayout extends Table
             TD::make('description', 'Описание')->width('50%')->defaultHidden()->sort(),
             TD::make('last_work', 'Last Work')
                 ->render(fn(Cron $cron) => $cron->getLastWork())
-                ->sort()
-                ->defaultHidden(),
+                ->sort(),
             TD::make('created_at', 'Created')
                 ->render(fn(Cron $cron) => $cron->created_at->format('d.m.Y H:i:s'))
-                ->sort()
-                ->defaultHidden(),
+                ->sort(),
             TD::make('updated_at', 'Updated')
                 ->render(fn(Cron $cron) => $cron->updated_at->format('d.m.Y H:i:s'))
-                ->sort()
-                ->defaultHidden(),
+                ->sort(),
         ];
 
         $rows[] = TD::make('#', 'Действия')
@@ -40,6 +37,10 @@ class CronListLayout extends Table
             ->width('100px')
             ->render(function (Cron $cron) {
                 return DropDown::make()->icon('options-vertical')->list([
+                    Button::make('Run')
+                        ->icon('refresh')
+                        ->confirm('Run this cron job')
+                        ->method('run', ['id' => $cron->id()]),
                     ModalToggle::make('Edit')
                         ->icon('pencil')
                         ->modal('cron_modal')
@@ -51,11 +52,6 @@ class CronListLayout extends Table
                         ->icon('trash')
                         ->confirm('This Cron will be removed permanently.')
                         ->method('remove', ['id' => $cron->id()]),
-
-                    Button::make('Run')
-                        ->icon('refresh')
-                        ->confirm('Run this cron job')
-                        ->method('run', ['id' => $cron->id()]),
                 ]);
             });
 

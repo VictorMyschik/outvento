@@ -1,0 +1,7 @@
+insert into public.faq (id, language, title, text, active, created_at, updated_at)
+values  (1, 2, 'Как оплатить услугу?', '<p>Вы можете оплатить услугу банковской картой, через онлайн-банкинг или другим доступным способом, указанным на сайте.</p>', true, '2026-01-30 13:58:18 +00:00', null),
+        (2, 2, 'Сколько времени занимает обработка заявки?', '<p>Обычно обработка заявки занимает от одного до трёх рабочих дней. В отдельных случаях срок может быть увеличен.</p>', true, '2026-01-30 15:56:17 +00:00', null),
+        (3, 3, 'Jak mogę opłacić usługę?', '<p>Usługę można opłacić kartą płatniczą, przelewem bankowym lub inną metodą dostępną na stronie.</p>', true, '2026-01-30 15:56:34 +00:00', null),
+        (4, 3, 'Ile czasu trwa realizacja zgłoszenia?', '<p>Realizacja zgłoszenia zazwyczaj trwa od jednego do trzech dni roboczych.</p>', true, '2026-01-30 15:56:50 +00:00', null),
+        (5, 1, 'How can I pay for the service?', '<p>You can pay for the service using a credit card, online banking, or any other payment method available on the website.</p>', true, '2026-01-30 15:57:02 +00:00', null),
+        (6, 1, 'How long does it take to process a request?', '<p>Processing a request usually takes between one and three business days, depending on the case.</p>', true, '2026-01-30 16:00:10 +00:00', null);

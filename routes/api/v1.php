@@ -5,35 +5,32 @@ declare(strict_types=1);
 use App\Http\Controllers\API\Auth\AuthController;
 use App\Http\Controllers\API\CommonApiController;
 use App\Http\Controllers\API\DownloadFileController;
-use App\Http\Controllers\API\SubscriptionApiController;
+use App\Http\Controllers\API\FAQController;
+use App\Http\Controllers\API\FormsController;
+use App\Http\Controllers\API\SocialAuthController;
+use App\Http\Controllers\API\SubscriptionController;
 use App\Http\Controllers\API\TelegramApiController;
+use App\Http\Controllers\API\Travel\TravelController;
 use App\Http\Controllers\API\User\UsersController;
 use App\Http\Controllers\API\WelcomeController;
-use App\Http\Controllers\Travel\Travel\TravelController;
-use App\Http\Controllers\Travel\Travel\TravelImageController;
+use App\Http\Controllers\Travel\Travel\TravelMediaController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/telegram', [TelegramApiController::class, 'index'])->name('telegram.webhook');
-
-Route::get('common/languages', [CommonApiController::class, 'getLanguages']);
-Route::get('translate/common', [CommonApiController::class, 'getCommonTranslate']);
-Route::get('frontend/settings', [CommonApiController::class, 'getFrontendSettings']);
-
-Route::post('/subscription/subscribe', [SubscriptionApiController::class, 'subscribe']);
-Route::get('/subscription/unsubscribe/{token}', [SubscriptionApiController::class, 'unsubscribe']);
-
 Route::middleware('optional:sanctum')->group(function () {
+    Route::post('/form/feedback', [FormsController::class, 'feedback']);
+
     Route::prefix('pages')->group(static function () {
         Route::get('welcome', [WelcomeController::class, 'index']);
     });
+
+    /// Users profile
+    Route::get('/user/{user}/avatar', [UsersController::class, 'getUserAvatar'])->name('user.avatar');
+    Route::get('/travel/{travel}/image/{media}', [TravelController::class, 'getTravelAvatar'])->name('travel.image');
 });
 
 Route::middleware('guest')->group(static function () {
     Route::post('login', [AuthController::class, 'login'])->name('login');
     Route::post('register', [AuthController::class, 'register'])->name('register');
-
-    Route::get('login/yandex', [AuthController::class, 'yandex'])->name('yandex');
-    Route::get('login/yandex/redirect', [AuthController::class, 'yandexRedirect'])->name('yandexRedirect');
 
     Route::post('reset-password', [AuthController::class, 'resetPassword']);
     Route::post('reset-password/{token}/check', [AuthController::class, 'checkActualResetPasswordToken']);
@@ -49,7 +46,7 @@ Route::middleware('auth:sanctum')->group(static function () {
         Route::get('full', [UsersController::class, 'profileFull']);
         // Установить локаль пользователя по умолчанию в Личном кабинете
         Route::post('profile/edit', [UsersController::class, 'updateProfile']);
-        Route::post('password', [UsersController::class, 'changePassword']);
+        Route::post('password', [AuthController::class, 'changePassword']);
         Route::post('verify', [AuthController::class, 'verifyRegistration']);
         Route::post('verify/resend', [AuthController::class, 'verifyResend']);
         Route::delete('avatar', [UsersController::class, 'removeAvatar']);
@@ -75,15 +72,32 @@ Route::group(['prefix' => 'travels'], function () {
     Route::post('personal/list', [TravelController::class, 'personalList'])->name('api.travel.personal.list');
 
     // Get list
-    Route::post('image/list', [TravelImageController::class, 'getList'])->name('api.travel.image.list');
+    Route::post('image/list', [TravelMediaController::class, 'getList'])->name('api.travel.image.list');
     // Upload image
-    Route::post('image/upload', [TravelImageController::class, 'imageUpload'])->name('api.travel.image.upload');
+    Route::post('image/upload', [TravelMediaController::class, 'imageUpload'])->name('api.travel.image.upload');
     // Delete image
-    Route::post('image/delete', [TravelImageController::class, 'deleteImage'])->name('api.travel.image.delete');
+    Route::post('image/delete', [TravelMediaController::class, 'deleteImage'])->name('api.travel.image.delete');
     // Public URL
-    Route::get('{travel_id}/image/show/{image_name}', [TravelImageController::class, 'showImage'])->name('api.travel.image.get');
+    Route::get('{travel_id}/image/show/{image_name}', [TravelMediaController::class, 'showImage'])->name('api.travel.image.get');
     // Update image description
-    Route::post('image/update', [TravelImageController::class, 'updateImage'])->name('api.travel.image.update');
+    Route::post('image/update', [TravelMediaController::class, 'updateImage'])->name('api.travel.image.update');
 });
 
+Route::get('/auth/social/{provider}/redirect', [SocialAuthController::class, 'redirect']);
+Route::get('/auth/social/{provider}/callback', [SocialAuthController::class, 'callback']);
+
+Route::get('/common/languages', [CommonApiController::class, 'getLanguages']);
+Route::get('/translations', [CommonApiController::class, 'getTranslations']);
+Route::get('/frontend/settings', [CommonApiController::class, 'getFrontendSettings']);
+
 Route::get('/download', [DownloadFileController::class, 'download'])->name('download');
+Route::get('/legal/{type}', [CommonApiController::class, 'legal']);
+Route::post('/faq/search', [FAQController::class, 'search']);
+Route::get('/faq/list', [FAQController::class, 'getBaseFaqList']);
+
+// Subscriptions
+Route::post('/subscription/subscribe', [SubscriptionController::class, 'subscribe']);
+Route::get('/subscription/confirm/{token}', [SubscriptionController::class, 'confirm']);
+
+// Telegram Webhook
+Route::post('/telegram', [TelegramApiController::class, 'index']);

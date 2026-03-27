@@ -32,7 +32,6 @@ class WelcomeController extends APIController
         tags: ["Pages"],
         parameters: [
             new OA\Parameter(ref: "#/components/parameters/XRequestedWithHeader"),
-            new OA\Parameter(ref: "#/components/parameters/AcceptLanguageHeader"),
         ],
         responses: [
             new OA\Response(
@@ -56,9 +55,9 @@ class WelcomeController extends APIController
         return $this->apiResponse(
             new WelcomeResponse(
                 countries: $this->referenceApiService->getUsingCountrySelectList($language),
-                translates: $this->translateApiService->getTranslateFor(TranslateGroupEnum::PageWelcome, $language),
-                travelTypeList: $this->referenceApiService->getTravelTypeList($language),
-                travelExamples: $this->apiService->travelExamples($language),
+                translations: $this->translateApiService->getTranslateFor([TranslateGroupEnum::PageWelcome], $language),
+                activities: $this->referenceApiService->getActivities(),
+                travelExamples: [],//$this->apiService->travelExamples($language),
             ),
         );
     }

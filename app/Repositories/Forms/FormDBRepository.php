@@ -6,7 +6,7 @@ namespace App\Repositories\Forms;
 
 use App\Models\Forms\Form;
 use App\Repositories\DatabaseRepository;
-use App\Services\Forms\Enum\FormTypeEnum;
+use App\Services\Forms\Enum\FormType;
 use App\Services\Forms\FormInterface;
 use App\Services\Forms\FormRepositoryInterface;
 
@@ -14,11 +14,7 @@ final readonly class FormDBRepository extends DatabaseRepository implements Form
 {
     public function addForm(FormInterface $dto): int
     {
-        return $this->db->table(Form::getTableName())->insertGetId([
-            'language' => $dto->getLanguage()->value,
-            'type'     => $dto->getType()->value,
-            'sl'       => $dto->getJson(),
-        ]);
+        return $this->db->table(Form::getTableName())->insertGetId($dto->jsonSerialize());
     }
 
     public function deleteForm(int $id): void
@@ -28,7 +24,6 @@ final readonly class FormDBRepository extends DatabaseRepository implements Form
 
     public function saveFormComment(int $formId, array $data): void
     {
-        $data['updated_at'] = now();
         $this->db->table(Form::getTableName())->where('id', $formId)->update($data);
     }
 
@@ -37,7 +32,7 @@ final readonly class FormDBRepository extends DatabaseRepository implements Form
         return Form::loadBy($formId);
     }
 
-    public function deleteAllRequestsByType(FormTypeEnum $type): void
+    public function deleteAllRequestsByType(FormType $type): void
     {
         $this->db->table(Form::getTableName())->where('type', $type->value)->delete();
     }
@@ -45,5 +40,10 @@ final readonly class FormDBRepository extends DatabaseRepository implements Form
     public function deleteAllRequests(): void
     {
         $this->db->table(Form::getTableName())->truncate();
+    }
+
+    public function runAllAsRead(): void
+    {
+        $this->db->table(Form::getTableName())->where('active', false)->update(['active' => true]);
     }
 }

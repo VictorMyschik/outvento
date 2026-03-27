@@ -10,6 +10,7 @@ use Orchid\Support\Facades\Layout;
 class PhpInfoScreen extends Screen
 {
     public string $name = 'PHP Info';
+    public string $description = 'Version: ' . PHP_VERSION;
 
     public function query(): iterable
     {

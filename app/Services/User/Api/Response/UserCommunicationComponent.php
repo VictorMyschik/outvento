@@ -14,6 +14,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: "type", description: "Никнейм", type: "string"),
         new OA\Property(property: "address", description: "Адрес электронной почты пользователя", type: "string"),
         new OA\Property(property: "description", description: "URL аватара пользователя", type: "string", nullable: true),
+        new OA\Property(property: "visibility", description: "Видимость контакта", type: "integer", format: "int32"),
     ],
     type: "object"
 )]
@@ -24,5 +25,6 @@ final readonly class UserCommunicationComponent
         public string  $type,
         public string  $address,
         public ?string $description,
+        public int     $visibility,
     ) {}
 }

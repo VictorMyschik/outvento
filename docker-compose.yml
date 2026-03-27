@@ -19,6 +19,8 @@ services:
   php:
     build: ./docker/php
     container_name: php_travel
+    mem_limit: 1g
+    cpus: "2.0"
     networks:
       - backend
     environment:
@@ -30,9 +32,12 @@ services:
       - ./docker/php/php.ini:/usr/local/etc/php/php.ini
 
   postgres:
-    image: postgres:latest
+    image: postgis/postgis:16-3.4
+    platform: linux/amd64
     networks:
       backend:
+    mem_limit: 512m
+    cpus: "1.0"
     ports:
       - '5441:5432'
     environment:
@@ -42,36 +47,36 @@ services:
       PGDATA: "/var/lib/postgresql/data/pgdata"
     volumes:
       - ./docker/postgres/travel:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d
 
   redis:
     image: bitnami/redis:latest
     networks:
       - backend
-    ports:
-      - '6379:6379'
+    mem_limit: 256m
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
 
-  supervisor:
-    build: ./docker/supervisor
-    container_name: supervisor_travel
-    networks:
-      - backend
-    volumes:
-      - .:/var/www/travel
-      - ./storage/logs:/var/log/php
-
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    ports:
-      # AMQP protocol port
-      - '5679:5672'
-      # HTTP management UI
-      - '15679:15672'
-    volumes:
-      - ./docker/rabbitmq/data/:/var/lib/rabbitmq/
-    networks:
-      - backend
+  #supervisor:
+  #  build: ./docker/supervisor
+  #  container_name: supervisor_travel
+  #  networks:
+  #    - backend
+  #  volumes:
+  #    - .:/var/www/travel
+  #    - ./storage/logs:/var/log/php
+#
+  #rabbitmq:
+  #  image: rabbitmq:3-management-alpine
+  #  ports:
+  #    # AMQP protocol port
+  #    - '5679:5672'
+  #    # HTTP management UI
+  #    - '15679:15672'
+  #  volumes:
+  #    - ./docker/rabbitmq/data/:/var/lib/rabbitmq/
+  #  networks:
+  #    - backend
 
   #elasticsearch:
   #  image: elasticsearch:9.0.2

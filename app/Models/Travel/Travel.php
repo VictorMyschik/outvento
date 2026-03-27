@@ -6,15 +6,19 @@ namespace App\Models\Travel;
 
 use App\Models\Lego\Fields\DeletedNullableFieldTrait;
 use App\Models\Lego\Fields\DescriptionNullableFieldTrait;
+use App\Models\Lego\Fields\LanguageFieldTrait;
 use App\Models\Lego\Fields\TitleFieldTrait;
 use App\Models\ORM\ORM;
+use App\Models\Reference\City;
 use App\Models\Reference\Country;
 use App\Models\User;
-use App\Services\Travel\Enum\ImageType;
+use App\Services\System\Enum\Language;
+use App\Services\Travel\Enum\TravelPointType;
 use App\Services\Travel\Enum\TravelStatus;
-use App\Services\Travel\Enum\TravelVisibleType;
-use App\Services\Travel\Enum\UITStatus;
+use App\Services\Travel\Enum\TravelVisible;
+use App\Services\Travel\Enum\UserTravelRole;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
@@ -24,6 +28,7 @@ class Travel extends ORM
     use AsSource;
     use Filterable;
 
+    use LanguageFieldTrait;
     use TitleFieldTrait;
     use DescriptionNullableFieldTrait;
     use DeletedNullableFieldTrait;
@@ -33,20 +38,21 @@ class Travel extends ORM
     protected array $allowedSorts = [
         'id',
         'title',
+        'date_from',
+        'date_to',
         'preview',
         'status',
         'user_id',
-        'country_id',
+        'visible',
         'members',
-        'public',
-        'travel_type_id',
         'public_id',
-        'visible_type',
         'created_at',
         'updated_at',
     ];
 
     public $casts = [
+        'date_from'  => 'datetime',
+        'date_to'    => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -71,9 +77,9 @@ class Travel extends ORM
         return $this->preview;
     }
 
-    public function getVisibleType(): TravelVisibleType
+    public function getVisibleType(): TravelVisible
     {
-        return TravelVisibleType::from($this->visible_type);
+        return TravelVisible::from($this->visible_type);
     }
 
     private const string STORAGE_PATH = 'files/travel_images';
@@ -83,29 +89,33 @@ class Travel extends ORM
         return TravelStatus::from($this->status);
     }
 
-    public function getUser(): User
+    public function getOwner(): User
     {
-        return User::findOrFail($this->user_id);
+        return UIT::where('travel_id', $this->id())->where('role', UserTravelRole::Owner->value)->first()->getUser();
     }
 
-    public function getCountry(): Country
+    public function getActivities(): Collection
     {
-        return Country::loadByOrDie($this->country_id);
+        return TravelActivity::where('travel_id', $this->id())->get();
     }
 
-    public function getTravelType(): TravelType
+    public function getCountries(): Collection
     {
-        return TravelType::loadByOrDie($this->travel_type_id);
+        return Country::join(TravelCountry::getTableName(), 'countries.id', '=', TravelCountry::getTableName() . '.country_id')
+            ->where(TravelCountry::getTableName() . '.travel_id', $this->id())
+            ->get(['countries.*']);
+    }
+
+    public function getStartCity(): ?City
+    {
+        return TravelPoint::where('travel_id', $this->id())
+            ->where('type', TravelPointType::Start->value)
+            ->first()?->getCity();
     }
 
     public function getPublicId(): ?string
     {
         return $this->public_id;
-    }
-
-    public function getDirNameForImages(): string
-    {
-        return self::STORAGE_PATH;
     }
 
     public function getMaxMembers(): ?int
@@ -120,21 +130,76 @@ class Travel extends ORM
 
     public function getFullImagesList(): array
     {
-        return TravelImage::where('travel_id', $this->id())->get()->all();
+        return TravelMedia::where('travel_id', $this->id())->get()->all();
     }
 
-    public function getMainImage(): ?TravelImage
+    public function hasLogo(): ?string
     {
-        return TravelImage::where('travel_id', $this->id())->where('kind', ImageType::LOGO)->value('name');
+        if ($id = TravelMedia::where('travel_id', $this->id())->where('is_avatar', true)->value('id')) {
+            return route('api.v1.travel.image', [
+                'travel' => $this->id,
+                'media'  => $id,
+            ]);
+        }
+
+        return null;
     }
 
-    /**
-     * @return TravelImage[]
-     */
-    public function getImagesList(): array
+    public function getAvatarExt(): string
     {
-        return Cache::rememberForever('travel_image_list_' . $this->id(), function () {
-            return TravelImage::where('travel_id', $this->id())->where('type', ImageType::PHOTO)->get()->all();
-        });
+        return $this->hasLogo() ?: '/images/travel_logo_circle.webp';
+    }
+
+    public function getActivitiesForOrchid(): array
+    {
+        $out = [];
+
+        /** @var TravelActivity $activity */
+        foreach ($this->getActivities() as $activity) {
+            $out[] = (int)$activity->activity;
+        }
+
+        return $out;
+    }
+
+    public function getCountriesForOrchid(): array
+    {
+        $out = [];
+
+        /** @var Country $country */
+        foreach ($this->getCountries() as $country) {
+            $out[] = (int)$country->id;
+        }
+
+        return $out;
+    }
+
+    public function getOwnerId(): int
+    {
+        return UIT::where('travel_id', $this->id())->where('role', UserTravelRole::Owner->value)->value('user_id');
+    }
+
+    public function getActivitiesByLanguage(Language $language): array
+    {
+        $out = [];
+
+        /** @var TravelActivity $activity */
+        foreach ($this->getActivities() as $activity) {
+            $out[] = (string)$activity->getActivity()->getLabel($language);
+        }
+
+        return $out;
+    }
+
+    public function getCountriesByLanguage(Language $language): array
+    {
+        $out = [];
+
+        /** @var Country $country */
+        foreach ($this->getCountries() as $country) {
+            $out[] = $country->getName($language);
+        }
+
+        return $out;
     }
 }

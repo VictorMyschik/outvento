@@ -19,11 +19,11 @@ class UserInfoListLayout extends Table
     public function columns(): array
     {
         return [
-            TD::make('id', 'ID')->sort(),
+            TD::make('id', 'ID')->render(fn(User $user) => Link::make((string)$user->id)->route('profiles.details', $user->id)->stretched())->sort(),
             TD::make('name', 'Login')->sort(),
             TD::make('email', 'Email')->sort(),
             TD::make('email_verified_at', 'Email Verified At')->render(fn(User $user) => $user->email_verified_at)->active()->sort(),
-            TD::make('telegram_chat_id', 'Telegram Chat ID')->sort(),
+            TD::make('subscription_token', 'Subscription Token')->sort(),
             TD::make('first_name', 'First Name')->sort(),
             TD::make('last_name', 'Last Name')->sort(),
             TD::make('language', 'Language')->render(fn(User $user) => $user->getLanguage()->getLabel())->sort(),
@@ -44,27 +44,6 @@ class UserInfoListLayout extends Table
                 ->render(fn(User $user) => $user->deleted_at?->format('d.m.Y H:i:s'))
                 ->sort()
                 ->defaultHidden(),
-
-            TD::make('#')
-                ->align(TD::ALIGN_CENTER)
-                ->width('100px')
-                ->render(fn($user) => DropDown::make()
-                    ->icon('bs.three-dots-vertical')
-                    ->list([
-                        Link::make(__('Profile'))
-                            ->icon('user')
-                            ->route('profiles.details', $user->id),
-                        ModalToggle::make('Edit')
-                            ->icon('pencil')
-                            ->modal('user_modal')
-                            ->modalTitle('User id ' . $user->id)
-                            ->method('saveUser')
-                            ->asyncParameters(['id' => $user->id]),
-                        Button::make(__('Delete'))
-                            ->icon('bs.trash3')
-                            ->confirm('Are you sure you want to delete the user?')
-                            ->method('remove', ['id' => $user->id]),
-                    ])),
         ];
     }
 

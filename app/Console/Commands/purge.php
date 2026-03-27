@@ -44,6 +44,8 @@ class purge extends Command
             "DROP SCHEMA IF EXISTS public CASCADE;",
             "CREATE SCHEMA public;",
             "GRANT ALL ON SCHEMA public TO public;",
+
+            'CREATE EXTENSION IF NOT EXISTS postgis',
         ];
 
         foreach ($statements as $statement) {
@@ -74,14 +76,23 @@ class purge extends Command
 
         $tableList = [
             'settings',
+            'roles',
+            'model_roles',
             'translates',
+            'faq',
+            'translate_groups',
             'users',
             'cron',
             'countries',
-            'travel_types',
-            'communication_types',
+            'cities',
+            'activities',
+            'communications',
+            'user_service_notifications',
             'travels',
             'uit',
+            'legal_documents',
+            'languages',
+            'language_names',
         ];
 
         foreach ($tableList as $tableName) {

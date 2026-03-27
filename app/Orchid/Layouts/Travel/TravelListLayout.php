@@ -23,15 +23,13 @@ class TravelListLayout extends Table
             TD::make('id', __('ID'))->sort(),
 
             TD::make('title', 'Title')->render(fn(Travel $travel) => Link::make($travel->getTitle())
-                ->route('travel.details', ['travel' => $travel->id()])
+                ->route('profiles.travel.details', ['user' => $travel->getOwnerId(), 'travel' => $travel->id()])
             )->sort(),
 
             TD::make('status', 'Status')->render(fn(Travel $travel) => $travel->getStatus()->getLabel())->sort(),
             TD::make('members', 'Max members')->sort(),
-            TD::make('user_id', 'User')->render(fn(Travel $travel) => $travel->getUser()->name),
-            TD::make('country', 'Country')->render(fn(Travel $travel) => $travel->getCountry()->getName(Language::RU)),
-            TD::make('travel_type_id', 'Travel type')->render(fn(Travel $travel) => $travel->getTravelType()->getName(Language::RU)),
-
+            TD::make('user_id', 'User')->render(fn(Travel $travel) => $travel->getOwner()->name),
+            TD::make('', 'Activities')->render(fn(Travel $travel) => $travel->getActivities()->getName(Language::RU)),
 
             TD::make(__('Actions'))
                 ->align(TD::ALIGN_CENTER)

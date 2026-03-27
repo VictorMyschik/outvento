@@ -18,19 +18,17 @@ class SettingsListLayout extends Table
         return [
             TD::make('id', 'ID')->sort(),
             TD::make('active', 'Active')->sort()->active(),
-            TD::make('category')->sort()->defaultHidden(),
-            TD::make('name')->sort(),
-            TD::make('code_key')->sort()->defaultHidden(),
+            TD::make('category')->sort(),
+            TD::make('', 'Title')->render(fn(Settings $setup) => $setup->getCodeKey()->getLabel()),
+            TD::make('code_key', 'Code')->sort(),
             TD::make('value', 'Value'),
-            TD::make('description', 'Description')->defaultHidden(),
+            TD::make('description', 'Description'),
             TD::make('created_at', 'Created')
-                ->render(fn (Settings $setup) => $setup->created_at->format('d.m.Y'))
-                ->sort()
-                ->defaultHidden(),
+                ->render(fn(Settings $setup) => $setup->created_at->format('d.m.Y'))
+                ->sort(),
             TD::make('updated_at', 'Updated')
-                ->render(fn (Settings $setup) => $setup->updated_at?->format('d.m.Y'))
-                ->sort()
-                ->defaultHidden(),
+                ->render(fn(Settings $setup) => $setup->updated_at?->format('d.m.Y'))
+                ->sort(),
 
             TD::make('#', 'Действия')
                 ->align(TD::ALIGN_CENTER)

@@ -9,27 +9,27 @@ return new class extends Migration {
     {
         Schema::create('travels', function (Blueprint $table) {
             $table->id();
+            $table->smallInteger('language')->index();
             $table->string('title')->index();
             $table->string('preview', 350)->nullable()->index();
             $table->text('description')->nullable();
             $table->tinyInteger('status')->index();
-            $table->unsignedBigInteger('country_id')->index();
-            $table->unsignedBigInteger('city_id')->nullable()->index();
-            $table->date('date_from')->index();
-            $table->date('date_to')->index();
+            $table->unsignedBigInteger('start_city_id')->nullable()->index();
+            $table->date('date_from')->nullable()->index();
+            $table->date('date_to')->nullable()->index();
             $table->smallInteger('members')->nullable();
             $table->smallInteger('members_exists')->default(0);
-            $table->unsignedBigInteger('travel_type_id')->index();
             $table->string('public_id', 15)->nullable()->index();
-            $table->tinyInteger('visible_type')->default(0)->index();
-            $table->unsignedBigInteger('user_id')->index();
+            $table->string('private_id', 64)->index();
+            $table->tinyInteger('visible')->default(0)->index();
+
+            $table->timestampTz('archived_at')->nullable()->index(); // Архивирование - для скрытия из общего списка, но сохранения данных
+            $table->timestampTz('deleted_at')->nullable()->index(); // Удаление - для полного удаления из системы, но с возможностью восстановления (soft delete)
 
             $table->timestampTz('created_at')->useCurrent();
             $table->timestampTz('updated_at')->nullable()->useCurrentOnUpdate();
 
-            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
-            $table->foreign('country_id')->references('id')->on('countries')->onDelete('set null');
-            $table->foreign('travel_type_id')->references('id')->on('travel_types')->restrictOnDelete();
+            $table->foreign('start_city_id')->references('id')->on('cities')->cascadeOnDelete();
         });
     }
 

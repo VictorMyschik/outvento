@@ -6,8 +6,8 @@ namespace App\Services\User\Enum;
 
 enum Gender: int
 {
-    case MALE = 1;
-    case FEMALE = 2;
+    case Male = 1;
+    case Female = 2;
 
     public function getLabel(): string
     {

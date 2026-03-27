@@ -20,4 +20,6 @@ interface TranslateRepositoryInterface
     public function purge(): void;
 
     public function getExportList(): array;
+
+    public function updateIndexes(): void;
 }

@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Services\Forms;
 
 use App\Models\Forms\Form;
-use App\Services\Forms\Enum\FormTypeEnum;
+use App\Services\Forms\Enum\FormType;
 
 interface FormRepositoryInterface
 {
@@ -16,7 +17,9 @@ interface FormRepositoryInterface
 
     public function getFormById(int $formId): ?Form;
 
-    public function deleteAllRequestsByType(FormTypeEnum $type): void;
+    public function deleteAllRequestsByType(FormType $type): void;
 
     public function deleteAllRequests(): void;
+
+    public function runAllAsRead(): void;
 }

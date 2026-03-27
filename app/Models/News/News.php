@@ -6,10 +6,10 @@ namespace App\Models\News;
 
 use App\Models\Lego\Fields\ActiveFieldTrait;
 use App\Models\Lego\Fields\CodeFieldTrait;
+use App\Models\Lego\Fields\LanguageFieldTrait;
 use App\Models\Lego\Fields\TitleFieldTrait;
 use App\Models\ORM\ORM;
 use App\Services\Newsletter\ImageUploader\Enum\NewsMediaType;
-use App\Services\System\Enum\Language;
 use Carbon\Carbon;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
@@ -21,6 +21,7 @@ class News extends ORM
     use CodeFieldTrait;
     use TitleFieldTrait;
     use ActiveFieldTrait;
+    use LanguageFieldTrait;
 
     protected $table = 'news';
 
@@ -57,27 +58,27 @@ class News extends ORM
         return $this->group_id;
     }
 
-    public function getLanguage(): Language
-    {
-        return Language::from($this->language);
-    }
-
     public function getPublishedAt(): ?Carbon
     {
         return $this->published_at;
     }
 
-    public function getTextVisible(string $link): string
+    public function getTextVisible(array $uriList): string
     {
+        $links = [];
+        foreach ($uriList as $linkItem) {
+            $links[] = '<a href="' . config('services.front.host') . $linkItem . '" target="_blank"><b>ссылке</b></a>';
+        }
+
         if ($this->isActive() && $this->isPublic()) {
-            return 'Новость участвует в поиске и доступна по прямой ссылке ' . $link;
+            return 'Новость участвует в поиске и доступна по прямой ссылке ' . implode(', ', $links);
         }
 
         if (!$this->isActive() && $this->isPublic()) {
-            return 'Новость доступна только по прямой ссылке ' . $link;
+            return 'Новость доступна только по прямой ссылке ' .implode(', ', $links);
         }
 
-        return 'Новость не участвует в поиске и не доступна по прямой ссылке ' . $link;
+        return 'Новость не участвует в поиске и не доступна по прямой ссылке ' .implode(', ', $links);
     }
 
     /**
@@ -87,7 +88,7 @@ class News extends ORM
     {
         return NewsSubgroup::join(NewsInSubgroup::getTableName(), NewsSubgroup::getTableName() . '.id', '=', NewsInSubgroup::getTableName() . '.subgroup_id')
             ->where(NewsInSubgroup::getTableName() . '.news_id', $this->id())
-            ->get()
+            ->get(NewsSubgroup::getTableName() . '.*')
             ->all();
     }
 
@@ -103,6 +104,23 @@ class News extends ORM
 
     public function getUrl(): string
     {
-        return env('FRONT_HOST') . "/news/{$this->getGroup()->getCode()}/{$this->getCode()}";
+        return $this->getUriList()[0];
+    }
+
+    public function getUriList(): array
+    {
+        $groupCode = $this->getGroup()->code;
+        $subgroups = $this->getSubgroupList();
+        $out = [];
+
+        if (count($subgroups) > 0) {
+            foreach ($subgroups as $subgroup) {
+                $out[] = '/' . $groupCode . '/' . $subgroup->code . '/news/' . $this->code;
+            }
+        } else {
+            $out[] = '/' . $groupCode . '/news/' . $this->code;
+        }
+
+        return $out;
     }
 }

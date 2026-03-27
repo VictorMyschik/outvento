@@ -70,6 +70,15 @@ abstract class APIController extends Controller
         ];
     }
 
+    #[OA\Parameter(
+        parameter: 'XLocaleHeader',
+        name: 'X-Locale',
+        description: "Предпочитаемый язык (ISO 639-1 или BCP 47). Пример: ru, en, pl.\n\nОтсутствие заголовка → 400.\nНеподдерживаемое значение → 422.",
+        in: 'header',
+        required: true,
+        schema: new OA\Schema(type: 'string', example: 'ru'),
+        example: 'ru'
+    )]
     protected function getLanguage(): Language
     {
         // Header: X-Locale

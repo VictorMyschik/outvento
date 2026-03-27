@@ -7,6 +7,7 @@ namespace App\Orchid\Screens;
 use App\Models\Faq;
 use App\Orchid\Layouts\FAQ\FAQEditLayout;
 use App\Orchid\Layouts\FAQ\FAQListLayout;
+use App\Services\Other\Faq\FaqService;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Layouts\Modal;
@@ -16,21 +17,17 @@ use Orchid\Support\Facades\Toast;
 
 class FAQScreen extends Screen
 {
+    public string $name = 'FAQ';
+
+    public string $description = 'Часто задаваемые вопросы';
+
+    public function __construct(private FaqService $service) {}
+
     public function query(): iterable
     {
         return [
             'list' => Faq::paginate(10)
         ];
-    }
-
-    public function name(): ?string
-    {
-        return 'FAQ';
-    }
-
-    public function description(): ?string
-    {
-        return 'Часто задаваемые вопросы';
     }
 
     public function commandBar(): iterable
@@ -61,7 +58,7 @@ class FAQScreen extends Screen
         ];
     }
 
-    public function saveFAQ(Request $request): void
+    public function saveFAQ(Request $request, int $id): void
     {
         $data = $request->validate([
             'faq.active'   => 'required|boolean',
@@ -70,12 +67,9 @@ class FAQScreen extends Screen
             'faq.text'     => 'required|string',
         ])['faq'];
 
-        Faq::updateOrCreate(
-            ['id' => (int)$request->get('id')],
-            $data
-        );
+        $this->service->saveFaq($id, $data);
 
-        Toast::info('FAQ was saved');
+        Toast::info('FAQ was saved')->delay(1500);
     }
 
     public function remove(int $id): void

@@ -6,15 +6,19 @@ namespace App\Services\Telegram;
 
 final readonly class Client
 {
+    public function __construct(
+        private string $token,
+    ) {}
+
     private const string TG_HOST = 'https://api.telegram.org';
 
-    public function sendMessage(string $userId, string $message): void
+    public function sendMessage(int $userId, string $message): void
     {
         $ch = curl_init();
         curl_setopt_array(
             $ch,
             [
-                CURLOPT_URL            => self::TG_HOST . '/bot' . env('TELEGRAM_TOKEN') . '/sendMessage',
+                CURLOPT_URL            => self::TG_HOST . '/bot' . $this->token . '/sendMessage',
                 CURLOPT_POST           => TRUE,
                 CURLOPT_RETURNTRANSFER => TRUE,
                 CURLOPT_TIMEOUT        => 10,
@@ -35,7 +39,7 @@ final readonly class Client
         curl_setopt_array(
             $ch,
             [
-                CURLOPT_URL            => self::TG_HOST . '/bot' . env('TELEGRAM_TOKEN') . '/setWebhook?url=' . $url,
+                CURLOPT_URL            => self::TG_HOST . '/bot' . $this->token . '/setWebhook?url=' . $url,
                 CURLOPT_POST           => TRUE,
                 CURLOPT_RETURNTRANSFER => TRUE,
                 CURLOPT_TIMEOUT        => 10,

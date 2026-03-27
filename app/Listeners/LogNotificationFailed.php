@@ -1,22 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Listeners;
 
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
+use App\Services\Notifications\NotificationRepositoryInterface;
 
-class LogNotificationFailed
+readonly class LogNotificationFailed
 {
+    public function __construct(private NotificationRepositoryInterface $repository) {}
+
     public function handle(object $event): void
     {
-        /*NotificationLog::create([
-            'notifiable_type' => get_class($event->notifiable),
-            'notifiable_id' => $event->notifiable->id ?? null,
-            'notification_key' => $event->notification::KEY,
-            'channel' => $event->channel,
-            'entity_type' => get_class($event->notification->news ?? null),
-            'entity_id' => $event->notification->news->id ?? null,
-            'status' => 'sent',
-        ]);*/
+        $message = $event->message;
+
+        $this->repository->setEmailLog([
+            'type'    => $message->getHeaders()->get('X-Notification-Key')?->getBodyAsString(),
+            'email'   => $message->getTo()[0]->getAddress(),
+            'subject' => $message->getSubject(),
+            'sl'      => json_encode($message->getHtmlBody() ?? $message->getTextBody()),
+            'status'  => false,
+            'error'   => $event->exception->getMessage(),
+        ]);
     }
 }

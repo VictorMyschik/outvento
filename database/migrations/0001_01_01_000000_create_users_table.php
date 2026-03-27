@@ -13,21 +13,27 @@ return new class extends Migration {
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name', 50)->index();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('telegram_chat_id')->nullable();
+            $table->string('subscription_token', 32)->nullable()->unique();
             $table->smallInteger('language')->default(Language::EN->value);
+            $table->string('avatar')->nullable();
             $table->string('first_name', 100)->nullable();
             $table->string('last_name', 100)->nullable();
+            $table->string('location', 255)->nullable();
             $table->tinyInteger('gender')->nullable();
             $table->date('birthday')->nullable();
             $table->string('about', 8000)->nullable();
+            $table->tinyInteger('relationship_status')->default(0)->index();
+            $table->smallInteger('visibility')->default(0)->index();
+
             $table->jsonb('permissions')->nullable();
             $table->timestampTz('deleted_at')->nullable();
             $table->rememberToken();
-            $table->timestamps();
+            $table->timestampTz('created_at')->useCurrent();
+            $table->timestampTz('updated_at')->nullable()->useCurrentOnUpdate();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

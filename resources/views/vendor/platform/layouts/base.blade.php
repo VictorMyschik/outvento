@@ -1,7 +1,20 @@
 @extends('platform::dashboard')
 
-@section('title', (string) __($name))
-@section('description', (string) __($description))
+@if(isset($avatar))
+    @section('avatar')
+        <a href="{{$avatar}}" target="_blank">
+            <img src="{{$avatar}}"
+                 class="rounded-circle border"
+                 style="width:58px;height:58px;object-fit:cover"
+            >
+        </a>
+    @endsection
+@endif
+@section('title', (string) $name)
+@section('description')
+    {!! $description !!}
+@endsection
+
 @section('controller', 'base')
 
 @section('navbar')

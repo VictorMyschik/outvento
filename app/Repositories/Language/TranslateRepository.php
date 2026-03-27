@@ -10,6 +10,7 @@ use App\Repositories\DatabaseRepository;
 use App\Services\Language\Enum\TranslateGroupEnum;
 use App\Services\Language\TranslateRepositoryInterface;
 use App\Services\System\Enum\Language;
+use Illuminate\Support\Facades\DB;
 
 readonly class TranslateRepository extends DatabaseRepository implements TranslateRepositoryInterface
 {
@@ -26,7 +27,7 @@ readonly class TranslateRepository extends DatabaseRepository implements Transla
 
         $this->db->table(TranslateGroup::getTableName())->where('translate_id', $id)->delete();
         $this->db->table(TranslateGroup::getTableName())->insert(
-            array_map(fn(int $group) => ['translate_id' => $id, 'group' => $group], $groups)
+            array_map(fn(int $group) => ['translate_id' => $id, 'group_id' => $group], $groups)
         );
 
         $this->db->commit();
@@ -38,7 +39,7 @@ readonly class TranslateRepository extends DatabaseRepository implements Transla
     {
         return $this->db->table(TranslateGroup::getTableName())
             ->where('translate_id', $translateId)
-            ->pluck('group')
+            ->pluck('group_id')
             ->all();
     }
 
@@ -47,7 +48,7 @@ readonly class TranslateRepository extends DatabaseRepository implements Transla
         return $this->db->table(Translate::getTableName())
             ->join(TranslateGroup::getTableName(), function ($join) use ($group) {
                 $join->on(Translate::getTableName() . '.id', '=', TranslateGroup::getTableName() . '.translate_id')
-                    ->where(TranslateGroup::getTableName() . '.group', '=', $group->value);
+                    ->where(TranslateGroup::getTableName() . '.group_id', '=', $group->value);
             })
             ->select(Translate::getTableName() . '.code', Translate::getTableName() . '.' . $language->getCode())
             ->get()
@@ -81,7 +82,7 @@ readonly class TranslateRepository extends DatabaseRepository implements Transla
             })
             ->selectRaw(
                 Translate::getTableName() . '.*,
-                    string_agg(' . TranslateGroup::getTableName() . '."group"::text, \',\') AS groups'
+                    string_agg(' . TranslateGroup::getTableName() . '."group_id"::text, \',\') AS groups'
             )
             ->groupBy(Translate::getTableName() . '.id')
             ->orderBy('id', 'asc');
@@ -114,5 +115,10 @@ readonly class TranslateRepository extends DatabaseRepository implements Transla
         }
 
         return $out;
+    }
+
+    public function updateIndexes(): void
+    {
+        DB::statement("SELECT pg_catalog.setval(pg_get_serial_sequence('translates', 'id'), MAX(id)) FROM translates;");
     }
 }

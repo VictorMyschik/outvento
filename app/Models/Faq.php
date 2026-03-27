@@ -14,6 +14,7 @@ class Faq extends ORM
 
     protected $table = 'faq';
     protected $fillable = array(
+        'id',
         'language',
         'title',
         'text',

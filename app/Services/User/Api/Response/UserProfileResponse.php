@@ -22,6 +22,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: "gender", description: "Пол пользователя", type: "string", nullable: true),
         new OA\Property(property: "birthday", description: "Дата рождения пользователя", type: "string", format: "date", nullable: true),
         new OA\Property(property: "about", description: "Информация о пользователе", type: "string", nullable: true),
+        new OA\Property(property: "updatedAt", description: "Дата и время последнего обновления профиля пользователя", type: "string", format: "date-time", nullable: true),
     ],
     type: "object"
 )]
@@ -41,5 +42,7 @@ final readonly class UserProfileResponse
         public ?string $gender,
         public ?string $birthday,
         public ?string $about,
+
+        public ?string $updatedAt = null,
     ) {}
 }

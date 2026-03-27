@@ -9,7 +9,7 @@ use App\Repositories\DatabaseRepository;
 
 final readonly class UploadServiceDBRepository extends DatabaseRepository
 {
-    public function addAttachment(array $data): int
+    public function addFile(array $data): int
     {
         return $this->db->table(FileAttachment::getTableName())->insertGetId($data);
     }

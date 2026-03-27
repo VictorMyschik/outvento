@@ -1,0 +1,3 @@
+insert into public.roles (id, slug, name, permissions, created_at, updated_at)
+values  (1, 'user', 'user', '{"platform.index": "0", "platform.systems.roles": "0", "platform.systems.users": "0", "platform.systems.attachment": "0"}', '2026-02-08 06:54:13', '2026-02-08 06:54:13'),
+        (2, 'admin', 'admin', '{"platform.index": "1", "platform.systems.roles": "1", "platform.systems.users": "1", "platform.systems.attachment": "1"}', '2026-02-08 07:04:12', '2026-02-08 07:05:03');

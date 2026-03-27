@@ -12,7 +12,7 @@ return new class extends Migration {
             $table->string('name_ru', 50);
             $table->string('name_en', 50)->nullable();
             $table->string('name_pl', 50)->nullable();
-            $table->char('iso3166alpha2', 3);
+            $table->char('iso3166alpha2', 3)->index();
             $table->char('iso3166alpha3', 4);
             $table->char('iso3166numeric', 3);
             $table->tinyInteger('continent');

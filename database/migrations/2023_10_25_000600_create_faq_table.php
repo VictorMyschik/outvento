@@ -9,10 +9,12 @@ return new class extends Migration {
     {
         Schema::create('faq', function (Blueprint $table) {
             $table->id();
-            $table->unsignedSmallInteger('language')->index();
-            $table->string('title')->unique();
+            $table->smallInteger('language')->index();
+            $table->string('title', 1000)->index();
             $table->string('text', 8000);
             $table->boolean('active')->default(false);
+
+            $table->unique(['language', 'title']);
 
             $table->timestampTz('created_at')->useCurrent();
             $table->timestampTz('updated_at')->nullable()->useCurrentOnUpdate();

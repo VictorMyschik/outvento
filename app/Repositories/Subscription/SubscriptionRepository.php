@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Repositories\Subscription;
 
-use App\Models\Subscription\Subscription;
+use App\Models\Promo\Subscription;
+use App\Models\Promo\SubscriptionLegalAcceptance;
 use App\Repositories\DatabaseRepository;
-use App\Services\Email\Enum\EmailTypeEnum;
-use App\Services\Notifications\Enum\NotificationType;
-use App\Services\Notifications\SubscriptionRepositoryInterface;
+use App\Services\Notifications\Enum\PromoEvent;
+use App\Services\Promo\Enum\Status;
+use App\Services\Promo\SubscriptionRepositoryInterface;
 
 final readonly class SubscriptionRepository extends DatabaseRepository implements SubscriptionRepositoryInterface
 {
@@ -25,7 +26,7 @@ final readonly class SubscriptionRepository extends DatabaseRepository implement
     public function saveSubscription(int $id, array $data): int
     {
         if ($id > 0) {
-            $this->db->table(Subscription::getTableName())->update($data);
+            $this->db->table(Subscription::getTableName())->where('id', $id)->update($data);
 
             return $id;
         }
@@ -38,23 +39,48 @@ final readonly class SubscriptionRepository extends DatabaseRepository implement
         $this->db->table(Subscription::getTableName())->where('token', $token)->delete();
     }
 
-    public function getListByType(NotificationType $type): array
+    public function revokeSubscription(string $token): void
     {
-        return Subscription::where('type', $type->value)->get()->all();
+        $this->db->table(Subscription::getTableName())->where('token', $token)->update([
+            'status'     => Status::Revoked->value,
+            'revoked_at' => now(),
+        ]);
     }
 
-    public function getSubscriptionByEmail(string $email): array
+    public function getSubscriptionByEmailAndEvent(string $email, PromoEvent $promoEvent): ?Subscription
     {
-        return Subscription::where('email', $email)->get()->all();
+        return Subscription::where('email', $email)
+            ->where('event', $promoEvent->value)
+            ->latest()->first();
     }
 
-    public function deleteSubscriptionByEmail(string $email): void
+    public function createSubscriptionLegalInfo(int $subscriptionId, array $legalDocuments): void
     {
-        $this->db->table(Subscription::getTableName())->where('email', $email)->delete();
+        $insert = [];
+
+        foreach ($legalDocuments as $documentId) {
+            $insert[] = [
+                'subscription_id'   => $subscriptionId,
+                'legal_document_id' => $documentId,
+                'accepted_at'       => now(),
+            ];
+        }
+
+        $this->db->table(SubscriptionLegalAcceptance::getTableName())->insert($insert);
     }
 
-    public function deleteSubscriptionByEmailAndType(NotificationType $type, string $email): void
+    public function confirmSubscriptionLegalInfo(int $subscriptionId): void
     {
-        $this->db->table(Subscription::getTableName())->where('email', $email)->where('type', $type->value)->delete();
+        $this->db->table(SubscriptionLegalAcceptance::getTableName())
+            ->where('subscription_id', $subscriptionId)
+            ->update(['accepted_at' => now()]);
+    }
+
+    public function getSubscribersByEvent(PromoEvent $promoEvent): array
+    {
+        return Subscription::where('event', $promoEvent->value)
+            ->where('status', Status::Confirmed->value)
+            ->get()
+            ->all();
     }
 }

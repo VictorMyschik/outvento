@@ -1,8 +1,15 @@
 <?php
 
 return [
+    // disk => [paths]
     'users'       => [
-        'avatar' => '/users/%s',
+        'disk'   => 'users',
+        'avatar' => '',
+    ],
+    'travels'     => [
+        'disk'      => 'travels',
+        'media'     => 'media',
+        'resources' => 'resources',
     ],
     'news_logo'   => 'news_logo',
     'constructor' => [

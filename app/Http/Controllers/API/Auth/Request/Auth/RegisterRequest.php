@@ -19,6 +19,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: "email", type: "string", format: "email", maxLength: 255, example: "john.doe@example.com"),
         new OA\Property(property: "password", type: "string", format: "password", example: "password123"),
         new OA\Property(property: "password_confirmation", type: "string", format: "password", example: "password123"),
+        new OA\Property(property: "remember", type: "boolean", example: true),
     ],
     type: "object"
 )]
@@ -30,7 +31,7 @@ class RegisterRequest extends FormRequest
             'name'     => ['required', 'string', 'max:255', Rule::unique(User::class)],
             'email'    => ['required', 'string', 'email', 'max:255', Rule::unique(User::class)],
             'password' => ['required', 'string', Password::default(), 'confirmed'],
-            'language' => ['sometimes', 'nullable', 'integer', Rule::enum(Language::class)],
+            'remember' => ['sometimes', 'boolean'],
         ];
     }
 
@@ -49,9 +50,9 @@ class RegisterRequest extends FormRequest
         return $this->input('password');
     }
 
-    public function getLanguage(): ?Language
+    public function remember(): bool
     {
-        return $this->has('language') ? Language::from((int)$this->input('language')) : null;
+        return $this->boolean('remember', false);
     }
 
     public function messages(): array

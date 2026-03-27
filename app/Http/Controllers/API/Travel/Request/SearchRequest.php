@@ -12,7 +12,7 @@ class SearchRequest extends FormRequest
     {
         return [
             'country'       => 'nullable|int|exists:countries,id',
-            'travelType'    => 'nullable|int|exists:travel_types,id',
+            'activity'      => 'nullable|int|exists:activity,id',
             'dateFrom'      => 'nullable|date',
             'dateTo'        => 'nullable|date',
             'maxMemberFrom' => 'nullable|int',

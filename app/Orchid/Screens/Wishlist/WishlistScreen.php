@@ -102,7 +102,7 @@ class WishlistScreen extends Screen
     {
         $list = [];
         foreach (EmailWishlistFilter::FIELDS as $item) {
-            if (!is_null($request->get($item))) {
+            if (!is_null($request->input($item))) {
                 $list[$item] = $request->get($item);
             }
         }

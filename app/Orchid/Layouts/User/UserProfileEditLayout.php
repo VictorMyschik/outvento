@@ -6,11 +6,14 @@ namespace App\Orchid\Layouts\User;
 
 use App\Services\System\Enum\Language;
 use App\Services\User\Enum\Gender;
+use App\Services\User\Enum\RelationshipStatus;
+use App\Services\User\Enum\Visibility;
 use Orchid\Screen\Fields\DateTimer;
 use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Fields\TextArea;
+use Orchid\Screen\Fields\ViewField;
 use Orchid\Screen\Layouts\Rows;
 
 class UserProfileEditLayout extends Rows
@@ -21,6 +24,16 @@ class UserProfileEditLayout extends Rows
             Group::make([
                 Input::make('name')->type('text')->max(255)->required()->title('Name (login)'),
                 Input::make('email')->type('email')->required()->title('Email'),
+            ]),
+
+            Group::make([
+                Select::make('visibility')
+                    ->title('Profile Visibility')
+                    ->options(Visibility::getSelectList()),
+
+                Select::make('relationship_status')
+                    ->title('Relationship status')
+                    ->options(RelationshipStatus::getSelectList()),
             ]),
 
             Group::make([
@@ -39,9 +52,6 @@ class UserProfileEditLayout extends Rows
                     1 => 'Verified',
                     0 => 'Not verified',
                 ]),
-
-            Input::make('telegram_chat_id')
-                ->title('Telegram Chat ID'),
 
             Group::make([
                 Select::make('gender')

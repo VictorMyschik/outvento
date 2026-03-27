@@ -4,253 +4,295 @@ declare(strict_types=1);
 
 namespace App\Services\User;
 
-use App\Models\NotificationCode;
-use App\Models\PasswordResetToken;
+use App\Models\Notification\ServiceNotification;
 use App\Models\User;
-use App\Notifications\ResetPassword;
-use App\Notifications\VerifyRegistrationCode;
+use App\Models\UserInfo\Communication;
 use App\Repositories\User\UserRepository;
+use App\Services\Notifications\DTO\ServiceNotificationDto;
+use App\Services\Notifications\Enum\NotificationChannel;
+use App\Services\Notifications\Enum\ServiceEvent;
+use App\Services\Notifications\Enum\SystemEvent;
+use App\Services\Notifications\InternalNotificationService;
+use App\Services\Notifications\ServiceNotificationService;
+use App\Services\Notifications\SystemNotificationService;
 use App\Services\System\Enum\Language;
-use App\Services\Upload\UploadService;
-use App\Services\User\DTO\UserProfileDTO;
-use Illuminate\Auth\AuthenticationException;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Services\Travel\TravelService;
+use App\Services\User\Enum\CommunicationType;
+use App\Services\User\Enum\VerificationStatus;
+use Illuminate\Http\UploadedFile;
+use Nette\Utils\Random;
 
 final readonly class UserService
 {
-    public const int TOKEN_LENGTH = 60;
-    private const int RESET_PASSWORD_TOKEN_EXPIRY_MINUTES = 20;
-    private const int ACTION_VERIFY_REG_TIME_EXPIRY_MINUTES = 20;
-
-    private Language $language;
-
     public function __construct(
-        private UploadService  $uploadService,
-        private UserRepository $repository,
-    )
-    {
-        $this->language = Language::fromCode(app()->getLocale());
-    }
-
-    public function authorize(string $email, string $password, bool $isRememberMe): ?string
-    {
-        $credentials = [
-            'email'    => $email,
-            'password' => $password,
-        ];
-
-        if (!Auth::attempt($credentials)) {
-            throw new AuthenticationException(__('auth.failed'));
-        }
-
-        /** @var User $user */
-        $user = Auth::user();
-
-        return $this->issueToken($user, $isRememberMe);
-    }
-
-    public function createWithAuth(UserProfileDTO $dto): string
-    {
-        $user = $this->create($dto);
-
-        Auth::login($user, true);
-
-        $this->sendVerifyNotification($user);
-
-        return $this->issueToken($user);
-    }
-
-    public function create(UserProfileDTO $dto): User
-    {
-        $user = new User();
-
-        $user->fill([
-            'name'     => $dto->name,
-            'email'    => $dto->email,
-            'password' => $dto->password,
-            'language' => $dto->language,
-        ])->save();
-
-        return $user;
-    }
-
-    public function registerWithYandex(object $user): string
-    {
-        $user = User::firstOrCreate([
-            'email' => $user->email
-        ], [
-            'first_name' => $user->user['display_name'],
-            'password'   => Hash::make(Str::random(24)),
-        ]);
-
-        Auth::login($user, true);
-
-        return $this->issueToken($user);
-    }
-
-    private function issueToken(User $user, bool $isRememberMe = false): string
-    {
-        return $user->createToken(name: 'auth-token',
-            expiresAt: $isRememberMe ? now()->addDays(7) : now()->addDay(),
-        )->plainTextToken;
-    }
+        private UserUploadService           $uploadService,
+        private UserRepository              $repository,
+        private AuthService                 $authService,
+        private SystemNotificationService   $notificationService,
+        private ServiceNotificationService  $serviceNotificationService,
+        private TravelService               $travelService,
+        private InternalNotificationService $internalNotificationService,
+    ) {}
 
     public function updateUser(User $user, array $data): User
     {
-        if (count($data)) {
-            $this->repository->updateUser($user->id, $data);
-            $user->refresh();
-        }
+        $needSendVerifyEmail = false;
 
         if (!empty($data['email']) && $data['email'] !== $user->email) {
             $data['email_verified_at'] = null;
-
-            $this->sendVerifyNotification($user);
+            $needSendVerifyEmail = true;
         }
 
         if (count($data)) {
             $this->repository->updateUser($user->id, $data);
+        }
+
+        if ($needSendVerifyEmail) {
+            $this->authService->sendVerifyNotification($user);
+        }
+
+        if (!empty($data['email_verified_at'])) {
+            $this->notificationService->deleteNotificationCode($user->id, SystemEvent::RegistrationConfirmation);
         }
 
         return $this->repository->getUserById($user->id);
     }
 
-    public function verifyEmailAddress(int $code, User $user): void
+    public function findUser(string $address): ?User
     {
-        $notification = NotificationCode::where([
-            'user_id' => $user->id(),
-            'code'    => $code,
-            'action'  => NotificationCode::ACTION_VERIFY_REG,
-        ])->first();
+        if (filter_var($address, FILTER_VALIDATE_EMAIL) === false) {
+            $address = $this->repository->getEmailByName($address);
 
-        if (!$notification) {
-            throw new NotFoundHttpException('Информация не найдена, проверьте правильность ввода данных или запросите новый код подтверждения.');
+            if (!$address) {
+                return null;
+            }
         }
 
-        $user->markEmailAsVerified();
-
-        $notification->delete();
+        return $this->repository->getUserByEmail($address);
     }
 
-    public function changePassword(User $user, string $password): void
+    public function getCommunicationByToken(string $token): ?Communication
     {
-        $user->forceFill([
-            'password' => Hash::make($password),
-        ])->save();
+        return $this->repository->getCommunicationByToken($token);
     }
 
-    public function sendVerifyNotification(User $user): void
+    public function updateUserRoles(User $user, array $roleIds): void
     {
-        $code = (string)rand(100000, 999999);
+        $this->repository->updateUserRoles($user->id, $roleIds);
 
-        NotificationCode::updateOrCreate(
-            [
-                'user_id' => $user->id,
-                'action'  => NotificationCode::ACTION_VERIFY_REG,
-            ],
-            [
-                'code' => $code,
-            ]
-        );
-
-        $user->notify(new VerifyRegistrationCode($code, self::ACTION_VERIFY_REG_TIME_EXPIRY_MINUTES));
-    }
-
-    public function sendResetPassword(string $email): void
-    {
-        $user = User::where('email', $email)->first();
-
-        if (!$user) {
-            return;
-        }
-
-        $this->sendResetPasswordNotification($user);
-    }
-
-    public function checkActualResetPasswordToken(string $token): void
-    {
-        $datetime = now()->subMinutes(self::RESET_PASSWORD_TOKEN_EXPIRY_MINUTES);
-
-        PasswordResetToken::where('token', $token)
-            ->where(function ($query) use ($datetime) {
-                $query->where('created_at', '>=', $datetime)->whereNull('updated_at');
-            })
-            ->orWhere(function ($query) use ($datetime) {
-                $query->where('updated_at', '>=', $datetime);
-            })
-            ->firstOrFail();
-    }
-
-    public function setPasswordByCode(string $token, string $password): void
-    {
-        try {
-            $datetime = now()->subMinutes(self::RESET_PASSWORD_TOKEN_EXPIRY_MINUTES);
-
-            $passwordResetToken = PasswordResetToken::where('token', $token)
-                ->where(function ($query) use ($datetime) {
-                    $query->where('created_at', '>=', $datetime)->whereNull('updated_at');
-                })
-                ->orWhere(function ($query) use ($datetime) {
-                    $query->where('updated_at', '>=', $datetime);
-                })
-                ->firstOrFail();;
-        } catch (\Exception $e) {
-            throw new NotFoundHttpException(__('mr-t.reset_password_token_invalid'));
-        }
-
-        $user = User::where('email', $passwordResetToken->email)->firstOrFail();
-        $user->password = Hash::make($password);
-        $user->save();
-
-        $passwordResetToken->delete();
-    }
-
-    private function sendResetPasswordNotification(User $user): void
-    {
-        $token = mb_strtolower(Str::random(self::TOKEN_LENGTH));
-
-        PasswordResetToken::updateOrCreate(['email' => $user->email], ['token' => $token]);
-
-        $url = config('app.url') . '/reset-password?token=' . $token;
-
-        $user->notify(new ResetPassword($url, $this->language->getCode(), self::RESET_PASSWORD_TOKEN_EXPIRY_MINUTES));
+        $this->serviceNotificationService->deleteUnavailableServiceNotification($user);
     }
 
     public function removeAvatar(User $user): void
     {
         if (!is_null($user->getAvatar())) {
-            $this->uploadService->deleteFile($user->getAvatar());
-            $user->avatar = null;
-            $user->save();
+            $this->uploadService->deleteFile($user->avatar);
+            $this->repository->deleteAvatar($user->id);
         }
+    }
+
+    public function addAvatar(int $userId, UploadedFile $file): void
+    {
+        $path = $this->uploadService->saveAvatar($userId, $file);
+        $this->repository->updateUser($userId, ['avatar' => $path]);
     }
 
     public function deleteUser(User $user): void
     {
-        $this->repository->deleteCommunicates($user->id);
-        $this->removeAvatar($user);
         $user->tokens()->delete();
+        $this->repository->deleteCommunications($user->id);
+        $this->removeAvatar($user);
         $user->softDelete();
 
-        // TODO: сдклать проверку на возможность полного удаления
-        $user->delete();
+        // TODO: сделать проверку на возможность полного удаления
+        if (!$this->getUndeletedModels($user)) {
+            $user->delete();
+        }
     }
 
-    public function saveCommunicate(int $id, array $data): void
+    public function getUndeletedModels(): bool
     {
-        $this->repository->saveCommunicate($id, $data);
+        // TODO: сделать проверку на наличие комментариев и т.п.
+        return false;
     }
 
-    public function getCommunicates(User $user, Language $language): array
+    public function saveCommunication(int $id, array $data): int
     {
-        return $this->repository->getCommunicates($user->id, $language);
+        if (CommunicationType::from($data['type']) === CommunicationType::Email) {
+            if (!filter_var($data['address'], FILTER_VALIDATE_EMAIL)) {
+                throw new \InvalidArgumentException('Invalid email address');
+            }
+
+            // From admin only
+            $status = VerificationStatus::from((int)($data['verification_status'] ?? VerificationStatus::NotVerified->value));
+
+            if ($status->isVerified()) {
+                return $this->repository->saveCommunication($id, $data);
+            }
+
+            $this->verificationEmail($id, $data);
+        }
+
+        if (CommunicationType::from($data['type']) === CommunicationType::Telegram) {
+            if (!$id) {
+                $data['address_ext'] = md5(Random::generate());
+            }
+        }
+
+        return $this->repository->saveCommunication($id, $data);
     }
 
-    public function deleteCommunication(User $user, int $id): void
+    public function saveCommunicationManually(int $id, array $data): int
     {
-        $this->repository->deleteCommunicate($user->id, $id);
+        return $this->repository->saveCommunication($id, $data);
+    }
+
+    public function sendCommunicationVerifyEmail(Communication $communication): void
+    {
+        $this->notificationService->addAndSendRequest(
+            channel: NotificationChannel::Email,
+            address: $communication->address,
+            eventType: SystemEvent::VerifyCommunicationEmail,
+            data: $communication->toArray(),
+        );
+    }
+
+    private function verificationEmail(int $id, array $data): void
+    {
+        if (!$id) {
+            $this->notificationService->addAndSendRequest(
+                channel: NotificationChannel::Email,
+                address: $data['address'],
+                eventType: SystemEvent::VerifyCommunicationEmail,
+                data: $data,
+            );
+
+            return;
+        }
+
+        $current = $this->repository->getCommunicationById($id, (int)$data['user_id']);
+
+        if ($current->address !== $data['address']) {
+            $this->notificationService->addAndSendRequest(
+                channel: NotificationChannel::Email,
+                address: $data['address'],
+                eventType: SystemEvent::VerifyCommunicationEmail,
+                data: $data,
+            );
+        }
+    }
+
+    public function getCommunications(int $userId): array
+    {
+        return $this->repository->getCommunications($userId);
+    }
+
+    public function deleteCommunication(int $userId, int $id): void
+    {
+        $this->repository->deleteCommunication($userId, $id);
+    }
+
+    public function deleteAllCommunication(int $userId): void
+    {
+        $this->repository->deleteAllCommunications($userId);
+    }
+
+    #region Notifications
+    public function getCommunicationsForNotification(int $userId): array
+    {
+        return $this->repository->getCommunicationsForServiceNotificationAvailable($userId);
+    }
+
+    public function isUserNotificationActive(int $userId, ServiceEvent $event): bool
+    {
+        return $this->serviceNotificationService->isUserNotificationActive($userId, $event);
+    }
+
+    /**
+     * @return ServiceNotification[]
+     */
+    public function getServiceUserNotificationList(int $userId): array
+    {
+        return $this->serviceNotificationService->getServiceNotificationList($userId);
+    }
+
+    public function resetToDefaultUserNotifications(int $userId): void
+    {
+        $this->serviceNotificationService->resetToDefault($userId);
+    }
+
+    public function updateUserServiceNotification(int $userId, ServiceEvent $event, ServiceNotificationDto $dto): void
+    {
+        $this->serviceNotificationService->updateUserServiceNotification($userId, $event, $dto);
+    }
+
+    public function updateNotificationMute(int $userId, ServiceEvent $event, bool $active): void
+    {
+        $this->serviceNotificationService->updateNotificationMute($userId, $event, $active);
+    }
+
+    #endregion
+
+    public function getUserLanguages(User $user, Language $language): array
+    {
+        return $this->repository->getUserLanguages($user, $language);
+    }
+
+    public function updateUserLanguages(User $user, array $languages): void
+    {
+        $this->repository->updateUserLanguages($user, $languages);
+    }
+
+    public function deleteUserLanguages(User $user): void
+    {
+        $this->repository->deleteUserLanguages($user);
+    }
+
+    public function getStorageUsed(int $userId): string
+    {
+        $personalStorage = $this->uploadService->getUserStorageUsed($userId);
+        $travelStorage = $this->travelService->getFullUserMediaSize($userId);
+
+        $bytes = $personalStorage + $travelStorage;
+
+        return $this->formatBytes($bytes);
+    }
+
+    private function formatBytes(int $bytes): string
+    {
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $factor = floor((strlen((string)$bytes) - 1) / 3);
+
+        return sprintf('%.2f', $bytes / pow(1024, $factor)) . ' ' . $units[(int)$factor];
+    }
+
+    public function saveUserNotification(int $notificationId, array $data): void
+    {
+        $this->internalNotificationService->saveUserNotification($notificationId, $data);
+    }
+
+    public function getInternalNotificationList(int $userId): array
+    {
+        return $this->internalNotificationService->getNotificationList($userId);
+    }
+
+    public function deleteInternalNotificationById(int $userId, int $internalNotificationId): void
+    {
+        $this->internalNotificationService->deleteNotificationById($userId, $internalNotificationId);
+    }
+
+    public function markUsReadInternalNotification(int $userId, int $internalNotificationId): void
+    {
+        $this->internalNotificationService->markUsRead($internalNotificationId);
+    }
+
+    public function purgeInternalUserNotifications(int $userId): void
+    {
+        $this->internalNotificationService->purgeInternalUserNotifications($userId);
+    }
+
+    public function readAllNotifications(int $userId): void
+    {
+        $this->internalNotificationService->markAllAsRead($userId);
     }
 }

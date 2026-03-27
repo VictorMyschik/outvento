@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\References;
 
+use App\Models\Reference\Country;
+use App\Services\Forms\DTO\FormFeedbackDTO;
+use App\Services\Notifications\AbstractNotificationService;
 use App\Services\System\Enum\Language;
+use App\Services\Travel\DTO\TravelInviteDto;
+use App\Services\Travel\Enum\Activity;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -18,7 +23,7 @@ use Orchid\Support\Facades\Layout;
 class EmailScreen extends Screen
 {
     public string $name = 'Email Templates';
-    public string $description = 'Email Templates';
+    public string $description = 'Email templates preview';
 
     public function __construct(private readonly Request $request)
     {
@@ -38,12 +43,14 @@ class EmailScreen extends Screen
     public function layout(): iterable
     {
         $fakeData['reset_password'] = [
-            'url'           => 'https://example.com/reset-password?token=abcdef',
+            'url'           => 'https://example.com/forgot-password?token=abcdef',
             'expireMinutes' => '20',
         ];
 
         $fakeData['new_news_subscription'] = [
-            'unsubscribeUrl' => '#',
+            'unsubscribeUrl'  => '#',
+            'expireMinutes'   => AbstractNotificationService::EXPIRE_MINUTES,
+            'confirmationUrl' => 'https://example.com/news/confirm?token=abcdef',
         ];
 
         $fakeData['news_digest'] = [
@@ -62,7 +69,31 @@ class EmailScreen extends Screen
 
         $fakeData['verify_account'] = [
             'code'          => '123456',
-            'expireMinutes' => 20,
+            'expireMinutes' => AbstractNotificationService::EXPIRE_MINUTES,
+        ];
+
+        $fakeData['feedback'] = [
+            'dto' => new FormFeedbackDTO(language: Language::EN, name: 'Viktor', email: 'email@example.com', message: 'Hi', userId: 1,)
+        ];
+
+        $fakeData['verify_communication_email'] = [
+            'confirmationUrl' => 'https://example.com/confirm?token=abcdef',
+            'expireMinutes'   => AbstractNotificationService::EXPIRE_MINUTES,
+        ];
+
+        $fakeData['travel_invite'] = [
+            'dto' => new TravelInviteDTO(
+                userId: 1,
+                activities: [
+                    Activity::Hiking->getLabel(),
+                    Activity::Cycling->getLabel(),
+                ],
+                countryLabels: [
+                    Country::loadByOrDie(1)->getName(Language::EN),
+                    Country::loadByOrDie(2)->getName(Language::EN),
+                ],
+                confirmationUrl: 'https://example.com',
+            )
         ];
 
         App::setlocale(Language::from((int)$this->request->get('locale', Language::RU->value))->getCode());
@@ -75,10 +106,13 @@ class EmailScreen extends Screen
             ]),
 
             Layout::tabs([
-                'Reset Password'     => $this->getTemplate('emails.reset_password', $fakeData['reset_password']),
-                'New Subscription'   => $this->getTemplate('emails.new_news_subscription', $fakeData['new_news_subscription']),
-                'News Digest'        => $this->getTemplate('emails.news_digest', $fakeData['news_digest']),
-                'Email verification' => $this->getTemplate('emails.verify_email_code', $fakeData['verify_account']),
+                'Reset Password'             => $this->getTemplate('emails.reset_password', $fakeData['reset_password']),
+                'New Subscription'           => $this->getTemplate('emails.new_news_subscription', $fakeData['new_news_subscription']),
+                'News Digest'                => $this->getTemplate('emails.news_digest', $fakeData['news_digest']),
+                'Email verification'         => $this->getTemplate('emails.verify_email_code', $fakeData['verify_account']),
+                'Feedback'                   => $this->getTemplate('emails.feedback', $fakeData['feedback']),
+                'Verify Communication Email' => $this->getTemplate('emails.verify_communication_email', $fakeData['verify_communication_email']),
+                'Travel Invite'              => $this->getTemplate('emails.travel_invite', $fakeData['travel_invite']),
             ]),
         ];
     }

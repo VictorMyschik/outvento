@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Orchid\Layouts\Newsletter;
 
-use App\Models\News\NewsGroup;
 use App\Models\News\NewsSubgroup;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;

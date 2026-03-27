@@ -11,11 +11,13 @@ use App\Orchid\Filters\User\UserInfoFilter;
 use App\Orchid\Layouts\User\NewUserLayout;
 use App\Orchid\Layouts\User\UserInfoListLayout;
 use App\Orchid\Layouts\User\UserProfileEditLayout;
+use App\Services\System\Enum\Language;
+use App\Services\User\AuthService;
 use App\Services\User\DTO\UserProfileDTO;
+use App\Services\User\Enum\UserRole;
 use App\Services\User\UserService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
@@ -26,6 +28,7 @@ class UserProfileListScreen extends Screen
     public function __construct(
         private readonly Request     $request,
         private readonly UserService $service,
+        private readonly AuthService $authService,
     ) {}
 
     public string $name = 'Пользователи';
@@ -43,7 +46,7 @@ class UserProfileListScreen extends Screen
             ModalToggle::make('Создать пользователя')
                 ->class('mr-btn-success')
                 ->modal('create_user_modal')
-                ->method('createNewUser')
+                ->method('createUser')
                 ->modalTitle('Добавить нового пользователя')
                 ->novalidate()
                 ->icon('plus'),
@@ -55,26 +58,21 @@ class UserProfileListScreen extends Screen
         return [
             UserInfoFilter::displayFilterCard($this->request),
             UserInfoListLayout::class,
-            Layout::modal('user_modal', UserProfileEditLayout::class)->async('asyncGetUserProfile'),
             Layout::modal('create_user_modal', NewUserLayout::class),
         ];
     }
 
-    public function asyncGetUserProfile(int $id): array
-    {
-        return User::find($id)->getAttributes();
-    }
-
-    public function createNewUser(RegisterRequest $request): void
+    public function createUser(RegisterRequest $request): void
     {
         $dto = new UserProfileDTO(
             email: $request->getEmail(),
             name: $request->getName(),
-            password: Hash::make($request->getPassword()),
-            language: $request->getLanguage()->value,
+            password: $request->getPassword(),
+            language: Language::fromCode(app()->getLocale())->value,
+            roles: [UserRole::User]
         );
 
-        $this->service->create($dto);
+        $this->authService->create($dto);
     }
 
     public function saveUser(UpdateProfileRequest $request, int $id): void
@@ -82,7 +80,7 @@ class UserProfileListScreen extends Screen
         $input = $request->getUpdateData();
 
         $input['email_verified_at'] = $request->get('email_verified_at') ? now() : null;
-        $input['telegram_chat_id'] = $request->get('telegram_chat_id') ?? null;
+        $input['subscription_token'] = $request->get('subscription_token') ?? null;
         unset($input['telegram']);
 
         if ($input['birthday']) {
@@ -94,21 +92,11 @@ class UserProfileListScreen extends Screen
         Toast::info('Информация о пользователе успешно сохранена');
     }
 
-    public function asyncGetUserInfo(int $id = 0): array
-    {
-        return ['info' => User::loadBy($id)];
-    }
-
-    public function remove(int $id): void
-    {
-        $this->service->deleteUser(User::findOrFail($id));
-    }
-
     public function runFiltering(Request $request): RedirectResponse
     {
         $list = [];
         foreach (UserInfoFilter::FIELDS as $item) {
-            if (!is_null($request->get($item))) {
+            if (!is_null($request->input($item))) {
                 $list[$item] = $request->get($item);
             }
         }

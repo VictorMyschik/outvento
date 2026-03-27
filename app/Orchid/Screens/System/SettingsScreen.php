@@ -117,8 +117,8 @@ class SettingsScreen extends Screen
     {
         $list = [];
         foreach (SettingsFilter::FIELDS as $item) {
-            if (!is_null($request->get($item))) {
-                $list[$item] = $request->get($item);
+            if (!is_null($request->input($item))) {
+                $list[$item] = $request->input($item);
             }
         }
 
