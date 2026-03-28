@@ -133,7 +133,7 @@ class Travel extends ORM
         return TravelMedia::where('travel_id', $this->id())->get()->all();
     }
 
-    public function hasLogo(): ?string
+    public function getExistsLogo(): ?string
     {
         if ($id = TravelMedia::where('travel_id', $this->id())->where('is_avatar', true)->value('id')) {
             return route('api.v1.travel.image', [
@@ -147,7 +147,7 @@ class Travel extends ORM
 
     public function getAvatarExt(): string
     {
-        return $this->hasLogo() ?: '/images/travel_logo_circle.webp';
+        return $this->getExistsLogo() ?: '/images/travel_logo_circle.webp';
     }
 
     public function getActivitiesForOrchid(): array

@@ -30,6 +30,7 @@ class purge extends Command
 
         $this->refreshTables();
         $this->addPostgresTablesData();
+        $this->purgeFiles();
         $this->reCopyFiles();
         $this->clearCache();
 
@@ -113,6 +114,13 @@ class purge extends Command
             $this->success('Table ' . $tableName . ' is OK');
             $this->nl();
         }
+    }
+
+    private function purgeFiles(): void
+    {
+        File::deleteDirectory(__DIR__ . '/../../../storage/app/public');
+        File::deleteDirectory(__DIR__ . '/../../../storage/app/travels');
+        File::deleteDirectory(__DIR__ . '/../../../storage/app/users');
     }
 
     private function reCopyFiles(): void
