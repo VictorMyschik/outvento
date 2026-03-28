@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Services\Conversations;
 
 use App\Models\Conversations\Conversation;
+use App\Models\Conversations\ConversationMessage;
 use App\Services\Conversations\Enum\Role;
 use App\Services\Conversations\Enum\Type;
+use stdClass;
 
 interface ConversationRepositoryInterface
 {
@@ -24,9 +26,9 @@ interface ConversationRepositoryInterface
 
     public function addUserToConversation(int $conversationId, int $userId, Role $role): void;
 
-    public function addMessage(int $conversationId, int $userId, string $text): void;
+    public function addMessage(int $conversationId, int $userId, ?string $text): string;
 
-    public function updateMessage(string $messageId, string $content): void;
+    public function updateMessage(string $messageId, ?string $content): void;
 
     public function getUnreadMessagesCount(int $conversationId, int $userId): int;
 
@@ -44,5 +46,21 @@ interface ConversationRepositoryInterface
 
     public function setMessageAsRead(int $conversationId, int $userId, string $messageId): void;
 
+    public function renameMessageFile(int $fileId, string $name): void;
+
     public function getLastMessageIdForUser(int $conversationId, int $userId): ?string;
+
+    public function getConversationAttachmentsSizeByUsers(int $conversationId): array;
+
+    public function addConversationMessageAttachment(array $data): int;
+
+    public function findExistsAttachment(int $conversationId, string $hash, ?int $ignoreId = null): ?stdClass;
+
+    public function getMessageFiles(string $messageId): array;
+
+    public function getMessageFile(string $messageId, int $fileId): ?stdClass;
+
+    public function deleteMessageFileModel(int $fileId): void;
+
+    public function getMessageById(string $messageId): ?ConversationMessage;
 }

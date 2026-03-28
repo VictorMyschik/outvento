@@ -6,11 +6,15 @@ namespace App\Services\Conversations;
 
 use App\Services\Conversations\Enum\Role;
 use App\Services\Conversations\Enum\Type;
+use Psr\Log\LoggerInterface;
 
 final readonly class ConversationService
 {
     public function __construct(
         private ConversationRepositoryInterface $repository,
+        private ConversationFileService         $uploadService,
+        private LoggerInterface                 $log,
+        private array                           $config,
     ) {}
 
     public function getConversationUsers(int $conversationId): array
@@ -58,14 +62,23 @@ final readonly class ConversationService
         $this->repository->addUserToConversation($conversationId, $userId, $role);
     }
 
-    public function addMessage(int $conversationId, int $userId, string $text): void
+    public function addMessage(int $conversationId, int $userId, ?string $text, array $files = []): void
     {
-        $this->repository->addMessage($conversationId, $userId, $text);
+        $id = $this->repository->addMessage($conversationId, $userId, $text);
+
+        foreach ($files as $file) {
+            $this->uploadService->uploadConversationFile($id, $file, $conversationId, $userId);
+        }
     }
 
-    public function updateMessage(string $messageId, string $content): void
+    public function updateMessage(string $messageId, ?string $content, array $files): void
     {
         $this->repository->updateMessage($messageId, $content);
+        $message = $this->repository->getMessageById($messageId);
+
+        foreach ($files as $file) {
+            $this->uploadService->uploadConversationFile($messageId, $file, $message->conversation_id, $message->user_id);
+        }
     }
 
     public function getUnreadMessagesCount(int $conversationId, int $userId): int
@@ -112,16 +125,84 @@ final readonly class ConversationService
             return;
         }
 
+        $this->deleteAllMessageFiles($messageId);
         $this->repository->deleteMessageForUser($userId, $messageId);
     }
 
     public function deleteMessage(string $messageId): void
     {
+        $this->deleteAllMessageFiles($messageId);
         $this->repository->deleteMessage($messageId);
+    }
+
+    public function deleteMessageFile(string $messageId, int $fileId): void
+    {
+        $file = $this->repository->getMessageFile($messageId, $fileId);
+
+        $result = $this->uploadService->smartDeleteFile($file);
+
+        if (!$result) {
+            $this->log->error('Error deletion message file', ['messageId' => $messageId, 'path' => $file->path]);
+
+            return;
+        }
+
+        $this->repository->deleteMessageFileModel($file->id);
+    }
+
+    public function deleteAllMessageFiles(string $messageId): void
+    {
+        $list = $this->repository->getMessageFiles($messageId);
+
+        foreach ($list as $file) {
+            $result = $this->uploadService->smartDeleteFile($file);
+
+            if (!$result) {
+                $this->log->error('Error deletion message file', ['messageId' => $messageId, 'path' => $file->path]);
+
+                return;
+            }
+
+            $this->repository->deleteMessageFileModel($file->id);
+        }
     }
 
     public function setMessageAsRead(int $conversationId, int $userId, string $messageId): void
     {
         $this->repository->setMessageAsRead($conversationId, $userId, $messageId);
+    }
+
+    public function renameMessageFile(int $fileId, string $name): void
+    {
+        $this->repository->renameMessageFile($fileId, $name);
+    }
+
+    public function getConversationAttachmentsSizeByUsers(int $conversationId): array
+    {
+        return $this->repository->getConversationAttachmentsSizeByUsers($conversationId);
+    }
+
+    public function validateAttachments(array $attachments): void
+    {
+        if (count($attachments) > $this->config['max_upload_files']) {
+            throw new \InvalidArgumentException('You can upload a maximum of 10 attachments.');
+        }
+
+        foreach ($attachments as $attachment) {
+            $this->uploadService->validateFile($attachment);
+        }
+    }
+
+    public function deleteEmptyMessage(string $messageId): void
+    {
+        $message = $this->repository->getMessageById($messageId);
+
+        if (empty($message->content)) {
+            $files = $this->repository->getMessageFiles($messageId);
+
+            if (empty($files)) {
+                $this->deleteMessage($messageId);
+            }
+        }
     }
 }

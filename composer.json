@@ -37,7 +37,8 @@
     "symfony/dom-crawler": "^8.0.x-dev",
     "symfony/intl": "^8.0",
     "tymon/jwt-auth": "^2.0",
-    "vladimir-yuldashev/laravel-queue-rabbitmq": "^v14.2.0"
+    "vladimir-yuldashev/laravel-queue-rabbitmq": "^v14.2.0",
+    "ext-zip": "*"
   },
   "require-dev": {
     "fakerphp/faker": "^1.23",

@@ -23,6 +23,7 @@ class ConversationMessage extends ORM
 
     public $casts = [
         'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+        'edited_at'  => 'datetime',
+        'deleted_at' => 'datetime',
     ];
 }

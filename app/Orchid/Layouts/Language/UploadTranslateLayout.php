@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Orchid\Layouts\Language;
 
 use Orchid\Screen\Fields\Input;
-use Orchid\Screen\Fields\ViewField;
 use Orchid\Screen\Layouts\Rows;
 
 class UploadTranslateLayout extends Rows
