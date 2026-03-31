@@ -62,17 +62,25 @@ return [
 
         'users' => [
             'driver' => 'local',
-            'root' => storage_path('app/users'),
-            'serve' => false,
-            'throw' => false,
+            'root'   => storage_path('app/users'),
+            'serve'  => false,
+            'throw'  => false,
+            'report' => false,
+        ],
+
+        'conversations' => [
+            'driver' => 'local',
+            'root'   => storage_path('app/conversations'),
+            'serve'  => false,
+            'throw'  => false,
             'report' => false,
         ],
 
         'travels' => [
             'driver' => 'local',
-            'root' => storage_path('app/travels'),
-            'serve' => false,
-            'throw' => false,
+            'root'   => storage_path('app/travels'),
+            'serve'  => false,
+            'throw'  => false,
             'report' => false,
         ],
     ],

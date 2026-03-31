@@ -10,7 +10,7 @@ return new class extends Migration {
         Schema::create('conversation_message_user_state', function (Blueprint $table) {
             $table->ulid('message_id');
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->timestampTz('updated_at')->useCurrent()->useCurrentOnUpdate();
+            $table->timestampTz('updated_at')->useCurrent();
 
             $table->primary(['message_id', 'user_id']);
             $table->index(['user_id', 'message_id']);

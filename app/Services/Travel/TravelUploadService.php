@@ -13,15 +13,13 @@ use Illuminate\Support\Facades\Storage;
 
 final readonly class TravelUploadService
 {
-    private const string TRAVEL_PATH = 'travels';
-
     public function __construct(
         private Filesystem                $filesystem,
         private TravelRepositoryInterface $repository,
         private array                     $basePaths,
     ) {}
 
-    private function uploadFiles(UploadedFile $file, string $path): void
+    private function uploadFile(UploadedFile $file, string $path): void
     {
         $resulFileName = $file->getClientOriginalName();
         $filePathWithName = $path . '/' . $resulFileName;
@@ -32,7 +30,7 @@ final readonly class TravelUploadService
     public function uploadTravelResourceFile(int $travelId, UploadedFile $file): string
     {
         $path = $this->getPath($travelId, $file->getClientOriginalName(), 'resources');
-        $this->uploadFiles($file, $path);
+        $this->uploadFile($file, $path);
 
         return $path . '/' . $file->getClientOriginalName();
     }
@@ -40,7 +38,7 @@ final readonly class TravelUploadService
     public function uploadTravelMedia(int $mediaId, UploadedFile $file, Travel $travel, MediaType $type): int
     {
         $path = $this->getPath($travel->id(), $file->getClientOriginalName(), 'media');
-        $this->uploadFiles($file, $path);
+        $this->uploadFile($file, $path);
 
         if ($mediaId) {
             $this->deleteFile($this->repository->getTravelMedia($mediaId)->path);

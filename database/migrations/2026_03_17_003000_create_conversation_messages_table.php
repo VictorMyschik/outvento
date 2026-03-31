@@ -15,7 +15,6 @@ return new class extends Migration {
             $table->string('content', 10000)->nullable();
             $table->timestampTz('created_at')->useCurrent();
             $table->timestampTz('edited_at')->nullable();
-            $table->timestampTz('deleted_at')->nullable();
 
             $table->index(['conversation_id', 'id']);
 

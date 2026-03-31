@@ -241,6 +241,10 @@ class UsersController extends APIController
 
     public function getUserAvatar(User $user): Response
     {
-        return response()->file(Storage::disk('users')->path($user->avatar));
+        if ($user->avatar) {
+            return response()->file(Storage::disk('users')->path($user->avatar));
+        }
+
+        return response()->file(Storage::disk('public')->path('/images/users/avatar.png'));
     }
 }

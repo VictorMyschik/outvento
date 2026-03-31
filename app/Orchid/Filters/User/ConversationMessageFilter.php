@@ -5,13 +5,18 @@ declare(strict_types=1);
 namespace App\Orchid\Filters\User;
 
 use App\Models\Conversations\ConversationMessage;
+use App\Models\Conversations\ConversationMessageAttachment;
 use App\Models\Conversations\ConversationMessageUserState;
+use App\Models\User;
 use App\Orchid\Layouts\Lego\ActionFilterPanel;
+use App\Services\Conversations\ConversationService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Orchid\Filters\Filter;
+use Orchid\Screen\Fields\DateTimer;
 use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
+use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Layouts\Rows;
 use Orchid\Support\Facades\Layout;
 
@@ -19,6 +24,10 @@ class ConversationMessageFilter extends Filter
 {
     public const array FIELDS = [
         'content',
+        'messageId',
+        'userIds',
+        'createdAt',
+        'fileName',
     ];
 
     public static function runQuery(int $conversationId, int $userId): Builder
@@ -30,8 +39,8 @@ class ConversationMessageFilter extends Filter
                     ->where(ConversationMessageUserState::TABLE . '.user_id', $userId);
             })
             ->whereNull(ConversationMessageUserState::TABLE . '.updated_at')
-            ->where('conversation_id', $conversationId)
-            //->orderByDesc(ConversationMessage::TABLE . '.created_at', 'ASC')
+            ->where(ConversationMessage::TABLE . '.conversation_id', $conversationId)
+            ->orderBy(ConversationMessage::TABLE . '.created_at', 'ASC')
             ->selectRaw(implode(',', [
                 ConversationMessage::TABLE . '.*',
                 'users.name as user_name',
@@ -48,19 +57,54 @@ class ConversationMessageFilter extends Filter
             $builder->whereRaw('lower(content) like ?', "%{$input['content']}%");
         }
 
+        if (!empty($input['userIds'])) {
+            $builder->whereIn(ConversationMessage::TABLE . '.user_id', $input['userIds']);
+        }
+
+        if(!empty($input['messageId'])){
+            $builder->where(ConversationMessage::TABLE . '.id', $input['messageId']);
+        }
+
+        if (!empty($input['createdAt'])) {
+            $builder->whereDate(ConversationMessage::TABLE . '.created_at', $input['createdAt']);
+        }
+
         return $builder;
     }
 
-    public static function displayFilterCard(Request $request): Rows
+    public static function displayFilterCard(Request $request, ConversationService  $conversations, int $conversationId): Rows
     {
+        $userOptions = [];
+
+        foreach ($conversations->getConversationUsers($conversationId) as $user) {
+            $userOptions[$user->id] = $user->name;
+        }
+
         $input = $request->all(self::FIELDS);
 
-        $outLine[] = Input::make('content')
-            ->title('Type')
-            ->value($input['content']);
-
         return Layout::rows([
-            Group::make($outLine),
+            Group::make([
+                Input::make('messageId')
+                    ->title('Message ID')
+                    ->value($input['messageId']),
+                Input::make('content')
+                    ->title('Message')
+                    ->value($input['content']),
+                Select::make('userIds')
+                    ->title('User')
+                    ->multiple()
+                    ->value($input['userIds'])
+                    ->options($userOptions)
+                    ->empty('Any'),
+                DateTimer::make('createdAt')
+                    ->title('Created At')
+                    ->enableTime(false)
+                    ->format24hr()
+                    ->value($input['createdAt'] ?? null),
+                Input::make('fileName')
+                    ->title('File Name')
+                    ->value($input['fileName']),
+            ]),
             ActionFilterPanel::getActionsButtons(),
         ]);
     }
