@@ -86,11 +86,6 @@ class UserConversationsListScreen extends UserBaseScreen
         $this->conversations->addMessage($conversationId, $userId, $text);
     }
 
-    public function purgeConversation(int $conversationId): void
-    {
-        $this->conversations->purgeConversation($conversationId);
-    }
-
     public function purgeUserMessages(): void
     {
         $this->conversations->removeForUser(null, $this->user->id);

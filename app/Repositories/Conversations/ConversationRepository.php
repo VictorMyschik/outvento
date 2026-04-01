@@ -57,13 +57,6 @@ final readonly class ConversationRepository extends DatabaseRepository implement
         ]);
     }
 
-    public function purgeConversation(int $conversationId): void
-    {
-        $this->db->table(ConversationUser::TABLE)
-            ->where('conversation_id', $conversationId)
-            ->update(['deleted_at' => now()]);
-    }
-
     public function addMessage(int $conversationId, int $userId, ?string $text): string
     {
         $id = $this->newUlidId();
@@ -83,28 +76,12 @@ final readonly class ConversationRepository extends DatabaseRepository implement
         return $id;
     }
 
-    public function setConversationAsDeleted(?int $conversationId, int $userId): void
+    public function setConversationUserAsDeleted(?int $conversationId, int $userId): void
     {
         $this->db->table(ConversationUser::TABLE)
-            ->when(!empty($conversationId), function ($query) use ($conversationId) {
-                $query->where('conversation_id', $conversationId);
-            })
+            ->where('conversation_id', $conversationId)
             ->where('user_id', $userId)
             ->update(['deleted_at' => now()]);
-    }
-
-    public function deleteMessagesByConversationId(int $conversationId): void
-    {
-        do {
-            $deleted = $this->db->table(ConversationMessage::TABLE)
-                ->where('conversation_id', $conversationId)
-                ->limit(1000)
-                ->delete();
-
-        } while ($deleted > 0);
-
-        $this->db->table(ConversationUser::TABLE)->where('conversation_id', $conversationId)->delete();
-        $this->db->table(Conversation::TABLE)->where('id', $conversationId)->delete();
     }
 
     public function getRemovedConversationIds(): array
@@ -330,5 +307,23 @@ final readonly class ConversationRepository extends DatabaseRepository implement
         }
 
         return $messageIds;
+    }
+
+    public function getRemovedMessageIds(int $count): array
+    {
+        return collect($this->db->select(
+            <<<SQL
+                SELECT m.id
+                FROM conversation_messages m
+                JOIN (
+                    SELECT conversation_id, COUNT(*) AS participants_count
+                    FROM conversation_users
+                    WHERE deleted_at IS NULL
+                    GROUP BY conversation_id
+                ) cu ON m.conversation_id = cu.conversation_id
+                WHERE m.deleted_by_count = cu.participants_count
+                LIMIT {$count}
+            SQL
+        ))->pluck('id')->all();
     }
 }

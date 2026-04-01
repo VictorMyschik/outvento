@@ -29,7 +29,7 @@ class ConversationFilter extends Filter
     {
         return [
             ConversationUser::TABLE . '.conversation_id as conversation_id',
-            'title',
+            Conversation::TABLE . '.title as title',
             'users.id as user_id',
             'users.name as name',
             'users.email as email',
@@ -63,6 +63,10 @@ class ConversationFilter extends Filter
                 $query->unionAll(
                     ConversationUser::where(ConversationUser::TABLE . '.conversation_id', '=', $singleConversation)
                         ->join('users', 'users.id', '=', ConversationUser::TABLE . '.user_id')
+                        ->join(Conversation::TABLE, function ($join) {
+                            $join->on(Conversation::TABLE . '.id', '=', ConversationUser::TABLE . '.conversation_id')
+                                ->where(Conversation::TABLE . '.type', Type::Private->value);
+                        })
                         ->leftJoin(ConversationMessage::TABLE, function ($join) {
                             $join->on(ConversationMessage::TABLE . '.conversation_id', '=', ConversationUser::TABLE . '.conversation_id')
                                 ->where(ConversationMessage::TABLE . '.created_at', function ($query) {

@@ -112,23 +112,14 @@ final readonly class ConversationService
         return $this->repository->getLastMessageIdForUser($conversationId, $userId);
     }
 
-    public function purgeConversation(int $conversationId): void
+    public function removeForUser(int $conversationId, int $userId): void
     {
-        $this->repository->purgeConversation($conversationId);
-    }
-
-    public function removeForUser(?int $conversationId, int $userId): void
-    {
-        $this->repository->setConversationAsDeleted($conversationId, $userId);
+        $this->repository->setConversationUserAsDeleted($conversationId, $userId);
     }
 
     public function clearHistoryUserConversation(int $conversationId, int $userId): void
     {
-        $deletedIds = $this->repository->clearHistoryUserConversation($conversationId, $userId);
-
-        foreach ($deletedIds as $deletedId) {
-            $this->deleteAllMessageFiles($deletedId);
-        }
+        $this->repository->clearHistoryUserConversation($conversationId, $userId);
     }
 
     public function restoreForUser(int $conversationId, int $userId): void
@@ -138,15 +129,9 @@ final readonly class ConversationService
 
     public function deleteRemovedMessages(): void
     {
-        // Delete full conversations for users who have removed them
-        foreach ($this->repository->getRemovedConversationIds() as $conversationId) {
-            $this->deleteMessagesByConversationId($conversationId);
+        foreach ($this->repository->getRemovedMessageIds(10) as $id) {
+            $this->deleteMessage($id);
         }
-    }
-
-    public function deleteMessagesByConversationId(int $conversationId): void
-    {
-        $this->repository->deleteMessagesByConversationId($conversationId);
     }
 
     public function deleteMessageForUser(int $conversationId, int $userId, string $messageId): void
@@ -160,7 +145,6 @@ final readonly class ConversationService
             return;
         }
 
-        $this->deleteAllMessageFiles($messageId);
         $this->repository->deleteMessageForUser($userId, $messageId);
     }
 

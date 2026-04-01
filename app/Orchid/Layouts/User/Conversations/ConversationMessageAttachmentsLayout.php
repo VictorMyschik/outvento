@@ -21,6 +21,7 @@ class ConversationMessageAttachmentsLayout extends Table
     {
         return [
             TD::make('id', 'ID')->class('text-nowrap')->sort(),
+            TD::make('user_name', 'User')->class('text-nowrap')->sort(),
             TD::make('message_id', 'Message')->render(function (ConversationMessageAttachment $attachment) {
                 return Link::make('')->icon('filter')->route('profiles.messages', [
                     'user'         => $attachment->user_id,

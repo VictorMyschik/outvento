@@ -67,6 +67,7 @@ class UserConversationDetailsScreen extends UserBaseScreen
     public function query(User $user, ?Conversation $conversation = null): iterable
     {
         $this->setAvatar($user->getAvatar());
+        $this->secondUser = $user;
 
         foreach ($this->conversations->getConversationUsers($conversation->id()) as $users) {
             if ($users->user_id !== $user->id) {
@@ -119,26 +120,13 @@ class UserConversationDetailsScreen extends UserBaseScreen
             return [Group::make($btn)->autoWidth()];
         }
 
-        $btn[] = Button::make('Удалить переписку для себя')
-            ->class('mr-btn-danger pull-right')
-            ->method('purgeUserConversation')
-            ->confirm('Вы уверены, что хотите удалить переписку?')
-            ->icon('trash');
-
-        $btn[] = Button::make('Очистить историю')
+        $btn[] = Button::make('Clear history')
             ->class('mr-btn-danger pull-right')
             ->method('clearHistoryUserConversation')
             ->confirm('Вы уверены, что хотите очистить историю переписки?')
             ->icon('trash');
 
         return [Group::make($btn)->autoWidth()];
-    }
-
-    public function purgeConversation(int $conversationId): RedirectResponse
-    {
-        $this->conversations->purgeConversation($conversationId);
-
-        return redirect()->route('profiles.conversations.list', ['user' => $this->user->id]);
     }
 
     private function getSummaryLayout(): array
@@ -156,7 +144,7 @@ class UserConversationDetailsScreen extends UserBaseScreen
             $sum += (int)$userSize->size;
             $table['body'][] = [
                 'ID'   => $userSize->user_id,
-                'Name' => $userSize->name,
+                'Name' => "<a href='" . route('profiles.details', ['user' => $userSize->user_id]) . "' target='_blank'>" . $userSize->name . '</a>',
                 'Size' => round(FileSizeConverter::bytesTo((int)$userSize->size), 2) . ' MB',
 
             ];
@@ -171,11 +159,6 @@ class UserConversationDetailsScreen extends UserBaseScreen
             ViewField::make('')->view('hr'),
             ...$row,
         ];
-    }
-
-    public function purgeUserConversation(): void
-    {
-        $this->conversations->removeForUser(null, $this->user->id);
     }
 
     public function clearHistoryUserConversation(): void

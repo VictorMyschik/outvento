@@ -36,15 +36,11 @@ interface ConversationRepositoryInterface
 
     public function getUnreadMessagesCount(int $conversationId, int $userId): int;
 
-    public function purgeConversation(int $conversationId): void;
-
-    public function setConversationAsDeleted(?int $conversationId, int $userId): void;
+    public function setConversationUserAsDeleted(?int $conversationId, int $userId): void;
 
     public function setConversationAsRestored(int $conversationId, int $userId): void;
 
     public function getRemovedConversationIds(): array;
-
-    public function deleteMessagesByConversationId(int $conversationId): void;
 
     public function deleteMessageForUser(int $userId, string $messageId): void;
 
