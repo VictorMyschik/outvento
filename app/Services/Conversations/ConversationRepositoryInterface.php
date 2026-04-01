@@ -64,7 +64,7 @@ interface ConversationRepositoryInterface
 
     public function deleteMessageFileModel(int $fileId): void;
 
-    public function getMessageById(string $messageId): ?ConversationMessage;
+    public function getMessageById(string $messageId): ConversationMessage;
 
     public function clearHistoryUserConversation(int $conversationId, int $userId): array;
 }
