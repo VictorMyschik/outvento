@@ -7,6 +7,7 @@ namespace App\Repositories\Conversations;
 use App\Models\Conversations\Conversation;
 use App\Models\Conversations\ConversationMessage;
 use App\Models\Conversations\ConversationMessageAttachment;
+use App\Models\Conversations\ConversationMessageLink;
 use App\Models\Conversations\ConversationMessageUserState;
 use App\Models\Conversations\ConversationUser;
 use App\Models\User;
@@ -264,5 +265,70 @@ final readonly class ConversationRepository extends DatabaseRepository implement
     public function renameMessageFile(int $fileId, string $name): void
     {
         $this->db->table(ConversationMessageAttachment::TABLE)->where('id', $fileId)->update(['name' => $name]);
+    }
+
+    public function saveLinks(int $conversationId, string $messageId, int $userId, array $links): void
+    {
+        $this->db->table(ConversationMessageLink::TABLE)->where('message_id', $messageId)->delete();
+
+        if (empty($links)) {
+            return;
+        }
+
+        $rows = [];
+
+        foreach ($links as $link) {
+            $rows[] = [
+                'message_id'      => $messageId,
+                'conversation_id' => $conversationId,
+                'user_id'         => $userId,
+                'url'             => $link,
+                'host'            => parse_url($link, PHP_URL_HOST),
+            ];
+        }
+
+        $this->db->table('conversation_message_links')->insert($rows);
+    }
+
+    public function getConversationUserInfo(int $conversationId, int $userId): stdClass
+    {
+        return $this->db->table(ConversationUser::TABLE)
+            ->where(['conversation_id' => $conversationId, 'user_id' => $userId])
+            ->first();
+    }
+
+    public function setConversationAsRestored(int $conversationId, int $userId): void
+    {
+        $this->db->table(ConversationUser::TABLE)
+            ->where('conversation_id', $conversationId)
+            ->where('user_id', $userId)
+            ->update(['deleted_at' => null]);
+    }
+
+    public function clearHistoryUserConversation(int $conversationId, int $userId): array
+    {
+        $messageIds = $this->db->table(ConversationMessage::TABLE)
+            ->leftJoin(ConversationMessageUserState::TABLE, function ($join) use ($conversationId, $userId) {
+                $join->on(ConversationMessage::TABLE . '.id', ConversationMessageUserState::TABLE . '.message_id')
+                    ->where(ConversationMessageUserState::TABLE . '.user_id', '=', $userId);
+            })
+            ->where(ConversationMessage::TABLE . '.conversation_id', $conversationId)
+            ->whereNull(ConversationMessageUserState::TABLE . '.message_id')
+            ->pluck(ConversationMessage::TABLE . '.id')
+            ->toArray();
+
+        $rows = [];
+        foreach ($messageIds as $messageId) {
+            $rows[] = [
+                'message_id' => $messageId,
+                'user_id'    => $userId,
+            ];
+        }
+
+        if (!empty($rows)) {
+            $this->db->table(ConversationMessageUserState::TABLE)->insert($rows);
+        }
+
+        return $messageIds;
     }
 }

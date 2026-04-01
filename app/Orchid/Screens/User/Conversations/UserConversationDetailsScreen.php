@@ -11,7 +11,9 @@ use App\Models\Conversations\ConversationMessageAttachment;
 use App\Models\User;
 use App\Orchid\Filters\User\ConversationMessageAttachmentsFilter;
 use App\Orchid\Filters\User\ConversationMessageFilter;
+use App\Orchid\Filters\User\ConversationMessageLinksFilter;
 use App\Orchid\Layouts\User\Conversations\ConversationMessageAttachmentsLayout;
+use App\Orchid\Layouts\User\Conversations\ConversationMessageLinksLayout;
 use App\Orchid\Layouts\User\Conversations\ConversationMessageListLayout;
 use App\Orchid\Layouts\User\Conversations\MessageEditLayout;
 use App\Orchid\Layouts\User\Conversations\RenameFileEditLayout;
@@ -20,6 +22,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
+use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Label;
 use Orchid\Screen\Fields\ViewField;
 use Orchid\Support\Facades\Layout;
@@ -40,7 +43,14 @@ class UserConversationDetailsScreen extends UserBaseScreen
     {
         $link = "<a href='" . route('profiles.details', ['user' => $this->user->id]) . "'>" . $this->user->name . "</a>";
 
-        return $link . ' | ' . $this->conversations->getUnreadMessagesCount($this->conversation->id, $this->user->id) . ' unread messages';
+        $description = $link . ' | ' . $this->conversations->getUnreadMessagesCount($this->conversation->id, $this->user->id) . ' unread messages';
+
+        $info = $this->conversations->getConversationUserInfo($this->conversation, $this->user);
+        if ($info->deleted_at) {
+            $description = 'Conversation deleted at ' . $info->deleted_at;
+        }
+
+        return $description;
     }
 
     public function commandBar(): iterable
@@ -57,6 +67,7 @@ class UserConversationDetailsScreen extends UserBaseScreen
     public function query(User $user, ?Conversation $conversation = null): iterable
     {
         $this->setAvatar($user->getAvatar());
+
         foreach ($this->conversations->getConversationUsers($conversation->id()) as $users) {
             if ($users->user_id !== $user->id) {
                 $this->secondUser = $users;
@@ -68,6 +79,7 @@ class UserConversationDetailsScreen extends UserBaseScreen
             'conversation'     => $conversation,
             'list'             => ConversationMessageFilter::runQuery($conversation->id(), $user->id)->paginate(10),
             'list-attachments' => ConversationMessageAttachmentsFilter::runQuery($conversation->id())->paginate(10, pageName: 'attachments'),
+            'list-links'       => ConversationMessageLinksFilter::runQuery($conversation->id())->paginate(10, pageName: 'links'),
         ];
     }
 
@@ -75,14 +87,58 @@ class UserConversationDetailsScreen extends UserBaseScreen
     {
         return [
             ConversationMessageFilter::displayFilterCard(request(), $this->conversations, $this->conversation->id()),
-            Layout::split([
+            Layout::columns([
                 ConversationMessageListLayout::class,
-                ConversationMessageAttachmentsLayout::class,
+                Layout::tabs([
+                    'Files' => ConversationMessageAttachmentsLayout::class,
+                    'Links' => ConversationMessageLinksLayout::class,
+                ]),
             ]),
             Layout::rows($this->getSummaryLayout()),
+            Layout::rows($this->getActionBottomLinkLayout()),
             Layout::modal('message_edit_modal', MessageEditLayout::class)->async('asyncGetMessage'),
             Layout::modal('rename_file_modal', RenameFileEditLayout::class)->async('asyncGetMessageFile'),
         ];
+    }
+
+    public function getActionBottomLinkLayout(): array
+    {
+        $btn[] = Button::make('Удалить переписку для всех')
+            ->class('mr-btn-danger pull-right')
+            ->method('purgeUserConversation')
+            ->confirm('Вы уверены, что хотите удалить переписку?')
+            ->icon('trash');
+
+        if ($this->conversations->getConversationUserInfo($this->conversation, $this->user)->deleted_at) {
+            $btn[] = Button::make('Восстановить переписку для себя')
+                ->class('mr-btn-success pull-right')
+                ->method('restoreUserConversation')
+                ->confirm('Вы уверены, что хотите восстановить переписку?')
+                ->icon('refresh');
+
+            return [Group::make($btn)->autoWidth()];
+        }
+
+        $btn[] = Button::make('Удалить переписку для себя')
+            ->class('mr-btn-danger pull-right')
+            ->method('purgeUserConversation')
+            ->confirm('Вы уверены, что хотите удалить переписку?')
+            ->icon('trash');
+
+        $btn[] = Button::make('Очистить историю')
+            ->class('mr-btn-danger pull-right')
+            ->method('clearHistoryUserConversation')
+            ->confirm('Вы уверены, что хотите очистить историю переписки?')
+            ->icon('trash');
+
+        return [Group::make($btn)->autoWidth()];
+    }
+
+    public function purgeConversation(int $conversationId): RedirectResponse
+    {
+        $this->conversations->purgeConversation($conversationId);
+
+        return redirect()->route('profiles.conversations.list', ['user' => $this->user->id]);
     }
 
     private function getSummaryLayout(): array
@@ -115,6 +171,21 @@ class UserConversationDetailsScreen extends UserBaseScreen
             ViewField::make('')->view('hr'),
             ...$row,
         ];
+    }
+
+    public function purgeUserConversation(): void
+    {
+        $this->conversations->removeForUser(null, $this->user->id);
+    }
+
+    public function clearHistoryUserConversation(): void
+    {
+        $this->conversations->clearHistoryUserConversation($this->conversation->id, $this->user->id);
+    }
+
+    public function restoreUserConversation(): void
+    {
+        $this->conversations->restoreForUser($this->conversation->id, $this->user->id);
     }
 
     public function asyncGetMessageFile(int $fileId): array
@@ -153,7 +224,7 @@ class UserConversationDetailsScreen extends UserBaseScreen
             $this->conversations->validateAttachments($files);
         }
 
-        $this->conversations->updateMessage($messageId, $text, $files);
+        $this->conversations->updateMessage($this->conversation->id, $messageId, $this->user->id, $text, $files);
     }
 
     public function asyncGetMessage(string $messageId): array

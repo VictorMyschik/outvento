@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Services\Conversations;
 
+use App\Models\Conversations\Conversation;
+use App\Models\User;
 use App\Services\Conversations\Enum\Role;
 use App\Services\Conversations\Enum\Type;
 use Psr\Log\LoggerInterface;
+use stdClass;
 
 final readonly class ConversationService
 {
@@ -20,6 +23,11 @@ final readonly class ConversationService
     public function getConversationUsers(int $conversationId): array
     {
         return $this->repository->getConversationUsers($conversationId);
+    }
+
+    public function getConversationUserInfo(Conversation $conversation, User $user): stdClass
+    {
+        return $this->repository->getConversationUserInfo($conversation->id, $user->id);
     }
 
     public function addGroupConversation(int $ownerId, array $userIds, string $title): int
@@ -66,14 +74,27 @@ final readonly class ConversationService
     {
         $id = $this->repository->addMessage($conversationId, $userId, $text);
 
+        $this->saveLinks($conversationId, $id, $userId, $text);
+
         foreach ($files as $file) {
             $this->uploadService->uploadConversationFile($id, $file, $conversationId, $userId);
         }
     }
 
-    public function updateMessage(string $messageId, ?string $content, array $files): void
+    public function saveLinks(int $conversationId, string $messageId, int $userId, string $content): void
+    {
+        preg_match_all('/https?:\/\/[^\s]+/i', $content, $matches);
+
+        $links = array_unique($matches[0] ?? []);
+
+        $this->repository->saveLinks($conversationId, $messageId, $userId, $links);
+    }
+
+    public function updateMessage(int $conversationId, string $messageId, int $userId, ?string $content, array $files): void
     {
         $this->repository->updateMessage($messageId, $content);
+        $this->saveLinks($conversationId, $messageId, $userId, $content);
+
         $message = $this->repository->getMessageById($messageId);
 
         foreach ($files as $file) {
@@ -99,6 +120,20 @@ final readonly class ConversationService
     public function removeForUser(?int $conversationId, int $userId): void
     {
         $this->repository->setConversationAsDeleted($conversationId, $userId);
+    }
+
+    public function clearHistoryUserConversation(int $conversationId, int $userId): void
+    {
+        $deletedIds = $this->repository->clearHistoryUserConversation($conversationId, $userId);
+
+        foreach ($deletedIds as $deletedId) {
+            $this->deleteAllMessageFiles($deletedId);
+        }
+    }
+
+    public function restoreForUser(int $conversationId, int $userId): void
+    {
+        $this->repository->setConversationAsRestored($conversationId, $userId);
     }
 
     public function deleteRemovedMessages(): void

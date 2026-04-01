@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Orchid\Layouts\User\Conversations;
 
 use App\Helpers\FileSizeConverter;
+use App\Helpers\Linkify;
 use App\Models\Conversations\ConversationMessage;
 use App\Services\Conversations\ConversationRepositoryInterface;
 use Orchid\Screen\Actions\Button;
@@ -53,6 +54,8 @@ class ConversationMessageListLayout extends Table
                 ]);
 
                 $message->files = $this->repository->getMessageFiles($message->id);
+
+                $message->content = Linkify::linkify($message->content);
 
                 $files = [];
                 foreach ($message->files as $file) {

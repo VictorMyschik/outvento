@@ -16,6 +16,7 @@ use Orchid\Filters\Filter;
 use Orchid\Screen\Fields\DateTimer;
 use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
+use Orchid\Screen\Fields\Relation;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Layouts\Rows;
 use Orchid\Support\Facades\Layout;
@@ -28,6 +29,7 @@ class ConversationMessageFilter extends Filter
         'userIds',
         'createdAt',
         'fileName',
+        'url',
     ];
 
     public static function runQuery(int $conversationId, int $userId): Builder
@@ -69,6 +71,10 @@ class ConversationMessageFilter extends Filter
             $builder->whereDate(ConversationMessage::TABLE . '.created_at', $input['createdAt']);
         }
 
+        if (!empty($input['url'])) {
+            $builder->whereRaw('lower(content) like ?', "%{$input['url']}%");
+        }
+
         return $builder;
     }
 
@@ -104,6 +110,9 @@ class ConversationMessageFilter extends Filter
                 Input::make('fileName')
                     ->title('File Name')
                     ->value($input['fileName']),
+                Input::make('url')
+                    ->title('URL')
+                    ->value($input['url']),
             ]),
             ActionFilterPanel::getActionsButtons(),
         ]);

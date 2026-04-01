@@ -29,7 +29,7 @@
         </div>
 
         @if(!empty(trim((string)$value->content)))
-            <div class="card-body" style="white-space: pre-wrap;">{{ $value->content }}</div>
+            <div class="card-body" style="white-space: pre-wrap;">{!! $value->content !!}</div>
         @endif
         @if(count($value->files))
             <div class="card-body pt-2">
@@ -126,6 +126,14 @@
 </div>
 
 <style>
+    .card-body a {
+        color: #0d6efd;
+        text-decoration: none;
+    }
+
+    .card-body a:hover {
+        text-decoration: underline;
+    }
     .trash-icon {
         color: #b30000;
         border: none;

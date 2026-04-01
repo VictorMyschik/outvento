@@ -12,6 +12,8 @@ use stdClass;
 
 interface ConversationRepositoryInterface
 {
+    public function getConversationUserInfo(int $conversationId, int $userId): stdClass;
+
     public function getConversationUsers(int $conversationId): array;
 
     public function getPersonalConversationByUsers(int $ownerId, int $userId): ?int;
@@ -28,6 +30,8 @@ interface ConversationRepositoryInterface
 
     public function addMessage(int $conversationId, int $userId, ?string $text): string;
 
+    public function saveLinks(int $conversationId, string $messageId, int $userId, array $links): void;
+
     public function updateMessage(string $messageId, ?string $content): void;
 
     public function getUnreadMessagesCount(int $conversationId, int $userId): int;
@@ -35,6 +39,8 @@ interface ConversationRepositoryInterface
     public function purgeConversation(int $conversationId): void;
 
     public function setConversationAsDeleted(?int $conversationId, int $userId): void;
+
+    public function setConversationAsRestored(int $conversationId, int $userId): void;
 
     public function getRemovedConversationIds(): array;
 
@@ -63,4 +69,6 @@ interface ConversationRepositoryInterface
     public function deleteMessageFileModel(int $fileId): void;
 
     public function getMessageById(string $messageId): ?ConversationMessage;
+
+    public function clearHistoryUserConversation(int $conversationId, int $userId): array;
 }

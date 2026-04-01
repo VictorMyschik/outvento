@@ -20,7 +20,7 @@ class ConversationMessageAttachmentsLayout extends Table
     public function columns(): array
     {
         return [
-            TD::make('id', 'ID')->sort(),
+            TD::make('id', 'ID')->class('text-nowrap')->sort(),
             TD::make('message_id', 'Message')->render(function (ConversationMessageAttachment $attachment) {
                 return Link::make('')->icon('filter')->route('profiles.messages', [
                     'user'         => $attachment->user_id,
@@ -32,10 +32,10 @@ class ConversationMessageAttachmentsLayout extends Table
             TD::make('name', 'Name')->render(function (ConversationMessageAttachment $attachment) {
                 return "<a href='{$attachment->path}'>{$attachment->name}</a>";
             })->sort(),
-            TD::make('size', 'Size')->render(function (ConversationMessageAttachment $attachment) {
+            TD::make('size', 'Size')->class('text-nowrap')->render(function (ConversationMessageAttachment $attachment) {
                 return round(FileSizeConverter::bytesTo((int)$attachment->size), 2) . ' Mb';
             })->alignRight()->sort(),
-            TD::make('created_at', 'Added')->render(function ($attachment) {
+            TD::make('created_at', 'Added')->class('text-nowrap')->render(function ($attachment) {
                 return Link::make($attachment->created_at->format('H:i:s d/m/Y'))->route('profiles.messages', [
                     'user'         => $attachment->user_id,
                     'conversation' => $attachment->conversation_id,
