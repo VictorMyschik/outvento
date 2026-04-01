@@ -23,7 +23,7 @@ swagger:
 	docker compose exec php php artisan l5-swagger:generate
 
 bash:
-	docker exec -it php_travel bash
+	docker exec -it php_outvento bash
 
 purge:
 	docker compose exec php php artisan purge

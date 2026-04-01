@@ -57,6 +57,6 @@ COPY php.ini /usr/local/etc/php/php.ini
 COPY jit.ini /usr/local/etc/php/conf.d/99-jit.ini
 
 
-WORKDIR /var/www/travel
+WORKDIR /var/www/outvento
 
 CMD ["php-fpm"]

@@ -64,7 +64,7 @@ COPY config/supervisord.conf /etc/supervisor/
 # --------------------------------------------------
 # Workdir
 # --------------------------------------------------
-WORKDIR /var/www/travel
+WORKDIR /var/www/outvento
 
 # --------------------------------------------------
 # Run config

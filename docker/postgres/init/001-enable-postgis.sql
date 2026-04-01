@@ -1,4 +1,4 @@
--- Включаем PostGIS в базе travel
+-- Включаем PostGIS в базе outvento
 CREATE EXTENSION IF NOT EXISTS postgis;
 
 -- (опционально, полезно для будущего)

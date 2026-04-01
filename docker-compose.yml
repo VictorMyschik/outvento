@@ -4,21 +4,21 @@ networks:
 services:
   nginx:
     build: ./docker/nginx
-    container_name: nginx_travel
+    container_name: nginx_outvento
     volumes:
-      - .:/var/www/travel
+      - .:/var/www/outvento
     environment:
-      - VIRTUAL_HOST=travel.test
+      - VIRTUAL_HOST=outvento.test
     ports:
       - "80:80"
     networks:
       backend:
         aliases:
-          - travel.test
+          - outvento.test
 
   php:
     build: ./docker/php
-    container_name: php_travel
+    container_name: php_outvento
     mem_limit: 1g
     cpus: "2.0"
     networks:
@@ -27,7 +27,7 @@ services:
       - COMPOSER_MEMORY_LIMIT=2G
       - XDEBUG_SESSION="PHPSTORM"
     volumes:
-      - .:/var/www/travel
+      - .:/var/www/outvento
       - ./storage/logs:/var/log/php
       - ./docker/php/php.ini:/usr/local/etc/php/php.ini
 
@@ -41,12 +41,12 @@ services:
     ports:
       - '5441:5432'
     environment:
-      POSTGRES_DB: travel
-      POSTGRES_USER: travel
-      POSTGRES_PASSWORD: travel
+      POSTGRES_DB: outvento
+      POSTGRES_USER: outvento
+      POSTGRES_PASSWORD: outvento
       PGDATA: "/var/lib/postgresql/data/pgdata"
     volumes:
-      - ./docker/postgres/travel:/var/lib/postgresql/data
+      - ./docker/postgres/outvento:/var/lib/postgresql/data
       - ./docker/postgres/init:/docker-entrypoint-initdb.d
 
   redis:
@@ -59,11 +59,11 @@ services:
 
   #supervisor:
   #  build: ./docker/supervisor
-  #  container_name: supervisor_travel
+  #  container_name: supervisor_outvento
   #  networks:
   #    - backend
   #  volumes:
-  #    - .:/var/www/travel
+  #    - .:/var/www/outvento
   #    - ./storage/logs:/var/log/php
 #
   #rabbitmq:
@@ -80,7 +80,7 @@ services:
 
   #elasticsearch:
   #  image: elasticsearch:9.0.2
-  #  container_name: elasticsearch_travel
+  #  container_name: elasticsearch_outvento
   #  environment:
   #    - xpack.security.enabled=true
   #    - xpack.security.authc.api_key.enabled=true
