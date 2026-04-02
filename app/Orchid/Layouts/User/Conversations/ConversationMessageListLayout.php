@@ -55,7 +55,9 @@ class ConversationMessageListLayout extends Table
 
                 $message->files = $this->repository->getMessageFiles($message->id);
 
-                $message->content = Linkify::linkify($message->content);
+                if (!empty(trim((string)$message->content))) {
+                    $message->content = Linkify::linkify($message->content);
+                }
 
                 $files = [];
                 foreach ($message->files as $file) {

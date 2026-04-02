@@ -15,6 +15,7 @@ use App\Repositories\DatabaseRepository;
 use App\Services\Conversations\ConversationRepositoryInterface;
 use App\Services\Conversations\Enum\Role;
 use App\Services\Conversations\Enum\Type;
+use App\Services\Conversations\Exceptions\ConversationMessageNotFoundException;
 use stdClass;
 
 final readonly class ConversationRepository extends DatabaseRepository implements ConversationRepositoryInterface
@@ -84,6 +85,13 @@ final readonly class ConversationRepository extends DatabaseRepository implement
             ->update(['deleted_at' => now()]);
     }
 
+    public function setConversationDeleted(int $conversationId): void
+    {
+        $this->db->table(ConversationUser::TABLE)
+            ->where('conversation_id', $conversationId)
+            ->update(['deleted_at' => now()]);
+    }
+
     public function getRemovedConversationIds(): array
     {
         return $this->db->table(ConversationUser::TABLE)
@@ -110,12 +118,16 @@ final readonly class ConversationRepository extends DatabaseRepository implement
 
     public function updateMessage(string $messageId, ?string $content): void
     {
-        $this->db->table(ConversationMessage::TABLE)
+        $affected = $this->db->table(ConversationMessage::TABLE)
             ->where('id', $messageId)
             ->update(['content' => $content, 'edited_at' => now()]);
+
+        if (!$affected) {
+            throw new ConversationMessageNotFoundException($messageId);
+        }
     }
 
-    public function deleteMessage(string $messageId): void
+    public function deleteMessageHard(string $messageId): void
     {
         $this->db->table(ConversationMessageUserState::TABLE)->where('message_id', $messageId)->delete();
         $this->db->table(ConversationMessage::TABLE)->where('id', $messageId)->delete();
@@ -234,9 +246,26 @@ final readonly class ConversationRepository extends DatabaseRepository implement
         $this->db->table(ConversationMessageAttachment::TABLE)->where('id', $fileId)->delete();
     }
 
-    public function getMessageById(string $messageId): ConversationMessage
+    public function getMessageById(?int $userId, string $messageId): ?ConversationMessage
     {
-        return ConversationMessage::findOrFail($messageId);
+        if(!$userId) {
+            return ConversationMessage::findOrFail($messageId);
+        }
+
+        $actual = $this->db->table(ConversationMessage::TABLE . ' as m')
+            ->leftJoin(ConversationMessageUserState::TABLE . ' as s', function ($join) use ($userId) {
+                $join->on('m.id', '=', 's.message_id')
+                    ->where('s.user_id', '=', $userId);
+            })
+            ->where('m.id', $messageId)
+            ->whereNull('s.updated_at')
+            ->exists();
+
+        if($actual) {
+            return ConversationMessage::findOrFail($messageId);
+        }
+
+        return null;
     }
 
     public function renameMessageFile(int $fileId, string $name): void
@@ -267,7 +296,12 @@ final readonly class ConversationRepository extends DatabaseRepository implement
         $this->db->table('conversation_message_links')->insert($rows);
     }
 
-    public function getConversationUserInfo(int $conversationId, int $userId): stdClass
+    public function deleteLinksForMessage(int $conversationId, string $messageId): void
+    {
+        $this->db->table(ConversationMessageLink::TABLE)->where('conversation_id', $conversationId)->where('message_id', $messageId)->delete();
+    }
+
+    public function getConversationUserInfo(int $conversationId, int $userId): ?stdClass
     {
         return $this->db->table(ConversationUser::TABLE)
             ->where(['conversation_id' => $conversationId, 'user_id' => $userId])
@@ -284,6 +318,7 @@ final readonly class ConversationRepository extends DatabaseRepository implement
 
     public function clearHistoryUserConversation(int $conversationId, int $userId): array
     {
+        $this->db->beginTransaction();
         $messageIds = $this->db->table(ConversationMessage::TABLE)
             ->leftJoin(ConversationMessageUserState::TABLE, function ($join) use ($conversationId, $userId) {
                 $join->on(ConversationMessage::TABLE . '.id', ConversationMessageUserState::TABLE . '.message_id')
@@ -304,7 +339,14 @@ final readonly class ConversationRepository extends DatabaseRepository implement
 
         if (!empty($rows)) {
             $this->db->table(ConversationMessageUserState::TABLE)->insert($rows);
+            $this->db->table(ConversationMessage::TABLE)
+                ->whereIn('id', $messageIds)
+                ->update([
+                    'deleted_by_count' => $this->db->raw('deleted_by_count + 1'),
+                ]);
         }
+
+        $this->db->commit();
 
         return $messageIds;
     }

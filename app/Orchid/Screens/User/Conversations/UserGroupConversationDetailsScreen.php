@@ -110,6 +110,6 @@ class UserGroupConversationDetailsScreen extends UserBaseScreen
 
     public function deleteMessage(string $messageId): void
     {
-        $this->conversations->deleteMessage($messageId);
+        $this->conversations->deleteMessageHard($messageId);
     }
 }

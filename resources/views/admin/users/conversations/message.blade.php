@@ -90,7 +90,7 @@
                             <a href="{{ route('api.v1.admin.conversation.attachment.get', ['conversationId' => (int)$file->conversation_id, 'hash' => $file->hash]) }}"
                                target="_blank"
                                class="d-flex align-items-center gap-2 text-decoration-none border rounded p-2">
-                                <i class="far fa-file"></i>
+                                <i class="fa fa-file"></i>
                                 <span class="text-truncate" style="max-width: 200px;">
                                     {{ basename($file->name) }}
                                 </span>

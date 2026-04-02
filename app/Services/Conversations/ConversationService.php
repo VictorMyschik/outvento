@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Conversations;
 
 use App\Models\Conversations\Conversation;
+use App\Models\Conversations\ConversationMessage;
 use App\Models\User;
 use App\Services\Conversations\Enum\Role;
 use App\Services\Conversations\Enum\Type;
@@ -20,14 +21,23 @@ final readonly class ConversationService
         private array                           $config,
     ) {}
 
+    public function checkAccess(int $conversationId, int $userId): void
+    {
+        $conversationUserInfo = $this->getConversationUserInfo($conversationId, $userId);
+
+        if(!$conversationUserInfo || $conversationUserInfo->deleted_at) {
+            throw new \InvalidArgumentException('Conversation not found');
+        }
+    }
+
     public function getConversationUsers(int $conversationId): array
     {
         return $this->repository->getConversationUsers($conversationId);
     }
 
-    public function getConversationUserInfo(Conversation $conversation, User $user): stdClass
+    public function getConversationUserInfo(int $conversationId, int $userId): ?stdClass
     {
-        return $this->repository->getConversationUserInfo($conversation->id, $user->id);
+        return $this->repository->getConversationUserInfo($conversationId, $userId);
     }
 
     public function addGroupConversation(int $ownerId, array $userIds, string $title): int
@@ -74,15 +84,21 @@ final readonly class ConversationService
     {
         $id = $this->repository->addMessage($conversationId, $userId, $text);
 
-        $this->saveLinks($conversationId, $id, $userId, $text);
+        $text && $this->saveLinks($conversationId, $id, $userId, $text);
 
         foreach ($files as $file) {
             $this->uploadService->uploadConversationFile($id, $file, $conversationId, $userId);
         }
     }
 
-    public function saveLinks(int $conversationId, string $messageId, int $userId, string $content): void
+    public function saveLinks(int $conversationId, string $messageId, int $userId, ?string $content): void
     {
+        if (empty($content)) {
+            $this->repository->deleteLinksForMessage($conversationId, $messageId);
+
+            return;
+        }
+
         preg_match_all('/https?:\/\/[^\s]+/i', $content, $matches);
 
         $links = array_unique($matches[0] ?? []);
@@ -90,16 +106,27 @@ final readonly class ConversationService
         $this->repository->saveLinks($conversationId, $messageId, $userId, $links);
     }
 
-    public function updateMessage(int $conversationId, string $messageId, int $userId, ?string $content, array $files): void
+    public function getMessageById(int $userId, string $messageId): ?ConversationMessage
     {
+        return $this->repository->getMessageById($userId, $messageId);
+    }
+
+    public function updateMessage(int $conversationId, string $messageId, int $userId, ?string $content, array $files): bool
+    {
+        $message = $this->getMessageById($userId, $messageId);
+
+        if (!$message) {
+            return false;
+        }
+
         $this->repository->updateMessage($messageId, $content);
         $this->saveLinks($conversationId, $messageId, $userId, $content);
-
-        $message = $this->repository->getMessageById($messageId);
 
         foreach ($files as $file) {
             $this->uploadService->uploadConversationFile($messageId, $file, $message->conversation_id, $message->user_id);
         }
+
+        return true;
     }
 
     public function getUnreadMessagesCount(int $conversationId, int $userId): int
@@ -112,79 +139,11 @@ final readonly class ConversationService
         return $this->repository->getLastMessageIdForUser($conversationId, $userId);
     }
 
-    public function removeForUser(int $conversationId, int $userId): void
-    {
-        $this->repository->setConversationUserAsDeleted($conversationId, $userId);
-    }
-
-    public function clearHistoryUserConversation(int $conversationId, int $userId): void
-    {
-        $this->repository->clearHistoryUserConversation($conversationId, $userId);
-    }
-
     public function restoreForUser(int $conversationId, int $userId): void
     {
         $this->repository->setConversationAsRestored($conversationId, $userId);
     }
 
-    public function deleteRemovedMessages(): void
-    {
-        foreach ($this->repository->getRemovedMessageIds(10) as $id) {
-            $this->deleteMessage($id);
-        }
-    }
-
-    public function deleteMessageForUser(int $conversationId, int $userId, string $messageId): void
-    {
-        $deletedByCount = $this->repository->getDeletedByCount($messageId);
-        $conversationUsers = $this->repository->getConversationUsersByConversationId($conversationId);
-
-        if (($deletedByCount + 1) === count($conversationUsers)) {
-            $this->deleteMessage($messageId);
-
-            return;
-        }
-
-        $this->repository->deleteMessageForUser($userId, $messageId);
-    }
-
-    public function deleteMessage(string $messageId): void
-    {
-        $this->deleteAllMessageFiles($messageId);
-        $this->repository->deleteMessage($messageId);
-    }
-
-    public function deleteMessageFile(string $messageId, int $fileId): void
-    {
-        $file = $this->repository->getMessageFile($messageId, $fileId);
-
-        $result = $this->uploadService->smartDeleteFile($file);
-
-        if (!$result) {
-            $this->log->error('Error deletion message file', ['messageId' => $messageId, 'path' => $file->path]);
-
-            return;
-        }
-
-        $this->repository->deleteMessageFileModel($file->id);
-    }
-
-    public function deleteAllMessageFiles(string $messageId): void
-    {
-        $list = $this->repository->getMessageFiles($messageId);
-
-        foreach ($list as $file) {
-            $result = $this->uploadService->smartDeleteFile($file);
-
-            if (!$result) {
-                $this->log->error('Error deletion message file', ['messageId' => $messageId, 'path' => $file->path]);
-
-                return;
-            }
-
-            $this->repository->deleteMessageFileModel($file->id);
-        }
-    }
 
     public function setMessageAsRead(int $conversationId, int $userId, string $messageId): void
     {
@@ -212,16 +171,98 @@ final readonly class ConversationService
         }
     }
 
+    #region Delete
+    public function removeForUser(int $conversationId, int $userId): void
+    {
+        $this->repository->setConversationUserAsDeleted($conversationId, $userId);
+    }
+
+    public function setConversationDeleted(int $conversationId): void
+    {
+        $this->repository->setConversationDeleted($conversationId);
+    }
+
+    public function clearHistoryUserConversation(int $conversationId, int $userId): void
+    {
+        $this->repository->clearHistoryUserConversation($conversationId, $userId);
+    }
+
+    public function deleteRemovedMessages(): void
+    {
+        foreach ($this->repository->getRemovedMessageIds(10) as $id) {
+            $this->deleteMessageHard($id);
+        }
+    }
+
+    public function deleteMessageForUser(int $conversationId, int $userId, string $messageId): void
+    {
+        $deletedByCount = $this->repository->getDeletedByCount($messageId);
+        $conversationUsers = $this->repository->getConversationUsersByConversationId($conversationId);
+
+        if (($deletedByCount + 1) === count($conversationUsers)) {
+            $this->deleteMessageHard($messageId);
+
+            return;
+        }
+
+        $this->repository->deleteMessageForUser($userId, $messageId);
+    }
+
+    public function deleteMessageHard(string $messageId): void
+    {
+        $this->deleteAllMessageFiles($messageId);
+        $this->repository->deleteMessageHard($messageId);
+    }
+
+    public function deleteMessageFile(string $messageId, int $fileId): void
+    {
+        $file = $this->repository->getMessageFile($messageId, $fileId);
+
+        if (!$file) {
+            return;
+        }
+
+        $result = $this->uploadService->smartDeleteFile($file);
+
+        if (!$result) {
+            $this->log->error('Error deletion message file', ['messageId' => $messageId, 'path' => $file->path]);
+
+            return;
+        }
+
+        $this->repository->deleteMessageFileModel($file->id);
+
+        $this->deleteEmptyMessage($messageId);
+    }
+
+    public function deleteAllMessageFiles(string $messageId): void
+    {
+        $list = $this->repository->getMessageFiles($messageId);
+
+        foreach ($list as $file) {
+            $result = $this->uploadService->smartDeleteFile($file);
+
+            if (!$result) {
+                $this->log->error('Error deletion message file', ['messageId' => $messageId, 'path' => $file->path]);
+
+                return;
+            }
+
+            $this->repository->deleteMessageFileModel($file->id);
+        }
+    }
+
     public function deleteEmptyMessage(string $messageId): void
     {
-        $message = $this->repository->getMessageById($messageId);
+        $message = $this->repository->getMessageById(null, $messageId);
 
         if (empty($message->content)) {
             $files = $this->repository->getMessageFiles($messageId);
 
             if (empty($files)) {
-                $this->deleteMessage($messageId);
+                $this->deleteMessageHard($messageId);
             }
         }
     }
+    #endregion
 }

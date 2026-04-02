@@ -9,6 +9,7 @@ return new class extends Migration {
     {
         Schema::create('conversation_messages', function (Blueprint $table) {
             $table->ulid('id')->primary();
+            $table->ulid('parent_id')->nullable()->index();
             $table->unsignedBigInteger('conversation_id')->index();
             $table->unsignedInteger('deleted_by_count')->default(0);
             $table->foreignId('user_id')->index();

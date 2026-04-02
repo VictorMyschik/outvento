@@ -12,7 +12,7 @@ use stdClass;
 
 interface ConversationRepositoryInterface
 {
-    public function getConversationUserInfo(int $conversationId, int $userId): stdClass;
+    public function getConversationUserInfo(int $conversationId, int $userId): ?stdClass;
 
     public function getConversationUsers(int $conversationId): array;
 
@@ -32,11 +32,15 @@ interface ConversationRepositoryInterface
 
     public function saveLinks(int $conversationId, string $messageId, int $userId, array $links): void;
 
+    public function deleteLinksForMessage(int $conversationId, string $messageId): void;
+
     public function updateMessage(string $messageId, ?string $content): void;
 
     public function getUnreadMessagesCount(int $conversationId, int $userId): int;
 
     public function setConversationUserAsDeleted(?int $conversationId, int $userId): void;
+
+    public function setConversationDeleted(int $conversationId): void;
 
     public function setConversationAsRestored(int $conversationId, int $userId): void;
 
@@ -44,7 +48,7 @@ interface ConversationRepositoryInterface
 
     public function deleteMessageForUser(int $userId, string $messageId): void;
 
-    public function deleteMessage(string $messageId): void;
+    public function deleteMessageHard(string $messageId): void;
 
     public function setMessageAsRead(int $conversationId, int $userId, string $messageId): void;
 
@@ -64,7 +68,7 @@ interface ConversationRepositoryInterface
 
     public function deleteMessageFileModel(int $fileId): void;
 
-    public function getMessageById(string $messageId): ConversationMessage;
+    public function getMessageById(?int $userId, string $messageId): ?ConversationMessage;
 
     public function clearHistoryUserConversation(int $conversationId, int $userId): array;
 }

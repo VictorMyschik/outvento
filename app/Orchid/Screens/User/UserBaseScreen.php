@@ -43,13 +43,6 @@ class UserBaseScreen extends Screen
         return 'ID ' . $this->user->id . ($this->user->getFullName() ? ' | ' . $this->user->getFullName() : '');
     }
 
-    public function query(User $user): iterable
-    {
-        return [
-            'user' => $user,
-        ];
-    }
-
     public function view(array|Repository $httpQueryArguments = [])
     {
         $repository = is_a($httpQueryArguments, Repository::class)

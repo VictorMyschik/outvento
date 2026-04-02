@@ -26,6 +26,7 @@ use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Label;
 use Orchid\Screen\Fields\ViewField;
 use Orchid\Support\Facades\Layout;
+use Orchid\Support\Facades\Toast;
 
 class UserConversationDetailsScreen extends UserBaseScreen
 {
@@ -45,7 +46,7 @@ class UserConversationDetailsScreen extends UserBaseScreen
 
         $description = $link . ' | ' . $this->conversations->getUnreadMessagesCount($this->conversation->id, $this->user->id) . ' unread messages';
 
-        $info = $this->conversations->getConversationUserInfo($this->conversation, $this->user);
+        $info = $this->conversations->getConversationUserInfo($this->conversation->id, $this->user->id);
         if ($info->deleted_at) {
             $description = 'Conversation deleted at ' . $info->deleted_at;
         }
@@ -64,7 +65,7 @@ class UserConversationDetailsScreen extends UserBaseScreen
         ];
     }
 
-    public function query(User $user, ?Conversation $conversation = null): iterable
+    public function query(User $user, Conversation $conversation): array
     {
         $this->setAvatar($user->getAvatar());
         $this->secondUser = $user;
@@ -110,7 +111,7 @@ class UserConversationDetailsScreen extends UserBaseScreen
             ->confirm('Вы уверены, что хотите удалить переписку?')
             ->icon('trash');
 
-        if ($this->conversations->getConversationUserInfo($this->conversation, $this->user)->deleted_at) {
+        if ($this->conversations->getConversationUserInfo($this->conversation->id, $this->user->id)->deleted_at) {
             $btn[] = Button::make('Восстановить переписку для себя')
                 ->class('mr-btn-success pull-right')
                 ->method('restoreUserConversation')
@@ -127,6 +128,13 @@ class UserConversationDetailsScreen extends UserBaseScreen
             ->icon('trash');
 
         return [Group::make($btn)->autoWidth()];
+    }
+
+    public function purgeUserConversation(): RedirectResponse
+    {
+        $this->conversations->setConversationDeleted($this->conversation->id);
+
+        return redirect()->route('profiles.conversations.list', ['user' => $this->user->id]);
     }
 
     private function getSummaryLayout(): array
@@ -180,6 +188,8 @@ class UserConversationDetailsScreen extends UserBaseScreen
 
     public function saveFileName(Request $request, int $fileId): void
     {
+        $this->conversations->checkAccess($this->conversation->id, $this->user->id);
+
         $name = $request->validate([
             'attachment.name' => 'required|string|max:255',
         ])['attachment']['name'];
@@ -189,6 +199,8 @@ class UserConversationDetailsScreen extends UserBaseScreen
 
     public function markRead(): void
     {
+        $this->conversations->checkAccess($this->conversation->id, $this->user->id);
+
         $lastMessageId = $this->conversations->getLastMessageIdForUser($this->conversation->id, $this->user->id);
         if ($lastMessageId) {
             $this->conversations->setMessageAsRead($this->conversation->id, $this->user->id, $lastMessageId);
@@ -197,8 +209,10 @@ class UserConversationDetailsScreen extends UserBaseScreen
 
     public function editMessage(Request $request, string $messageId): void
     {
+        $this->conversations->checkAccess($this->conversation->id, $this->user->id);
+
         $text = $request->validate([
-            'message' => 'required|string|max:10000',
+            'message' => 'nullable|string|max:10000',
         ])['message'];
 
         $files = $request->allFiles()['file'] ?? [];
@@ -207,7 +221,11 @@ class UserConversationDetailsScreen extends UserBaseScreen
             $this->conversations->validateAttachments($files);
         }
 
-        $this->conversations->updateMessage($this->conversation->id, $messageId, $this->user->id, $text, $files);
+        $result = $this->conversations->updateMessage($this->conversation->id, $messageId, $this->user->id, $text, $files);
+
+        if (!$result) {
+            Toast::error('Error updating message');
+        }
     }
 
     public function asyncGetMessage(string $messageId): array
@@ -219,6 +237,8 @@ class UserConversationDetailsScreen extends UserBaseScreen
 
     public function saveMessage(Request $request): void
     {
+        $this->conversations->checkAccess($this->conversation->id, $this->user->id);
+
         $input = $request->validate([
             'message' => 'nullable|string|max:10000',
         ]);
@@ -238,16 +258,22 @@ class UserConversationDetailsScreen extends UserBaseScreen
 
     public function removeForMe(string $messageId): void
     {
+        $this->conversations->checkAccess($this->conversation->id, $this->user->id);
+
         $this->conversations->deleteMessageForUser($this->conversation->id, $this->user->id, $messageId);
     }
 
     public function deleteMessage(string $messageId): void
     {
-        $this->conversations->deleteMessage($messageId);
+        $this->conversations->checkAccess($this->conversation->id, $this->user->id);
+
+        $this->conversations->deleteMessageHard($messageId);
     }
 
     public function deleteAllMessageFiles(string $messageId): void
     {
+        $this->conversations->checkAccess($this->conversation->id, $this->user->id);
+
         $this->conversations->deleteAllMessageFiles($messageId);
 
         $this->conversations->deleteEmptyMessage($messageId);
@@ -255,6 +281,8 @@ class UserConversationDetailsScreen extends UserBaseScreen
 
     public function deleteMessageFile(string $messageId, int $fileId): void
     {
+        $this->conversations->checkAccess($this->conversation->id, $this->user->id);
+
         $this->conversations->deleteMessageFile($messageId, $fileId);
         $this->conversations->deleteEmptyMessage($messageId);
     }

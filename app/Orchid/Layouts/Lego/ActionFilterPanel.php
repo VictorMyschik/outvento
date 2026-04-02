@@ -12,7 +12,7 @@ class ActionFilterPanel
     {
         return Group::make([
             Button::make('Filter')->icon('filter')->name('поиск')->method('runFiltering', $properties)->class('mr-btn-success'),
-            Button::make('Clear')->icon('close')->name('очистить')->method('clearFilter')->class('mr-btn-danger'),
+            Button::make('Clear')->icon('close')->name('очистить')->method('clearFilter')->class('mr-btn-route'),
         ])->autoWidth();
     }
 }
