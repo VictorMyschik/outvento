@@ -42,7 +42,7 @@ class TravelInviteController extends Controller
 
             $emailInvite->delete();
 
-            return redirect()->route('travel.public.link', ['token' => $publicId]);
+            return redirect()->route('todo: сделать', ['token' => $publicId]);
         }
 
         if ($status === 'false') {

@@ -60,7 +60,7 @@ readonly class TravelService
 
     public function getPublicUrl(Travel $travel): string
     {
-        return route('travel.public.link', ['token' => $travel->getPublicId()]);
+        return 'todo: сделать';
     }
 
     public function deleteTravel(int $travelId): void
