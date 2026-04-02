@@ -108,19 +108,14 @@ class ConversationFilter extends Filter
     {
         $input = $request->all(self::FIELDS);
 
-        $outLine[] = Select::make('type')
-            ->title('Type')
-            ->options(Type::getSelectList())
-            ->value($input['type'])
-            ->empty('Any');
-        $outLine[] = Select::make('userId')
-            ->title('User')
-            ->fromModel(User::class, 'name')
-            ->value($input['userId'])
-            ->empty('Any');
-
         return Layout::rows([
-            Group::make($outLine),
+            Group::make([
+                Select::make('userId')
+                    ->title('User')
+                    ->fromModel(User::class, 'name')
+                    ->value($input['userId'])
+                    ->empty('Any')
+            ]),
             ActionFilterPanel::getActionsButtons(),
         ]);
     }

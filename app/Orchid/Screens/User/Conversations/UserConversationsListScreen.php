@@ -7,7 +7,6 @@ namespace App\Orchid\Screens\User\Conversations;
 use App\Models\User;
 use App\Orchid\Filters\User\ConversationFilter;
 use App\Orchid\Layouts\User\Conversations\AddConversationLayout;
-use App\Orchid\Layouts\User\Conversations\AddGroupConversationLayout;
 use App\Orchid\Layouts\User\Conversations\ConversationListLayout;
 use App\Orchid\Layouts\User\Conversations\MessageEditLayout;
 use App\Orchid\Screens\User\UserBaseScreen;
@@ -77,41 +76,11 @@ class UserConversationsListScreen extends UserBaseScreen
         ];
     }
 
-    public function saveMessage(Request $request, int $conversationId, int $userId): void
-    {
-        $text = $request->validate([
-            'message' => 'required|string|max:10000',
-        ])['message'];
-
-        $this->conversations->addMessage($conversationId, $userId, $text);
-    }
-
-    public function purgeUserMessages(): void
-    {
-        $this->conversations->removeForUser(null, $this->user->id);
-    }
-
-    public function removeForMe(int $conversationId): void
-    {
-        $this->conversations->removeForUser($conversationId, $this->user->id);
-    }
-
     public function saveConversation(Request $request): RedirectResponse
     {
         $id = $this->conversations->addPersonalConversation(
             ownerId: $this->user->id,
             userId: (int)$request->input('userId'),
-        );
-
-        return redirect()->route('profiles.messages', ['user' => $this->user->id, 'conversation' => $id]);
-    }
-
-    public function saveGroupConversation(Request $request): RedirectResponse
-    {
-        $id = $this->conversations->addGroupConversation(
-            ownerId: $this->user->id,
-            userIds: (array)$request->input('userIds'),
-            title: $request->input('title'),
         );
 
         return redirect()->route('profiles.messages', ['user' => $this->user->id, 'conversation' => $id]);

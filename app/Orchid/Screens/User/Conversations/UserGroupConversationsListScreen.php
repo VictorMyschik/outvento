@@ -58,40 +58,11 @@ class UserGroupConversationsListScreen extends UserBaseScreen
         return [
             GroupConversationFilter::displayFilterCard(request()),
             GroupConversationListLayout::class,
-            Layout::rows($this->getActionBottomLayout()),
 
             Layout::modal('add_conversation_modal', AddConversationLayout::class),
             Layout::modal('add_group_conversation_modal', AddGroupConversationLayout::class),
             Layout::modal('message_modal', MessageEditLayout::class),
         ];
-    }
-
-    private function getActionBottomLayout(): array
-    {
-        return [
-            Group::make([
-                Button::make('Purge')
-                    ->class('mr-btn-danger pull-right')
-                    ->icon('trash')
-                    ->method('purgeUserMessages')
-                    ->confirm('Are you sure you want to delete all messages for this user? This action cannot be undone.'),
-            ])->alignCenter()
-        ];
-    }
-
-    public function saveMessage(Request $request, int $conversationId, int $userId): void
-    {
-        $text = $request->validate([
-            'message' => 'required|string|max:10000',
-        ])['message'];
-
-        $this->conversations->addMessage($conversationId, $userId, $text);
-    }
-
-
-    public function removeForMe(int $conversationId): void
-    {
-        $this->conversations->removeForUser($conversationId, $this->user->id);
     }
 
     public function saveConversation(Request $request): RedirectResponse
@@ -118,17 +89,17 @@ class UserGroupConversationsListScreen extends UserBaseScreen
     public function runFiltering(Request $request): RedirectResponse
     {
         $list = [];
-        foreach (ConversationFilter::FIELDS as $item) {
+        foreach (GroupConversationFilter::FIELDS as $item) {
             if (!is_null($request->input($item))) {
-                $list[$item] = $request->get($item);
+                $list[$item] = $request->input($item);
             }
         }
 
-        return redirect()->route('profiles.conversations.list', $list + ['user' => $this->user->id]);
+        return redirect()->route('profiles.group-conversations.list', $list + ['user' => $this->user->id]);
     }
 
     public function clearFilter(): RedirectResponse
     {
-        return redirect()->route('profiles.conversations.list', ['user' => $this->user->id]);
+        return redirect()->route('profiles.group-conversations.list', ['user' => $this->user->id]);
     }
 }
