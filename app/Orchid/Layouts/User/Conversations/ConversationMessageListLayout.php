@@ -36,12 +36,18 @@ class ConversationMessageListLayout extends Table
 
                 $message->btns = DropDown::make()->icon('options-vertical')->list([
                     ViewField::make('')->view('admin.raw')->value(Group::make([
+                        ModalToggle::make('replay')
+                            ->icon('reply')
+                            ->modal('message_edit_modal')
+                            ->modalTitle('Reply Message')
+                            ->method('saveMessage')
+                            ->asyncParameters(['parentId' => $message->id]),
                         ModalToggle::make('edit')
                             ->icon('pencil')
                             ->modal('message_edit_modal')
                             ->modalTitle('Edit Message')
                             ->method('editMessage')
-                            ->asyncParameters(['messageId' => $message->id]),
+                            ->asyncParameters(['messageId' => $message->id, 'parentId' => null]),
                         Button::make('for all')
                             ->icon('bs.trash3')
                             ->confirm('Are you sure you want to delete this message?')

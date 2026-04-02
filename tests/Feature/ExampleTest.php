@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Models\Conversations\Conversation;
 use App\Models\Conversations\ConversationUser;
+use App\Repositories\Conversations\ConversationRepository;
 use App\Services\Conversations\ConversationService;
 use Tests\TestCase;
 

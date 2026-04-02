@@ -40,6 +40,7 @@ class ConversationMessageFilter extends Filter
                 $query->on(ConversationMessageUserState::TABLE . '.message_id', '=', ConversationMessage::TABLE . '.id')
                     ->where(ConversationMessageUserState::TABLE . '.user_id', $userId);
             })
+            ->leftJoin(ConversationMessage::TABLE . ' as parent', 'parent.id', '=', 'conversation_messages.parent_id')
             ->whereNull(ConversationMessageUserState::TABLE . '.updated_at')
             ->where(ConversationMessage::TABLE . '.conversation_id', $conversationId)
             ->orderBy(ConversationMessage::TABLE . '.created_at', 'ASC')
@@ -48,6 +49,9 @@ class ConversationMessageFilter extends Filter
                 'users.name as user_name',
                 'users.id as user_id',
                 $userId . ' as current_user_id',
+                'parent.id as parent_id',
+                'parent.content as parent_content',
+                'parent.user_id as parent_user_id',
             ]));
     }
 
@@ -63,7 +67,7 @@ class ConversationMessageFilter extends Filter
             $builder->whereIn(ConversationMessage::TABLE . '.user_id', $input['userIds']);
         }
 
-        if(!empty($input['messageId'])){
+        if (!empty($input['messageId'])) {
             $builder->where(ConversationMessage::TABLE . '.id', $input['messageId']);
         }
 
@@ -78,7 +82,7 @@ class ConversationMessageFilter extends Filter
         return $builder;
     }
 
-    public static function displayFilterCard(Request $request, ConversationService  $conversations, int $conversationId): Rows
+    public static function displayFilterCard(Request $request, ConversationService $conversations, int $conversationId): Rows
     {
         $userOptions = [];
 

@@ -28,7 +28,7 @@ interface ConversationRepositoryInterface
 
     public function addUserToConversation(int $conversationId, int $userId, Role $role): void;
 
-    public function addMessage(int $conversationId, int $userId, ?string $text): string;
+    public function addMessage(int $conversationId, int $userId, ?string $text, ?string $parentId): string;
 
     public function saveLinks(int $conversationId, string $messageId, int $userId, array $links): void;
 
@@ -71,4 +71,12 @@ interface ConversationRepositoryInterface
     public function getMessageById(?int $userId, string $messageId): ?ConversationMessage;
 
     public function clearHistoryUserConversation(int $conversationId, int $userId): array;
+
+    public function getRemovedMessageIds(int $count): array;
+
+    public function getDeletedConversationIds(int $limit): array;
+
+    public function getMessages(int $conversationId): array;
+
+    public function deleteConversation(int $conversationId): void;
 }

@@ -207,6 +207,19 @@ class UserConversationDetailsScreen extends UserBaseScreen
         }
     }
 
+    public function asyncGetMessage(?string $messageId = null, ?string $parentId = null): array
+    {
+        if (is_null($messageId)) {
+            return [
+                'message' => null,
+            ];
+        }
+
+        return [
+            'message' => ConversationMessage::findOrFail($messageId)->content,
+        ];
+    }
+
     public function editMessage(Request $request, string $messageId): void
     {
         $this->conversations->checkAccess($this->conversation->id, $this->user->id);
@@ -228,14 +241,7 @@ class UserConversationDetailsScreen extends UserBaseScreen
         }
     }
 
-    public function asyncGetMessage(string $messageId): array
-    {
-        return [
-            'message' => ConversationMessage::findOrFail($messageId)->content,
-        ];
-    }
-
-    public function saveMessage(Request $request): void
+    public function saveMessage(Request $request, ?string $parentId = null): void
     {
         $this->conversations->checkAccess($this->conversation->id, $this->user->id);
 
@@ -253,7 +259,7 @@ class UserConversationDetailsScreen extends UserBaseScreen
             return;
         }
 
-        $this->conversations->addMessage($this->conversation->id, $this->user->id, $input['message'], $files);
+        $this->conversations->addMessage($this->conversation->id, $this->user->id, $input['message'], $parentId,  $files);
     }
 
     public function removeForMe(string $messageId): void

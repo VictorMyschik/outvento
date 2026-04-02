@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Conversations;
 
-use App\Models\Conversations\Conversation;
 use App\Models\Conversations\ConversationMessage;
-use App\Models\User;
 use App\Services\Conversations\Enum\Role;
 use App\Services\Conversations\Enum\Type;
 use Psr\Log\LoggerInterface;
@@ -25,7 +23,7 @@ final readonly class ConversationService
     {
         $conversationUserInfo = $this->getConversationUserInfo($conversationId, $userId);
 
-        if(!$conversationUserInfo || $conversationUserInfo->deleted_at) {
+        if (!$conversationUserInfo || $conversationUserInfo->deleted_at) {
             throw new \InvalidArgumentException('Conversation not found');
         }
     }
@@ -80,9 +78,9 @@ final readonly class ConversationService
         $this->repository->addUserToConversation($conversationId, $userId, $role);
     }
 
-    public function addMessage(int $conversationId, int $userId, ?string $text, array $files = []): void
+    public function addMessage(int $conversationId, int $userId, ?string $text, ?string $parentId, array $files = []): void
     {
-        $id = $this->repository->addMessage($conversationId, $userId, $text);
+        $id = $this->repository->addMessage($conversationId, $userId, $text, $parentId);
 
         $text && $this->saveLinks($conversationId, $id, $userId, $text);
 
@@ -191,6 +189,14 @@ final readonly class ConversationService
     {
         foreach ($this->repository->getRemovedMessageIds(10) as $id) {
             $this->deleteMessageHard($id);
+        }
+
+        foreach ($this->repository->getDeletedConversationIds(1) as $conversationId) {
+            foreach ($this->repository->getMessages($conversationId) as $messageId) {
+                $this->deleteMessageHard($messageId);
+            }
+
+            $this->repository->deleteConversation($conversationId);
         }
     }
 

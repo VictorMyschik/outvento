@@ -28,6 +28,12 @@
             </div>
         </div>
 
+        @if($value->parent_id)
+            <div class="text-muted small border-start ps-2 mb-1">
+                ↩ {{ Str::limit($value->parent_content, 100) }}
+            </div>
+        @endif
+
         @if(!empty(trim((string)$value->content)))
             <div class="card-body" style="white-space: pre-wrap;">{!! $value->content !!}</div>
         @endif

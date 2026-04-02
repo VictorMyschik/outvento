@@ -22,6 +22,13 @@ return new class extends Migration {
             $table->foreign('conversation_id')->references('id')->on('conversations')->cascadeOnDelete();
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
         });
+
+        Schema::table('conversation_messages', function (Blueprint $table) {
+            $table->foreign('parent_id')
+                ->references('id')
+                ->on('conversation_messages')
+                ->nullOnDelete();
+        });
     }
 
     public function down(): void

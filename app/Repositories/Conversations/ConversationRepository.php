@@ -58,7 +58,7 @@ final readonly class ConversationRepository extends DatabaseRepository implement
         ]);
     }
 
-    public function addMessage(int $conversationId, int $userId, ?string $text): string
+    public function addMessage(int $conversationId, int $userId, ?string $text, ?string $parentId): string
     {
         $id = $this->newUlidId();
 
@@ -67,6 +67,7 @@ final readonly class ConversationRepository extends DatabaseRepository implement
             'conversation_id' => $conversationId,
             'user_id'         => $userId,
             'content'         => $text,
+            'parent_id'       => $parentId,
         ]);
 
         $this->db->table(ConversationUser::TABLE)
@@ -248,7 +249,7 @@ final readonly class ConversationRepository extends DatabaseRepository implement
 
     public function getMessageById(?int $userId, string $messageId): ?ConversationMessage
     {
-        if(!$userId) {
+        if (!$userId) {
             return ConversationMessage::findOrFail($messageId);
         }
 
@@ -261,7 +262,7 @@ final readonly class ConversationRepository extends DatabaseRepository implement
             ->whereNull('s.updated_at')
             ->exists();
 
-        if($actual) {
+        if ($actual) {
             return ConversationMessage::findOrFail($messageId);
         }
 
@@ -298,7 +299,9 @@ final readonly class ConversationRepository extends DatabaseRepository implement
 
     public function deleteLinksForMessage(int $conversationId, string $messageId): void
     {
-        $this->db->table(ConversationMessageLink::TABLE)->where('conversation_id', $conversationId)->where('message_id', $messageId)->delete();
+        $this->db->table(ConversationMessageLink::TABLE)
+            ->where('conversation_id', $conversationId)
+            ->where('message_id', $messageId)->delete();
     }
 
     public function getConversationUserInfo(int $conversationId, int $userId): ?stdClass
@@ -367,5 +370,26 @@ final readonly class ConversationRepository extends DatabaseRepository implement
                 LIMIT {$count}
             SQL
         ))->pluck('id')->all();
+    }
+
+    public function getDeletedConversationIds(int $limit): array
+    {
+        return $this->db->table(ConversationUser::TABLE)
+            ->groupBy('conversation_id')
+            ->havingRaw('COUNT(*) = COUNT(deleted_at)')
+            ->limit($limit)
+            ->pluck('conversation_id')->all();
+    }
+
+    public function getMessages(int $conversationId): array
+    {
+        return $this->db->table(ConversationMessage::TABLE)
+            ->where('conversation_id', $conversationId)
+            ->pluck('id')->all();
+    }
+
+    public function deleteConversation(int $conversationId): void
+    {
+        $this->db->table(Conversation::TABLE)->where('id', $conversationId)->delete();
     }
 }
