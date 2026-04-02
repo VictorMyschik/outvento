@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Orchid\Screens\User\Conversations;
 
 use App\Models\User;
-use App\Orchid\Filters\User\ConversationFilter;
 use App\Orchid\Filters\User\GroupConversationFilter;
 use App\Orchid\Layouts\User\Conversations\AddConversationLayout;
 use App\Orchid\Layouts\User\Conversations\AddGroupConversationLayout;
@@ -14,10 +13,8 @@ use App\Orchid\Layouts\User\Conversations\MessageEditLayout;
 use App\Orchid\Screens\User\UserBaseScreen;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Actions\ModalToggle;
-use Orchid\Screen\Fields\Group;
 use Orchid\Support\Facades\Layout;
 
 class UserGroupConversationsListScreen extends UserBaseScreen

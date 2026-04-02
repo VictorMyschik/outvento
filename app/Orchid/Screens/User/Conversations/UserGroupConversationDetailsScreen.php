@@ -21,7 +21,6 @@ class UserGroupConversationDetailsScreen extends UserBaseScreen
 {
     public ?User $user = null;
     public ?Conversation $conversation = null;
-    public string $name = 'Users Messages';
 
     public function name(): string
     {
