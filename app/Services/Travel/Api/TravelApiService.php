@@ -18,7 +18,6 @@ use App\Services\System\Enum\Language;
 use App\Services\Travel\Api\Components\TravelListByTypeComponent;
 use App\Services\Travel\Api\Components\TravelTypeComponent;
 use App\Services\Travel\Enum\Activity;
-use App\Services\Travel\Enum\ImageType;
 use App\Services\Travel\TravelRepositoryInterface;
 
 final readonly class TravelApiService

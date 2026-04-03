@@ -29,8 +29,9 @@ Route::middleware('optional:sanctum')->group(function () {
 });
 
 Route::middleware('guest')->group(static function () {
-    Route::post('login', [AuthController::class, 'login'])->name('login');
     Route::post('register', [AuthController::class, 'register'])->name('register');
+    Route::post('login', [AuthController::class, 'login'])->name('login');
+    Route::any('refresh', [AuthController::class, 'refresh'])->name('refresh');
 
     Route::post('reset-password', [AuthController::class, 'resetPassword']);
     Route::post('reset-password/{token}/check', [AuthController::class, 'checkActualResetPasswordToken']);
@@ -42,7 +43,7 @@ Route::middleware('auth:sanctum')->group(static function () {
     Route::any('logout-all', [AuthController::class, 'logoutAllSessions'])->name('logoutAllSessions');
 
     Route::prefix('user')->group(static function () {
-        Route::get('', [UsersController::class, 'profile']);
+        Route::get('', [UsersController::class, 'profile'])->name('user.profile');
         Route::get('full', [UsersController::class, 'profileFull']);
         // Установить локаль пользователя по умолчанию в Личном кабинете
         Route::post('profile/edit', [UsersController::class, 'updateProfile']);
@@ -53,7 +54,7 @@ Route::middleware('auth:sanctum')->group(static function () {
 
         // Communications
         Route::get('communications', [UsersController::class, 'getCommunications']);
-        Route::post('communications/create', [UsersController::class, 'createCommunication']);
+        Route::post('communications', [UsersController::class, 'createCommunication']);
         Route::put('communications/{id}', [UsersController::class, 'updateCommunication']);
         Route::delete('communications/{id}', [UsersController::class, 'deleteCommunication']);
     });

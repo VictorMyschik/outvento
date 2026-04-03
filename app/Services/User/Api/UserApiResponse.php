@@ -54,7 +54,7 @@ final readonly class UserApiResponse
         foreach ($list as $communication) {
             $out[] = new UserCommunicationComponent(
                 id: $communication->id,
-                type: $communication->title,
+                type: $communication->getType()->getLabel(),
                 address: $communication->address,
                 description: $communication->description,
                 visibility: $communication->visibility,

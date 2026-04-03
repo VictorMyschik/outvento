@@ -12,7 +12,7 @@
                     "Auth"
                 ],
                 "summary": "Регистрация",
-                "description": "Регистрация нового пользователя. Успешный ответ будет содержать Bearer токен, который нужно использовать для авторизации в других запросах.",
+                "description": "Регистрация нового пользователя и возвращает access и refresh токенов. Успешный ответ будет содержать Bearer токен, который нужно использовать для авторизации в других запросах.",
                 "operationId": "register",
                 "parameters": [
                     {
@@ -30,7 +30,7 @@
                     }
                 },
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "Successful login",
                         "content": {
                             "application/json": {
@@ -45,20 +45,10 @@
                                             "example": "ok"
                                         },
                                         "content": {
-                                            "$ref": "#/components/schemas/LoginResponseContent"
+                                            "$ref": "#/components/schemas/AuthTokenResponse"
                                         }
                                     },
                                     "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthError"
                                 }
                             }
                         }
@@ -82,7 +72,7 @@
                     "Auth"
                 ],
                 "summary": "Login",
-                "description": "Авторизация происходит по email и паролю. Успешный ответ будет содержать Bearer токен, который нужно\n        использовать для авторизации в других запросах. Токен будет действителен 60 минут. Для обновления токена следует ещё раз выполнить текущий запрос.",
+                "description": "Access token имеет ограниченный срок действия. Для его обновления используйте endpoint /refresh с refresh token.",
                 "operationId": "login",
                 "parameters": [
                     {
@@ -115,20 +105,10 @@
                                             "example": "ok"
                                         },
                                         "content": {
-                                            "$ref": "#/components/schemas/LoginResponseContent"
+                                            "$ref": "#/components/schemas/AuthTokenResponse"
                                         }
                                     },
                                     "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthError"
                                 }
                             }
                         }
@@ -142,6 +122,54 @@
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/api/v1/refresh": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Refresh token",
+                "description": "Обновление access token с помощью refresh token.",
+                "operationId": "refresh",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RefreshTokenRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful refresh",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "status",
+                                        "content"
+                                    ],
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "ok"
+                                        },
+                                        "content": {
+                                            "$ref": "#/components/schemas/AuthTokenResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token"
                     }
                 }
             }
@@ -492,6 +520,67 @@
                         }
                     }
                 }
+            }
+        },
+        "/api/v1/user/password": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Изменить пароль пользователя",
+                "operationId": "changePassword",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/XRequestedWithHeader"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdatePasswordRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SuccessfulEmptyResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/common/languages": {
@@ -868,98 +957,6 @@
                 }
             }
         },
-        "/api/v1/subscription/subscribe": {
-            "post": {
-                "tags": [
-                    "Subscription"
-                ],
-                "summary": "Subscribe to news",
-                "operationId": "subscribe",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/XRequestedWithHeader"
-                    }
-                ],
-                "requestBody": {
-                    "description": "Subscription payload",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/SubscriptionRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "204": {
-                        "description": "Successful",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SuccessfulEmptyResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/subscription/subscribe/{token}": {
-            "get": {
-                "tags": [
-                    "Subscription"
-                ],
-                "summary": "Unsubscribe for type",
-                "operationId": "unsubscribe",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/XRequestedWithHeader"
-                    },
-                    {
-                        "name": "token",
-                        "in": "path",
-                        "description": "Subscription token",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Successful",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SuccessfulEmptyResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/user": {
             "get": {
                 "tags": [
@@ -1052,67 +1049,6 @@
                                         }
                                     },
                                     "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthError"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/user/password": {
-            "post": {
-                "tags": [
-                    "User info"
-                ],
-                "summary": "Изменить пароль пользователя",
-                "operationId": "changePassword",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/XRequestedWithHeader"
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/UpdatePasswordRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "204": {
-                        "description": "Successful",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SuccessfulEmptyResponse"
                                 }
                             }
                         }
@@ -1487,7 +1423,7 @@
                     },
                     "password": {
                         "type": "string",
-                        "example": "password123"
+                        "example": "pR4(assword123^"
                     },
                     "remember": {
                         "type": "boolean",
@@ -1527,6 +1463,27 @@
                             "type": "string",
                             "format": "email"
                         }
+                    }
+                },
+                "type": "object"
+            },
+            "RefreshTokenRequest": {
+                "required": [
+                    "login",
+                    "password"
+                ],
+                "properties": {
+                    "login": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "password": {
+                        "type": "string",
+                        "example": "pR4(assword123^"
+                    },
+                    "remember": {
+                        "type": "boolean",
+                        "example": true
                     }
                 },
                 "type": "object"
@@ -1615,17 +1572,29 @@
                 },
                 "type": "object"
             },
-            "LoginResponseContent": {
+            "AuthTokenResponse": {
                 "required": [
-                    "token"
+                    "accessToken",
+                    "refreshToken",
+                    "tokenType",
+                    "expiresIn"
                 ],
                 "properties": {
-                    "token": {
+                    "accessToken": {
                         "type": "string",
-                        "enum": [
-                            "ok"
-                        ],
-                        "example": "54|zSA0wCsYADhnwylBCo86NPCKnz1jEYGns7cJbY8543e3b2ad"
+                        "example": "1|abc..."
+                    },
+                    "refreshToken": {
+                        "type": "string",
+                        "example": "2|xyz..."
+                    },
+                    "tokenType": {
+                        "type": "string",
+                        "example": "Bearer"
+                    },
+                    "expiresIn": {
+                        "type": "integer",
+                        "example": 3600
                     }
                 },
                 "type": "object"
@@ -1664,20 +1633,6 @@
                         "description": "Message content",
                         "type": "string",
                         "maxLength": 5000
-                    }
-                },
-                "type": "object"
-            },
-            "SubscriptionRequest": {
-                "required": [
-                    "email"
-                ],
-                "properties": {
-                    "email": {
-                        "description": "Subscriber email",
-                        "type": "string",
-                        "format": "email",
-                        "example": "user@example.com"
                     }
                 },
                 "type": "object"
@@ -1853,7 +1808,7 @@
                 "required": [
                     "countries",
                     "translations",
-                    "travelTypeList",
+                    "activities",
                     "travelExamples"
                 ],
                 "properties": {
@@ -1869,7 +1824,7 @@
                         "type": "object",
                         "example": "{'page_welcome.slogan': 'Welcome to our site!'}"
                     },
-                    "travelTypeList": {
+                    "activities": {
                         "description": "List of travel types",
                         "type": "array",
                         "items": {
@@ -1920,8 +1875,8 @@
                 },
                 "type": "object"
             },
-            "TravelImageComponent": {
-                "title": "TravelImageComponent",
+            "TravelMediaComponent": {
+                "title": "TravelMediaComponent",
                 "description": "Image information for a travel item",
                 "required": [
                     "logo",
@@ -2089,7 +2044,7 @@
                         "description": "Array of images",
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/TravelImageComponent"
+                            "$ref": "#/components/schemas/TravelMediaComponent"
                         }
                     },
                     "owner": {
@@ -2103,7 +2058,8 @@
             "CommunicationRequest": {
                 "required": [
                     "type",
-                    "address"
+                    "address",
+                    "visibility"
                 ],
                 "properties": {
                     "type": {
@@ -2121,6 +2077,11 @@
                         "maxLength": 8000,
                         "example": "This is a sample description.",
                         "nullable": true
+                    },
+                    "visibility": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": false
                     }
                 },
                 "type": "object"
@@ -2143,12 +2104,6 @@
                         "format": "email",
                         "maxLength": 255,
                         "example": "user@example.com",
-                        "nullable": true
-                    },
-                    "telegram": {
-                        "type": "string",
-                        "maxLength": 255,
-                        "example": "123456789",
                         "nullable": true
                     },
                     "language": {
@@ -2186,6 +2141,53 @@
                         "maxLength": 8000,
                         "example": "This is a sample about me section.",
                         "nullable": true
+                    },
+                    "visibility": {
+                        "description": "Visibility ID",
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "relationship_status": {
+                        "description": "Relationship status ID",
+                        "type": "integer",
+                        "example": 2,
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "UserLocationRequest": {
+                "required": [
+                    "placeId",
+                    "lat",
+                    "lng"
+                ],
+                "properties": {
+                    "placeId": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "ChIJN1t_tDeuEmsRUsoyG83frY4"
+                    },
+                    "lat": {
+                        "type": "number",
+                        "format": "float",
+                        "example": -33.8670522
+                    },
+                    "lng": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 151.1957362
+                    },
+                    "countryCode": {
+                        "type": "string",
+                        "maxLength": 2,
+                        "example": "US"
+                    },
+                    "cityName": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "Sydney"
                     }
                 },
                 "type": "object"
@@ -2421,6 +2423,11 @@
                         "description": "URL аватара пользователя",
                         "type": "string",
                         "nullable": true
+                    },
+                    "visibility": {
+                        "description": "Видимость контакта",
+                        "type": "integer",
+                        "format": "int32"
                     }
                 },
                 "type": "object"
@@ -2603,10 +2610,6 @@
         {
             "name": "Forms",
             "description": "Forms"
-        },
-        {
-            "name": "Subscription",
-            "description": "Subscription"
         },
         {
             "name": "User info",

@@ -51,9 +51,13 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
         'birthday',
         'deleted_at',
         'subscription_token',
-        'about',
         'email_verified_at',
         'relationship_status',
+        'avatar',
+        'location',
+        'gender',
+        'about',
+        'visibility',
     ];
 
     protected $hidden = [

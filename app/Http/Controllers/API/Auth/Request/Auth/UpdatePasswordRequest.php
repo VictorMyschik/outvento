@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\API\Auth\Request\Auth;
 
+use App\Support\Validation\PasswordRules;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Password;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(
@@ -23,8 +23,8 @@ class UpdatePasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'current_password' => ['required', 'string', 'current_password:web'],
-            'password'         => ['required', 'string', Password::default(), 'confirmed'],
+            'current_password' => ['required', 'string', 'current_password:sanctum'],
+            'password'         => ['required', 'string', PasswordRules::default(), 'confirmed'],
         ];
     }
 

@@ -47,15 +47,17 @@ final readonly class UserService
             $this->repository->updateUser($user->id, $data);
         }
 
+        $updatedUser = $this->repository->getUserById($user->id);
+
         if ($needSendVerifyEmail) {
-            $this->authService->sendVerifyNotification($user);
+            $this->authService->sendVerifyNotification($updatedUser);
         }
 
         if (!empty($data['email_verified_at'])) {
             $this->notificationService->deleteNotificationCode($user->id, SystemEvent::RegistrationConfirmation);
         }
 
-        return $this->repository->getUserById($user->id);
+        return $updatedUser;
     }
 
     public function findUser(string $address): ?User

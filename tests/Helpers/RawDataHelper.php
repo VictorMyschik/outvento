@@ -1,46 +1,11 @@
 <?php
 
-namespace Tests\Feature\Helpers;
+declare(strict_types=1);
 
-use App\Models\User;
+namespace Tests\Helpers;
 
-class TestHelper
+final readonly class RawDataHelper
 {
-    private const array DOMAINS = [
-        'gmail.com',
-        'yahoo.com',
-        'hotmail.com',
-        'outlook.com',
-        'mail.ru',
-        'yandex.ru',
-        'rambler.ru',
-        'tut.by',
-    ];
-
-    public static function getRandomEmail(string $name = null): string
-    {
-        return strtolower($name) . rand(1, 100000) . array_rand(array_flip(self::DOMAINS));
-    }
-
-    public static function createNewUser(): User
-    {
-        $name = self::getName();
-        $user = new User();
-        $user->fill([
-            'name'     => $name,
-            'email'    => TestHelper::getRandomEmail($name),
-            'password' => 'Qwerty1234',
-            'avatar'   => null
-        ])->save();
-
-        return $user;
-    }
-
-    public static function getName(): string
-    {
-        return self::getNames()[array_rand(self::getNames())];
-    }
-
     public static function getNames(): array
     {
         return [
@@ -419,5 +384,10 @@ class TestHelper
             "Abram",
             "Aubrey",
         ];
+    }
+
+    public static function randomName(): string
+    {
+        return self::getNames()[array_rand(self::getNames())];
     }
 }

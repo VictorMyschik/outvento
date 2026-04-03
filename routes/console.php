@@ -4,6 +4,7 @@ use App\Services\Catalog\Onliner\ImportOnlinerService;
 use App\Services\Conversations\ConversationService;
 use App\Services\Newsletter\NewsletterDispatchService;
 use App\Services\System\CronService;
+use App\Services\User\AuthService;
 use Illuminate\Support\Facades\Schedule;
 use Psr\Log\LoggerInterface;
 
@@ -19,3 +20,8 @@ Schedule::call(function () {
     $service = app(ConversationService::class);
     $service->deleteRemovedMessages();
 })->everyTwoHours();
+
+Schedule::call(function () {
+    $service = app(AuthService::class);
+    $service->clearExpiredTokens();
+})->everySixHours();

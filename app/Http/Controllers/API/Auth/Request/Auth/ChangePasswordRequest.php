@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\API\Auth\Request\Auth;
 
+use App\Support\Validation\PasswordRules;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Password;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(
@@ -23,7 +23,7 @@ class ChangePasswordRequest extends FormRequest
     {
         return [
             'token'    => 'required|string',
-            'password' => ['required', 'string', Password::default()],
+            'password' => ['required', 'string', PasswordRules::default()],
         ];
     }
 }

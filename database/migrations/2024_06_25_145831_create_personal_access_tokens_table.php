@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('token', 64)->unique();
             $table->text('abilities')->nullable();
             $table->timestampTz('last_used_at')->nullable();
-            $table->timestampTz('expires_at')->nullable();
+            $table->timestampTz('expires_at')->index()->nullable();
             $table->timestampTz('created_at')->useCurrent();
             $table->timestampTz('updated_at')->nullable()->useCurrentOnUpdate();
         });

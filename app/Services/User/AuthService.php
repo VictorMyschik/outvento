@@ -16,7 +16,6 @@ use App\Services\System\Enum\Language;
 use App\Services\Travel\TravelInviteRepositoryInterface;
 use App\Services\User\DTO\UserProfileDTO;
 use Illuminate\Auth\AuthenticationException;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -33,7 +32,7 @@ final readonly class AuthService
         private SystemNotificationService       $systemNotificationService,
     ) {}
 
-    public function authorize(string $loginOrEmail, string $password, bool $isRememberMe): ?string
+    public function authorize(string $loginOrEmail, string $password, bool $isRememberMe): array
     {
         $email = $loginOrEmail;
         if (filter_var($loginOrEmail, FILTER_VALIDATE_EMAIL) === false) {
@@ -44,30 +43,48 @@ final readonly class AuthService
             }
         }
 
-        $credentials = [
-            'email'    => $email,
-            'password' => $password,
-        ];
+        $user = User::where('email', $email)->first();
 
-        if (!Auth::attempt($credentials)) {
+        if (!$user || !Hash::check($password, $user->password)) {
             throw new AuthenticationException(__('auth.failed'));
         }
 
-        /** @var User $user */
-        $user = Auth::user();
-
-        return $this->issueToken($user, $isRememberMe);
+        return $this->issueTokens($user, $isRememberMe);
     }
 
-    public function createWithAuth(UserProfileDTO $dto): string
+    public function createWithAuth(UserProfileDTO $dto, bool $isRememberMe = false): array
     {
         $user = $this->create($dto);
 
-        Auth::login($user, true);
-
         $this->sendVerifyNotification($user);
 
-        return $this->issueToken($user);
+        return $this->issueTokens($user, $isRememberMe);
+    }
+
+    public function refresh(string $refreshToken): array
+    {
+        $token = \Laravel\Sanctum\PersonalAccessToken::findToken($refreshToken);
+
+        if (!$token || !str_starts_with($token->name, 'refresh-token:')) {
+            throw new AuthenticationException('Invalid refresh token');
+        }
+
+        if ($token->expires_at && $token->expires_at->isPast()) {
+            throw new AuthenticationException('Refresh token expired');
+        }
+
+        $user = $token->tokenable;
+
+        // rotation
+        $token->delete();
+
+        $sessionId = explode(':', $token->name)[1];
+
+        $user->tokens()
+            ->where('name', 'like', "%:{$sessionId}")
+            ->delete();
+
+        return $this->issueTokens($user);
     }
 
     public function sendResetPassword(string $email, Language $language): void
@@ -171,7 +188,7 @@ final readonly class AuthService
         $notification = NotificationCode::where([
             'user_id' => $user->id,
             'code'    => $code,
-            'action'  => NotificationCode::ACTION_VERIFY_REG,
+            'type'    => SystemEvent::RegistrationConfirmation->value,
         ])->first();
 
         if (!$notification) {
@@ -190,10 +207,37 @@ final readonly class AuthService
         ])->save();
     }
 
-    private function issueToken(User $user, bool $isRememberMe = false): string
+    public function issueTokens(User $user, bool $isRememberMe = false): array
     {
-        return $user->createToken(name: 'auth-token',
-            expiresAt: $isRememberMe ? now()->addDays(7) : now()->addDay(),
+        $ttl = $isRememberMe ? 60 * 60 * 24 * 7 : 60 * 60; // 7 days or 1 hour
+        $sessionId = Str::uuid()->toString();
+
+        return [
+            'accessToken'  => $this->issueAccessToken($sessionId, $user, $ttl),
+            'refreshToken' => $this->issueRefreshToken($sessionId, $user),
+            'tokenType'    => 'Bearer',
+            'expiresIn'    => $ttl,
+        ];
+    }
+
+    private function issueAccessToken(string $uid, User $user, int $ttl): string
+    {
+        return $user->createToken(
+            name: 'access-token:' . $uid,
+            expiresAt: now()->addSeconds($ttl),
         )->plainTextToken;
+    }
+
+    private function issueRefreshToken(string $uid, User $user): string
+    {
+        return $user->createToken(
+            name: 'refresh-token:' . $uid,
+            expiresAt: now()->addDays(14),
+        )->plainTextToken;
+    }
+
+    public function clearExpiredTokens(): void
+    {
+        $this->repository->clearExpiredTokens();
     }
 }

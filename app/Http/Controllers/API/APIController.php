@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 #[OA\Info(
@@ -87,7 +88,7 @@ abstract class APIController extends Controller
 
         try {
             return Language::fromCode($locale);
-        } catch (\ValueError) {
+        } catch (NotFoundHttpException) {
             throw new UnprocessableEntityHttpException('Unsupported locale value');
         }
     }

@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Controllers\API\Auth\Request\Auth;
 
 use App\Models\User;
-use App\Services\System\Enum\Language;
+use App\Support\Validation\PasswordRules;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Password;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(
@@ -30,7 +29,7 @@ class RegisterRequest extends FormRequest
         return [
             'name'     => ['required', 'string', 'max:255', Rule::unique(User::class)],
             'email'    => ['required', 'string', 'email', 'max:255', Rule::unique(User::class)],
-            'password' => ['required', 'string', Password::default(), 'confirmed'],
+            'password' => ['required', 'string', PasswordRules::default(), 'confirmed'],
             'remember' => ['sometimes', 'boolean'],
         ];
     }

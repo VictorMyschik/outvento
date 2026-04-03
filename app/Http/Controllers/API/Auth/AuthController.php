@@ -7,14 +7,16 @@ namespace App\Http\Controllers\API\Auth;
 use App\Http\Controllers\API\APIController;
 use App\Http\Controllers\API\Auth\Request\Auth\AuthenticateRequest;
 use App\Http\Controllers\API\Auth\Request\Auth\ChangePasswordRequest;
+use App\Http\Controllers\API\Auth\Request\Auth\RefreshTokenRequest;
 use App\Http\Controllers\API\Auth\Request\Auth\RegisterRequest;
 use App\Http\Controllers\API\Auth\Request\Auth\ResetPasswordRequest;
 use App\Http\Controllers\API\Auth\Request\Auth\UpdatePasswordRequest;
 use App\Http\Controllers\API\Auth\Request\Auth\VerifyRegistrationRequest;
-use App\Http\Controllers\API\Auth\Response\LoginResponse;
+use App\Http\Controllers\API\Auth\Response\AuthTokenResponse;
 use App\Services\User\AuthService;
 use App\Services\User\DTO\UserProfileDTO;
 use App\Services\User\Enum\UserRole;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,7 +33,7 @@ class AuthController extends APIController
     #[OA\Post(
         path: "/api/v1/register",
         operationId: 'register',
-        description: "Регистрация нового пользователя. Успешный ответ будет содержать Bearer токен, который нужно использовать для авторизации в других запросах.",
+        description: "Регистрация нового пользователя и возвращает access и refresh токенов. Успешный ответ будет содержать Bearer токен, который нужно использовать для авторизации в других запросах.",
         summary: "Регистрация",
         requestBody: new OA\RequestBody(
             required: true,
@@ -43,39 +45,45 @@ class AuthController extends APIController
         ],
         responses: [
             new OA\Response(
-                response: 200,
+                response: 201,
                 description: "Successful login",
                 content: new OA\JsonContent(
                     required: ["status", "content"],
                     properties: [
                         new OA\Property(property: "status", type: "string", example: "ok"),
-                        new OA\Property(property: "content", ref: "#/components/schemas/LoginResponseContent", type: "object"),
+                        new OA\Property(property: "content", ref: "#/components/schemas/AuthTokenResponse", type: "object"),
                     ],
                     type: "object"
                 )
             ),
-            new OA\Response(response: 401, description: "Unauthorized", content: new OA\JsonContent(ref: "#/components/schemas/AuthError")),
             new OA\Response(response: 422, description: "Validation error", content: new OA\JsonContent(ref: "#/components/schemas/ValidationError"))
         ]
     )]
     public function register(RegisterRequest $request): JsonResponse
     {
-        $dto = new UserProfileDTO(
+        $data = $this->authService->createWithAuth(new UserProfileDTO(
             email: $request->getEmail(),
             name: $request->getName(),
             password: $request->getPassword(),
             language: $this->getLanguage()->value,
             roles: [UserRole::User],
-        );
+        ), $request->remember());
 
-        return $this->apiResponse(['token' => $this->authService->createWithAuth($dto)]);
+        return $this->apiResponse(
+            new AuthTokenResponse(
+                accessToken: $data['accessToken'],
+                refreshToken: $data['refreshToken'],
+                tokenType: $data['tokenType'],
+                expiresIn: $data['expiresIn'],
+            ),
+            201,
+        );
     }
 
     #[OA\Post(
         path: "/api/v1/login",
         operationId: 'login',
-        description: "Авторизация происходит по email и паролю. Успешный ответ будет содержать Bearer токен, который нужно
-        использовать для авторизации в других запросах. Токен будет действителен 60 минут. Для обновления токена следует ещё раз выполнить текущий запрос.",
+        description: "Access token имеет ограниченный срок действия. Для его обновления используйте endpoint /refresh с refresh token.",
         summary: "Login",
         requestBody: new OA\RequestBody(
             required: true,
@@ -93,19 +101,66 @@ class AuthController extends APIController
                     required: ["status", "content"],
                     properties: [
                         new OA\Property(property: "status", type: "string", example: "ok"),
-                        new OA\Property(property: "content", ref: "#/components/schemas/LoginResponseContent", type: "object"),
+                        new OA\Property(property: "content", ref: "#/components/schemas/AuthTokenResponse", type: "object"),
                     ],
                     type: "object"
                 )
             ),
-            new OA\Response(response: 401, description: "Unauthorized", content: new OA\JsonContent(ref: "#/components/schemas/AuthError")),
             new OA\Response(response: 422, description: "Validation error", content: new OA\JsonContent(ref: "#/components/schemas/ValidationError"))
         ]
     )]
     public function login(AuthenticateRequest $request): JsonResponse
     {
+        $data = $this->authService->authorize($request->getLogin(), $request->getPassword(), $request->getRemember());
+
         return $this->apiResponse(
-            new LoginResponse($this->authService->authorize($request->getLogin(), $request->getPassword(), $request->getRemember())),
+            new AuthTokenResponse(
+                accessToken: $data['accessToken'],
+                refreshToken: $data['refreshToken'],
+                tokenType: $data['tokenType'],
+                expiresIn: $data['expiresIn'],
+            ),
+        );
+    }
+
+    #[OA\Post(
+        path: "/api/v1/refresh",
+        operationId: 'refresh',
+        description: "Обновление access token с помощью refresh token.",
+        summary: "Refresh token",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: "#/components/schemas/RefreshTokenRequest")
+        ),
+        tags: ["Auth"],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Successful refresh",
+                content: new OA\JsonContent(
+                    required: ["status", "content"],
+                    properties: [
+                        new OA\Property(property: "status", type: "string", example: "ok"),
+                        new OA\Property(property: "content", ref: "#/components/schemas/AuthTokenResponse"),
+                    ]
+                )
+            ),
+            new OA\Response(response: 401, description: "Invalid token"),
+        ]
+    )]
+    public function refresh(RefreshTokenRequest $request): JsonResponse
+    {
+        $data = $this->authService->refresh(
+            $request->getRefreshToken(),
+        );
+
+        return $this->apiResponse(
+            new AuthTokenResponse(
+                accessToken: $data['accessToken'],
+                refreshToken: $data['refreshToken'],
+                tokenType: $data['tokenType'],
+                expiresIn: $data['expiresIn'],
+            ),
         );
     }
 
@@ -124,9 +179,23 @@ class AuthController extends APIController
             new OA\Response(response: 401, description: "Unauthorized", content: new OA\JsonContent(ref: "#/components/schemas/AuthError"))
         ]
     )]
-    public function logout(): JsonResponse
+    public function logout(Request $request): JsonResponse
     {
-        Auth::user()?->currentAccessToken()->delete();
+        $user = $request->user('sanctum');
+
+        if (!$user) {
+            throw new AuthenticationException('unauthorized');
+        }
+
+        $accessToken = $request->bearerToken();
+
+        if ($accessToken) {
+            $tokenModel = \Laravel\Sanctum\PersonalAccessToken::findToken($accessToken);
+
+            if ($tokenModel) {
+                $tokenModel->delete();
+            }
+        }
 
         return $this->apiResponse();
     }

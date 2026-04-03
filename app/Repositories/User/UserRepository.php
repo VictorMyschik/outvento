@@ -156,4 +156,13 @@ final readonly class UserRepository extends DatabaseRepository
     {
         $this->db->table(UserLanguage::getTableName())->where('user_id', $user->id)->delete();
     }
+
+    public function clearExpiredTokens(int $limit = 1000): void
+    {
+        $this->db->table('personal_access_tokens')
+            ->whereNotNull('expires_at')
+            ->where('expires_at', '<', now())
+            ->limit($limit)
+            ->delete();
+    }
 }
