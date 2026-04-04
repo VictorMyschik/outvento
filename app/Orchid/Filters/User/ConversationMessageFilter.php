@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace App\Orchid\Filters\User;
 
 use App\Models\Conversations\ConversationMessage;
-use App\Models\Conversations\ConversationMessageAttachment;
 use App\Models\Conversations\ConversationMessageUserState;
-use App\Models\User;
 use App\Orchid\Layouts\Lego\ActionFilterPanel;
 use App\Services\Conversations\ConversationService;
 use Illuminate\Database\Eloquent\Builder;
@@ -16,7 +14,6 @@ use Orchid\Filters\Filter;
 use Orchid\Screen\Fields\DateTimer;
 use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
-use Orchid\Screen\Fields\Relation;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Layouts\Rows;
 use Orchid\Support\Facades\Layout;
@@ -30,6 +27,7 @@ class ConversationMessageFilter extends Filter
         'createdAt',
         'fileName',
         'url',
+        'email',
     ];
 
     public static function runQuery(int $conversationId, int $userId): Builder
@@ -65,6 +63,10 @@ class ConversationMessageFilter extends Filter
 
         if (!empty($input['userIds'])) {
             $builder->whereIn(ConversationMessage::TABLE . '.user_id', $input['userIds']);
+        }
+
+        if (!empty($input['email'])) {
+            $builder->where('users.email', $input['email']);
         }
 
         if (!empty($input['messageId'])) {
@@ -106,6 +108,9 @@ class ConversationMessageFilter extends Filter
                     ->value($input['userIds'])
                     ->options($userOptions)
                     ->empty('Any'),
+                Input::make('email')
+                    ->title('Email')
+                    ->value($input['email']),
                 DateTimer::make('createdAt')
                     ->title('Created At')
                     ->enableTime(false)

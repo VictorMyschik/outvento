@@ -3168,7 +3168,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _vue_shared__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vue/shared */ "./node_modules/@vue/shared/dist/shared.esm-bundler.js");
 /**
-* @vue/compiler-core v3.5.31
+* @vue/compiler-core v3.5.32
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
@@ -9182,7 +9182,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vue_compiler_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vue/compiler-core */ "./node_modules/@vue/compiler-core/dist/compiler-core.esm-bundler.js");
 /* harmony import */ var _vue_shared__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @vue/shared */ "./node_modules/@vue/shared/dist/shared.esm-bundler.js");
 /**
-* @vue/compiler-dom v3.5.31
+* @vue/compiler-dom v3.5.32
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
@@ -9937,7 +9937,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _vue_shared__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vue/shared */ "./node_modules/@vue/shared/dist/shared.esm-bundler.js");
 /**
-* @vue/reactivity v3.5.31
+* @vue/reactivity v3.5.32
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
@@ -12084,7 +12084,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vue_reactivity__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vue/reactivity */ "./node_modules/@vue/reactivity/dist/reactivity.esm-bundler.js");
 /* harmony import */ var _vue_shared__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @vue/shared */ "./node_modules/@vue/shared/dist/shared.esm-bundler.js");
 /**
-* @vue/runtime-core v3.5.31
+* @vue/runtime-core v3.5.32
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
@@ -13031,6 +13031,7 @@ function createPathGetter(ctx, path) {
   };
 }
 
+const pendingMounts = /* @__PURE__ */ new WeakMap();
 const TeleportEndKey = /* @__PURE__ */ Symbol("_vte");
 const isTeleport = (type) => type.__isTeleport;
 const isTeleportDisabled = (props) => props && (props.disabled || props.disabled === "");
@@ -13072,91 +13073,86 @@ const TeleportImpl = {
       o: { insert, querySelector, createText, createComment }
     } = internals;
     const disabled = isTeleportDisabled(n2.props);
-    let { shapeFlag, children, dynamicChildren } = n2;
+    let { dynamicChildren } = n2;
     if ( true && isHmrUpdating) {
       optimized = false;
       dynamicChildren = null;
     }
+    const mount = (vnode, container2, anchor2) => {
+      if (vnode.shapeFlag & 16) {
+        mountChildren(
+          vnode.children,
+          container2,
+          anchor2,
+          parentComponent,
+          parentSuspense,
+          namespace,
+          slotScopeIds,
+          optimized
+        );
+      }
+    };
+    const mountToTarget = (vnode = n2) => {
+      const disabled2 = isTeleportDisabled(vnode.props);
+      const target = vnode.target = resolveTarget(vnode.props, querySelector);
+      const targetAnchor = prepareAnchor(target, vnode, createText, insert);
+      if (target) {
+        if (namespace !== "svg" && isTargetSVG(target)) {
+          namespace = "svg";
+        } else if (namespace !== "mathml" && isTargetMathML(target)) {
+          namespace = "mathml";
+        }
+        if (parentComponent && parentComponent.isCE) {
+          (parentComponent.ce._teleportTargets || (parentComponent.ce._teleportTargets = /* @__PURE__ */ new Set())).add(target);
+        }
+        if (!disabled2) {
+          mount(vnode, target, targetAnchor);
+          updateCssVars(vnode, false);
+        }
+      } else if ( true && !disabled2) {
+        warn$1("Invalid Teleport target on mount:", target, `(${typeof target})`);
+      }
+    };
+    const queuePendingMount = (vnode) => {
+      const mountJob = () => {
+        if (pendingMounts.get(vnode) !== mountJob) return;
+        pendingMounts.delete(vnode);
+        if (isTeleportDisabled(vnode.props)) {
+          mount(vnode, container, vnode.anchor);
+          updateCssVars(vnode, true);
+        }
+        mountToTarget(vnode);
+      };
+      pendingMounts.set(vnode, mountJob);
+      queuePostRenderEffect(mountJob, parentSuspense);
+    };
     if (n1 == null) {
       const placeholder = n2.el =  true ? createComment("teleport start") : 0;
       const mainAnchor = n2.anchor =  true ? createComment("teleport end") : 0;
       insert(placeholder, container, anchor);
       insert(mainAnchor, container, anchor);
-      const mount = (container2, anchor2) => {
-        if (shapeFlag & 16) {
-          mountChildren(
-            children,
-            container2,
-            anchor2,
-            parentComponent,
-            parentSuspense,
-            namespace,
-            slotScopeIds,
-            optimized
-          );
-        }
-      };
-      const mountToTarget = () => {
-        const target = n2.target = resolveTarget(n2.props, querySelector);
-        const targetAnchor = prepareAnchor(target, n2, createText, insert);
-        if (target) {
-          if (namespace !== "svg" && isTargetSVG(target)) {
-            namespace = "svg";
-          } else if (namespace !== "mathml" && isTargetMathML(target)) {
-            namespace = "mathml";
-          }
-          if (parentComponent && parentComponent.isCE) {
-            (parentComponent.ce._teleportTargets || (parentComponent.ce._teleportTargets = /* @__PURE__ */ new Set())).add(target);
-          }
-          if (!disabled) {
-            mount(target, targetAnchor);
-            updateCssVars(n2, false);
-          }
-        } else if ( true && !disabled) {
-          warn$1(
-            "Invalid Teleport target on mount:",
-            target,
-            `(${typeof target})`
-          );
-        }
-      };
-      if (disabled) {
-        mount(container, mainAnchor);
-        updateCssVars(n2, true);
-      }
       if (isTeleportDeferred(n2.props) || parentSuspense && parentSuspense.pendingBranch) {
-        n2.el.__isMounted = false;
-        queuePostRenderEffect(() => {
-          if (n2.el.__isMounted !== false) return;
-          mountToTarget();
-          delete n2.el.__isMounted;
-        }, parentSuspense);
-      } else {
-        mountToTarget();
-      }
-    } else {
-      n2.el = n1.el;
-      n2.targetStart = n1.targetStart;
-      const mainAnchor = n2.anchor = n1.anchor;
-      const target = n2.target = n1.target;
-      const targetAnchor = n2.targetAnchor = n1.targetAnchor;
-      if (n1.el.__isMounted === false) {
-        queuePostRenderEffect(() => {
-          TeleportImpl.process(
-            n1,
-            n2,
-            container,
-            anchor,
-            parentComponent,
-            parentSuspense,
-            namespace,
-            slotScopeIds,
-            optimized,
-            internals
-          );
-        }, parentSuspense);
+        queuePendingMount(n2);
         return;
       }
+      if (disabled) {
+        mount(n2, container, mainAnchor);
+        updateCssVars(n2, true);
+      }
+      mountToTarget();
+    } else {
+      n2.el = n1.el;
+      const mainAnchor = n2.anchor = n1.anchor;
+      const pendingMount = pendingMounts.get(n1);
+      if (pendingMount) {
+        pendingMount.flags |= 8;
+        pendingMounts.delete(n1);
+        queuePendingMount(n2);
+        return;
+      }
+      n2.targetStart = n1.targetStart;
+      const target = n2.target = n1.target;
+      const targetAnchor = n2.targetAnchor = n1.targetAnchor;
       const wasDisabled = isTeleportDisabled(n1.props);
       const currentContainer = wasDisabled ? container : target;
       const currentAnchor = wasDisabled ? mainAnchor : targetAnchor;
@@ -13247,13 +13243,19 @@ const TeleportImpl = {
       target,
       props
     } = vnode;
+    let shouldRemove = doRemove || !isTeleportDisabled(props);
+    const pendingMount = pendingMounts.get(vnode);
+    if (pendingMount) {
+      pendingMount.flags |= 8;
+      pendingMounts.delete(vnode);
+      shouldRemove = false;
+    }
     if (target) {
       hostRemove(targetStart);
       hostRemove(targetAnchor);
     }
     doRemove && hostRemove(anchor);
     if (shapeFlag & 16) {
-      const shouldRemove = doRemove || !isTeleportDisabled(props);
       for (let i = 0; i < children.length; i++) {
         const child = children[i];
         unmount(
@@ -19457,6 +19459,7 @@ function createSuspenseBoundary(vnode, parentSuspense, parentComponent, containe
         if (instance.isUnmounted || suspense.isUnmounted || suspense.pendingId !== instance.suspenseId) {
           return;
         }
+        unsetCurrentInstance();
         instance.asyncResolved = true;
         const { vnode: vnode2 } = instance;
         if (true) {
@@ -20663,7 +20666,7 @@ function isMemoSame(cached, memo) {
   return true;
 }
 
-const version = "3.5.31";
+const version = "3.5.32";
 const warn =  true ? warn$1 : 0;
 const ErrorTypeStrings = ErrorTypeStrings$1 ;
 const devtools =  true ? devtools$1 : 0;
@@ -20874,7 +20877,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vue_runtime_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @vue/runtime-core */ "./node_modules/@vue/reactivity/dist/reactivity.esm-bundler.js");
 /* harmony import */ var _vue_runtime_core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @vue/shared */ "./node_modules/@vue/shared/dist/shared.esm-bundler.js");
 /**
-* @vue/runtime-dom v3.5.31
+* @vue/runtime-dom v3.5.32
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
@@ -22946,7 +22949,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   toTypeString: () => (/* binding */ toTypeString)
 /* harmony export */ });
 /**
-* @vue/shared v3.5.31
+* @vue/shared v3.5.32
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
@@ -43773,7 +43776,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/**
   var undefined;
 
   /** Used as the semantic version number. */
-  var VERSION = '4.17.23';
+  var VERSION = '4.18.1';
 
   /** Used as the size to enable large array optimizations. */
   var LARGE_ARRAY_SIZE = 200;
@@ -43781,7 +43784,8 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/**
   /** Error message constants. */
   var CORE_ERROR_TEXT = 'Unsupported core-js use. Try https://npms.io/search?q=ponyfill.',
       FUNC_ERROR_TEXT = 'Expected a function',
-      INVALID_TEMPL_VAR_ERROR_TEXT = 'Invalid `variable` option passed into `_.template`';
+      INVALID_TEMPL_VAR_ERROR_TEXT = 'Invalid `variable` option passed into `_.template`',
+      INVALID_TEMPL_IMPORTS_ERROR_TEXT = 'Invalid `imports` option passed into `_.template`';
 
   /** Used to stand-in for `undefined` hash values. */
   var HASH_UNDEFINED = '__lodash_hash_undefined__';
@@ -45513,6 +45517,10 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/**
      * embedded Ruby (ERB) as well as ES2015 template strings. Change the
      * following template settings to use alternative delimiters.
      *
+     * **Security:** See
+     * [threat model](https://github.com/lodash/lodash/blob/main/threat-model.md)
+     * — `_.template` is insecure and will be removed in v5.
+     *
      * @static
      * @memberOf _
      * @type {Object}
@@ -46061,7 +46069,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/**
      * @name has
      * @memberOf SetCache
      * @param {*} value The value to search for.
-     * @returns {number} Returns `true` if `value` is found, else `false`.
+     * @returns {boolean} Returns `true` if `value` is found, else `false`.
      */
     function setCacheHas(value) {
       return this.__data__.has(value);
@@ -48132,7 +48140,9 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/**
     function baseUnset(object, path) {
       path = castPath(path, object);
 
-      // Prevent prototype pollution, see: https://github.com/lodash/lodash/security/advisories/GHSA-xxjr-mmjv-4gpg
+      // Prevent prototype pollution:
+      // https://github.com/lodash/lodash/security/advisories/GHSA-xxjr-mmjv-4gpg
+      // https://github.com/lodash/lodash/security/advisories/GHSA-f23m-r3pf-42rh
       var index = -1,
           length = path.length;
 
@@ -48140,32 +48150,17 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/**
         return true;
       }
 
-      var isRootPrimitive = object == null || (typeof object !== 'object' && typeof object !== 'function');
-
       while (++index < length) {
-        var key = path[index];
-
-        // skip non-string keys (e.g., Symbols, numbers)
-        if (typeof key !== 'string') {
-          continue;
-        }
+        var key = toKey(path[index]);
 
         // Always block "__proto__" anywhere in the path if it's not expected
         if (key === '__proto__' && !hasOwnProperty.call(object, '__proto__')) {
           return false;
         }
 
-        // Block "constructor.prototype" chains
-        if (key === 'constructor' &&
-            (index + 1) < length &&
-            typeof path[index + 1] === 'string' &&
-            path[index + 1] === 'prototype') {
-
-          // Allow ONLY when the path starts at a primitive root, e.g., _.unset(0, 'constructor.prototype.a')
-          if (isRootPrimitive && index === 0) {
-            continue;
-          }
-
+        // Block constructor/prototype as non-terminal traversal keys to prevent
+        // escaping the object graph into built-in constructors and prototypes.
+        if ((key === 'constructor' || key === 'prototype') && index < length - 1) {
           return false;
         }
       }
@@ -50722,7 +50717,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/**
 
     /**
      * Creates an array with all falsey values removed. The values `false`, `null`,
-     * `0`, `""`, `undefined`, and `NaN` are falsey.
+     * `0`, `-0`, `0n`, `""`, `undefined`, and `NaN` are falsy.
      *
      * @static
      * @memberOf _
@@ -51261,7 +51256,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/**
 
       while (++index < length) {
         var pair = pairs[index];
-        result[pair[0]] = pair[1];
+        baseAssignValue(result, pair[0], pair[1]);
       }
       return result;
     }
@@ -57921,6 +57916,8 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/**
      * **Note:** JavaScript follows the IEEE-754 standard for resolving
      * floating-point values which can produce unexpected results.
      *
+     * **Note:** If `lower` is greater than `upper`, the values are swapped.
+     *
      * @static
      * @memberOf _
      * @since 0.7.0
@@ -57934,8 +57931,15 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/**
      * _.random(0, 5);
      * // => an integer between 0 and 5
      *
+     * // when lower is greater than upper the values are swapped
+     * _.random(5, 0);
+     * // => an integer between 0 and 5
+     *
      * _.random(5);
      * // => also an integer between 0 and 5
+     *
+     * _.random(-5);
+     * // => an integer between -5 and 0
      *
      * _.random(5, true);
      * // => a floating-point number between 0 and 5
@@ -58538,6 +58542,10 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/**
      * properties may be accessed as free variables in the template. If a setting
      * object is given, it takes precedence over `_.templateSettings` values.
      *
+     * **Security:** `_.template` is insecure and should not be used. It will be
+     * removed in Lodash v5. Avoid untrusted input. See
+     * [threat model](https://github.com/lodash/lodash/blob/main/threat-model.md).
+     *
      * **Note:** In the development build `_.template` utilizes
      * [sourceURLs](http://www.html5rocks.com/en/tutorials/developertools/sourcemaps/#toc-sourceurl)
      * for easier debugging.
@@ -58645,11 +58653,17 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/**
         options = undefined;
       }
       string = toString(string);
-      options = assignInWith({}, options, settings, customDefaultsAssignIn);
+      options = assignWith({}, options, settings, customDefaultsAssignIn);
 
-      var imports = assignInWith({}, options.imports, settings.imports, customDefaultsAssignIn),
+      var imports = assignWith({}, options.imports, settings.imports, customDefaultsAssignIn),
           importsKeys = keys(imports),
           importsValues = baseValues(imports, importsKeys);
+
+      arrayEach(importsKeys, function(key) {
+        if (reForbiddenIdentifierChars.test(key)) {
+          throw new Error(INVALID_TEMPL_IMPORTS_ERROR_TEXT);
+        }
+      });
 
       var isEscaping,
           isEvaluating,
@@ -64054,7 +64068,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vue_compiler_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @vue/compiler-dom */ "./node_modules/@vue/compiler-dom/dist/compiler-dom.esm-bundler.js");
 /* harmony import */ var _vue_shared__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @vue/shared */ "./node_modules/@vue/shared/dist/shared.esm-bundler.js");
 /**
-* vue v3.5.31
+* vue v3.5.32
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/

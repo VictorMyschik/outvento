@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services\Conversations\Enum;
 
-enum Role: string
+enum Visibility: string
 {
-    case User = 'user';
-    case Owner = 'owner';
-    case Admin = 'admin';
+    case Private = 'private';
+    case Searchable = 'searchable';
+    case Public = 'public';
 
     public static function getSelectList(): array
     {
@@ -21,9 +21,9 @@ enum Role: string
     public function getLabel(): string
     {
         return match ($this) {
-            self::User => 'User',
-            self::Admin => 'Admin',
-            self::Owner => 'Owner',
+            self::Private => 'Private',
+            self::Searchable => 'Searchable',
+            self::Public => 'Public',
         };
     }
 }

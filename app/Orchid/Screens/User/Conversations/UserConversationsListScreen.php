@@ -6,13 +6,12 @@ namespace App\Orchid\Screens\User\Conversations;
 
 use App\Models\User;
 use App\Orchid\Filters\User\ConversationFilter;
-use App\Orchid\Layouts\User\Conversations\AddConversationLayout;
+use App\Orchid\Layouts\User\Conversations\AddPersonalConversationLayout;
 use App\Orchid\Layouts\User\Conversations\ConversationListLayout;
 use App\Orchid\Layouts\User\Conversations\MessageEditLayout;
 use App\Orchid\Screens\User\UserBaseScreen;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Fields\Group;
@@ -58,7 +57,7 @@ class UserConversationsListScreen extends UserBaseScreen
             ConversationListLayout::class,
             Layout::rows($this->getActionBottomLayout()),
 
-            Layout::modal('add_conversation_modal', AddConversationLayout::class),
+            Layout::modal('add_conversation_modal', AddPersonalConversationLayout::class),
             Layout::modal('message_modal', MessageEditLayout::class),
         ];
     }
@@ -67,11 +66,6 @@ class UserConversationsListScreen extends UserBaseScreen
     {
         return [
             Group::make([
-                Button::make('Purge')
-                    ->class('mr-btn-danger pull-right')
-                    ->icon('trash')
-                    ->method('purgeUserMessages')
-                    ->confirm('Are you sure you want to delete all messages for this user? This action cannot be undone.'),
             ])->alignCenter()
         ];
     }

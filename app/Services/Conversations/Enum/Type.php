@@ -8,6 +8,7 @@ enum Type: string
 {
     case Private = 'private';
     case Group = 'group';
+    case Public = 'public';
 
     public static function getSelectList(): array
     {
@@ -17,11 +18,20 @@ enum Type: string
         );
     }
 
+    public static function getSelectGroupList(): array
+    {
+        return [
+            self::Group->value  => self::Group->getLabel(),
+            self::Public->value => self::Public->getLabel(),
+        ];
+    }
+
     public function getLabel(): string
     {
         return match ($this) {
             self::Private => 'Private',
             self::Group => 'Group',
+            self::Public => 'Public',
         };
     }
 }

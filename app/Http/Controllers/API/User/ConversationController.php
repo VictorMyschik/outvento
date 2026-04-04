@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\API\User;
 
 use App\Http\Controllers\API\APIController;
+use App\Models\Conversations\Conversation;
 use App\Models\Conversations\ConversationMessageAttachment;
 use App\Services\Conversations\ConversationFileService;
 use Illuminate\Http\Request;
@@ -58,8 +59,17 @@ class ConversationController extends APIController
         $file = ConversationMessageAttachment::loadBy($fileId);
 
         return Response::file(Storage::disk('conversations')->path($file->path), [
-            'Content-Type' => $file->mime_type,
+            'Content-Type'        => $file->mime_type,
             'Content-Disposition' => 'inline; filename="' . $file->name . '"',
         ]);
+    }
+
+    public function getConversationAvatar(Request $request, Conversation $conversation)
+    {
+        if (!$conversation->avatar) {
+            return $this->service->getDefaultAvatar();
+        }
+
+        return $this->service->showAvatar($conversation, $request->user());
     }
 }

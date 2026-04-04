@@ -143,7 +143,6 @@ Route::screen('/profiles/{user}/travels', UserTravelListScreen::class)->name('pr
 Route::screen('/profiles/{user}/conversations', UserConversationsListScreen::class)->name('profiles.conversations.list');
 Route::screen('/profiles/{user}/group-conversations', UserGroupConversationsListScreen::class)->name('profiles.group-conversations.list');
 Route::screen('/profiles/{user}/conversation/{conversation}/details', UserConversationDetailsScreen::class)->name('profiles.messages');
-Route::screen('/profiles/{user}/group-conversation/{conversation}/details', UserGroupConversationDetailsScreen::class)->name('profiles.group-messages');
 Route::screen('/profiles/{user}/travel/{travel}/details', UserTravelDetailsScreen::class)->name('profiles.travel.details');
 Route::screen('/profiles/communications/list', UserCommunicateScreen::class)->name('profiles.communication.list');
 

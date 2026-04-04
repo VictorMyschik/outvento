@@ -6,11 +6,15 @@ namespace App\Orchid\Screens\User\Conversations;
 
 use App\Models\User;
 use App\Orchid\Filters\User\GroupConversationFilter;
-use App\Orchid\Layouts\User\Conversations\AddConversationLayout;
 use App\Orchid\Layouts\User\Conversations\AddGroupConversationLayout;
+use App\Orchid\Layouts\User\Conversations\AddPersonalConversationLayout;
 use App\Orchid\Layouts\User\Conversations\GroupConversationListLayout;
 use App\Orchid\Layouts\User\Conversations\MessageEditLayout;
 use App\Orchid\Screens\User\UserBaseScreen;
+use App\Services\Conversations\DTO\GroupConversationDto;
+use App\Services\Conversations\Enum\JoinPolicy;
+use App\Services\Conversations\Enum\Status;
+use App\Services\Conversations\Enum\Type;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Link;
@@ -44,7 +48,7 @@ class UserGroupConversationsListScreen extends UserBaseScreen
                 ->icon('plus')
                 ->class('mr-btn-success pull-left')
                 ->modal('add_group_conversation_modal')
-                ->modalTitle('Add User Conversation')
+                ->modalTitle('Add Group User Conversation')
                 ->method('saveGroupConversation'),
             Link::make('Назад')->class('mr-btn mr-btn-route')->icon('arrow-up')->route('profiles.details', ['user' => $this->user->id]),
         ];
@@ -56,7 +60,7 @@ class UserGroupConversationsListScreen extends UserBaseScreen
             GroupConversationFilter::displayFilterCard(request()),
             GroupConversationListLayout::class,
 
-            Layout::modal('add_conversation_modal', AddConversationLayout::class),
+            Layout::modal('add_conversation_modal', AddPersonalConversationLayout::class),
             Layout::modal('add_group_conversation_modal', AddGroupConversationLayout::class),
             Layout::modal('message_modal', MessageEditLayout::class),
         ];
@@ -74,10 +78,23 @@ class UserGroupConversationsListScreen extends UserBaseScreen
 
     public function saveGroupConversation(Request $request): RedirectResponse
     {
+        $userIds = (array)$request->input('userIds');
+
+        foreach ($userIds as $key => $userId) {
+            if ($userId === $this->user->id) {
+                unset($userIds[$key]);
+            }
+        }
+
         $id = $this->conversations->addGroupConversation(
-            ownerId: $this->user->id,
-            userIds: (array)$request->input('userIds'),
-            title: $request->input('title'),
+            new GroupConversationDto(
+                ownerId: $this->user->id,
+                userIds: (array)$request->input('userIds'),
+                title: $request->input('title'),
+                type: Type::from((string)$request->input('type')),
+                joinPolicy: JoinPolicy::from($request->input('joinPolicy')),
+                status: Status::Active,
+            ),
         );
 
         return redirect()->route('profiles.messages', ['user' => $this->user->id, 'conversation' => $id]);

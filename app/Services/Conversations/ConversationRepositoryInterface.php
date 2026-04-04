@@ -6,13 +6,21 @@ namespace App\Services\Conversations;
 
 use App\Models\Conversations\Conversation;
 use App\Models\Conversations\ConversationMessage;
+use App\Services\Conversations\Enum\JoinPolicy;
 use App\Services\Conversations\Enum\Role;
+use App\Services\Conversations\Enum\Status;
 use App\Services\Conversations\Enum\Type;
 use stdClass;
 
 interface ConversationRepositoryInterface
 {
     public function getConversationUserInfo(int $conversationId, int $userId): ?stdClass;
+
+    public function updateConversation(int $conversationId, array $data): void;
+
+    public function addToPinned(int $conversationId, string $messageId, int $userId): void;
+
+    public function deleteAllPinnedMessages(int $conversationId): void;
 
     public function getConversationUsers(int $conversationId): array;
 
@@ -24,9 +32,11 @@ interface ConversationRepositoryInterface
 
     public function getConversationById(int $conversationId): ?Conversation;
 
-    public function addConversation(Type $type, ?string $title): int;
+    public function addConversation(Type $type, ?string $title, JoinPolicy $policy): int;
 
-    public function addUserToConversation(int $conversationId, int $userId, Role $role): void;
+    public function addUserToConversation(int $conversationId, int $userId, Role $role, Status $status): void;
+
+    public function updateConversationUser(int $conversationId, int $userId, Role $role, Status $status): void;
 
     public function addMessage(int $conversationId, int $userId, ?string $text, ?string $parentId): string;
 

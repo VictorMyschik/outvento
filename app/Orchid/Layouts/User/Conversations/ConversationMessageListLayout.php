@@ -48,6 +48,10 @@ class ConversationMessageListLayout extends Table
                             ->modalTitle('Edit Message')
                             ->method('editMessage')
                             ->asyncParameters(['messageId' => $message->id, 'parentId' => null]),
+                        Button::make('add to pinned')
+                            ->icon('bs.plus')
+                            ->confirm('Are you sure you want to add this message to pinned? It will be visible for all conversation members.')
+                            ->method('addToPinned', ['messageId' => $message->id]),
                         Button::make('for all')
                             ->icon('bs.trash3')
                             ->confirm('Are you sure you want to delete this message?')

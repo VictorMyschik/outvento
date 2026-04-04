@@ -11,10 +11,10 @@ use App\Models\TravelInvite;
 use App\Models\User;
 use App\Models\UserInfo\Communication;
 use App\Models\UserNotification;
+use App\Orchid\Layouts\Lego\AvatarUploadLayout;
 use App\Orchid\Layouts\Travel\TravelLocationEditLayout;
 use App\Orchid\Layouts\User\InternalNotificationEditLayout;
 use App\Orchid\Layouts\User\InternalNotificationShowLayout;
-use App\Orchid\Layouts\User\Profile\AvatarUploadLayout;
 use App\Orchid\Layouts\User\Profile\UserLanguagesEditLayout;
 use App\Orchid\Layouts\User\Profile\UserLocationLayout;
 use App\Orchid\Layouts\User\Profile\UserNotificationSettingsEditLayout;
@@ -767,7 +767,7 @@ class ProfileScreen extends UserBaseScreen
             ])->autoWidth(),
         ];
 
-        $group[] = ViewField::make('#')->view('admin.users.avatar')->value(['path' => $this->user->getAvatar()]);
+        $group[] = ViewField::make('#')->view('admin.avatar')->value(['path' => $this->user->getAvatar()]);
 
         return array_merge($photoTab, [ViewField::make('')->view('space')], $group);
     }

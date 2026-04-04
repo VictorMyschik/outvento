@@ -19,7 +19,7 @@ class GroupConversationListLayout extends Table
             TD::make('conversation_id', 'Conversations ID')->render(function (ConversationUser $conversation) {
                 return Link::make((string)$conversation->conversation_id)
                     ->stretched()
-                    ->route('profiles.group-messages', ['user' => $this->query->get('user'), 'conversation' => $conversation->conversation_id]);
+                    ->route('profiles.messages', ['user' => $this->query->get('user'), 'conversation' => $conversation->conversation_id]);
             }),
             TD::make('title', 'Title')->sort(),
             TD::make('created_at', 'Date')->render(function (ConversationUser $conversation) {

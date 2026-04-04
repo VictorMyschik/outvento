@@ -8,12 +8,13 @@ use App\Models\User;
 use Orchid\Screen\Fields\Relation;
 use Orchid\Screen\Layouts\Rows;
 
-class AddConversationLayout extends Rows
+class AddPersonalConversationLayout extends Rows
 {
     public function fields(): array
     {
         return [
             Relation::make('userId')
+                ->required()
                 ->fromModel(User::class, 'name', 'id')
                 ->value(request()->get('userId'))
                 ->title('User'),

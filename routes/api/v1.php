@@ -25,6 +25,7 @@ Route::middleware('optional:sanctum')->group(function () {
 
     /// Users profile
     Route::get('/user/{user}/avatar', [UsersController::class, 'getUserAvatar'])->name('user.avatar');
+    Route::get('/conversation/{conversation}/avatar', [ConversationController::class, 'getConversationAvatar'])->name('conversation.avatar');
     Route::get('/travel/{travel}/image/{media}', [TravelController::class, 'getTravelAvatar'])->name('travel.image');
 });
 

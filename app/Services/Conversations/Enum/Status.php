@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Services\Conversations\Enum;
 
-enum Role: string
+enum Status: string
 {
-    case User = 'user';
-    case Owner = 'owner';
-    case Admin = 'admin';
+    case Active = 'active';
+    case Invited = 'invited';
+    case Requested = 'requested';
+    case Banned = 'banned';
+    case Left = 'left';
 
     public static function getSelectList(): array
     {
@@ -21,9 +23,11 @@ enum Role: string
     public function getLabel(): string
     {
         return match ($this) {
-            self::User => 'User',
-            self::Admin => 'Admin',
-            self::Owner => 'Owner',
+            self::Active => 'Active',
+            self::Invited => 'Invited',
+            self::Requested => 'Requested',
+            self::Banned => 'Banned',
+            self::Left => 'Left',
         };
     }
 }

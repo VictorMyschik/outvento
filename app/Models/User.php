@@ -91,6 +91,8 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
         'permissions',
         'created_at',
         'updated_at',
+        'status',
+        'role',
     ];
 
     public function getRolesDisplay(): string

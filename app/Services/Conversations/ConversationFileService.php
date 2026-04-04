@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace App\Services\Conversations;
 
+use App\Models\Conversations\Conversation;
+use App\Services\Conversations\Enum\Type;
 use App\Services\Upload\UploadBaseService;
 use Exception;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use stdClass;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipArchive;
 
@@ -28,6 +32,15 @@ final readonly class ConversationFileService extends UploadBaseService
         if ($file->getSize() > 1000 * 1024 * 1024) {
             throw new InvalidArgumentException('File size exceeds the maximum allowed size of 100 MB.');
         }
+    }
+
+    public function saveAvatar(int $conversationId, UploadedFile $file): string
+    {
+        $path = $this->getPath($conversationId, 'avatar');
+        $filename = 'avatar' . '.' . $file->getClientOriginalExtension();
+        $this->filesystem->putFileAs($path, $file, $filename);
+
+        return $path . '/' . $filename;
     }
 
     private function uploadFile(UploadedFile $file, string $filePathWithName): void
@@ -66,6 +79,7 @@ final readonly class ConversationFileService extends UploadBaseService
     {
         return $this->filesystem->delete($filePathWithName);
     }
+
 
     private function getPath(int $objectId, string $fileName): string
     {
@@ -134,5 +148,38 @@ final readonly class ConversationFileService extends UploadBaseService
     public function getMessageFiles(string $messageId): array
     {
         return $this->repository->getMessageFiles($messageId);
+    }
+
+    public function showAvatar(Conversation $conversation): ?BinaryFileResponse
+    {
+        switch ($conversation->getType()) {
+            case Type::Group:
+            case Type::Public:
+                return $this->getAvatarExt($conversation);
+            case Type::Private:
+                return null;
+        }
+
+        return null;
+    }
+
+    private function getAvatarExt(Conversation $conversation): BinaryFileResponse
+    {
+        if ($conversation->avatar) {
+            return Response::file(Storage::disk('conversations')->path($conversation->avatar), [
+                'Content-Type'        => mime_content_type(Storage::disk('conversations')->path($conversation->avatar)),
+                'Content-Disposition' => 'inline; filename="' . basename($conversation->avatar) . '"',
+            ]);
+        }
+
+        return $this->getDefaultAvatar();
+    }
+
+    public function getDefaultAvatar(): BinaryFileResponse
+    {
+        return Response::file(Storage::disk('public')->path('/images/conversations/chat_blank.webp'), [
+            'Content-Type'        => 'image/webp',
+            'Content-Disposition' => 'inline; filename="chat_blank.webp"',
+        ]);
     }
 }

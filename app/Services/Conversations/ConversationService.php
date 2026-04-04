@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace App\Services\Conversations;
 
+use App\Models\Conversations\Conversation;
 use App\Models\Conversations\ConversationMessage;
+use App\Services\Conversations\DTO\GroupConversationDto;
+use App\Services\Conversations\Enum\JoinPolicy;
 use App\Services\Conversations\Enum\Role;
+use App\Services\Conversations\Enum\Status;
 use App\Services\Conversations\Enum\Type;
+use Illuminate\Http\UploadedFile;
 use Psr\Log\LoggerInterface;
 use stdClass;
 
@@ -28,6 +33,11 @@ final readonly class ConversationService
         }
     }
 
+    public function updateConversation(int $id, array $data): void
+    {
+        $this->repository->updateConversation($id, $data);
+    }
+
     public function getConversationUsers(int $conversationId): array
     {
         return $this->repository->getConversationUsers($conversationId);
@@ -38,25 +48,76 @@ final readonly class ConversationService
         return $this->repository->getConversationUserInfo($conversationId, $userId);
     }
 
-    public function addGroupConversation(int $ownerId, array $userIds, string $title): int
+    public function removeAvatar(Conversation $conversation): void
     {
-        $id = $this->repository->addConversation(Type::Group, $title);
+        $result = $this->uploadService->deleteFile($conversation->avatar);
 
-        $this->repository->addUserToConversation($id, $ownerId, Role::Admin);
+        if ($result) {
+            $this->repository->updateConversation($conversation->id, ['avatar' => null]);
+        }
+    }
 
-        foreach ($userIds as $userId) {
-            if ((int)$userId === $ownerId) {
+    public function addAvatar(int $conversationId, UploadedFile $file): void
+    {
+        $path = $this->uploadService->saveAvatar($conversationId, $file);
+        $this->repository->updateConversation($conversationId, ['avatar' => $path]);
+    }
+
+    public function addToPinned(int $conversationId, string $messageId, int $userId): void
+    {
+        $this->repository->addToPinned($conversationId, $messageId, $userId);
+    }
+
+    public function deleteAllPinnedMessages(int $conversationId): void
+    {
+        $this->repository->deleteAllPinnedMessages($conversationId);
+    }
+
+    public function addGroupConversation(GroupConversationDto $dto): int
+    {
+        $id = $this->repository->addConversation($dto->type, $dto->title, $dto->joinPolicy);
+
+        // Add Owner
+        $this->repository->addUserToConversation($id, $dto->ownerId, Role::Owner, $dto->status);
+
+        foreach ($dto->userIds as $userId) {
+            if ((int)$userId === $dto->ownerId) {
                 continue;
             }
-            $this->repository->addUserToConversation($id, (int)$userId, Role::User);
+
+            // Add users
+            $this->repository->addUserToConversation($id, (int)$userId, Role::User, $dto->status);
         }
 
         return $id;
     }
 
-    public function addUserToGroupConversation(int $conversationId, int $userId, Role $role): void
+    public function addUsersToGroupConversation(int $conversationId, array $userIds, Role $role, Status $status): void
     {
-        $this->repository->addUserToConversation($conversationId, $userId, $role);
+        foreach ($this->getConversationUsers($conversationId) as $user) {
+            if (in_array($user->user_id, $userIds)) {
+                unset($userIds[array_search($user->user_id, $userIds)]);
+            }
+        }
+
+        foreach ($userIds as $userId) {
+            $this->repository->addUserToConversation(
+                conversationId: $conversationId,
+                userId: (int)$userId,
+                role: $role,
+                status: $status,
+            );
+        }
+    }
+
+    public function updateUserConversation(int $conversationId, int $userId, Role $role, Status $status): void
+    {
+        $this->repository->updateConversationUser(
+            conversationId: $conversationId,
+            userId: (int)$userId,
+            role: $role,
+            status: $status,
+        );
     }
 
     public function addPersonalConversation(int $ownerId, int $userId): int
@@ -64,10 +125,10 @@ final readonly class ConversationService
         $id = $this->repository->getPersonalConversationByUsers($ownerId, $userId);
 
         if (!$id) {
-            $id = $this->repository->addConversation(Type::Private, null);
+            $id = $this->repository->addConversation(Type::Private, null, JoinPolicy::Disable);
 
-            $this->repository->addUserToConversation($id, $ownerId, Role::User);
-            $this->repository->addUserToConversation($id, $userId, Role::User);
+            $this->repository->addUserToConversation($id, $ownerId, Role::User, Status::Active);
+            $this->repository->addUserToConversation($id, $userId, Role::User, Status::Active);
         }
 
         return $id;
@@ -75,7 +136,7 @@ final readonly class ConversationService
 
     public function setRole(int $conversationId, int $userId, Role $role): void
     {
-        $this->repository->addUserToConversation($conversationId, $userId, $role);
+        $this->repository->addUserToConversation($conversationId, $userId, $role, Status::Active);
     }
 
     public function addMessage(int $conversationId, int $userId, ?string $text, ?string $parentId, array $files = []): void

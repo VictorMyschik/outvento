@@ -35,7 +35,7 @@ class JobsListLayout extends Table
             TD::make('available_at', 'Available')->sort()->render(fn(Job $job) => $job->available_at?->format('H:i:s d.m.Y')),
             TD::make('created_at', 'Created')->sort()->render(fn(Job $job) => $job->created_at?->format('H:i:s d.m.Y')),
 
-            TD::make('#', 'Действия')->render(function (Job $job) {
+            TD::make('#', '#')->render(function (Job $job) {
                 return DropDown::make()->icon('options-vertical')->list([
                 /*    Button::make('run')
                         ->icon('play')

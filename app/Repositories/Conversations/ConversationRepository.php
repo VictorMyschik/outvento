@@ -13,7 +13,9 @@ use App\Models\Conversations\ConversationUser;
 use App\Models\User;
 use App\Repositories\DatabaseRepository;
 use App\Services\Conversations\ConversationRepositoryInterface;
+use App\Services\Conversations\Enum\JoinPolicy;
 use App\Services\Conversations\Enum\Role;
+use App\Services\Conversations\Enum\Status;
 use App\Services\Conversations\Enum\Type;
 use App\Services\Conversations\Exceptions\ConversationMessageNotFoundException;
 use stdClass;
@@ -40,22 +42,35 @@ final readonly class ConversationRepository extends DatabaseRepository implement
             ->value('conversation_id');
     }
 
-    public function addConversation(Type $type, ?string $title): int
+    public function addConversation(Type $type, ?string $title, JoinPolicy $policy): int
     {
         return $this->db->table(Conversation::getTableName())->insertGetId([
-            'type'  => $type->value,
-            'title' => $title,
+            'type'        => $type->value,
+            'title'       => $title,
+            'join_policy' => $policy->value,
         ]);
     }
 
-    public function addUserToConversation(int $conversationId, int $userId, Role $role): void
+    public function addUserToConversation(int $conversationId, int $userId, Role $role, Status $status): void
     {
         $this->db->table(ConversationUser::TABLE)->updateOrInsert([
             'conversation_id' => $conversationId,
             'user_id'         => $userId,
+            'status'          => $status->value,
         ], [
             'role' => $role->value
         ]);
+    }
+
+    public function updateConversationUser(int $conversationId, int $userId, Role $role, Status $status): void
+    {
+        $this->db->table(ConversationUser::TABLE)
+            ->where('conversation_id', $conversationId)
+            ->where('user_id', $userId)
+            ->update([
+                'status' => $status->value,
+                'role'   => $role->value
+            ]);
     }
 
     public function addMessage(int $conversationId, int $userId, ?string $text, ?string $parentId): string
@@ -391,5 +406,24 @@ final readonly class ConversationRepository extends DatabaseRepository implement
     public function deleteConversation(int $conversationId): void
     {
         $this->db->table(Conversation::TABLE)->where('id', $conversationId)->delete();
+    }
+
+    public function updateConversation(int $conversationId, array $data): void
+    {
+        $this->db->table(Conversation::TABLE)->where('id', $conversationId)->update($data);
+    }
+
+    public function addToPinned(int $conversationId, string $messageId, int $userId): void
+    {
+        $this->db->table('conversation_pinned_messages')->updateOrInsert([
+            'conversation_id' => $conversationId,
+            'message_id'      => $messageId,
+            'user_id'         => $userId,
+        ]);
+    }
+
+    public function deleteAllPinnedMessages(int $conversationId): void
+    {
+        $this->db->table('conversation_pinned_messages')->where('conversation_id', $conversationId)->delete();
     }
 }
