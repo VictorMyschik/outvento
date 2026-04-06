@@ -207,15 +207,15 @@ final readonly class ConversationRepository extends DatabaseRepository implement
     public function getConversationUsers(int $conversationId): array
     {
         return User::join(ConversationUser::TABLE, function ($join) use ($conversationId) {
-            $join->on(ConversationUser::TABLE . '.user_id', '=', User::getTableName() . '.id')->where(ConversationUser::TABLE . '.conversation_id', $conversationId);
+            $join->on(ConversationUser::TABLE . '.user_id', '=', User::TABLE . '.id')->where(ConversationUser::TABLE . '.conversation_id', $conversationId);
         })->get()->all();
     }
 
     public function getConversationAttachmentsSizeByUsers(int $conversationId): array
     {
         return $this->db->table(ConversationUser::TABLE)
-            ->join(User::getTableName(), function ($join) {
-                $join->on(User::getTableName() . '.id', '=', ConversationUser::TABLE . '.user_id');
+            ->join(User::TABLE, function ($join) {
+                $join->on(User::TABLE . '.id', '=', ConversationUser::TABLE . '.user_id');
             })
             ->leftJoin(ConversationMessageAttachment::TABLE, function ($join) use ($conversationId) {
                 $join->on(ConversationUser::TABLE . '.conversation_id', '=', ConversationMessageAttachment::TABLE . '.conversation_id')

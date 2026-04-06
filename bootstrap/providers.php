@@ -1,6 +1,7 @@
 <?php
 
 use App\Orchid\Providers\TableServiceProvider;
+use App\Providers\AlbumProvider;
 use App\Providers\CatalogServiceProvider;
 use App\Providers\ConstructorProvider;
 use App\Providers\ConversationProvider;
@@ -35,4 +36,5 @@ return [
     FaqProvider::class,
     LocationProvider::class,
     ConversationProvider::class,
+    AlbumProvider::class,
 ];

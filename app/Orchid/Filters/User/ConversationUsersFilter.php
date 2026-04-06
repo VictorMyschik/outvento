@@ -19,9 +19,9 @@ class ConversationUsersFilter extends Filter
     public static function runQuery(int $conversationId): Builder
     {
         return User::filters([self::class])
-            ->join(ConversationUser::TABLE, 'user_id', '=', User::getTableName() . '.id')
+            ->join(ConversationUser::TABLE, 'user_id', '=', User::TABLE . '.id')
             ->where(ConversationUser::TABLE . '.conversation_id', $conversationId)
-            ->select(User::getTableName() . '.*');
+            ->select(User::TABLE . '.*');
     }
 
     public function run(Builder $builder): Builder
@@ -29,7 +29,7 @@ class ConversationUsersFilter extends Filter
         $input = $this->request->all(self::FIELDS);
 
         if (!empty($input['userIds'])) {
-            $builder->whereIn(User::getTableName() . '.id', $input['userIds']);
+            $builder->whereIn(User::TABLE . '.id', $input['userIds']);
         }
 
         if (!empty($input['email'])) {

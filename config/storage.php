@@ -21,4 +21,8 @@ return [
         'disk'             => 'conversations',
         'max_upload_files' => 10,
     ],
+    'albums'        => [
+        'disk'             => 'albums',
+        'max_upload_files' => 10,
+    ],
 ];

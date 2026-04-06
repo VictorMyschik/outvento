@@ -39,7 +39,7 @@ class UserCommunicationFilter extends Filter
     public static function runQuery(): Builder
     {
         $query = Communication::filters([self::class])
-            ->join(User::getTableName(), Communication::getTableName() . '.user_id', '=', 'users.id');
+            ->join(User::TABLE, Communication::getTableName() . '.user_id', '=', 'users.id');
 
         $query->selectRaw(implode(', ', [
                 'communications.*',

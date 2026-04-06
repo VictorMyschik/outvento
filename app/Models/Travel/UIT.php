@@ -20,7 +20,9 @@ class UIT extends ORM
     use UserFieldTrait;
     use TravelFieldTrait;
 
-    protected $table = 'uit';
+    public const string TABLE = 'uit';
+
+    protected $table = self::TABLE;
 
     protected array $allowedSorts = [
         'travel_id',

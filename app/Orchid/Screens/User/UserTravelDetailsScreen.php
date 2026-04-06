@@ -329,22 +329,55 @@ class UserTravelDetailsScreen extends UserBaseScreen
             'Resources' => Layout::rows($this->getResourceTab()),
             'Points'    => Layout::rows($this->getTravelPointsLayout()),
             'Users'     => Layout::rows($this->getUITActiveListLayout()),
-            'Invites'   => Layout::rows([
-                Group::make([
-                    ViewField::make('')->view('admin.h6')->value('<b>Пригласить участников: </b>'),
-                    Link::make('QR code')->class('mr-btn-success')->icon('qrcode')->target('_blank')
-                        ->href('https://api.qrserver.com/v1/create-qr-code/?data=' . $this->travelService->getPublicUrl($this->travel) . '&amp;size=200x200'),
-
-                    ModalToggle::make('by Email')
-                        ->icon('envelope')
-                        ->class('mr-btn-success')
-                        ->modal('new_invite_email_modal')
-                        ->modalTitle('Create invite')
-                        ->method('createInvite'),
-                ])->autoWidth(),
-                //new InviteListLayout()
-            ]),
+            'Invites'   => Layout::rows($this->getInvitesTabLayout()),
+            'Albums'    => Layout::rows($this->getAlbumsTabLayout()),
         ]);
+    }
+
+    private function getAlbumsTabLayout(): array
+    {
+        $rows['header'] = ['User ID', 'Name', 'Title', '#'];
+
+        foreach ($this->albumService->getAlbumsForTravel($this->travel) as $item) {
+
+            $rowBtns = [
+                Button::make('delete')
+                    ->icon('bs.trash3')
+                    ->confirm('Delink album from this travel?')
+                    ->method('delinkAlbumTravel', ['albumId' => $item->id]),
+            ];
+
+            $link = route('profiles.albums.details', ['user' => $item->user_id, 'album' => $item->id]);
+
+            $rows['body'][] = [
+                'User ID' => $item->user_id,
+                'Name'    => $item->user_name,
+                'Title'   => Link::make($item->title)->href($link)->target('_blank'),
+                '#'       => DropDown::make()->icon('options-vertical')->list($rowBtns)->render(),
+            ];
+        }
+        $out[] = ViewField::make('')->view('admin.table')->value($rows);
+
+        return $out;
+    }
+
+    private function getInvitesTabLayout(): array
+    {
+        return [
+            Group::make([
+                ViewField::make('')->view('admin.h6')->value('<b>Пригласить участников: </b>'),
+                Link::make('QR code')->class('mr-btn-success')->icon('qrcode')->target('_blank')
+                    ->href('https://api.qrserver.com/v1/create-qr-code/?data=' . $this->travelService->getPublicUrl($this->travel) . '&amp;size=200x200'),
+
+                ModalToggle::make('by Email')
+                    ->icon('envelope')
+                    ->class('mr-btn-success')
+                    ->modal('new_invite_email_modal')
+                    ->modalTitle('Create invite')
+                    ->method('createInvite'),
+            ])->autoWidth(),
+            //new InviteListLayout()
+        ];
     }
 
     public function getResourceTab(): array
@@ -409,6 +442,11 @@ class UserTravelDetailsScreen extends UserBaseScreen
             ViewField::make('')->view('hr'),
             ViewField::make('')->view('admin.travel.resources')->value($list),
         ];
+    }
+
+    public function delinkAlbumTravel(int $albumId): void
+    {
+        $this->albumService->delinkAlbumTravel($this->travel->id, $albumId);
     }
 
     public function addTravelLink(Request $request, int $resourceId): void

@@ -29,7 +29,6 @@ class TravelListLayout extends Table
             TD::make('status', 'Status')->render(fn(Travel $travel) => $travel->getStatus()->getLabel())->sort(),
             TD::make('members', 'Max members')->sort(),
             TD::make('user_id', 'User')->render(fn(Travel $travel) => $travel->getOwner()->name),
-            TD::make('', 'Activities')->render(fn(Travel $travel) => $travel->getActivities()->getName(Language::RU)),
 
             TD::make(__('Actions'))
                 ->align(TD::ALIGN_CENTER)

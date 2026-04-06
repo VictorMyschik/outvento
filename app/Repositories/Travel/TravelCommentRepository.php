@@ -23,14 +23,14 @@ final readonly class TravelCommentRepository extends DatabaseRepository
     public function getTravelComments(int $travelId): array
     {
         return $this->db->table(TravelComment::getTableName())
-            ->join(User::getTableName(), User::getTableName() . '.id', '=', TravelComment::getTableName() . '.user_id')
+            ->join(User::TABLE, User::TABLE . '.id', '=', TravelComment::getTableName() . '.user_id')
             ->where('travel_id', $travelId)
             ->orderBy('path')
             ->limit(500)
             ->selectRaw(implode(', ', [
                 TravelComment::getTableName() . '.*',
-                User::getTableName() . '.name',
-                User::getTableName() . '.id as user_id',
+                User::TABLE . '.name',
+                User::TABLE . '.id as user_id',
             ]))
             ->get()->all();
     }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Services\Conversations;
+namespace App\Services\Albums;
 
 use App\Models\Conversations\Conversation;
 use App\Services\Conversations\Enum\Type;
@@ -19,24 +19,24 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipArchive;
 
-final readonly class ConversationFileService extends UploadBaseService
+final readonly class AlbumUploadService extends UploadBaseService
 {
     public function __construct(
-        protected Filesystem                    $filesystem,
-        private ConversationRepositoryInterface $repository,
-        protected array                         $basePaths,
+        protected Filesystem             $filesystem,
+        private AlbumRepositoryInterface $repository,
+        protected array                  $basePaths,
     ) {}
 
     public function validateFile(UploadedFile $file): void
     {
-        if ($file->getSize() > 10 * 1024 * 1024) {
+        if ($file->getSize() > 100 * 1024 * 1024) {
             throw new InvalidArgumentException('File size exceeds the maximum allowed size of 100 MB.');
         }
     }
 
-    public function saveAvatar(int $conversationId, UploadedFile $file): string
+    public function saveAvatar(int $albumId, UploadedFile $file): string
     {
-        $path = $this->getPath($conversationId, 'avatar');
+        $path = $this->getPath($albumId, 'avatar');
         $filename = 'avatar' . '.' . $file->getClientOriginalExtension();
         $this->filesystem->putFileAs($path, $file, $filename);
 
@@ -48,7 +48,7 @@ final readonly class ConversationFileService extends UploadBaseService
         $this->filesystem->put($filePathWithName, $file->getContent());
     }
 
-    public function uploadConversationFile(string $messageId, UploadedFile $file, int $conversationId, int $userId): int
+    public function uploadAlbumFile(string $messageId, UploadedFile $file, int $conversationId, int $userId): int
     {
         $hash = md5_file($file->getRealPath());
 
@@ -63,7 +63,7 @@ final readonly class ConversationFileService extends UploadBaseService
             $this->uploadFile($file, $filePathWithName);
         }
 
-        return $this->repository->addConversationMessageAttachment([
+        return $this->repository->addAlbumAttachment([
             'conversation_message_id' => $messageId,
             'path'                    => $filePathWithName,
             'hash'                    => $hash,
@@ -143,43 +143,5 @@ final readonly class ConversationFileService extends UploadBaseService
             readfile($tmpFile);
             unlink($tmpFile);
         }, "message_{$messageId}.zip");
-    }
-
-    public function getMessageFiles(string $messageId): array
-    {
-        return $this->repository->getMessageFiles($messageId);
-    }
-
-    public function showAvatar(Conversation $conversation): ?BinaryFileResponse
-    {
-        switch ($conversation->getType()) {
-            case Type::Group:
-            case Type::Public:
-                return $this->getAvatarExt($conversation);
-            case Type::Private:
-                return null;
-        }
-
-        return null;
-    }
-
-    private function getAvatarExt(Conversation $conversation): BinaryFileResponse
-    {
-        if ($conversation->avatar) {
-            return Response::file(Storage::disk('conversations')->path($conversation->avatar), [
-                'Content-Type'        => mime_content_type(Storage::disk('conversations')->path($conversation->avatar)),
-                'Content-Disposition' => 'inline; filename="' . basename($conversation->avatar) . '"',
-            ]);
-        }
-
-        return $this->getDefaultAvatar();
-    }
-
-    public function getDefaultAvatar(): BinaryFileResponse
-    {
-        return Response::file(Storage::disk('public')->path('/images/conversations/chat_blank.webp'), [
-            'Content-Type'        => 'image/webp',
-            'Content-Disposition' => 'inline; filename="chat_blank.webp"',
-        ]);
     }
 }

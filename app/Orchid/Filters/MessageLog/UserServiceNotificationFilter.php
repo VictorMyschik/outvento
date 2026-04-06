@@ -40,8 +40,8 @@ class UserServiceNotificationFilter extends Filter
             ServiceNotification::getTableName() . '.id',
             ServiceNotification::getTableName() . '.*',
             Communication::getTableName() . '.address as communication_address',
-            User::getTableName() . '.subscription_token as token',
-            User::getTableName() . '.email as email'
+            User::TABLE . '.subscription_token as token',
+            User::TABLE . '.email as email'
         ]));
     }
 
@@ -49,7 +49,7 @@ class UserServiceNotificationFilter extends Filter
     {
         $input = $this->request->all(self::FIELDS);
 
-        $builder->join(User::getTableName(), User::getTableName() . '.id', '=', ServiceNotification::getTableName() . '.user_id');
+        $builder->join(User::TABLE, User::TABLE . '.id', '=', ServiceNotification::getTableName() . '.user_id');
         $builder->join(Communication::getTableName(), Communication::getTableName() . '.id', '=', ServiceNotification::getTableName() . '.communication_id');
 
         if (!empty($input['id'])) {

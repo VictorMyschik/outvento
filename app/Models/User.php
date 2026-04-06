@@ -33,13 +33,14 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
     use Filterable;
     use Notifiable, HasApiTokens;
 
+    public const string TABLE = 'users';
     public const string TYPE_VIEW = 'view';
 
     public const string TYPE_EDIT = 'edit';
 
     public const string TYPE_DELETE = 'delete';
 
-    protected $table = 'users';
+    protected $table = self::TABLE;
 
     protected $fillable = [
         'name',
@@ -114,7 +115,7 @@ class User extends Authenticatable implements MustVerifyEmail, NotificationRecip
 
     public static function getTableName(): string
     {
-        return 'users';
+        return self::TABLE;
     }
 
     public static function canView(string $objectCheckName): bool

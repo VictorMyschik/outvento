@@ -23,7 +23,7 @@ class ConversationPinnedMessagesFilter extends Filter
     {
         return ConversationPinnedMessage::filters([self::class])
             ->join(ConversationMessage::TABLE, ConversationMessage::TABLE . '.id', '=', ConversationPinnedMessage::TABLE . '.message_id')
-            ->join(User::getTableName(), ConversationMessage::TABLE . '.user_id', '=', User::getTableName() . '.id')
+            ->join(User::TABLE, ConversationMessage::TABLE . '.user_id', '=', User::TABLE . '.id')
             ->where(ConversationMessage::TABLE . '.conversation_id', $conversationId)
             ->selectRaw(implode(',', [
                 ConversationMessage::TABLE . '.*',
@@ -38,11 +38,11 @@ class ConversationPinnedMessagesFilter extends Filter
         $input = $this->request->all(self::FIELDS);
 
         if (!empty($input['userIds'])) {
-            $builder->whereIn(User::getTableName() . '.id', $input['userIds']);
+            $builder->whereIn(User::TABLE . '.id', $input['userIds']);
         }
 
         if (!empty($input['email'])) {
-            $builder->where(User::getTableName() . '.email', $input['email']);
+            $builder->where(User::TABLE . '.email', $input['email']);
         }
 
         if (!empty($input['content'])) {

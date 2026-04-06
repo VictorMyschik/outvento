@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Orchid\Screens\User;
 
 use App\Models\User;
+use App\Services\Albums\AlbumService;
 use App\Services\Conversations\ConversationService;
 use App\Services\Promo\SubscriptionService;
 use App\Services\Travel\TravelCommentService;
@@ -31,6 +32,7 @@ class UserBaseScreen extends Screen
         protected readonly TravelInviteService  $inviteService,
         protected readonly TravelCommentService $travelCommentService,
         protected readonly ConversationService  $conversations,
+        protected readonly AlbumService         $albumService,
     ) {}
 
     public function name(): string

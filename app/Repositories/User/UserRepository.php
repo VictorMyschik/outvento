@@ -16,12 +16,12 @@ final readonly class UserRepository extends DatabaseRepository
 {
     public function createUser(array $data): int
     {
-        return $this->db->table(User::getTableName())->insertGetId($data);
+        return $this->db->table(User::TABLE)->insertGetId($data);
     }
 
     public function deleteAvatar(int $userId): void
     {
-        $this->db->table(User::getTableName())->where('id', $userId)->update(['avatar' => null]);
+        $this->db->table(User::TABLE)->where('id', $userId)->update(['avatar' => null]);
     }
 
     public function updateUserRoles(int $userId, array $roleIds): void
@@ -52,7 +52,7 @@ final readonly class UserRepository extends DatabaseRepository
 
     public function getEmailByName(string $name): ?string
     {
-        return $this->db->table(User::getTableName())->where('name', $name)->value('email');
+        return $this->db->table(User::TABLE)->where('name', $name)->value('email');
     }
 
     public function getUserById(int $id): ?User
@@ -62,7 +62,7 @@ final readonly class UserRepository extends DatabaseRepository
 
     public function updateUser(int $id, array $data): void
     {
-        $this->db->table(User::getTableName())->where('id', $id)->update($data);
+        $this->db->table(User::TABLE)->where('id', $id)->update($data);
     }
 
     public function saveCommunication(int $id, array $data): int

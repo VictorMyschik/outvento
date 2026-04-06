@@ -19,7 +19,6 @@ use App\Services\Travel\Enum\TravelVisible;
 use App\Services\Travel\Enum\UserTravelRole;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
 
@@ -33,7 +32,9 @@ class Travel extends ORM
     use DescriptionNullableFieldTrait;
     use DeletedNullableFieldTrait;
 
-    protected $table = 'travels';
+    public const string TABLE = 'travels';
+
+    protected $table = self::TABLE;
 
     protected array $allowedSorts = [
         'id',

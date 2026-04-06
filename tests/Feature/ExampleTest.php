@@ -13,6 +13,8 @@ class ExampleTest extends TestCase
      */
     public function test_the_application_returns_a_successful_response(): void
     {
-        self::assertSame(1, 1);
+        $amount = '123.45';
+
+        $r = bcdiv($amount, '100', 0);
     }
 }

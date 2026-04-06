@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Orchid\Screens\Album\AlbumDetailsScreen;
+use App\Orchid\Screens\Album\AlbumScreen;
 use App\Orchid\Screens\Catalog\CatalogAttributeScreen;
 use App\Orchid\Screens\Catalog\CatalogGoodDetailsScreen;
 use App\Orchid\Screens\Catalog\CatalogGoodsScreen;
@@ -145,6 +147,8 @@ Route::screen('/profiles/{user}/group-conversations', UserGroupConversationsList
 Route::screen('/profiles/{user}/conversation/{conversation}/details', UserConversationDetailsScreen::class)->name('profiles.messages');
 Route::screen('/profiles/{user}/travel/{travel}/details', UserTravelDetailsScreen::class)->name('profiles.travel.details');
 Route::screen('/profiles/communications/list', UserCommunicateScreen::class)->name('profiles.communication.list');
+Route::screen('/profiles/{user}/albums/list', AlbumScreen::class)->name('profiles.albums.list');
+Route::screen('/profiles/{user}/albums/{album}/details', AlbumDetailsScreen::class)->name('profiles.albums.details');
 
 // Travel
 Route::screen('/travel/list', TravelListScreen::class)->name('travel.list');
@@ -177,5 +181,5 @@ Route::screen('/catalog/types/list', CatalogGroupsScreen::class)->name('type.lis
 Route::screen('/catalog/groups/list', CatalogGroupsScreen::class)->name('catalog.groups.list');
 Route::screen('/catalog/group/{group_id}/attributes/list', CatalogAttributeScreen::class)->name('catalog.group.attributes');
 /// Other routes...
-Route::screen('/legal.documents/list', LegalDocumentsScreen::class)->name('legal.documents.list');
-Route::screen('/legal.documents/{id}/details', LegalDocumentEditScreen::class)->name('legal.documents.edit');
+Route::screen('/legal-documents/list', LegalDocumentsScreen::class)->name('legal.documents.list');
+Route::screen('/legal-documents/{id}/details', LegalDocumentEditScreen::class)->name('legal.documents.edit');
