@@ -10,7 +10,7 @@ final readonly class FileSizeConverter
     const string Mb = 'Mb';
     const string Gb = 'Gb';
 
-    public static function bytesTo(int $bites, string $measure = self::Mb): float
+    public static function bytesTo(int $bites, string $measure = self::Mb, int $round = 2): float
     {
         if ($bites < 0) {
             throw new \InvalidArgumentException('Bytes must be a non-negative integer.');
@@ -18,11 +18,13 @@ final readonly class FileSizeConverter
 
         $normalized = ucfirst(strtolower($measure));
 
-        return match ($normalized) {
+        $result = match ($normalized) {
             self::Kb => $bites / 1024,
             self::Mb => $bites / (1024 ** 2),
             self::Gb => $bites / (1024 ** 3),
             default => throw new \InvalidArgumentException(sprintf('Unknown measure "%s". Allowed: %s, %s, %s.', $measure, self::Kb, self::Mb, self::Gb)),
         };
+
+        return round($result, $round);
     }
 }

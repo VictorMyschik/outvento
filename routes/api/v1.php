@@ -29,6 +29,7 @@ Route::middleware('optional:sanctum')->group(function () {
     Route::get('/conversation/{conversation}/avatar', [ConversationController::class, 'getConversationAvatar'])->name('conversation.avatar');
     Route::get('/travel/{travel}/image/{media}', [TravelController::class, 'getTravelAvatar'])->name('travel.image');
     Route::get('/album/{album}/avatar', [AlbumController::class, 'getAvatar'])->name('album.avatar');
+    Route::get('/album/media/{mediaId}/signature/{signature}/exp/{expires}', [AlbumController::class, 'showMedia'])->name('album.media');
 });
 
 Route::middleware('guest')->group(static function () {

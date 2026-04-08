@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories\Albums;
 
 use App\Models\Albums\Album;
+use App\Models\Albums\AlbumMedia;
 use App\Models\Albums\AlbumTravel;
 use App\Models\Travel\Travel;
 use App\Models\Travel\UIT;
@@ -12,6 +13,7 @@ use App\Models\User;
 use App\Repositories\DatabaseRepository;
 use App\Services\Albums\AlbumRepositoryInterface;
 use App\Services\Travel\Enum\UserTravelRole;
+use stdClass;
 
 final readonly class AlbumRepository extends DatabaseRepository implements AlbumRepositoryInterface
 {
@@ -80,5 +82,86 @@ final readonly class AlbumRepository extends DatabaseRepository implements Album
             ->where('travel_id', $travelId)
             ->where('album_id', $albumId)
             ->delete();
+    }
+
+    public function addAlbumAttachment(array $data): int
+    {
+        return $this->db->table(AlbumMedia::TABLE)->insertGetId($data);
+    }
+
+    public function findExistsAttachment(int $albumId, string $hash, ?int $selfId = null): ?stdClass
+    {
+        return $this->db->table(AlbumMedia::TABLE)
+            ->when($selfId !== null, function ($q) use ($selfId) {
+                $q->whereNot('id', $selfId);
+            })
+            ->where('album_id', $albumId)
+            ->where('hash', $hash)
+            ->first();
+    }
+
+    public function getAlbumFileSize(int $albumId): int
+    {
+        return (int)$this->db->table(AlbumMedia::TABLE)
+            ->where('album_id', $albumId)
+            ->sum('size');
+    }
+
+    public function getAlbumMedia(int $albumId): array
+    {
+        return $this->db->table(AlbumMedia::TABLE)
+            ->where('album_id', $albumId)
+            ->selectRaw(implode(',', [
+                'id',
+                'file_type',
+                'path',
+                'size',
+                'mime',
+                'description',
+                'created_at',
+                'updated_at',
+                'point',
+            ]))
+            ->orderBy('sort')
+            ->orderBy('created_at')
+            ->get()
+            ->toArray();
+    }
+
+    public function getAlbumById(int $albumId): ?stdClass
+    {
+        return $this->db->table(Album::TABLE)->where('id', $albumId)->first();
+    }
+
+    public function getAlbumMediaById(int $mediaId): ?stdClass
+    {
+        return $this->db->table(AlbumMedia::TABLE)
+            ->where('id', $mediaId)
+            ->first(['path', 'album_id', 'hash', 'id']);
+    }
+
+    public function deleteAlbumAttachment(int $mediaId): void
+    {
+        $this->db->table(AlbumMedia::TABLE)->where('id', $mediaId)->delete();
+    }
+
+    public function updateMediaInfo(int $mediaId, array $data): void
+    {
+        $data['point'] = null;
+
+        if (!empty($data['address'])) {
+            $data['point'] = $this->db->raw(
+                sprintf(
+                    'ST_SetSRID(ST_MakePoint(%F, %F), 4326)::geography',
+                    $data['lng'],
+                    $data['lat'],
+                )
+            );
+        }
+
+        unset($data['lat'], $data['lng']);
+
+        $this->db->table(AlbumMedia::TABLE)->where('id', $mediaId)->update($data);
+
     }
 }

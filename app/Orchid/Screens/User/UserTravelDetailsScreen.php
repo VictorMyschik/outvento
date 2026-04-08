@@ -61,7 +61,7 @@ class UserTravelDetailsScreen extends UserBaseScreen
 
     public function name(): string
     {
-        return $this->travel->title ?? '';
+        return (string) $this->travel->title ?? '';
     }
 
     public function description(): string

@@ -4,20 +4,13 @@ declare(strict_types=1);
 
 namespace App\Services\Albums;
 
-use App\Models\Conversations\Conversation;
-use App\Services\Conversations\Enum\Type;
+use App\Services\Albums\Enum\FileType;
 use App\Services\Upload\UploadBaseService;
-use Exception;
+use finfo;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
-use League\Flysystem\Local\LocalFilesystemAdapter;
 use stdClass;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\StreamedResponse;
-use ZipArchive;
 
 final readonly class AlbumUploadService extends UploadBaseService
 {
@@ -48,31 +41,42 @@ final readonly class AlbumUploadService extends UploadBaseService
         $this->filesystem->put($filePathWithName, $file->getContent());
     }
 
-    public function uploadAlbumFile(string $messageId, UploadedFile $file, int $conversationId, int $userId): int
+    public function uploadAlbumFile(int $albumId, UploadedFile $file): int
     {
         $hash = md5_file($file->getRealPath());
 
-        $existsFile = $this->findExistsAttachment($conversationId, $hash);
+        $existsFile = $this->findExistsAttachment($albumId, $hash);
         $filePathWithName = $existsFile?->path;
         $fileName = $file->getClientOriginalName();
 
         if (!$existsFile) {
-            $path = $this->getPath($conversationId, $fileName);
+            $path = $this->getPath($albumId, $fileName);
             $filePathWithName = $path . '/' . $fileName;
 
             $this->uploadFile($file, $filePathWithName);
         }
 
         return $this->repository->addAlbumAttachment([
-            'conversation_message_id' => $messageId,
-            'path'                    => $filePathWithName,
-            'hash'                    => $hash,
-            'name'                    => $fileName,
-            'mime_type'               => $file->getMimeType(),
-            'size'                    => $file->getSize(),
-            'user_id'                 => $userId,
-            'conversation_id'         => $conversationId,
+            'album_id'  => $albumId,
+            'file_type' => $this->getFileType($file)->value,
+            'mime'      => $file->getMimeType(),
+            'size'      => $file->getSize(),
+            'path'      => $filePathWithName,
+            'hash'      => $hash,
         ]);
+    }
+
+    public function getFileType(UploadedFile $file): FileType
+    {
+        if (str_starts_with($file->getMimeType(), 'image/')) {
+            return FileType::Image;
+        }
+
+        if (str_starts_with($file->getMimeType(), 'video/')) {
+            return FileType::Video;
+        }
+
+        throw new \LogicException('Unsupported file type: ' . $file->getMimeType());
     }
 
     public function deleteFile(string $filePathWithName): bool
@@ -101,7 +105,7 @@ final readonly class AlbumUploadService extends UploadBaseService
 
     public function smartDeleteFile(stdClass $file): bool
     {
-        $existsFile = $this->repository->findExistsAttachment($file->conversation_id, $file->hash, $file->id);
+        $existsFile = $this->repository->findExistsAttachment((int)$file->album_id, $file->hash, $file->id);
 
         if ($existsFile) {
             return true;
@@ -110,38 +114,8 @@ final readonly class AlbumUploadService extends UploadBaseService
         return $this->deleteFile($file->path);
     }
 
-    public function findExistsAttachment(int $conversationId, string $hash): ?stdClass
+    public function findExistsAttachment(int $albumId, string $hash): ?stdClass
     {
-        return $this->repository->findExistsAttachment($conversationId, $hash);
-    }
-
-    public function getMessageFileArchived(string $messageId, array $files): StreamedResponse
-    {
-        return response()->streamDownload(function () use ($files) {
-            $zip = new ZipArchive();
-
-            $tmpFile = tempnam(sys_get_temp_dir(), 'zip');
-
-            if ($zip->open($tmpFile, ZipArchive::CREATE) !== TRUE) {
-                throw new Exception('Cannot create zip');
-            }
-
-            foreach ($files as $file) {
-                if (!Storage::disk($this->basePaths['disk'])->exists($file->path)) {
-                    continue;
-                }
-
-                if ($this->filesystem->getAdapter() instanceof LocalFilesystemAdapter) {
-                    $zip->addFile(Storage::disk($this->basePaths['disk'])->path($file->path), $file->name);
-                } else {
-                    $zip->addFromString($file->name, Storage::disk($this->basePaths['disk'])->get($file->path));
-                }
-            }
-
-            $zip->close();
-
-            readfile($tmpFile);
-            unlink($tmpFile);
-        }, "message_{$messageId}.zip");
+        return $this->repository->findExistsAttachment($albumId, $hash);
     }
 }

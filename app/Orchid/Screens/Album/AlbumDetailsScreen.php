@@ -4,22 +4,31 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\Album;
 
+use App\Helpers\FileSizeConverter;
 use App\Models\Albums\Album;
+use App\Models\Albums\AlbumMedia;
+use App\Models\Orchid\Attachment;
 use App\Models\User;
+use App\Orchid\Filters\Album\AlbumMediaListFilter;
 use App\Orchid\Layouts\Album\AddAlbumTravelLayout;
 use App\Orchid\Layouts\Album\AlbumEditLayout;
+use App\Orchid\Layouts\Album\AlbumMediaEditLayout;
 use App\Orchid\Layouts\Lego\AvatarUploadLayout;
 use App\Orchid\Screens\User\UserBaseScreen;
 use App\Services\Albums\Enum\Visibility;
+use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Actions\ModalToggle;
-use Orchid\Screen\Fields\Attach;
 use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Label;
+use Orchid\Screen\Fields\Upload;
 use Orchid\Screen\Fields\ViewField;
 use Orchid\Screen\Layouts\Modal;
 use Orchid\Support\Facades\Layout;
@@ -73,24 +82,120 @@ class AlbumDetailsScreen extends UserBaseScreen
             ])
         ];
 
-        $out[] = Layout::rows($this->getActionLayout());
+        $out[] = Layout::accordion($this->getImageActionLayout());
+        $out[] = Layout::rows($this->getImagesLayout());
 
         $out[] = Layout::rows($this->getActionBottomLayout());
+
         $out[] = Layout::modal('media_edit_modal', AlbumEditLayout::class)->async('asyncGetAlbum')->size(Modal::SIZE_LG);
         $out[] = Layout::modal('album_edit_modal', AlbumEditLayout::class)->async('asyncGetAlbum')->size(Modal::SIZE_LG);
         $out[] = Layout::modal('upload_album_avatar', AvatarUploadLayout::class);
         $out[] = Layout::modal('add_travel_modal', AddAlbumTravelLayout::class);
+        $out[] = Layout::modal('album_media_edit_modal', AlbumMediaEditLayout::class)->async('asyncGetMedia')->size(Modal::SIZE_LG);
 
         return $out;
     }
 
-    private function getActionLayout(): array
+    private function getImagesLayout(): array
+    {
+        $list = AlbumMediaListFilter::runQuery($this->album->id)->paginate(14);
+
+        $expires = now()->addMinutes(30)->timestamp;
+
+        foreach ($list as &$media) {
+            $signature = $this->albumService->getSignature($media->id, $expires);
+
+            $media->url = route('api.v1.album.media', ['mediaId' => $media->id, 'path' => $media->path, 'expires' => $expires, 'signature' => $signature]);
+            $media->btn = Group::make([
+                ModalToggle::make('edit')
+                    ->icon('pencil')
+                    ->modalTitle('Edit')
+                    ->modal('album_media_edit_modal', ['mediaId' => $media->id])
+                    ->method('saveAlbumMedia'),
+                Button::make('delete')
+                    ->icon('trash')
+                    ->confirm('Delete this media?')
+                    ->method('deleteMedia', ['mediaId' => $media->id]),
+            ])->render();
+        }
+
+        return [
+            ViewField::make('')->view('admin.users.albums.images')->value($list),
+            ViewField::make('')->view('admin.pagination')->value($list),
+        ];
+    }
+
+    private function getImageActionLayout(): array
     {
         return [
-            Attach::make('attachments')
-                ->maxCount(3)
-                ->multiple()
+            'Add images' => Layout::rows([
+                Upload::make('images')
+                    ->storage('albums')
+                    ->maxFiles(20)
+                    ->path('/tmp/' . $this->album->id),
+                Button::make('save')->class('mr-btn-success')->method('saveImages'),
+            ]),
         ];
+    }
+
+    public function asyncGetMedia(int $mediaId): array
+    {
+        $media = AlbumMedia::loadByOrDie($mediaId);
+
+        if ($media->point) {
+            $coords = DB::selectOne(
+                'SELECT ST_Y(?) as lat, ST_X(?) as lng',
+                [$media->point, $media->point]
+            );
+
+            $out['lat'] = $coords->lat;
+            $out['lng'] = $coords->lng;
+        } else {
+            $point = $this->user->getUserLocation()?->getCity();
+            $out['lat'] = $point?->lat;
+            $out['lng'] = $point?->lng;
+        }
+
+        $out['languageCode'] = $this->user->getLanguage()->getCode();
+        $out['languageLabel'] = $this->user->getLanguage()->getLabel();
+        $out['address'] = $media->address;
+        $out['sort'] = $media->sort;
+        $out['description'] = $media->description;
+
+        return $out;
+    }
+
+    public function saveAlbumMedia(Request $request, int $mediaId): void
+    {
+        $input = [
+            'address'     => $request->input('address'),
+            'sort'        => (int)$request->input('sort'),
+            'lat'         => (float)$request->input('lat'),
+            'lng'         => (float)$request->input('lng'),
+            'description' => $request->input('description'),
+        ];
+
+        $this->albumService->updateMediaInfo($mediaId, $input);
+    }
+
+    public function saveImages(Request $request): void
+    {
+        foreach ($request->input('images', []) as $file) {
+            $attachment = Attachment::loadByOrDie((int)$file);
+
+            $path = Storage::disk('albums')->path($attachment->getFullPath());
+
+            if (!file_exists($path) || !is_file($path)) {
+                Attachment::where('hash', $attachment->getHash())->delete();
+                throw new Exception('Ошибка при загрузке файла. Попробуйте ещё раз.');
+            }
+
+            $media = new UploadedFile($path, $attachment->getOriginalName(), $attachment->getMime());
+
+            $this->albumService->uploadMedia($this->album->id, $media);
+
+            $attachment->delete();
+        }
     }
 
     private function getBaseLayout(): array
@@ -112,10 +217,18 @@ class AlbumDetailsScreen extends UserBaseScreen
     {
         $out = $this->avatarTab();
 
+        $out[] = ViewField::make('')->view('admin.raw')->value(
+            'Total file size: ' . FileSizeConverter::bytesTo($this->albumService->getAlbumFileSize($this->album->id)) . ' Mb'
+        );
         $out[] = ViewField::make('')->view('hr');
         $out[] = ViewField::make('')->view('admin.created_updated')->value($this->album);
 
         return $out;
+    }
+
+    public function deleteMedia(int $mediaId): void
+    {
+        $this->albumService->deleteMedia($this->album->id, $mediaId);
     }
 
     private function avatarTab(): array
@@ -193,12 +306,17 @@ class AlbumDetailsScreen extends UserBaseScreen
     {
         return [
             Group::make([
+                Button::make('Purge media')
+                    ->class('mr-btn-danger pull-right')
+                    ->icon('trash')
+                    ->method('purgeAlbumMedia')
+                    ->confirm('Are you sure you want to delete all media in this album? This action cannot be undone.'),
                 Button::make('Delete album')
                     ->class('mr-btn-danger pull-right')
                     ->icon('trash')
                     ->method('removeAlbum')
                     ->confirm('Are you sure you want to delete this album? This action cannot be undone.'),
-            ])->alignCenter()
+            ])->autoWidth()
         ];
     }
 

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\API\User\AlbumController;
 use App\Orchid\Screens\Album\AlbumDetailsScreen;
 use App\Orchid\Screens\Album\AlbumScreen;
 use App\Orchid\Screens\Catalog\CatalogAttributeScreen;

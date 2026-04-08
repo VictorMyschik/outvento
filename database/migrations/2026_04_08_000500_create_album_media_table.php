@@ -11,11 +11,13 @@ return new class extends Migration {
             $table->id();
             $table->unsignedBigInteger('album_id')->index();
             $table->tinyInteger('file_type'); // image, video
-            $table->string('mime_type', 50)->index();
+            $table->string('mime', 50)->index();
             $table->unsignedBigInteger('size')->index();
             $table->string('path');
-            $table->string('alt')->nullable();
+            $table->integer('sort')->default(0);
             $table->string('hash', 32)->index();
+            $table->string('description')->nullable();
+            $table->string('address')->nullable();
 
             $table->index(['album_id', 'hash']);
 

@@ -20,9 +20,7 @@ Route::get('/', function () {
     return redirect('/admin');
 });
 
-Route::post('/test', function () {
-    return View('test');
-});
+Route::post('/test', [TestController::class, 'index'])->name('test');
 
 Route::get('locale/{locale}', function ($locale) {
     Session::put('locale', $locale);

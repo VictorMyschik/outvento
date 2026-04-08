@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Orchid\Attachment\File;
+use Orchid\Platform\Events\UploadedFileEvent;
 use Psr\Log\LoggerInterface;
 use Stichoza\GoogleTranslate\GoogleTranslate;
 
@@ -23,6 +26,27 @@ class TestController extends Controller
         $this->logger->info(json_encode($body, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT));
 
         return Response()->json(status: 204);
+    }
+
+    private function createModel(UploadedFile $file, Request $request)
+    {
+        $file = resolve(File::class, [
+            'file'  => $file,
+            'disk'  => $request->get('storage'),
+            'group' => $request->get('group'),
+        ]);
+
+        if ($request->has('path')) {
+            $file->path($request->get('path'));
+        }
+
+        $model = $file->load();
+
+        $model->url = $model->url();
+
+        event(new UploadedFileEvent($model));
+
+        return $model;
     }
 
     function translateCountryNames(): void

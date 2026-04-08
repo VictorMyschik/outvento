@@ -106,4 +106,60 @@ final readonly class AlbumService
     {
         $this->repository->delinkAlbumTravel($travelId, $albumId);
     }
+
+    public function uploadMedia(int $albumId, UploadedFile $file): void
+    {
+        $this->uploadService->uploadAlbumFile($albumId, $file);
+    }
+
+    public function getAlbumFileSize(int $albumId): int
+    {
+        return $this->repository->getAlbumFileSize($albumId);
+    }
+
+    public function getAlbumMedia(int $albumId): array
+    {
+        return $this->repository->getAlbumMedia($albumId);
+    }
+
+    public function showMedia(int $albumId, int $mediaId, ?User $user): ?BinaryFileResponse
+    {
+        $album = $this->repository->getAlbumById($albumId);
+
+        if ($album->user_id !== $user?->id) {
+            return null;
+        }
+
+        $media = $this->repository->getAlbumMediaById($mediaId);
+
+        if (!$media) {
+            return null;
+        }
+
+        return Response::file(Storage::disk('albums')->path($media->path), [
+            'Content-Type'        => mime_content_type(Storage::disk('albums')->path($media->path)),
+            'Content-Disposition' => 'inline; filename="' . basename($media->path) . '"',
+        ]);
+    }
+
+    public function getSignature(int $mediaId, int $exp): string
+    {
+        return hash_hmac(
+            'sha256',
+            $mediaId . '|' . $exp,
+            config('app.key')
+        );
+    }
+
+    public function deleteMedia(int $albumId, int $mediaId): void
+    {
+        if ($this->uploadService->smartDeleteFile($this->repository->getAlbumMediaById($mediaId))) {
+            $this->repository->deleteAlbumAttachment($mediaId);
+        }
+    }
+
+    public function updateMediaInfo(int $mediaId, array $data): void
+    {
+        $this->repository->updateMediaInfo($mediaId, $data);
+    }
 }
