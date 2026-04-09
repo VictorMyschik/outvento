@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Services\Image\ImageResizerService;
+use Imagick;
 use Tests\TestCase;
 
 class ExampleTest extends TestCase
@@ -13,8 +15,7 @@ class ExampleTest extends TestCase
      */
     public function test_the_application_returns_a_successful_response(): void
     {
-        $amount = '123.45';
-
-        $r = bcdiv($amount, '100', 0);
+        $service = new ImageResizerService();
+        $service->resize();
     }
 }
