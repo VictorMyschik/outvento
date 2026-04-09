@@ -6,9 +6,9 @@ namespace App\Services\Albums;
 
 use App\Services\Albums\Enum\FileType;
 use App\Services\Upload\UploadBaseService;
-use finfo;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Str;
 use InvalidArgumentException;
 use stdClass;
 
@@ -47,22 +47,26 @@ final readonly class AlbumUploadService extends UploadBaseService
 
         $existsFile = $this->findExistsAttachment($albumId, $hash);
         $filePathWithName = $existsFile?->path;
-        $fileName = $file->getClientOriginalName();
+
+        $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_BASENAME);
+        $originalName = Str::limit($originalName, 255);
 
         if (!$existsFile) {
-            $path = $this->getPath($albumId, $fileName);
-            $filePathWithName = $path . '/' . $fileName;
+            $extension = $file->getClientOriginalExtension();
+
+            $filePathWithName = $this->getPathByDate($albumId, $extension);
 
             $this->uploadFile($file, $filePathWithName);
         }
 
         return $this->repository->addAlbumAttachment([
-            'album_id'  => $albumId,
-            'file_type' => $this->getFileType($file)->value,
-            'mime'      => $file->getMimeType(),
-            'size'      => $file->getSize(),
-            'path'      => $filePathWithName,
-            'hash'      => $hash,
+            'album_id'      => $albumId,
+            'file_type'     => $this->getFileType($file)->value,
+            'mime'          => $file->getMimeType(),
+            'original_name' => $originalName,
+            'size'          => $file->getSize(),
+            'path'          => $filePathWithName,
+            'hash'          => $hash,
         ]);
     }
 
@@ -101,6 +105,21 @@ final readonly class AlbumUploadService extends UploadBaseService
         $currentDir = count($directories) + 1;
 
         return $objectId . '/' . $currentDir;
+    }
+
+    private function getPathByDate(int $albumId, string $extension): string
+    {
+        $ulid = strtolower(Str::ulid()->toBase32());
+
+        return sprintf(
+            '%s/%s/%s/%s/%s.%s',
+            $albumId,
+            now()->format('Y/m'),
+            substr($ulid, 0, 2),
+            substr($ulid, 2, 2),
+            $ulid,
+            $extension
+        );
     }
 
     public function smartDeleteFile(stdClass $file): bool

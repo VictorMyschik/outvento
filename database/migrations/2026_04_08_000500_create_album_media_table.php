@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->string('mime', 50)->index();
             $table->unsignedBigInteger('size')->index();
             $table->string('path');
+            $table->string('original_name');
             $table->integer('sort')->default(0);
             $table->string('hash', 32)->index();
             $table->string('description')->nullable();

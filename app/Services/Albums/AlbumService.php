@@ -151,10 +151,18 @@ final readonly class AlbumService
         );
     }
 
-    public function deleteMedia(int $albumId, int $mediaId): void
+    public function deleteMedia(int $mediaId): void
     {
         if ($this->uploadService->smartDeleteFile($this->repository->getAlbumMediaById($mediaId))) {
             $this->repository->deleteAlbumAttachment($mediaId);
+        }
+    }
+
+
+    public function purgeAlbumMedia(int $albumId): void
+    {
+        foreach ($this->repository->getAlbumMedia($albumId) as $media) {
+            $this->deleteMedia($media->id);
         }
     }
 

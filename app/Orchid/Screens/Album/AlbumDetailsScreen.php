@@ -320,6 +320,11 @@ class AlbumDetailsScreen extends UserBaseScreen
         ];
     }
 
+    public function purgeAlbumMedia(): void
+    {
+        $this->albumService->purgeAlbumMedia($this->album->id);
+    }
+
     public function delinkAlbumTravel(int $travelId): void
     {
         $this->albumService->delinkAlbumTravel($travelId, $this->album->id);
