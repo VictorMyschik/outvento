@@ -1,21 +1,20 @@
-<div class="gallery">
-    @foreach($value as $image)
-        <div class="gallery-item">
-            <a class="gallery-item--link" href="{{ $image->original }}" target="_blank">
-                <img src="{{ $image->preview }}" alt="{{ $image->id }}" loading="lazy">
-            </a>
-
-            @if($image->description)
-                <div class="gallery-item--desc">
-                    {{ $image->description }}
+<div class="gallery row">
+    <div class="col">
+        @foreach($value as $image)
+            <div class="gallery-item">
+                <a class="gallery-item--link" href="{{ $image->original }}" target="_blank">
+                    <img src="{{ $image->preview }}" alt="{{ $image->id }}" loading="lazy">
+                </a>
+                <div class="gallery-item--footer">
+                    {{ $image->btn }}
                 </div>
-            @endif
 
-            <div class="gallery-item--footer">
-                {{ $image->btn }}
             </div>
-        </div>
-    @endforeach
+        @endforeach
+    </div>
+    <div class="col">
+        {{ $value[0]->description }}
+    </div>
 </div>
 
 <style>
@@ -57,12 +56,7 @@
     .gallery-item--desc {
         padding: 8px 10px;
         font-size: 14px;
-        display: none;
-    }
-
-    .gallery-item:hover .gallery-item--desc,
-    .gallery-item:focus-within .gallery-item--desc {
-        display: block;
+        flex-grow: 1;
     }
 
     .gallery-item--footer {

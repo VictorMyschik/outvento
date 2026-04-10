@@ -31,6 +31,21 @@ RUN docker-php-ext-install \
     zip \
     mbstring
 
+RUN apk add --no-cache \
+    imagemagick \
+    libwebp \
+    libwebp-dev \
+    libwebp-tools
+
+# dev зависимости (можно удалить)
+RUN apk add --no-cache --virtual .imagick-build-deps \
+    imagemagick-dev \
+    $PHPIZE_DEPS \
+ && pecl install imagick \
+ && docker-php-ext-enable imagick \
+ && apk del .imagick-build-deps \
+ && rm -rf /tmp/pear
+
 # --------------------------------------------------
 # PHP extensions (PECL)
 # --------------------------------------------------

@@ -8,6 +8,7 @@ use App\Repositories\Albums\AlbumRepository;
 use App\Services\Albums\AlbumRepositoryInterface;
 use App\Services\Albums\AlbumService;
 use App\Services\Albums\AlbumUploadService;
+use App\Services\Image\AlbumImageResizer;
 use Illuminate\Config\Repository;
 use Illuminate\Contracts\Filesystem\Factory;
 use Illuminate\Contracts\Foundation\Application;
@@ -37,6 +38,7 @@ class AlbumProvider extends ServiceProvider
             return new AlbumUploadService(
                 filesystem: $app->make(Factory::class)->disk($config['disk']),
                 repository: $app->make(AlbumRepositoryInterface::class),
+                imageResizer: $app->make(AlbumImageResizer::class),
                 basePaths: $config,
             );
         });

@@ -11,7 +11,7 @@ class ActionFilterPanel
     public static function getActionsButtons(array $properties = []): Group
     {
         return Group::make([
-            Button::make('Filter')->icon('filter')->name('filter')->method('runFiltering', $properties)->class('mr-btn-success'),
+            Button::make('Filter')->icon('filter')->name('filter')->novalidate()->method('runFiltering', $properties)->class('mr-btn-success'),
             Button::make('Clear')->icon('close')->name('clear')->method('clearFilter')->class('mr-btn-route'),
         ])->autoWidth();
     }

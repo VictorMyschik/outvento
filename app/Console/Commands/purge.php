@@ -118,6 +118,7 @@ class purge extends Command
 
     private function purgeFiles(): void
     {
+        File::deleteDirectory(__DIR__ . '/../../../storage/app/albums');
         File::deleteDirectory(__DIR__ . '/../../../storage/app/public');
         File::deleteDirectory(__DIR__ . '/../../../storage/app/travels');
         File::deleteDirectory(__DIR__ . '/../../../storage/app/users');

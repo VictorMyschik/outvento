@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace App\Services\Albums;
 
+use App\Jobs\Images\ImageResizeJob;
 use App\Models\Albums\Album;
+use App\Models\Albums\AlbumMedia;
 use App\Models\Travel\Travel;
 use App\Models\User;
 use App\Services\Albums\Enum\Visibility;
+use App\Services\Image\Enum\Size;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
+use stdClass;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 final readonly class AlbumService
@@ -109,7 +113,9 @@ final readonly class AlbumService
 
     public function uploadMedia(int $albumId, UploadedFile $file): void
     {
-        $this->uploadService->uploadAlbumFile($albumId, $file);
+        $id = $this->uploadService->uploadAlbumFile($albumId, $file);
+
+        ImageResizeJob::dispatch($id);
     }
 
     public function getAlbumFileSize(int $albumId): int
@@ -120,6 +126,41 @@ final readonly class AlbumService
     public function getAlbumMedia(int $albumId): array
     {
         return $this->repository->getAlbumMedia($albumId);
+    }
+
+    public function getAlbumMediaById(int $mediaId): ?stdClass
+    {
+        return $this->repository->getAlbumMediaById($mediaId);
+    }
+
+    public function canViewAlbumMedia(int $mediaId, ?User $user): bool
+    {
+        $media = $this->repository->getAlbumMediaById($mediaId);
+
+        if (!$media) {
+            return false;
+        }
+
+        $album = $this->repository->getAlbumById((int)$media->album_id);
+
+        if (!$album) {
+            return false;
+        }
+
+        return match (Visibility::from($album->visibility)) {
+            Visibility::Public => true,
+            Visibility::RegisteredUsers => $user !== null,
+            Visibility::Private => (int)$album->user_id === (int)$user?->id,
+        };
+    }
+
+    public function canCommentOnAlbumMedia(int $mediaId, ?User $user): bool
+    {
+        if ($user === null) {
+            return false;
+        }
+
+        return $this->canViewAlbumMedia($mediaId, $user);
     }
 
     public function showMedia(int $albumId, int $mediaId, ?User $user): ?BinaryFileResponse
@@ -142,13 +183,44 @@ final readonly class AlbumService
         ]);
     }
 
-    public function getSignature(int $mediaId, int $exp): string
+    public function generateMediaUrl(AlbumMedia $media, Size $size): string
     {
-        return hash_hmac(
-            'sha256',
-            $mediaId . '|' . $exp,
-            config('app.key')
-        );
+        $expires = now()->addMinutes(1)->timestamp;
+
+        return route('api.v1.album.media', [
+            'm'   => $media->id,
+            'p'   => $media->path,
+            's'   => $size->value,
+            'e'   => $expires,
+            'sig' => $this->getSignature(mediaId: $media->id, path: $media->path, size: $size, expires: $expires),
+        ]);
+    }
+
+    public function getSignature(int $mediaId, string $path, Size $size, int $expires): string
+    {
+        $data = implode('|', [$mediaId, $path, $size->value, $expires]);
+
+        return hash_hmac('sha256', $data, config('app.key'));
+    }
+
+    public function checkMediaSignature(string $signature, int $mediaId, string $path, Size $size, int $expires): void
+    {
+        if (!hash_equals($this->getSignature($mediaId, $path, $size, $expires), $signature)) {
+            abort(403);
+        }
+    }
+
+    public function getMediaUrl(string $basePath, Size $size): BinaryFileResponse
+    {
+        if ($size === Size::Original) {
+            return $this->uploadService->getUrl($basePath);
+        }
+
+        $info = pathinfo($basePath);
+
+        $resizedRelativePath = sprintf('%s/%s_%s.webp', $info['dirname'], $info['filename'], $size->value);
+
+        return $this->uploadService->getUrl($resizedRelativePath) ?: $this->uploadService->getUrl($basePath);
     }
 
     public function deleteMedia(int $mediaId): void
@@ -169,5 +241,10 @@ final readonly class AlbumService
     public function updateMediaInfo(int $mediaId, array $data): void
     {
         $this->repository->updateMediaInfo($mediaId, $data);
+    }
+
+    public function deleteTempFile(string $relativePath): void
+    {
+        $this->uploadService->deleteFile($relativePath);
     }
 }

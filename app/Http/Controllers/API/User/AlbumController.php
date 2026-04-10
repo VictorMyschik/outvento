@@ -7,10 +7,9 @@ namespace App\Http\Controllers\API\User;
 use App\Http\Controllers\API\APIController;
 use App\Models\Albums\Album;
 use App\Services\Albums\AlbumService;
+use App\Services\Image\Enum\Size;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\Storage;
 use Orchid\Attachment\File;
 use Orchid\Platform\Events\UploadedFileEvent;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -30,18 +29,20 @@ class AlbumController extends APIController
         return $this->service->showAvatar($album, $request->user());
     }
 
-    public function showMedia(Request $request, int $mediaId, string $signature, int $expires): ?BinaryFileResponse
+    public function showMedia(Request $request): BinaryFileResponse
     {
-        if ($this->service->getSignature($mediaId, $expires) !== $signature) {
-            return null;
+        $expires = (int)$request->input('e');
+
+        if ($expires < time()) {
+            abort(403);
         }
 
-        $path = $request->input('path');
+        $path = $request->input('p');
+        $size = Size::tryFrom($request->input('s')) ?? Size::Medium;
 
-        return Response::file(Storage::disk('albums')->path($path), [
-            'Content-Type'        => mime_content_type(Storage::disk('albums')->path($path)),
-            'Content-Disposition' => 'inline; filename="' . basename($path) . '"',
-        ]);
+        $this->service->checkMediaSignature($request->input('sig'), (int)$request->input('m'), $path, $size, $expires);
+
+        return $this->service->getMediaUrl($path, $size);
     }
 
     public function uploadMedia(Request $request, Album $album)//: JsonResponse

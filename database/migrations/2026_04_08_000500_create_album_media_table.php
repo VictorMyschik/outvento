@@ -17,8 +17,9 @@ return new class extends Migration {
             $table->string('original_name');
             $table->integer('sort')->default(0);
             $table->string('hash', 32)->index();
-            $table->string('description')->nullable();
+            $table->string('description', 10000)->nullable();
             $table->string('address')->nullable();
+            $table->unsignedInteger('comments_count')->default(0)->index();
 
             $table->index(['album_id', 'hash']);
 

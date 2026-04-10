@@ -6,6 +6,7 @@ use App\Providers\CatalogServiceProvider;
 use App\Providers\ConstructorProvider;
 use App\Providers\ConversationProvider;
 use App\Providers\FaqProvider;
+use App\Providers\ImageResizerProvider;
 use App\Providers\LocationProvider;
 use App\Providers\NewsletterProvider;
 use App\Providers\NotificationProvider;
@@ -37,4 +38,5 @@ return [
     LocationProvider::class,
     ConversationProvider::class,
     AlbumProvider::class,
+    ImageResizerProvider::class,
 ];

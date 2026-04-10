@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Services\Image\ImageResizerService;
-use Imagick;
+use App\Services\Image\AlbumImageResizer;
 use Tests\TestCase;
 
 class ExampleTest extends TestCase
@@ -15,7 +14,7 @@ class ExampleTest extends TestCase
      */
     public function test_the_application_returns_a_successful_response(): void
     {
-        $service = new ImageResizerService();
-        $service->resize();
+        $service = app(AlbumImageResizer::class);
+        $service->resize(92);
     }
 }

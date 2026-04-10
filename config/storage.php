@@ -24,5 +24,13 @@ return [
     'albums'        => [
         'disk'             => 'albums',
         'max_upload_files' => 10,
+        'resize'           => [
+            'variants' => [
+                'preview' => 200,
+                'medium'  => 800,
+                'large'   => 1600,
+            ],
+            'quality'  => 80,
+        ],
     ],
 ];

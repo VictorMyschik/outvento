@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Albums;
 
 use App\Services\Albums\Enum\FileType;
+use App\Services\Image\AlbumImageResizer;
 use App\Services\Upload\UploadBaseService;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\UploadedFile;
@@ -17,6 +18,7 @@ final readonly class AlbumUploadService extends UploadBaseService
     public function __construct(
         protected Filesystem             $filesystem,
         private AlbumRepositoryInterface $repository,
+        private AlbumImageResizer        $imageResizer,
         protected array                  $basePaths,
     ) {}
 
@@ -130,11 +132,55 @@ final readonly class AlbumUploadService extends UploadBaseService
             return true;
         }
 
-        return $this->deleteFile($file->path);
+        if (!$this->deleteFile($file->path)) {
+            return false;
+        }
+
+        $this->deleteFiles($this->getVariantPaths($file->path));
+
+        return true;
+    }
+
+    /**
+     * @param array<int, string> $paths
+     */
+    private function deleteFiles(array $paths): void
+    {
+        if ($paths === []) {
+            return;
+        }
+
+        $this->filesystem->delete($paths);
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function getVariantPaths(string $originalPath): array
+    {
+        $suffixes = array_keys($this->basePaths['resize']['variants'] ?? []);
+
+        if ($suffixes === []) {
+            $suffixes = ['preview', 'medium', 'large'];
+        }
+
+        return array_map(
+            fn (string $suffix): string => $this->imageResizer->buildVariantPath($originalPath, $suffix),
+            $suffixes,
+        );
     }
 
     public function findExistsAttachment(int $albumId, string $hash): ?stdClass
     {
         return $this->repository->findExistsAttachment($albumId, $hash);
+    }
+
+    public function getUrl(string $path)
+    {
+        if ($this->filesystem->exists($path)) {
+            return response()->file($this->filesystem->path($path));
+        }
+
+        return null;
     }
 }

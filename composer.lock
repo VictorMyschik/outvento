@@ -1051,12 +1051,12 @@
             "version": "v7.0.5",
             "source": {
                 "type": "git",
-                "url": "https://github.com/firebase/php-jwt.git",
+                "url": "https://github.com/googleapis/php-jwt.git",
                 "reference": "47ad26bab5e7c70ae8a6f08ed25ff83631121380"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/47ad26bab5e7c70ae8a6f08ed25ff83631121380",
+                "url": "https://api.github.com/repos/googleapis/php-jwt/zipball/47ad26bab5e7c70ae8a6f08ed25ff83631121380",
                 "reference": "47ad26bab5e7c70ae8a6f08ed25ff83631121380",
                 "shasum": ""
             },
@@ -1105,8 +1105,8 @@
                 "php"
             ],
             "support": {
-                "issues": "https://github.com/firebase/php-jwt/issues",
-                "source": "https://github.com/firebase/php-jwt/tree/v7.0.5"
+                "issues": "https://github.com/googleapis/php-jwt/issues",
+                "source": "https://github.com/googleapis/php-jwt/tree/v7.0.5"
             },
             "time": "2026-04-01T20:38:03+00:00"
         },
@@ -5110,16 +5110,16 @@
         },
         {
             "name": "phpoffice/phpspreadsheet",
-            "version": "2.4.3",
+            "version": "2.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-                "reference": "3b204d00c19f9d809f8d2374f408b197f37ad0bd"
+                "reference": "78bf6f0b4945ab31f1935741324ef3f0bf59a6fe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/3b204d00c19f9d809f8d2374f408b197f37ad0bd",
-                "reference": "3b204d00c19f9d809f8d2374f408b197f37ad0bd",
+                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/78bf6f0b4945ab31f1935741324ef3f0bf59a6fe",
+                "reference": "78bf6f0b4945ab31f1935741324ef3f0bf59a6fe",
                 "shasum": ""
             },
             "require": {
@@ -5210,9 +5210,9 @@
             ],
             "support": {
                 "issues": "https://github.com/PHPOffice/PhpSpreadsheet/issues",
-                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/2.4.3"
+                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/2.4.4"
             },
-            "time": "2026-01-11T06:08:40+00:00"
+            "time": "2026-04-10T03:20:38+00:00"
         },
         {
             "name": "phpoption/phpoption",
@@ -5291,16 +5291,16 @@
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "3.0.50",
+            "version": "3.0.51",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "aa6ad8321ed103dc3624fb600a25b66ebf78ec7b"
+                "reference": "d59c94077f9c9915abb51ddb52ce85188ece1748"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/aa6ad8321ed103dc3624fb600a25b66ebf78ec7b",
-                "reference": "aa6ad8321ed103dc3624fb600a25b66ebf78ec7b",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/d59c94077f9c9915abb51ddb52ce85188ece1748",
+                "reference": "d59c94077f9c9915abb51ddb52ce85188ece1748",
                 "shasum": ""
             },
             "require": {
@@ -5381,7 +5381,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpseclib/phpseclib/issues",
-                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.50"
+                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.51"
             },
             "funding": [
                 {
@@ -5397,7 +5397,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-03-19T02:57:58+00:00"
+            "time": "2026-04-10T01:33:53+00:00"
         },
         {
             "name": "psr/cache",
@@ -10023,16 +10023,16 @@
     "packages-dev": [
         {
             "name": "barryvdh/laravel-debugbar",
-            "version": "v4.2.5",
+            "version": "v4.2.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fruitcake/laravel-debugbar.git",
-                "reference": "4f62913c865023ccd2c34d8d2d13916d2c5720f8"
+                "reference": "68c3de788feb7047bea547b51253e71a54e7936a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fruitcake/laravel-debugbar/zipball/4f62913c865023ccd2c34d8d2d13916d2c5720f8",
-                "reference": "4f62913c865023ccd2c34d8d2d13916d2c5720f8",
+                "url": "https://api.github.com/repos/fruitcake/laravel-debugbar/zipball/68c3de788feb7047bea547b51253e71a54e7936a",
+                "reference": "68c3de788feb7047bea547b51253e71a54e7936a",
                 "shasum": ""
             },
             "require": {
@@ -10106,7 +10106,7 @@
             ],
             "support": {
                 "issues": "https://github.com/fruitcake/laravel-debugbar/issues",
-                "source": "https://github.com/fruitcake/laravel-debugbar/tree/v4.2.5"
+                "source": "https://github.com/fruitcake/laravel-debugbar/tree/v4.2.6"
             },
             "funding": [
                 {
@@ -10118,7 +10118,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-04-08T09:39:15+00:00"
+            "time": "2026-04-10T07:24:18+00:00"
         },
         {
             "name": "fakerphp/faker",

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models\Albums;
 
 use App\Models\ORM\ORM;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
 
@@ -25,8 +26,14 @@ class AlbumMedia extends ORM
         'path',
         'sort',
         'hash',
+        'comments_count',
         'description',
         'created_at',
         'updated_at',
     ];
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(AlbumMediaComment::class, 'media_id');
+    }
 }
