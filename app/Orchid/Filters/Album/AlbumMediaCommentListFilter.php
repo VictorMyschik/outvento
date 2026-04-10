@@ -12,7 +12,7 @@ use Orchid\Filters\Filter;
 use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
 
-class AlbumCommentListFilter extends Filter
+class AlbumMediaCommentListFilter extends Filter
 {
     public const array FIELDS = [
         'text',

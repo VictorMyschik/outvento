@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\User\AlbumController;
 use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
@@ -28,3 +29,4 @@ Route::get('locale/{locale}', function ($locale) {
 });
 
 Route::match(['get', 'post'], '/test', [TestController::class, 'index'])->name('test.page');
+Route::get('/album/{album}/avatar', [AlbumController::class, 'getAvatar'])->name('admin.album.avatar');

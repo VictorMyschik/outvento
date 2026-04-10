@@ -4,16 +4,19 @@ declare(strict_types=1);
 
 namespace App\Services\Albums;
 
-use App\Jobs\Images\ImageResizeJob;
+use App\Jobs\Images\AlbumAvatarResizeJob;
+use App\Jobs\Images\AlbumImageResizeJob;
 use App\Models\Albums\Album;
 use App\Models\Albums\AlbumMedia;
 use App\Models\Travel\Travel;
 use App\Models\User;
+use App\Services\Albums\Enum\Icon;
 use App\Services\Albums\Enum\Visibility;
 use App\Services\Image\Enum\Size;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
+use Psr\SimpleCache\CacheInterface;
 use stdClass;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -22,7 +25,18 @@ final readonly class AlbumService
     public function __construct(
         private AlbumRepositoryInterface $repository,
         private AlbumUploadService       $uploadService,
+        private CacheInterface           $cache,
     ) {}
+
+    public function getAlbumById(int $id): stdClass
+    {
+        return $this->repository->getAlbumById($id);
+    }
+
+    public function getMediaById(int $id): stdClass
+    {
+        return $this->repository->getAlbumMediaById($id);
+    }
 
     public function saveAlbum(int $id, string $title, Visibility $visibility, User $user, ?string $description = null): int
     {
@@ -76,17 +90,26 @@ final readonly class AlbumService
         ]);
     }
 
-    public function addAvatar(int $albumId, UploadedFile $file): void
+    public function addAvatar(Album $album, UploadedFile $file): void
     {
-        $path = $this->uploadService->saveAvatar($albumId, $file);
-        $this->repository->saveAlbum($albumId, ['avatar' => $path]);
+        $path = $this->uploadService->addAvatar($album->id, $file);
+
+        if ($path) {
+            $this->removeAvatar($album);
+
+            $this->repository->saveAlbum($album->id, ['avatar' => $path]);
+
+            AlbumAvatarResizeJob::dispatch($album->id);
+        }
     }
 
     public function removeAvatar(Album $album): void
     {
-        $result = $this->uploadService->deleteFile($album->avatar);
+        if (!$album->avatar) {
+            return;
+        }
 
-        if ($result) {
+        if ($this->uploadService->smartDeleteAvatar($album->id, $album->avatar)) {
             $this->repository->saveAlbum($album->id, ['avatar' => null]);
         }
     }
@@ -115,7 +138,7 @@ final readonly class AlbumService
     {
         $id = $this->uploadService->uploadAlbumFile($albumId, $file);
 
-        ImageResizeJob::dispatch($id);
+        AlbumImageResizeJob::dispatch($id);
     }
 
     public function getAlbumFileSize(int $albumId): int
@@ -223,18 +246,19 @@ final readonly class AlbumService
         return $this->uploadService->getUrl($resizedRelativePath) ?: $this->uploadService->getUrl($basePath);
     }
 
-    public function deleteMedia(int $mediaId): void
+    public function deleteMedia(stdClass $album, stdClass $media): void
     {
-        if ($this->uploadService->smartDeleteFile($this->repository->getAlbumMediaById($mediaId))) {
-            $this->repository->deleteAlbumAttachment($mediaId);
+        if ($this->uploadService->smartDeleteFile($album, $media)) {
+            $this->repository->deleteAlbumAttachment($media->id);
         }
     }
 
-
     public function purgeAlbumMedia(int $albumId): void
     {
+        $album = $this->repository->getAlbumById($albumId);
+
         foreach ($this->repository->getAlbumMedia($albumId) as $media) {
-            $this->deleteMedia($media->id);
+            $this->deleteMedia($album, $media);
         }
     }
 
@@ -246,5 +270,44 @@ final readonly class AlbumService
     public function deleteTempFile(string $relativePath): void
     {
         $this->uploadService->deleteFile($relativePath);
+    }
+
+    public function getUserLike(int $mediaId, int $userId): ?Icon
+    {
+        return $this->repository->getUserLike($mediaId, $userId);
+    }
+
+    public function doMediaLike(int $mediaId, int $userId, Icon $icon): void
+    {
+        $this->repository->toggleMediaLike($mediaId, $userId, $icon);
+        $this->clearLikeCache($mediaId);
+    }
+
+    public function deleteLike(int $mediaId, int $userId): void
+    {
+        $this->repository->deleteLike($mediaId, $userId);
+        $this->clearLikeCache($mediaId);
+    }
+
+    public function getAggregatedLikesInfo(int $mediaId): array
+    {
+        return $this->cache->remember('media_likes_aggregation_' . $mediaId, 60 * 60 * 24, function () use ($mediaId) {
+            return $this->repository->getAggregatedLikes($mediaId);
+        });
+    }
+
+    private function clearLikeCache(int $mediaId): void
+    {
+        $this->cache->forget('media_likes_aggregation_' . $mediaId);
+    }
+
+    public function getLikeUserList(int $mediaId): array
+    {
+        return $this->repository->getLikesList($mediaId);
+    }
+
+    public function setMediaAsAvatar(int $albumId, int $mediaId): void
+    {
+        $this->repository->setMediaAsAvatar($albumId, $mediaId);
     }
 }

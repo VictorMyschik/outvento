@@ -41,8 +41,6 @@ final readonly class AlbumCommentService
             'body'     => $body,
         ]);
 
-        $this->repository->incrementMediaCommentsCount($mediaId);
-
         return $id;
     }
 

@@ -24,11 +24,10 @@ class AlbumProvider extends ServiceProvider
         });
 
         $this->app->bind(AlbumService::class, function (Application $app) {
-            $config = $this->app->make(Repository::class)->get('storage')['albums'];
-
             return new AlbumService(
                 repository: $app->make(AlbumRepositoryInterface::class),
                 uploadService: $app->make(AlbumUploadService::class),
+                cache: $app->make(\Illuminate\Cache\Repository::class),
             );
         });
 

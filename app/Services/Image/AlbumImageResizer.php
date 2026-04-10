@@ -27,8 +27,20 @@ final readonly class AlbumImageResizer
         private AlbumRepositoryInterface $repository,
         private Filesystem               $filesystem,
         private array                    $config = [],
-    )
-    {}
+    ) {}
+
+    public function resizeAvatar(int $albumId): void
+    {
+        $album = $this->repository->getAlbumById($albumId);
+
+        if (!$album?->avatar) {
+            $this->log->warning('Album not found for resize.', ['album_id' => $album]);
+
+            return;
+        }
+
+        $this->resizeByPath((string)$album->avatar);
+    }
 
     public function resize(int $mediaId): void
     {

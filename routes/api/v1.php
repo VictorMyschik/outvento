@@ -12,7 +12,6 @@ use App\Http\Controllers\API\SubscriptionController;
 use App\Http\Controllers\API\TelegramApiController;
 use App\Http\Controllers\API\Travel\TravelController;
 use App\Http\Controllers\API\User\AlbumController;
-use App\Http\Controllers\API\User\AlbumCommentController;
 use App\Http\Controllers\API\User\ConversationController;
 use App\Http\Controllers\API\User\UsersController;
 use App\Http\Controllers\API\WelcomeController;
@@ -31,8 +30,6 @@ Route::middleware('optional:sanctum')->group(function () {
     Route::get('/travel/{travel}/image/{media}', [TravelController::class, 'getTravelAvatar'])->name('travel.image');
     Route::get('/album/{album}/avatar', [AlbumController::class, 'getAvatar'])->name('album.avatar');
     Route::get('/album/media', [AlbumController::class, 'showMedia'])->name('album.media');
-    Route::get('/album/media/{mediaId}/comments', [AlbumCommentController::class, 'index'])->name('album.media.comments.index');
-    Route::get('/album/media/{mediaId}/comments/{commentId}/replies', [AlbumCommentController::class, 'replies'])->name('album.media.comments.replies');
 });
 
 Route::middleware('guest')->group(static function () {

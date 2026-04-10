@@ -49,4 +49,9 @@ class Album extends ORM
     {
         return $this->avatar ? route('api.v1.album.avatar', ['album' => $this->id]) : null;
     }
+
+    public function getAvatarForAdmin(): string
+    {
+        return route('admin.album.avatar', ['album' => $this->id]);
+    }
 }

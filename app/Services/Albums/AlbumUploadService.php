@@ -29,13 +29,15 @@ final readonly class AlbumUploadService extends UploadBaseService
         }
     }
 
-    public function saveAvatar(int $albumId, UploadedFile $file): string
+    public function addAvatar(int $albumId, UploadedFile $file): string
     {
-        $path = $this->getPath($albumId, 'avatar');
-        $filename = 'avatar' . '.' . $file->getClientOriginalExtension();
-        $this->filesystem->putFileAs($path, $file, $filename);
+        $extension = $file->getClientOriginalExtension();
 
-        return $path . '/' . $filename;
+        $filePathWithName = $this->getPathByDate($albumId, $extension);
+
+        $this->uploadFile($file, $filePathWithName);
+
+        return $filePathWithName;
     }
 
     private function uploadFile(UploadedFile $file, string $filePathWithName): void
@@ -124,19 +126,33 @@ final readonly class AlbumUploadService extends UploadBaseService
         );
     }
 
-    public function smartDeleteFile(stdClass $file): bool
+    public function smartDeleteFile(stdClass $album, stdClass $media): bool
     {
-        $existsFile = $this->repository->findExistsAttachment((int)$file->album_id, $file->hash, $file->id);
+        $existsFile = $this->repository->findExistsAttachment((int)$album->id, $media->hash, $media->id);
 
         if ($existsFile) {
             return true;
         }
 
-        if (!$this->deleteFile($file->path)) {
-            return false;
+        if ($album->avatar === $media->path) {
+            return true;
         }
 
-        $this->deleteFiles($this->getVariantPaths($file->path));
+        $variants = $this->getVariantPaths($media->path);
+        $variants[] = $media->path;
+
+        $this->deleteFiles($variants);
+
+        return true;
+    }
+
+    public function smartDeleteAvatar(int $albumId, string $path): true
+    {
+        if ($this->repository->hasMediaByPath($albumId, $path)) {
+            return true;
+        }
+
+        $this->deleteFiles([$path, ...$this->getVariantPaths($path)]);
 
         return true;
     }
@@ -165,7 +181,7 @@ final readonly class AlbumUploadService extends UploadBaseService
         }
 
         return array_map(
-            fn (string $suffix): string => $this->imageResizer->buildVariantPath($originalPath, $suffix),
+            fn(string $suffix): string => $this->imageResizer->buildVariantPath($originalPath, $suffix),
             $suffixes,
         );
     }

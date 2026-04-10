@@ -6,12 +6,14 @@ namespace App\Repositories\Albums;
 
 use App\Models\Albums\Album;
 use App\Models\Albums\AlbumMedia;
+use App\Models\Albums\AlbumMediaLike;
 use App\Models\Albums\AlbumTravel;
 use App\Models\Travel\Travel;
 use App\Models\Travel\UIT;
 use App\Models\User;
 use App\Repositories\DatabaseRepository;
 use App\Services\Albums\AlbumRepositoryInterface;
+use App\Services\Albums\Enum\Icon;
 use App\Services\Travel\Enum\UserTravelRole;
 use stdClass;
 
@@ -116,6 +118,7 @@ final readonly class AlbumRepository extends DatabaseRepository implements Album
                 'file_type',
                 'path',
                 'size',
+                'hash',
                 'mime',
                 'description',
                 'created_at',
@@ -162,6 +165,91 @@ final readonly class AlbumRepository extends DatabaseRepository implements Album
         unset($data['lat'], $data['lng']);
 
         $this->db->table(AlbumMedia::TABLE)->where('id', $mediaId)->update($data);
+    }
 
+    public function getLikesList(int $mediaId): array
+    {
+        return [];
+    }
+
+    public function toggleMediaLike(int $mediaId, int $userId, Icon $icon): void
+    {
+        $sql = <<<SQL
+        WITH existing AS (
+            SELECT icon
+            FROM album_media_likes
+            WHERE media_id = :media_id
+              AND user_id = :user_id
+        ),
+        deleted AS (
+            DELETE FROM album_media_likes
+            WHERE media_id = :media_id
+              AND user_id = :user_id
+              AND icon = :icon
+            RETURNING 1
+        ),
+        upsert AS (
+            INSERT INTO album_media_likes (media_id, user_id, icon)
+            SELECT :media_id, :user_id, :icon
+            WHERE NOT EXISTS (SELECT 1 FROM existing WHERE icon = :icon)
+            ON CONFLICT (media_id, user_id)
+            DO UPDATE SET icon = EXCLUDED.icon
+            WHERE album_media_likes.icon <> EXCLUDED.icon
+            RETURNING 1
+        )
+        SELECT
+            (SELECT COUNT(*) FROM deleted) AS deleted,
+            (SELECT COUNT(*) FROM upsert) AS upserted;
+        SQL;
+
+        $this->db->insert($sql, [
+            'media_id' => $mediaId,
+            'user_id'  => $userId,
+            'icon'     => $icon->value,
+        ]);
+    }
+
+    public function getUserLike(int $mediaId, int $userId): ?Icon
+    {
+        $result = $this->db->table(AlbumMediaLike::TABLE)
+            ->where('media_id', $mediaId)
+            ->where('user_id', $userId)
+            ->value('icon');
+
+        return $result ? Icon::from($result) : null;
+    }
+
+    public function getAggregatedLikes(int $mediaId): array
+    {
+        return $this->db->table(AlbumMediaLike::TABLE)
+            ->where('media_id', $mediaId)
+            ->selectRaw('COUNT(*) as likes_count, icon')
+            ->groupBy('icon')
+            ->get()
+            ->toArray();
+    }
+
+    public function deleteLike(int $mediaId, int $userId): void
+    {
+        $this->db->table(AlbumMediaLike::TABLE)->where('media_id', $mediaId)->where('user_id', $userId)->delete();
+    }
+
+    public function setMediaAsAvatar(int $albumId, int $mediaId): void
+    {
+        $sql = <<<SQL
+            UPDATE albums
+            SET avatar = (select path from album_media where id = :media_id)
+            WHERE id = :album_id;
+        SQL;
+
+        $this->db->statement($sql, ['media_id' => $mediaId, 'album_id' => $albumId]);
+    }
+
+    public function hasMediaByPath(int $albumId, string $path): bool
+    {
+        return $this->db->table(AlbumMedia::TABLE)
+            ->where('album_id', $albumId)
+            ->where('path', $path)
+            ->exists();
     }
 }

@@ -14,7 +14,7 @@ use Orchid\Screen\Fields\ViewField;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
 
-class AlbumCommentListLayout extends Table
+class AlbumMediaCommentListLayout extends Table
 {
     public $target = 'comment-list';
 

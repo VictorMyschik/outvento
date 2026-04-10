@@ -10,15 +10,18 @@ use App\Models\Albums\AlbumMedia;
 use App\Models\Albums\AlbumMediaComment;
 use App\Models\Orchid\Attachment;
 use App\Models\User;
-use App\Orchid\Filters\Album\AlbumCommentListFilter;
+use App\Orchid\Filters\Album\AlbumMediaCommentListFilter;
+use App\Orchid\Filters\Album\AlbumMediaLikeListFilter;
 use App\Orchid\Filters\Album\AlbumMediaListFilter;
 use App\Orchid\Layouts\Album\AddAlbumTravelLayout;
-use App\Orchid\Layouts\Album\AlbumCommentListLayout;
 use App\Orchid\Layouts\Album\AlbumEditLayout;
+use App\Orchid\Layouts\Album\AlbumMediaCommentListLayout;
 use App\Orchid\Layouts\Album\AlbumMediaEditLayout;
+use App\Orchid\Layouts\Album\AlbumMediaLikeListLayout;
 use App\Orchid\Layouts\Album\CommentEditLayout;
 use App\Orchid\Layouts\Lego\AvatarUploadLayout;
 use App\Orchid\Screens\User\UserBaseScreen;
+use App\Services\Albums\Enum\Icon;
 use App\Services\Albums\Enum\Visibility;
 use App\Services\Image\Enum\Size;
 use Exception;
@@ -109,19 +112,81 @@ class AlbumDetailsScreen extends UserBaseScreen
 
     private function getMediaLayout(): \Orchid\Screen\Layout
     {
-        $mediaId = (int)request()->input('mediaId');
+        $media = AlbumMedia::loadBy((int)request()->input('mediaId'));
 
-        if ($mediaId) {
+        if ($media) {
             return Layout::split([
                 Layout::rows($this->getImagesLayout()),
-                Layout::rows($this->getCommentsLayout($mediaId)),
+                Layout::tabs([
+                    'Comments' => Layout::rows($this->getCommentsLayout($media)),
+                    'Likes'    => Layout::rows($this->getLikesLayout($media)),
+
+                ])
+
             ])->ratio('60/40');
         }
 
         return Layout::rows($this->getImagesLayout());
     }
 
-    private function getCommentsLayout(int $mediaId): array
+    private function getLikesLayout(AlbumMedia $media): array
+    {
+        $list = AlbumMediaLikeListFilter::runQuery($media->id)->paginate(10, pageName: 'likes');
+        $table = new AlbumMediaLikeListLayout()->build(new Repository(['likes-list' => $list->items()]));
+        $aggregatedLikes = $this->albumService->getAggregatedLikesInfo($media->id);
+        $hasUserLikeIcon = $this->albumService->getUserLike($media->id, $this->user->id);
+
+        $likeBtns = [];
+
+        foreach (Icon::getCodeList() as $key => $iconCode) {
+            $hasLike = false;
+            if ($hasUserLikeIcon?->value === $key) {
+                $hasLike = true;
+            }
+
+            $count = 0;
+            foreach ($aggregatedLikes as $icon) {
+                if ($icon->icon === $key) {
+                    $count = $icon->likes_count;
+                    break;
+                }
+            }
+
+            $likeBtns[] = Button::make((string)$count ?: '')->icon("fa.$iconCode")
+                ->style($hasLike ? 'color: red' : 'color: gray')
+                ->method('doMediaLike', ['mediaId' => $media->id, 'icon' => $key]);
+        }
+
+        return [
+            Group::make([
+                ViewField::make('likes')->view('admin.h5')->value('Likes (' . array_sum(array_column($aggregatedLikes, 'likes_count')) . ')'),
+                Link::make('')
+                    ->icon('close')
+                    ->class('pull-right button-link ')
+                    ->route('profiles.albums.details', ['user' => $this->user->id, 'album' => $this->album->id]),
+            ]),
+
+            ViewField::make('')->view('admin.users.albums.images_comment')->value(
+                $this->buildMediaBlock($media)
+            ),
+            Group::make($likeBtns)->autoWidth(),
+            ViewField::make('')->view('space'),
+            ViewField::make('')->view('admin.row')->value($table),
+            ViewField::make('')->view('admin.pagination')->value($list),
+        ];
+    }
+
+    public function doMediaLike(int $mediaId, int $icon): void
+    {
+        $this->albumService->doMediaLike($mediaId, $this->user->id, Icon::from($icon));
+    }
+
+    public function deleteLike(int $mediaId, int $userId): void
+    {
+        $this->albumService->deleteLike($mediaId, $userId);
+    }
+
+    private function getCommentsLayout(AlbumMedia $media): array
     {
         $object = new \stdClass();
 
@@ -132,13 +197,11 @@ class AlbumDetailsScreen extends UserBaseScreen
         $object->location = Input::make('attachments')->type('file')->name('file')->multiple();
         $object->btn = Button::make('save')
             ->class('mr-btn-success pull-right')
-            ->method('saveMediaComment', ['mediaId' => $mediaId, 'commentId' => 0]);
+            ->method('saveMediaComment', ['mediaId' => $media->id, 'commentId' => 0]);
 
-        $media = AlbumMedia::loadByOrDie($mediaId);
+        $list = AlbumMediaCommentListFilter::runQuery($media->id)->paginate(10, pageName: 'comments');
 
-        $list = AlbumCommentListFilter::runQuery($mediaId)->paginate(10, pageName: 'comments');
-
-        $table = new AlbumCommentListLayout()->build(new Repository(['comment-list' => $list->items()]));
+        $table = new AlbumMediaCommentListLayout()->build(new Repository(['comment-list' => $list->items()]));
 
         return [
             Group::make([
@@ -153,7 +216,7 @@ class AlbumDetailsScreen extends UserBaseScreen
                 $this->buildMediaBlock($media)
             ),
 
-            AlbumCommentListFilter::displayFilterCard(request()),
+            AlbumMediaCommentListFilter::displayFilterCard(request()),
             Group::make([
                 Button::make('Filter')->icon('filter')->name('filter')->novalidate()->method('runFiltering', ['mediaId' => $media->id])->class('mr-btn-success'),
                 Button::make('Clear')->icon('close')->name('clear')->method('clearFilter', ['mediaId' => $media->id])->class('mr-btn-route'),
@@ -204,12 +267,16 @@ class AlbumDetailsScreen extends UserBaseScreen
             $media->original = $this->albumService->generateMediaUrl($media, Size::Original);
 
             $media->btn = Group::make([
+                Link::make()->icon('fa.info')->route('profiles.albums.details', ['user' => $this->user->id, 'album' => $this->album->id, 'mediaId' => $media->id]),
+                Button::make('')
+                    ->icon('fa.check')
+                    ->method('setMediaAsAvatar', ['mediaId' => $media->id])
+                    ->confirm('Set as avatar?'),
                 ModalToggle::make('')
                     ->icon('pencil')
                     ->modalTitle('Edit')
                     ->modal('album_media_edit_modal', ['mediaId' => $media->id])
                     ->method('saveAlbumMedia'),
-                Link::make((string)$media->comments_count)->icon('chat')->route('profiles.albums.details', ['user' => $this->user->id, 'album' => $this->album->id, 'mediaId' => $media->id]),
                 Button::make('')
                     ->icon('trash')
                     ->confirm('Delete this media?')
@@ -255,6 +322,11 @@ class AlbumDetailsScreen extends UserBaseScreen
                 Button::make('save')->class('mr-btn-success')->method('saveImages'),
             ]),
         ];
+    }
+
+    public function setMediaAsAvatar(int $mediaId): void
+    {
+        $this->albumService->setMediaAsAvatar($this->album->id, $mediaId);
     }
 
     public function asyncGetMedia(int $mediaId): array
@@ -349,7 +421,10 @@ class AlbumDetailsScreen extends UserBaseScreen
 
     public function deleteMedia(int $mediaId): void
     {
-        $this->albumService->deleteMedia($this->album->id, $mediaId);
+        $this->albumService->deleteMedia(
+            $this->albumService->getAlbumById($this->album->id),
+            $this->albumService->getMediaById($mediaId),
+        );
     }
 
     private function avatarTab(): array
@@ -367,14 +442,13 @@ class AlbumDetailsScreen extends UserBaseScreen
                     ->class('mr-btn-danger')
                     ->method('removeAvatar')
                     ->hidden(!$hasLogo)
-                    ->confirm('Delete avatar?')
-                    ->parameters(['albumIdId' => $this->album->id]),
+                    ->confirm('Delete avatar?'),
             ])->autoWidth(),
         ];
 
         $group = ['avatar' => ViewField::make('#')->view('admin.raw')->value('<i>No avatar</i>')];
         if ($this->album->avatar) {
-            $group['avatar'] = ViewField::make('#')->view('admin.avatar')->value(['path' => $this->album->getAvatar()]);
+            $group['avatar'] = ViewField::make('#')->view('admin.avatar')->value(['path' => $this->album->getAvatarForAdmin()]);
         }
 
         return array_merge($photoTab, [ViewField::make('')->view('space')], $group);
@@ -410,8 +484,7 @@ class AlbumDetailsScreen extends UserBaseScreen
                 ->class('mr-btn-danger')
                 ->method('removeAvatar')
                 ->hidden(empty($list))
-                ->confirm('Delete avatar?')
-                ->parameters(['albumIdId' => $this->album->id]),
+                ->confirm('Delete avatar?'),
         ])->autoWidth();
 
 
@@ -485,9 +558,7 @@ class AlbumDetailsScreen extends UserBaseScreen
 
     public function saveAlbumAvatar(Request $request): void
     {
-        $file = $request->file('avatar');
-
-        $this->albumService->addAvatar($this->album->id, $file);
+        $this->albumService->addAvatar($this->album, $request->file('avatar'));
     }
 
     public function removeAvatar(): void
@@ -498,7 +569,7 @@ class AlbumDetailsScreen extends UserBaseScreen
     public function runFiltering(Request $request, int $mediaId): RedirectResponse
     {
         $list = [];
-        foreach (AlbumCommentListFilter::FIELDS as $item) {
+        foreach (AlbumMediaCommentListFilter::FIELDS as $item) {
             if (!is_null($request->input($item))) {
                 $list[$item] = $request->input($item);
             }
